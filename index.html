@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Virtual Watchbox</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background-color: #111;
+      color: #fff;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background-color: #000;
+      border-bottom: 1px solid #333;
+    }
+    header nav a {
+      color: #fff;
+      margin-left: 20px;
+      text-decoration: none;
+    }
+    .hero {
+      text-align: center;
+      padding: 60px 20px;
+      font-size: 1.5em;
+    }
+    .watchbox {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      padding: 40px;
+    }
+    .watch-slot {
+      background: #222;
+      border-radius: 10px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .watch-slot:hover {
+      background: #333;
+    }
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #222;
+      border: 1px solid #444;
+      border-radius: 10px;
+      padding: 20px;
+      z-index: 1000;
+      color: #fff;
+    }
+    .popup.show {
+      display: block;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px;
+      background: #000;
+      border-top: 1px solid #333;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Virtual Watchbox</div>
+    <nav>
+      <a href="#">My Watchbox</a>
+      <a href="#">Playground</a>
+      <a href="#">Try On Room</a>
+      <a href="#">News Feed</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <h1>Showcase Your Timepieces</h1>
+    <p>Discover what’s next.</p>
+  </div>
+
+  <div class="watchbox" id="watchbox">
+    <!-- Watch slots will be generated here by JS -->
+  </div>
+
+  <div class="popup" id="popup">
+    <h2>Watch Details</h2>
+    <p>This is a placeholder for the watch description.</p>
+    <button onclick="closePopup()">Close</button>
+    <button>Replace Watch</button>
+  </div>
+
+  <div class="footer">
+    <p>Follow us on IG • TW • Discord</p>
+  </div>
+
+  <script>
+    const watchbox = document.getElementById("watchbox");
+    const popup = document.getElementById("popup");
+
+    for (let i = 0; i < 36; i++) {
+      const slot = document.createElement("div");
+      slot.className = "watch-slot";
+      slot.textContent = `Watch ${i + 1}`;
+      slot.onclick = () => {
+        popup.classList.add("show");
+      };
+      watchbox.appendChild(slot);
+    }
+
+    function closePopup() {
+      popup.classList.remove("show");
+    }
+  </script>
+</body>
+</html>
