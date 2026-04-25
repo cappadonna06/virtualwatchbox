@@ -48,8 +48,6 @@ export default function CollectionSection() {
             position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 201,
             background: '#FAFAF8',
             borderRadius: '20px 20px 0 0',
-            maxHeight: '88vh',
-            overflowY: 'auto',
             display: 'flex', flexDirection: 'column',
           }}
         >
@@ -58,7 +56,7 @@ export default function CollectionSection() {
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
               <div style={{ width: 36, height: 4, borderRadius: 2, background: '#E0DAD0' }} />
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
               <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880' }}>
                 Customize Box
               </span>
@@ -71,37 +69,42 @@ export default function CollectionSection() {
             </div>
           </div>
 
-          {/* Box preview */}
-          <div style={{ padding: '0 20px 20px', flexShrink: 0 }}>
+          {/* Box preview — fixed height, slots fill container via gridTemplateRows */}
+          <div style={{ padding: '0 20px 16px', flexShrink: 0 }}>
             <div
               style={{
-                borderRadius: 10, padding: '14px 14px 16px',
+                height: 168,
+                borderRadius: 10, padding: '12px 12px 14px',
                 background: fr.css, boxShadow: fr.shadow,
                 transition: 'background 0.4s ease, box-shadow 0.4s ease',
               }}
             >
               <div
                 style={{
-                  background: ln.color, borderRadius: 5, padding: 8,
+                  height: '100%',
+                  background: ln.color, borderRadius: 5, padding: 7,
                   boxShadow: 'inset 0 4px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04)',
                   transition: 'background 0.4s ease',
                 }}
               >
                 <div
                   style={{
+                    height: '100%',
                     display: 'grid',
                     gridTemplateColumns: `repeat(${sc.cols}, 1fr)`,
+                    gridTemplateRows: 'repeat(2, 1fr)',
                     gap: 5,
-                    transition: 'all 0.3s ease',
+                    transition: 'grid-template-columns 0.3s ease',
                   }}
                 >
                   {Array.from({ length: sc.n }).map((_, i) => (
                     <div
                       key={i}
                       style={{
-                        aspectRatio: '3/4', borderRadius: 3,
+                        borderRadius: 3,
                         background: ln.slotBg,
                         transition: 'background 0.4s ease',
+                        minHeight: 0,
                       }}
                     />
                   ))}
@@ -111,10 +114,10 @@ export default function CollectionSection() {
           </div>
 
           {/* Controls */}
-          <div style={{ padding: '0 20px 36px', background: '#FFFFFF', flexShrink: 0 }}>
+          <div style={{ padding: '0 20px 32px', background: '#FFFFFF', flexShrink: 0 }}>
 
             {/* Slots */}
-            <div style={{ padding: '16px 0', borderBottom: '1px solid #F0EBE3' }}>
+            <div style={{ padding: '14px 0', borderBottom: '1px solid #F0EBE3' }}>
               <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
                 Slots
               </div>
@@ -140,7 +143,7 @@ export default function CollectionSection() {
             </div>
 
             {/* Frame */}
-            <div style={{ padding: '16px 0', borderBottom: '1px solid #F0EBE3' }}>
+            <div style={{ padding: '14px 0', borderBottom: '1px solid #F0EBE3' }}>
               <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
                 Frame · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0, fontSize: 10 }}>{fr.label}</span>
               </div>
@@ -171,7 +174,7 @@ export default function CollectionSection() {
             </div>
 
             {/* Lining */}
-            <div style={{ padding: '16px 0 0' }}>
+            <div style={{ padding: '14px 0 0' }}>
               <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
                 Lining · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0, fontSize: 10 }}>{ln.label}</span>
               </div>
