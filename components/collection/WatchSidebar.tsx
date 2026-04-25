@@ -1,0 +1,164 @@
+import Image from 'next/image'
+import type { Watch, WatchCondition } from '@/types/watch'
+
+const conditionColors: Record<WatchCondition, { bg: string; text: string }> = {
+  Unworn:    { bg: '#E8F4E8', text: '#2D6A2D' },
+  'Like New':{ bg: '#EDF4E8', text: '#3A6A2D' },
+  Excellent: { bg: '#FFF8E6', text: '#8A6A10' },
+  Good:      { bg: '#FDF0E0', text: '#8A5010' },
+  Fair:      { bg: '#FAE8E8', text: '#8A2020' },
+}
+
+function fmt(n: number) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
+}
+
+interface Props {
+  watch: Watch | null
+}
+
+export default function WatchSidebar({ watch }: Props) {
+  if (!watch) {
+    return (
+      <div
+        style={{
+          background: '#FFFFFF', border: '1px solid #EAE5DC', borderRadius: 12,
+          padding: 24, position: 'sticky', top: 88,
+          boxShadow: '0 4px 24px rgba(26,20,16,0.06)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400,
+        }}
+      >
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
+            Select a Watch
+          </div>
+          <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: 18, color: '#D4CBBF' }}>
+            Click any slot to view details
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const colors = conditionColors[watch.condition]
+
+  return (
+    <div
+      style={{
+        background: '#FFFFFF', border: '1px solid #EAE5DC', borderRadius: 12,
+        padding: 24, position: 'sticky', top: 88,
+        boxShadow: '0 4px 24px rgba(26,20,16,0.06)',
+      }}
+    >
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880' }}>
+          Watch Detail
+        </div>
+        <span
+          style={{
+            display: 'inline-block', padding: '3px 10px', borderRadius: 20,
+            fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 600, letterSpacing: '0.04em',
+            background: colors.bg, color: colors.text,
+          }}
+        >
+          {watch.condition}
+        </span>
+      </div>
+
+      {/* Watch image */}
+      <div style={{ position: 'relative', width: 160, maxWidth: '100%', margin: '0 auto 16px', aspectRatio: '1/1' }}>
+        <Image
+          src={watch.imageUrl}
+          alt={watch.model}
+          fill
+          sizes="160px"
+          style={{ objectFit: 'contain', filter: 'drop-shadow(0 8px 16px rgba(26,20,16,0.10))' }}
+        />
+      </div>
+
+      {/* Brand / Model */}
+      <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 4 }}>
+        {watch.brand.toUpperCase()}
+      </div>
+      <h3 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 26, fontWeight: 400, lineHeight: 1.1, color: '#1A1410', marginBottom: 3 }}>
+        {watch.model}
+      </h3>
+      <div style={{ fontSize: 12, color: '#A89880', marginBottom: 4 }}>Ref. {watch.reference}</div>
+      {watch.notes && (
+        <div style={{ fontSize: 11, color: '#C9A84C', fontStyle: 'italic', marginBottom: 16 }}>
+          &ldquo;{watch.notes}&rdquo;
+        </div>
+      )}
+
+      {/* Market value */}
+      <div
+        style={{
+          background: '#FAF8F4', border: '1px solid #EAE5DC', borderRadius: 8,
+          padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          margin: '16px 0',
+        }}
+      >
+        <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880' }}>
+          Est. Market Value
+        </span>
+        <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 18, fontWeight: 600, color: '#C9A84C' }}>
+          {fmt(watch.estimatedValue)}
+        </span>
+      </div>
+
+      {/* Specs */}
+      <div style={{ marginBottom: 16 }}>
+        {(
+          [
+            ['Case Size',     `${watch.caseSizeMm}mm`],
+            ['Case Material', watch.caseMaterial],
+            ['Dial Color',    watch.dialColor],
+            ['Movement',      watch.movement],
+            ['Complications', watch.complications.join(', ')],
+            ['Price Paid',    fmt(watch.purchasePrice)],
+          ] as [string, string][]
+        ).map(([label, value]) => (
+          <div
+            key={label}
+            style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
+              padding: '9px 0', borderBottom: '1px solid #F0EBE3',
+              fontSize: 12,
+            }}
+          >
+            <span style={{ color: '#A89880', fontWeight: 400 }}>{label}</span>
+            <span style={{ color: '#1A1410', fontWeight: 500, textAlign: 'right' }}>{value}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Actions */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <button style={{
+          fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.08em',
+          padding: '9px 18px', background: '#1A1410', color: '#FAF8F4',
+          border: 'none', borderRadius: 4, cursor: 'pointer', width: '100%',
+        }}>
+          Find For Sale ↗
+        </button>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <button style={{
+            fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.08em',
+            padding: '9px 18px', background: 'transparent', color: '#1A1410',
+            border: '1px solid #D4CBBF', borderRadius: 4, cursor: 'pointer',
+          }}>
+            Sell This Watch
+          </button>
+          <button style={{
+            fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.08em',
+            padding: '9px 18px', background: 'transparent', color: '#1A1410',
+            border: '1px solid #D4CBBF', borderRadius: 4, cursor: 'pointer',
+          }}>
+            Swap Strap
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
