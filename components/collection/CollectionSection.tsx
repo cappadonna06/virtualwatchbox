@@ -1,11 +1,42 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useLayoutEffect } from 'react'
 import { watches } from '@/lib/watches'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import WatchBox from './WatchBox'
 import BoxConfigurator from './BoxConfigurator'
 import WatchSidebar from './WatchSidebar'
+
+// WatchBox internal padding constants (from WatchBox.tsx)
+// Frame: padding '22px 22px 24px', Lining: padding 10, Row gap: 6
+const WB_W_PAD = 64  // frame(22+22) + lining(10+10)
+const WB_H_PAD = 72  // frame(22+24) + lining(10+10) + rowGap(6)
+const WB_GAP   = 6
+
+// Drawer preview padding constants
+// Frame: padding '12px 12px 14px', Lining: padding 7, Row gap: 5
+const PV_W_PAD = 38  // frame(12+12) + lining(7+7)
+const PV_H_PAD = 45  // frame(12+14) + lining(7+7) + rowGap(5)
+const PV_GAP   = 5
+
+const ROWS = 2  // all slot counts use 2 rows
+
+/**
+ * Returns the largest box width that fits within both containerW and maxH,
+ * while maintaining the 3/4 slot aspect ratio.
+ * Formula: slotW = min(slotFromWidth, slotFromHeight), then maxBoxW = padding + cols*slotW
+ */
+function calcMaxBoxW(
+  containerW: number, maxH: number, cols: number,
+  wPad: number, hPad: number, gap: number,
+): number {
+  const slotFromW = (containerW - wPad - (cols - 1) * gap) / cols
+  // Total height = hPad + ROWS * slotH, slotH = slotW * 4/3
+  // Solving: slotW = (maxH - hPad) * 3 / (4 * ROWS) = (maxH - hPad) * 3/8
+  const slotFromH = (maxH - hPad) * 3 / (4 * ROWS)
+  const slotPx = Math.max(16, Math.min(slotFromW, slotFromH))
+  return Math.floor(wPad + (cols - 1) * gap + cols * slotPx)
+}
 
 export default function CollectionSection() {
   const [activeSlot, setActiveSlot] = useState<number | null>(0)
@@ -13,6 +44,14 @@ export default function CollectionSection() {
   const [lining, setLining] = useState('cream')
   const [slotCount, setSlotCount] = useState(6)
   const [configOpen, setConfigOpen] = useState(false)
+  const [screenW, setScreenW] = useState(0) // 0 = unknown until client hydrates
+
+  useLayoutEffect(() => {
+    const update = () => setScreenW(window.innerWidth)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
 
   function handleSlotClick(i: number) {
     setActiveSlot(prev => prev === i ? null : i)
@@ -22,6 +61,18 @@ export default function CollectionSection() {
   const fr = FRAMES.find(f => f.id === frame) ?? FRAMES[0]
   const ln = LININGS.find(l => l.id === lining) ?? LININGS[0]
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
+
+  const isMobile = screenW > 0 && screenW < 768
+  const mobileSectionPad = 40 // 20px each side
+
+  // Max width for the actual WatchBox on the page (mobile): cap height at 300px
+  const watchboxMaxW = isMobile
+    ? calcMaxBoxW(screenW - mobileSectionPad, 300, sc.cols, WB_W_PAD, WB_H_PAD, WB_GAP)
+    : undefined
+
+  // Max width for the drawer preview: cap height at 260px
+  const previewContainerW = screenW > 0 ? screenW - mobileSectionPad : 350
+  const previewMaxW = calcMaxBoxW(previewContainerW, 260, sc.cols, PV_W_PAD, PV_H_PAD, PV_GAP)
 
   return (
     <section className="collection-section" style={{ padding: '80px 56px', borderTop: '1px solid #EAE5DC' }}>
@@ -69,45 +120,42 @@ export default function CollectionSection() {
             </div>
           </div>
 
-          {/* Box preview — fixed height, slots fill container via gridTemplateRows */}
-          <div style={{ padding: '0 20px 16px', flexShrink: 0 }}>
-            <div
-              style={{
-                height: 168,
-                borderRadius: 10, padding: '12px 12px 14px',
-                background: fr.css, boxShadow: fr.shadow,
-                transition: 'background 0.4s ease, box-shadow 0.4s ease',
-              }}
-            >
+          {/* Box preview — constrained by calcMaxBoxW, slots maintain 3/4 ratio */}
+          <div style={{ padding: '0 20px 16px', flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
+            <div style={{ width: '100%', maxWidth: previewMaxW }}>
               <div
                 style={{
-                  height: '100%',
-                  background: ln.color, borderRadius: 5, padding: 7,
-                  boxShadow: 'inset 0 4px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04)',
-                  transition: 'background 0.4s ease',
+                  borderRadius: 10, padding: '12px 12px 14px',
+                  background: fr.css, boxShadow: fr.shadow,
+                  transition: 'background 0.4s ease, box-shadow 0.4s ease',
                 }}
               >
                 <div
                   style={{
-                    height: '100%',
-                    display: 'grid',
-                    gridTemplateColumns: `repeat(${sc.cols}, 1fr)`,
-                    gridTemplateRows: 'repeat(2, 1fr)',
-                    gap: 5,
-                    transition: 'grid-template-columns 0.3s ease',
+                    background: ln.color, borderRadius: 5, padding: 7,
+                    boxShadow: 'inset 0 4px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04)',
+                    transition: 'background 0.4s ease',
                   }}
                 >
-                  {Array.from({ length: sc.n }).map((_, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        borderRadius: 3,
-                        background: ln.slotBg,
-                        transition: 'background 0.4s ease',
-                        minHeight: 0,
-                      }}
-                    />
-                  ))}
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: `repeat(${sc.cols}, 1fr)`,
+                      gap: PV_GAP,
+                    }}
+                  >
+                    {Array.from({ length: sc.n }).map((_, i) => (
+                      <div
+                        key={i}
+                        style={{
+                          aspectRatio: '3/4',
+                          borderRadius: 3,
+                          background: ln.slotBg,
+                          transition: 'background 0.4s ease',
+                        }}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -240,13 +288,16 @@ export default function CollectionSection() {
 
       <div className="collection-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}>
         <div>
-          <WatchBox
-            activeSlot={activeSlot}
-            onSlotClick={handleSlotClick}
-            frame={frame}
-            lining={lining}
-            slotCount={slotCount}
-          />
+          {/* WatchBox wrapper: on mobile, constrained to calcMaxBoxW so slots stay 3/4 ratio without overflowing */}
+          <div style={watchboxMaxW !== undefined ? { maxWidth: watchboxMaxW, width: '100%', margin: '0 auto' } : {}}>
+            <WatchBox
+              activeSlot={activeSlot}
+              onSlotClick={handleSlotClick}
+              frame={frame}
+              lining={lining}
+              slotCount={slotCount}
+            />
+          </div>
 
           {/* Inline configurator — desktop only */}
           <div className="configurator-wrap">
