@@ -19,7 +19,7 @@ export default function CollectionSection() {
   const activeWatch = activeSlot !== null ? (watches[activeSlot] ?? null) : null
 
   return (
-    <section style={{ padding: '80px 56px', borderTop: '1px solid #EAE5DC' }}>
+    <section className="collection-section" style={{ padding: '80px 56px', borderTop: '1px solid #EAE5DC' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 36 }}>
         <div>
           <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 12 }}>
@@ -31,7 +31,7 @@ export default function CollectionSection() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}>
+      <div className="collection-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}>
         <div>
           <WatchBox
             activeSlot={activeSlot}

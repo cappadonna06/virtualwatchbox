@@ -17,7 +17,7 @@ export default function OnYourRadar({ liked, toggleLike }: Props) {
   const likedWatches = CAROUSEL_WATCHES.filter(w => liked.has(w.id))
 
   return (
-    <div style={{ padding: '80px 56px', borderTop: '1px solid #EAE5DC' }}>
+    <div className="radar-section" style={{ padding: '80px 56px', borderTop: '1px solid #EAE5DC' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
         <div>
           <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 6 }}>

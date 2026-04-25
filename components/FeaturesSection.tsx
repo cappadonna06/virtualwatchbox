@@ -26,8 +26,8 @@ const articles = [
 
 export default function FeaturesSection() {
   return (
-    <section style={{ padding: '80px 56px', borderTop: '1px solid #EAE5DC' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80 }}>
+    <section className="features-section" style={{ padding: '80px 56px', borderTop: '1px solid #EAE5DC' }}>
+      <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80 }}>
 
         {/* Left: numbered feature list */}
         <div>
