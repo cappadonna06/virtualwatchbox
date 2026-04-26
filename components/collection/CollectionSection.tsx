@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useLayoutEffect } from 'react'
+import { useState, useEffect, useLayoutEffect } from 'react'
 import { watches } from '@/lib/watches'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import WatchBox from './WatchBox'
@@ -34,7 +34,7 @@ function calcSlotPx(
 }
 
 export default function CollectionSection() {
-  const [activeSlot, setActiveSlot] = useState<number | null>(0)
+  const [activeSlot, setActiveSlot] = useState<number | null>(null)
   const [frame, setFrame] = useState('light-oak')
   const [lining, setLining] = useState('cream')
   const [slotCount, setSlotCount] = useState(6)
@@ -47,6 +47,22 @@ export default function CollectionSection() {
     window.addEventListener('resize', update)
     return () => window.removeEventListener('resize', update)
   }, [])
+
+  // Restore saved box config from localStorage after hydration
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('watchbox-config') ?? 'null')
+      if (!saved) return
+      if (FRAMES.some(f => f.id === saved.frame)) setFrame(saved.frame)
+      if (LININGS.some(l => l.id === saved.lining)) setLining(saved.lining)
+      if (SLOT_COUNTS.some(s => s.n === saved.slotCount)) setSlotCount(saved.slotCount)
+    } catch {}
+  }, [])
+
+  // Persist box config whenever it changes
+  useEffect(() => {
+    localStorage.setItem('watchbox-config', JSON.stringify({ frame, lining, slotCount }))
+  }, [frame, lining, slotCount])
 
   function handleSlotClick(i: number) {
     setActiveSlot(prev => prev === i ? null : i)
