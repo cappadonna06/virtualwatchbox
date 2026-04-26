@@ -1,8 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 
-const LINKS = ['My Collection', 'Playground', 'Discover', 'News']
+const LINKS: { label: string; href: string }[] = [
+  { label: 'My Collection', href: '/collection' },
+  { label: 'Playground',    href: '#' },
+  { label: 'Discover',      href: '#' },
+  { label: 'News',          href: '#' },
+]
 
 export default function NavBar() {
   const [open, setOpen] = useState(false)
@@ -24,18 +30,18 @@ export default function NavBar() {
         </span>
 
         <div className="nav-links" style={{ display: 'flex', gap: 32 }}>
-          {LINKS.map(link => (
-            <a
-              key={link}
-              href="#"
+          {LINKS.map(({ label, href }) => (
+            <Link
+              key={label}
+              href={href}
               style={{
                 fontFamily: 'var(--font-dm-sans)', fontSize: 12, fontWeight: 400,
                 letterSpacing: '0.04em', color: '#A89880',
                 textDecoration: 'none', cursor: 'pointer',
               }}
             >
-              {link}
-            </a>
+              {label}
+            </Link>
           ))}
         </div>
 
@@ -93,10 +99,10 @@ export default function NavBar() {
           transition: 'transform 0.2s ease, opacity 0.2s ease',
         }}
       >
-        {LINKS.map((link, i) => (
-          <a
-            key={link}
-            href="#"
+        {LINKS.map(({ label, href }, i) => (
+          <Link
+            key={label}
+            href={href}
             onClick={() => setOpen(false)}
             style={{
               fontFamily: 'var(--font-dm-sans)',
@@ -108,8 +114,8 @@ export default function NavBar() {
               display: 'block',
             }}
           >
-            {link}
-          </a>
+            {label}
+          </Link>
         ))}
         <button
           onClick={() => setOpen(false)}

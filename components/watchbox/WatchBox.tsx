@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import type { Watch, WatchCondition } from '@/types/watch'
-import { watches } from '@/lib/watches'
 import DialSVG from './DialSVG'
+import AddWatchModal from './AddWatchModal'
 
 const TOTAL_SLOTS = 6
 
@@ -23,15 +23,31 @@ function formatCurrency(n: number): string {
   }).format(n)
 }
 
-export default function WatchBox() {
+export default function WatchBox({ initialWatches }: { initialWatches: Watch[] }) {
+  const [slots, setSlots] = useState<(Watch | null)[]>(() => {
+    const arr = Array<Watch | null>(TOTAL_SLOTS).fill(null)
+    initialWatches.slice(0, TOTAL_SLOTS).forEach((w, i) => { arr[i] = w })
+    return arr
+  })
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null)
   const [activeSidebar, setActiveSidebar] = useState<number | null>(null)
+  const [modalSlot, setModalSlot] = useState<number | null>(null)
 
   const activeWatch: Watch | null =
-    activeSidebar !== null ? (watches[activeSidebar] ?? null) : null
+    activeSidebar !== null ? (slots[activeSidebar] ?? null) : null
 
   function handleSlotClick(index: number) {
-    setActiveSidebar((prev) => (prev === index ? null : index))
+    if (slots[index] === null) {
+      setActiveSidebar(null)
+      setModalSlot(index)
+    } else {
+      setActiveSidebar((prev) => (prev === index ? null : index))
+    }
+  }
+
+  function handleModalSelect(watch: Watch) {
+    setSlots(prev => prev.map((s, i) => i === modalSlot ? watch : s))
+    setModalSlot(null)
   }
 
   return (
@@ -42,13 +58,11 @@ export default function WatchBox() {
         style={{ backgroundColor: '#EDE9E2', border: '1px solid #E0DAD0' }}
       >
         <div className="grid grid-cols-3 gap-2.5">
-          {Array.from({ length: TOTAL_SLOTS }, (_, i) => {
-            const watch = watches[i]
-            const isFilled = watch !== undefined
+          {slots.map((watch, i) => {
             const isActive = activeSidebar === i
             const isHovered = hoveredSlot === i
 
-            if (!isFilled) {
+            if (watch === null) {
               return (
                 <div
                   key={i}
@@ -60,6 +74,7 @@ export default function WatchBox() {
                     color: '#A89880',
                     gap: '6px',
                   }}
+                  onClick={() => handleSlotClick(i)}
                 >
                   <span style={{ fontSize: '1.4rem', lineHeight: 1 }}>+</span>
                   <span
@@ -358,7 +373,7 @@ export default function WatchBox() {
                   ['Case Material', activeWatch.caseMaterial],
                   ['Dial Color', activeWatch.dialColor],
                   ['Movement', activeWatch.movement],
-                  ['Complications', activeWatch.complications.join(', ')],
+                  ['Complications', activeWatch.complications.join(', ') || '—'],
                 ] as [string, string][]
               ).map(([label, value]) => (
                 <div
@@ -451,7 +466,9 @@ export default function WatchBox() {
                   className="font-sans"
                   style={{ fontSize: '0.73rem', color: '#1A1410' }}
                 >
-                  {formatCurrency(activeWatch.purchasePrice)}
+                  {activeWatch.purchasePrice > 0
+                    ? formatCurrency(activeWatch.purchasePrice)
+                    : '—'}
                 </span>
               </div>
             </div>
@@ -510,6 +527,13 @@ export default function WatchBox() {
           </div>
         )}
       </div>
+
+      {/* Add Watch Modal */}
+      <AddWatchModal
+        open={modalSlot !== null}
+        onClose={() => setModalSlot(null)}
+        onSelect={handleModalSelect}
+      />
     </>
   )
 }
