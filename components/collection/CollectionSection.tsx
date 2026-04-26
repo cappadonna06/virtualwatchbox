@@ -63,15 +63,18 @@ export default function CollectionSection() {
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
 
   const isMobile = screenW > 0 && screenW < 768
-  const mobileSectionPad = 40 // 20px each side
 
-  // Max width for the actual WatchBox on the page (mobile): cap height at 300px
-  const watchboxMaxW = isMobile
-    ? calcMaxBoxW(screenW - mobileSectionPad, 300, sc.cols, WB_W_PAD, WB_H_PAD, WB_GAP)
+  // Desktop column width = screenW minus section padding (56×2=112) + sidebar (300) + gap (32)
+  const watchboxContainerW = isMobile ? screenW - 40 : Math.max(200, screenW - 444)
+  const watchboxMaxH = isMobile ? 300 : 480
+
+  // Apply on both mobile and desktop: slots stay the same size regardless of slot count
+  const watchboxMaxW = screenW > 0
+    ? calcMaxBoxW(watchboxContainerW, watchboxMaxH, sc.cols, WB_W_PAD, WB_H_PAD, WB_GAP)
     : undefined
 
   // Max width for the drawer preview: cap height at 260px
-  const previewContainerW = screenW > 0 ? screenW - mobileSectionPad : 350
+  const previewContainerW = screenW > 0 ? screenW - 40 : 350
   const previewMaxW = calcMaxBoxW(previewContainerW, 260, sc.cols, PV_W_PAD, PV_H_PAD, PV_GAP)
 
   return (
