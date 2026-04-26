@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useLayoutEffect } from 'react'
+import Link from 'next/link'
 import { watches } from '@/lib/watches'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import WatchBox from './WatchBox'
@@ -278,12 +279,17 @@ export default function CollectionSection() {
       {/* Section header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 36 }}>
         <div>
-          <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 12 }}>
-            My Collection
-          </div>
-          <h2 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 38, fontWeight: 400, lineHeight: 1.15, color: '#1A1410' }}>
-            Your Virtual<br /><em>Watch Box.</em>
-          </h2>
+          <Link
+            href="/collection"
+            style={{ textDecoration: 'none', display: 'inline-block' }}
+          >
+            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 12 }}>
+              My Collection →
+            </div>
+            <h2 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 38, fontWeight: 400, lineHeight: 1.15, color: '#1A1410', whiteSpace: 'nowrap' }}>
+              Your Virtual <em>Watch Box.</em>
+            </h2>
+          </Link>
         </div>
 
         {/* Edit Box button — mobile only */}
