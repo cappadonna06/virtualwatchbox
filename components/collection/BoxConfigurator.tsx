@@ -15,6 +15,7 @@ export default function BoxConfigurator({ frame, setFrame, lining, setLining, sl
 
   return (
     <div
+      className="box-configurator"
       style={{
         marginTop: 16,
         padding: '16px 20px',

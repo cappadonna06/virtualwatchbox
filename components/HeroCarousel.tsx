@@ -51,14 +51,15 @@ export default function HeroCarousel({ liked, toggleLike }: Props) {
 
   return (
     <section style={{ padding: 0, borderBottom: '1px solid #EAE5DC' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 440px', minHeight: 420, alignItems: 'stretch' }}>
+      <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 440px', minHeight: 420, alignItems: 'stretch' }}>
 
         {/* Left: static text */}
-        <div style={{ padding: '72px 56px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <div className="hero-text" style={{ padding: '72px 56px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 20 }}>
             The Digital Home for Every Collector
           </div>
           <h1
+            className="hero-h1"
             style={{
               fontFamily: 'var(--font-cormorant)',
               fontSize: 'clamp(48px, 5vw, 78px)',
@@ -94,7 +95,7 @@ export default function HeroCarousel({ liked, toggleLike }: Props) {
         </div>
 
         {/* Right: dark carousel panel */}
-        <div style={{
+        <div className="hero-panel" style={{
           position: 'relative', overflow: 'hidden',
           background: 'linear-gradient(160deg, #1e1b16 0%, #2a2420 100%)',
           display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
