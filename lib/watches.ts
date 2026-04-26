@@ -18,6 +18,8 @@ export const watches: Watch[] = [
     notes: 'AD purchase, complete set',
     imageUrl: '/watches/longines-05.avif',
     dialConfig: { dialColor: '#F5F0E8', markerColor: '#1A1410', handColor: '#1A1410' },
+    watchType: 'Diver',
+    ownershipStatus: 'Owned',
   },
   {
     id: 'longines-ld-navy',
@@ -36,6 +38,8 @@ export const watches: Watch[] = [
     notes: 'Birthday gift, unworn',
     imageUrl: '/watches/longines-02.avif',
     dialConfig: { dialColor: '#1B2A4A', markerColor: '#FAF8F4', handColor: '#FAF8F4' },
+    watchType: 'Diver',
+    ownershipStatus: 'Recently Added',
   },
   {
     id: 'longines-ld-green',
@@ -54,6 +58,8 @@ export const watches: Watch[] = [
     notes: 'Limited run, hard to find',
     imageUrl: '/watches/longines-03.avif',
     dialConfig: { dialColor: '#2A4A2E', markerColor: '#FAF8F4', handColor: '#FAF8F4' },
+    watchType: 'Diver',
+    ownershipStatus: 'For Sale',
   },
   {
     id: 'longines-ld-black',
@@ -72,6 +78,8 @@ export const watches: Watch[] = [
     notes: 'Leather strap original',
     imageUrl: '/watches/longines-04.avif',
     dialConfig: { dialColor: '#111111', markerColor: '#FAF8F4', handColor: '#FAF8F4' },
+    watchType: 'Diver',
+    ownershipStatus: 'Needs Service',
   },
   {
     id: 'longines-ld-grey',
@@ -90,5 +98,7 @@ export const watches: Watch[] = [
     notes: 'Odd dial — love the patina feel',
     imageUrl: '/watches/longines-01.avif',
     dialConfig: { dialColor: '#5A5A5A', markerColor: '#FAF8F4', handColor: '#FAF8F4' },
+    watchType: 'Diver',
+    ownershipStatus: 'Owned',
   },
 ]
