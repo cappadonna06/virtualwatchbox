@@ -8,9 +8,10 @@ interface Props {
   frame: string
   lining: string
   slotCount: number
+  slotWidth?: number
 }
 
-export default function WatchBox({ activeSlot, onSlotClick, frame, lining, slotCount }: Props) {
+export default function WatchBox({ activeSlot, onSlotClick, frame, lining, slotCount, slotWidth }: Props) {
   const fr = FRAMES.find(f => f.id === frame) ?? FRAMES[0]
   const ln = LININGS.find(l => l.id === lining) ?? LININGS[0]
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
@@ -38,9 +39,10 @@ export default function WatchBox({ activeSlot, onSlotClick, frame, lining, slotC
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: `repeat(${sc.cols}, 1fr)`,
+            gridTemplateColumns: slotWidth
+              ? `repeat(${sc.cols}, ${slotWidth}px)`
+              : `repeat(${sc.cols}, 1fr)`,
             gap: 6,
-            transition: 'all 0.3s ease',
           }}
         >
           {slots.map((w, i) => {

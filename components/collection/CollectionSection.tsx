@@ -21,21 +21,16 @@ const PV_GAP   = 5
 
 const ROWS = 2  // all slot counts use 2 rows
 
-/**
- * Returns the largest box width that fits within both containerW and maxH,
- * while maintaining the 3/4 slot aspect ratio.
- * Formula: slotW = min(slotFromWidth, slotFromHeight), then maxBoxW = padding + cols*slotW
- */
-function calcMaxBoxW(
+// Returns the exact pixel width per slot that fits within containerW and maxH
+// at 3/4 aspect ratio. Used to drive both the wrapper maxWidth and explicit grid
+// column sizes — bypassing 1fr inheritance so slots never overflow the box frame.
+function calcSlotPx(
   containerW: number, maxH: number, cols: number,
   wPad: number, hPad: number, gap: number,
 ): number {
   const slotFromW = (containerW - wPad - (cols - 1) * gap) / cols
-  // Total height = hPad + ROWS * slotH, slotH = slotW * 4/3
-  // Solving: slotW = (maxH - hPad) * 3 / (4 * ROWS) = (maxH - hPad) * 3/8
   const slotFromH = (maxH - hPad) * 3 / (4 * ROWS)
-  const slotPx = Math.max(16, Math.min(slotFromW, slotFromH))
-  return Math.floor(wPad + (cols - 1) * gap + cols * slotPx)
+  return Math.max(16, Math.min(slotFromW, slotFromH))
 }
 
 export default function CollectionSection() {
@@ -68,14 +63,19 @@ export default function CollectionSection() {
   const watchboxContainerW = isMobile ? screenW - 40 : Math.max(200, screenW - 444)
   const watchboxMaxH = isMobile ? 300 : 480
 
-  // Apply on both mobile and desktop: slots stay the same size regardless of slot count
-  const watchboxMaxW = screenW > 0
-    ? calcMaxBoxW(watchboxContainerW, watchboxMaxH, sc.cols, WB_W_PAD, WB_H_PAD, WB_GAP)
+  // Exact slot pixel width → drives both the wrapper maxWidth AND the explicit grid
+  // column sizes (repeat(cols, Xpx)) so slots can never overflow the frame.
+  const watchboxSlotPx = screenW > 0
+    ? Math.floor(calcSlotPx(watchboxContainerW, watchboxMaxH, sc.cols, WB_W_PAD, WB_H_PAD, WB_GAP))
+    : undefined
+  const watchboxMaxW = watchboxSlotPx !== undefined
+    ? WB_W_PAD + (sc.cols - 1) * WB_GAP + sc.cols * watchboxSlotPx
     : undefined
 
-  // Max width for the drawer preview: cap height at 260px
+  // Drawer preview slot px and wrapper maxWidth
   const previewContainerW = screenW > 0 ? screenW - 40 : 350
-  const previewMaxW = calcMaxBoxW(previewContainerW, 260, sc.cols, PV_W_PAD, PV_H_PAD, PV_GAP)
+  const previewSlotPx = Math.floor(calcSlotPx(previewContainerW, 260, sc.cols, PV_W_PAD, PV_H_PAD, PV_GAP))
+  const previewMaxW = PV_W_PAD + (sc.cols - 1) * PV_GAP + sc.cols * previewSlotPx
 
   return (
     <section className="collection-section" style={{ padding: '80px 56px', borderTop: '1px solid #EAE5DC' }}>
@@ -143,7 +143,7 @@ export default function CollectionSection() {
                   <div
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: `repeat(${sc.cols}, 1fr)`,
+                      gridTemplateColumns: `repeat(${sc.cols}, ${previewSlotPx}px)`,
                       gap: PV_GAP,
                     }}
                   >
@@ -151,7 +151,8 @@ export default function CollectionSection() {
                       <div
                         key={i}
                         style={{
-                          aspectRatio: '3/4',
+                          width: previewSlotPx,
+                          height: Math.round(previewSlotPx * 4 / 3),
                           borderRadius: 3,
                           background: ln.slotBg,
                           transition: 'background 0.4s ease',
@@ -291,7 +292,7 @@ export default function CollectionSection() {
 
       <div className="collection-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}>
         <div>
-          {/* WatchBox wrapper: on mobile, constrained to calcMaxBoxW so slots stay 3/4 ratio without overflowing */}
+          {/* Wrapper centers the box; slotWidth drives explicit px grid columns in WatchBox */}
           <div style={watchboxMaxW !== undefined ? { maxWidth: watchboxMaxW, width: '100%', margin: '0 auto' } : {}}>
             <WatchBox
               activeSlot={activeSlot}
@@ -299,6 +300,7 @@ export default function CollectionSection() {
               frame={frame}
               lining={lining}
               slotCount={slotCount}
+              slotWidth={watchboxSlotPx}
             />
           </div>
 
