@@ -14,81 +14,15 @@ export default function BoxConfigurator({ frame, setFrame, lining, setLining, sl
   const ln = LININGS.find(l => l.id === lining) ?? LININGS[0]
 
   return (
-    <div
-      className="box-configurator"
-      style={{
-        marginTop: 16,
-        padding: '16px 20px',
-        background: '#FFFFFF',
-        border: '1px solid #EAE5DC',
-        borderRadius: 10,
-        display: 'flex', gap: 32, alignItems: 'flex-start',
-      }}
-    >
-      {/* Frame */}
-      <div style={{ flex: 1 }}>
-        <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
-          Frame · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0 }}>{fr.label}</span>
-        </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {FRAMES.map(f => (
-            <div key={f.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div
-                onClick={() => setFrame(f.id)}
-                title={f.label}
-                style={{
-                  width: 28, height: 28, borderRadius: '50%',
-                  background: f.swatchColor,
-                  cursor: 'pointer',
-                  border: frame === f.id ? '2px solid #C9A84C' : '2px solid transparent',
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
-                  transition: 'border-color 0.15s, transform 0.15s',
-                  transform: frame === f.id ? 'scale(1.0)' : 'scale(1)',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')}
-                onMouseLeave={e => (e.currentTarget.style.transform = frame === f.id ? 'scale(1.0)' : 'scale(1)')}
-              />
-              <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, color: '#A89880', textAlign: 'center', marginTop: 4, letterSpacing: '0.03em' }}>
-                {f.label.split(' ')[0]}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Lining */}
-      <div style={{ flex: 1 }}>
-        <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
-          Lining · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0 }}>{ln.label}</span>
-        </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {LININGS.map(l => (
-            <div key={l.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div
-                onClick={() => setLining(l.id)}
-                title={l.label}
-                style={{
-                  width: 28, height: 28, borderRadius: '50%',
-                  background: l.color,
-                  cursor: 'pointer',
-                  border: lining === l.id ? '2px solid #C9A84C' : l.id === 'cream' ? '2px solid #e0dbd0' : '2px solid transparent',
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
-                  transition: 'border-color 0.15s, transform 0.15s',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')}
-                onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-              />
-              <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, color: '#A89880', textAlign: 'center', marginTop: 4, letterSpacing: '0.03em' }}>
-                {l.label}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
+    <div style={{
+      background: '#FFFFFF',
+      border: '1px solid #EAE5DC',
+      borderTop: 'none',
+      borderRadius: '0 0 8px 8px',
+    }}>
       {/* Slots */}
-      <div style={{ flex: '0 0 auto' }}>
-        <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
+      <div style={{ padding: '12px 16px', borderBottom: '1px solid #F0EBE3' }}>
+        <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 8 }}>
           Slots
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
@@ -105,6 +39,66 @@ export default function BoxConfigurator({ frame, setFrame, lining, setLining, sl
                 cursor: 'pointer', transition: 'all 0.15s',
               }}
             >{s.label}</button>
+          ))}
+        </div>
+      </div>
+
+      {/* Frame */}
+      <div style={{ padding: '12px 16px', borderBottom: '1px solid #F0EBE3' }}>
+        <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 8 }}>
+          Frame · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0 }}>{fr.label}</span>
+        </div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {FRAMES.map(f => (
+            <div key={f.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div
+                onClick={() => setFrame(f.id)}
+                title={f.label}
+                style={{
+                  width: 28, height: 28, borderRadius: '50%',
+                  background: f.swatchColor,
+                  cursor: 'pointer',
+                  border: frame === f.id ? '2px solid #C9A84C' : '2px solid transparent',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
+                  transition: 'border-color 0.15s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')}
+                onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+              />
+              <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, color: '#A89880', textAlign: 'center', marginTop: 4, letterSpacing: '0.03em' }}>
+                {f.label.split(' ')[0]}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Lining */}
+      <div style={{ padding: '12px 16px' }}>
+        <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 8 }}>
+          Lining · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0 }}>{ln.label}</span>
+        </div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {LININGS.map(l => (
+            <div key={l.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div
+                onClick={() => setLining(l.id)}
+                title={l.label}
+                style={{
+                  width: 28, height: 28, borderRadius: '50%',
+                  background: l.color,
+                  cursor: 'pointer',
+                  border: lining === l.id ? '2px solid #C9A84C' : l.id === 'cream' ? '2px solid #e0dbd0' : '2px solid transparent',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
+                  transition: 'border-color 0.15s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')}
+                onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+              />
+              <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, color: '#A89880', textAlign: 'center', marginTop: 4, letterSpacing: '0.03em' }}>
+                {l.label}
+              </div>
+            </div>
           ))}
         </div>
       </div>

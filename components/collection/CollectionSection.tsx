@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { watches } from '@/lib/watches'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import WatchBox from './WatchBox'
-import BoxConfigurator from './BoxConfigurator'
 import WatchSidebar from './WatchSidebar'
 
 // WatchBox internal padding constants (from WatchBox.tsx)
@@ -40,7 +39,7 @@ export default function CollectionSection() {
   const [lining, setLining]               = useState('cream')
   const [slotCount, setSlotCount]         = useState(6)
   const [configOpen, setConfigOpen]       = useState(false)
-  const [customizerOpen, setCustonizerOpen] = useState(false)
+  const [customizerOpen, setCustomizerOpen] = useState(false)
   const [screenW, setScreenW]             = useState(0)
 
   useLayoutEffect(() => {
@@ -294,7 +293,7 @@ export default function CollectionSection() {
 
       <div className="collection-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}>
         <div>
-          {/* Wrapper centers the box; slotWidth drives explicit px grid columns in WatchBox */}
+          {/* Box + flyout — both constrained to watchboxMaxW so they visually align */}
           <div style={watchboxMaxW !== undefined ? { maxWidth: watchboxMaxW, width: '100%', margin: '0 auto' } : {}}>
             <WatchBox
               activeSlot={activeSlot}
@@ -304,9 +303,79 @@ export default function CollectionSection() {
               slotCount={slotCount}
               slotWidth={watchboxSlotPx}
             />
+
+            {/* Desktop flyout — .configurator-wrap CSS hides on mobile */}
+            <div className="configurator-wrap" style={{ marginTop: 10, position: 'relative' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, color: '#A89880' }}>{fr.label} · {ln.label} · {sc.n} slots</span>
+                <button
+                  onClick={() => setCustomizerOpen(v => !v)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 5,
+                    fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500,
+                    letterSpacing: '0.06em',
+                    padding: '5px 12px',
+                    background: '#FFFFFF', color: '#A89880',
+                    border: '1px solid #EAE5DC', borderRadius: 6,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                    <path d="M1 9.5V11h1.5l4.42-4.42-1.5-1.5L1 9.5zm7.07-5.07c.2-.2.2-.51 0-.71L6.99 2.64a.5.5 0 00-.71 0L5.13 3.79l1.5 1.5 1.44-1.44z" fill="#A89880"/>
+                  </svg>
+                  Customize Watchbox
+                </button>
+              </div>
+
+              {/* Flyout panel — absolute, flies in from top-right */}
+              <div
+                style={{
+                  position: 'absolute', top: '100%', right: 0, zIndex: 20, marginTop: 4,
+                  border: '1px solid #EAE5DC', borderRadius: 8, background: '#FFFFFF',
+                  boxShadow: '0 4px 20px rgba(26,20,16,0.1)',
+                  overflow: 'hidden',
+                  opacity: customizerOpen ? 1 : 0,
+                  transform: customizerOpen ? 'translateY(0) scale(1)' : 'translateY(-4px) scale(0.98)',
+                  transformOrigin: 'top right',
+                  pointerEvents: customizerOpen ? 'auto' : 'none',
+                  transition: 'opacity 0.18s ease, transform 0.18s ease',
+                }}
+              >
+                <div style={{ padding: '9px 12px', borderBottom: '1px solid #F0EBE3', display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', flexShrink: 0 }}>Slots</span>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    {SLOT_COUNTS.map(s => (
+                      <button key={s.n} onClick={() => setSlotCount(s.n)} style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, padding: '3px 9px', borderRadius: 4, border: slotCount === s.n ? '1px solid #C9A84C' : '1px solid #E0DAD0', background: slotCount === s.n ? 'rgba(201,168,76,0.06)' : 'transparent', color: slotCount === s.n ? '#C9A84C' : '#A89880', cursor: 'pointer', transition: 'all 0.15s' }}>{s.label}</button>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ padding: '9px 12px', borderBottom: '1px solid #F0EBE3', display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', flexShrink: 0 }}>Frame · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0 }}>{fr.label}</span></span>
+                  <div style={{ display: 'flex', gap: 7 }}>
+                    {FRAMES.map(f => (
+                      <div key={f.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div onClick={() => setFrame(f.id)} title={f.label} style={{ width: 24, height: 24, borderRadius: '50%', background: f.swatchColor, cursor: 'pointer', border: frame === f.id ? '2px solid #C9A84C' : '2px solid transparent', boxShadow: '0 1px 4px rgba(0,0,0,0.15)', transition: 'border-color 0.15s' }} onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.15)')} onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')} />
+                        <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 8, color: '#A89880', textAlign: 'center', marginTop: 3 }}>{f.label.split(' ')[0]}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ padding: '9px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', flexShrink: 0 }}>Lining · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0 }}>{ln.label}</span></span>
+                  <div style={{ display: 'flex', gap: 7 }}>
+                    {LININGS.map(l => (
+                      <div key={l.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div onClick={() => setLining(l.id)} title={l.label} style={{ width: 24, height: 24, borderRadius: '50%', background: l.color, cursor: 'pointer', border: lining === l.id ? '2px solid #C9A84C' : l.id === 'cream' ? '2px solid #e0dbd0' : '2px solid transparent', boxShadow: '0 1px 4px rgba(0,0,0,0.15)', transition: 'border-color 0.15s' }} onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.15)')} onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')} />
+                        <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 8, color: '#A89880', textAlign: 'center', marginTop: 3 }}>{l.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Customize Watchbox — mobile trigger (below box, centered) */}
+          {/* Mobile trigger — .edit-box-btn CSS shows on mobile */}
           <button
             className="edit-box-btn"
             onClick={() => setConfigOpen(true)}
@@ -326,35 +395,6 @@ export default function CollectionSection() {
             </svg>
             Customize Watchbox
           </button>
-
-          {/* Customize Watchbox flyout — desktop only */}
-          <div className="configurator-wrap" style={{ marginTop: 12 }}>
-            <button
-              onClick={() => setCustonizerOpen(v => !v)}
-              style={{
-                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '11px 16px', background: '#FFFFFF', border: '1px solid #EAE5DC',
-                borderRadius: 8, cursor: 'pointer', textAlign: 'left',
-              }}
-            >
-              <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1A1410' }}>
-                Customize Watchbox
-              </span>
-              <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#A89880', display: 'flex', alignItems: 'center', gap: 8 }}>
-                {fr.label} · {ln.label} · {sc.n} slots
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: customizerOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
-                  <path d="M2 4L6 8L10 4" stroke="#A89880" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </span>
-            </button>
-            <div style={{ overflow: 'hidden', maxHeight: customizerOpen ? '320px' : 0, transition: 'max-height 0.28s cubic-bezier(0.32,0.72,0,1)' }}>
-              <BoxConfigurator
-                frame={frame} setFrame={setFrame}
-                lining={lining} setLining={setLining}
-                slotCount={slotCount} setSlotCount={setSlotCount}
-              />
-            </div>
-          </div>
 
         </div>
 
