@@ -130,7 +130,7 @@ export default function CollectionSection() {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
               <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880' }}>
-                Customize Box
+                Customize Watchbox
               </span>
               <button
                 onClick={() => setConfigOpen(false)}
