@@ -25,9 +25,12 @@ export default function NavBar() {
           position: 'sticky', top: 0, zIndex: 100,
         }}
       >
-        <span style={{ fontFamily: 'var(--font-cormorant)', fontSize: 20, fontWeight: 500, letterSpacing: '0.03em', color: '#1A1410' }}>
+        <Link
+          href="/"
+          style={{ fontFamily: 'var(--font-cormorant)', fontSize: 20, fontWeight: 500, letterSpacing: '0.03em', color: '#1A1410', textDecoration: 'none' }}
+        >
           Virtual Watchbox
-        </span>
+        </Link>
 
         <div className="nav-links" style={{ display: 'flex', gap: 32 }}>
           {LINKS.map(link => (

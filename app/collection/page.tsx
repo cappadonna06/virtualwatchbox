@@ -12,7 +12,6 @@ import WatchCard from '@/components/collection/WatchCard'
 import CollectionStats from '@/components/collection/CollectionStats'
 import UnsavedChangesBar, { type DraftChange } from '@/components/collection/UnsavedChangesBar'
 
-// Slot-px calculation constants (mirrors CollectionSection)
 const WB_W_PAD = 64
 const WB_H_PAD = 72
 const WB_GAP   = 6
@@ -24,7 +23,7 @@ function calcSlotPx(containerW: number, maxH: number, cols: number, wPad: number
   return Math.max(16, Math.min(slotFromW, slotFromH))
 }
 
-type View = 'watchbox' | 'cards' | 'stats'
+type View = 'watchbox' | 'cards'
 
 const totalEstValue = watches.reduce((s, w) => s + w.estimatedValue, 0)
 
@@ -44,7 +43,6 @@ export default function CollectionPage() {
     return () => window.removeEventListener('resize', update)
   }, [])
 
-  // Restore saved box config from localStorage
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('watchbox-config') ?? 'null')
@@ -55,7 +53,6 @@ export default function CollectionPage() {
     } catch {}
   }, [])
 
-  // Persist box config
   useEffect(() => {
     localStorage.setItem('watchbox-config', JSON.stringify({ frame, lining, slotCount }))
   }, [frame, lining, slotCount])
@@ -104,7 +101,22 @@ export default function CollectionPage() {
         pendingChangesCount={pendingChanges.length}
       />
 
-      <ViewSwitcher activeView={activeView} setActiveView={setActiveView} />
+      {/* View switcher + stats scroll anchor */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28 }}>
+        <ViewSwitcher activeView={activeView} setActiveView={setActiveView} />
+        <a
+          href="#collection-stats"
+          style={{
+            fontFamily: 'var(--font-dm-sans)',
+            fontSize: 11,
+            color: '#A89880',
+            textDecoration: 'none',
+            letterSpacing: '0.04em',
+          }}
+        >
+          Stats ↓
+        </a>
+      </div>
 
       {/* Main 2-col layout: content + sidebar */}
       <div
@@ -135,16 +147,10 @@ export default function CollectionPage() {
               onCardSelect={handleCardSelect}
             />
           )}
-
-          {activeView === 'stats' && (
-            <CollectionStats watches={watches} />
-          )}
         </div>
 
         {/* Right column — persistent sidebar */}
-        <div
-          className={`sidebar-sheet ${activeWatch ? 'is-active' : ''}`}
-        >
+        <div className={`sidebar-sheet ${activeWatch ? 'is-active' : ''}`}>
           <div
             className="sidebar-drag-pill"
             style={{ display: 'none', justifyContent: 'center', padding: '12px 0 4px' }}
@@ -155,17 +161,9 @@ export default function CollectionPage() {
             className="sidebar-close-btn"
             onClick={() => setActiveSlot(null)}
             style={{
-              display: 'none',
-              position: 'absolute',
-              top: 14,
-              right: 16,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: '#A89880',
-              fontSize: 18,
-              lineHeight: 1,
-              padding: 4,
+              display: 'none', position: 'absolute', top: 14, right: 16,
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: '#A89880', fontSize: 18, lineHeight: 1, padding: 4,
             }}
           >
             ✕
@@ -176,7 +174,38 @@ export default function CollectionPage() {
         </div>
       </div>
 
-      {/* Unsaved changes bar — fixed bottom */}
+      {/* ── Collection Stats — always-visible below-fold section ── */}
+      <div
+        id="collection-stats"
+        style={{ marginTop: 72, paddingTop: 48, borderTop: '1px solid #EAE5DC' }}
+      >
+        <div style={{ marginBottom: 32 }}>
+          <h2
+            style={{
+              fontFamily: 'var(--font-cormorant)',
+              fontSize: 36,
+              fontWeight: 400,
+              color: '#1A1410',
+              margin: '0 0 6px',
+              lineHeight: 1.1,
+            }}
+          >
+            Collection Stats
+          </h2>
+          <p
+            style={{
+              fontFamily: 'var(--font-dm-sans)',
+              fontSize: 13,
+              color: '#A89880',
+              margin: 0,
+            }}
+          >
+            A factual breakdown of what you own.
+          </p>
+        </div>
+        <CollectionStats watches={watches} />
+      </div>
+
       <UnsavedChangesBar
         pendingChanges={pendingChanges}
         onSave={() => setPendingChanges([])}
@@ -206,31 +235,26 @@ function WatchboxView({
   frame, setFrame, lining, setLining, slotCount, setSlotCount,
   activeSlot, onSlotClick, watchboxSlotPx, watchboxMaxW, onSimulateChange,
 }: WatchboxViewProps) {
+  const [customizerOpen, setCustomizerOpen] = useState(false)
+
+  const fr = FRAMES.find(f => f.id === frame) ?? FRAMES[0]
+  const ln = LININGS.find(l => l.id === lining) ?? LININGS[0]
+  const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
+
   return (
     <div>
-      {/* Slim toolbar */}
+      {/* Slim toolbar — sort + layout controls */}
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-          gap: 8,
-          marginBottom: 4,
-          flexWrap: 'wrap',
+          display: 'flex', justifyContent: 'flex-end', alignItems: 'center',
+          gap: 8, marginBottom: 12, flexWrap: 'wrap',
         }}
       >
-        {/* Sort dropdown — UI only, Phase 2 wiring */}
         <select
           style={{
-            fontFamily: 'var(--font-dm-sans)',
-            fontSize: 11,
-            color: '#A89880',
-            border: '1px solid #E0DAD0',
-            borderRadius: 4,
-            padding: '5px 10px',
-            background: 'transparent',
-            cursor: 'pointer',
-            outline: 'none',
+            fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#A89880',
+            border: '1px solid #E0DAD0', borderRadius: 4, padding: '5px 10px',
+            background: 'transparent', cursor: 'pointer', outline: 'none',
           }}
         >
           <option value="manual">Sort: Manual</option>
@@ -239,62 +263,34 @@ function WatchboxView({
           <option value="type">Type</option>
         </select>
 
-        {/* Edit Layout — TODO: wire up in Phase 2 */}
+        {/* TODO: wire up in Phase 2 */}
         <button
           style={{
-            fontFamily: 'var(--font-dm-sans)',
-            fontSize: 11,
-            fontWeight: 500,
-            letterSpacing: '0.06em',
-            padding: '5px 12px',
-            background: 'transparent',
-            color: '#A89880',
-            border: '1px solid #E0DAD0',
-            borderRadius: 4,
-            cursor: 'pointer',
+            fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 500,
+            letterSpacing: '0.06em', padding: '5px 12px',
+            background: 'transparent', color: '#A89880',
+            border: '1px solid #E0DAD0', borderRadius: 4, cursor: 'pointer',
           }}
         >
           Edit Layout
         </button>
 
-        {/* TODO: remove before launch — dev testing only */}
+        {/* TODO: remove before launch */}
         <button
           onClick={onSimulateChange}
           style={{
-            fontFamily: 'var(--font-dm-sans)',
-            fontSize: 11,
-            fontWeight: 500,
-            letterSpacing: '0.06em',
-            padding: '5px 12px',
-            background: 'transparent',
-            color: '#C9A84C',
-            border: '1px solid rgba(201,168,76,0.4)',
-            borderRadius: 4,
-            cursor: 'pointer',
+            fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 500,
+            letterSpacing: '0.06em', padding: '5px 12px',
+            background: 'transparent', color: '#C9A84C',
+            border: '1px solid rgba(201,168,76,0.4)', borderRadius: 4, cursor: 'pointer',
           }}
         >
           Simulate Change
         </button>
       </div>
 
-      {/* Box configurator — reused exactly as-is */}
-      <BoxConfigurator
-        frame={frame}
-        setFrame={setFrame}
-        lining={lining}
-        setLining={setLining}
-        slotCount={slotCount}
-        setSlotCount={setSlotCount}
-      />
-
       {/* Watch box */}
-      <div
-        style={
-          watchboxMaxW !== undefined
-            ? { maxWidth: watchboxMaxW, width: '100%', margin: '16px auto 0' }
-            : { marginTop: 16 }
-        }
-      >
+      <div style={watchboxMaxW !== undefined ? { maxWidth: watchboxMaxW, width: '100%', margin: '0 auto' } : {}}>
         <WatchBox
           activeSlot={activeSlot}
           onSlotClick={onSlotClick}
@@ -305,17 +301,38 @@ function WatchboxView({
         />
       </div>
 
-      <p
-        style={{
-          fontFamily: 'var(--font-dm-sans)',
-          fontSize: 11,
-          color: '#C8BFAF',
-          marginTop: 10,
-          letterSpacing: '0.04em',
-        }}
-      >
+      <p style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#C8BFAF', marginTop: 10, marginBottom: 0, letterSpacing: '0.04em' }}>
         Click any watch to view details · drag to rearrange
       </p>
+
+      {/* Customize Watchbox flyout */}
+      <div style={{ marginTop: 10 }}>
+        <button
+          onClick={() => setCustomizerOpen(v => !v)}
+          style={{
+            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '11px 16px', background: '#FFFFFF', border: '1px solid #EAE5DC',
+            borderRadius: 8, cursor: 'pointer', textAlign: 'left',
+          }}
+        >
+          <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1A1410' }}>
+            Customize Watchbox
+          </span>
+          <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#A89880', display: 'flex', alignItems: 'center', gap: 8 }}>
+            {fr.label} · {ln.label} · {sc.n} slots
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: customizerOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+              <path d="M2 4L6 8L10 4" stroke="#A89880" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </span>
+        </button>
+        <div style={{ overflow: 'hidden', maxHeight: customizerOpen ? '320px' : 0, transition: 'max-height 0.28s cubic-bezier(0.32,0.72,0,1)' }}>
+          <BoxConfigurator
+            frame={frame} setFrame={setFrame}
+            lining={lining} setLining={setLining}
+            slotCount={slotCount} setSlotCount={setSlotCount}
+          />
+        </div>
+      </div>
     </div>
   )
 }

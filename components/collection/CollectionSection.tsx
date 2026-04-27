@@ -35,12 +35,13 @@ function calcSlotPx(
 }
 
 export default function CollectionSection() {
-  const [activeSlot, setActiveSlot] = useState<number | null>(null)
-  const [frame, setFrame] = useState('light-oak')
-  const [lining, setLining] = useState('cream')
-  const [slotCount, setSlotCount] = useState(6)
-  const [configOpen, setConfigOpen] = useState(false)
-  const [screenW, setScreenW] = useState(0) // 0 = unknown until client hydrates
+  const [activeSlot, setActiveSlot]       = useState<number | null>(null)
+  const [frame, setFrame]                 = useState('light-oak')
+  const [lining, setLining]               = useState('cream')
+  const [slotCount, setSlotCount]         = useState(6)
+  const [configOpen, setConfigOpen]       = useState(false)
+  const [customizerOpen, setCustonizerOpen] = useState(false)
+  const [screenW, setScreenW]             = useState(0)
 
   useLayoutEffect(() => {
     const update = () => setScreenW(window.innerWidth)
@@ -308,7 +309,7 @@ export default function CollectionSection() {
           <svg width="11" height="11" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
             <path d="M1 9.5V11h1.5l4.42-4.42-1.5-1.5L1 9.5zm7.07-5.07c.2-.2.2-.51 0-.71L6.99 2.64a.5.5 0 00-.71 0L5.13 3.79l1.5 1.5 1.44-1.44z" fill="#A89880"/>
           </svg>
-          Edit Box
+          Customize Watchbox
         </button>
       </div>
 
@@ -326,16 +327,36 @@ export default function CollectionSection() {
             />
           </div>
 
-          {/* Inline configurator — desktop only */}
-          <div className="configurator-wrap">
-            <BoxConfigurator
-              frame={frame} setFrame={setFrame}
-              lining={lining} setLining={setLining}
-              slotCount={slotCount} setSlotCount={setSlotCount}
-            />
-            <p style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#C8BFAF', marginTop: 10, letterSpacing: '0.04em' }}>
+          {/* Customize Watchbox flyout — desktop only */}
+          <div className="configurator-wrap" style={{ marginTop: 12 }}>
+            <p style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#C8BFAF', marginBottom: 10, letterSpacing: '0.04em' }}>
               Click any watch to view details · drag to rearrange
             </p>
+            <button
+              onClick={() => setCustonizerOpen(v => !v)}
+              style={{
+                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '11px 16px', background: '#FFFFFF', border: '1px solid #EAE5DC',
+                borderRadius: 8, cursor: 'pointer', textAlign: 'left',
+              }}
+            >
+              <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1A1410' }}>
+                Customize Watchbox
+              </span>
+              <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#A89880', display: 'flex', alignItems: 'center', gap: 8 }}>
+                {fr.label} · {ln.label} · {sc.n} slots
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: customizerOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                  <path d="M2 4L6 8L10 4" stroke="#A89880" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </span>
+            </button>
+            <div style={{ overflow: 'hidden', maxHeight: customizerOpen ? '320px' : 0, transition: 'max-height 0.28s cubic-bezier(0.32,0.72,0,1)' }}>
+              <BoxConfigurator
+                frame={frame} setFrame={setFrame}
+                lining={lining} setLining={setLining}
+                slotCount={slotCount} setSlotCount={setSlotCount}
+              />
+            </div>
           </div>
 
           {/* Mobile hint */}

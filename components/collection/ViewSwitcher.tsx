@@ -1,4 +1,4 @@
-type View = 'watchbox' | 'cards' | 'stats'
+type View = 'watchbox' | 'cards'
 
 interface Props {
   activeView: View
@@ -8,7 +8,6 @@ interface Props {
 const TABS: { id: View; label: string }[] = [
   { id: 'watchbox', label: 'Watchbox' },
   { id: 'cards',    label: 'Cards'    },
-  { id: 'stats',    label: 'Stats'    },
 ]
 
 export default function ViewSwitcher({ activeView, setActiveView }: Props) {
@@ -19,7 +18,6 @@ export default function ViewSwitcher({ activeView, setActiveView }: Props) {
         border: '1px solid #E8E2D8',
         borderRadius: 6,
         background: '#FAF8F4',
-        marginBottom: 28,
         overflow: 'hidden',
       }}
     >
