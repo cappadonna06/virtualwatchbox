@@ -1,8 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 
-const LINKS = ['My Collection', 'Playground', 'Discover', 'News']
+const LINKS: { label: string; href: string }[] = [
+  { label: 'My Collection', href: '/collection' },
+  { label: 'Playground',    href: '#'           },
+  { label: 'Discover',      href: '#'           },
+  { label: 'News',          href: '#'           },
+]
 
 export default function NavBar() {
   const [open, setOpen] = useState(false)
@@ -12,30 +18,38 @@ export default function NavBar() {
       <nav
         className="nav-root"
         style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '20px 56px',
           borderBottom: '1px solid #EAE5DC',
           background: '#FAF8F4',
           position: 'sticky', top: 0, zIndex: 100,
         }}
       >
-        <span style={{ fontFamily: 'var(--font-cormorant)', fontSize: 20, fontWeight: 500, letterSpacing: '0.03em', color: '#1A1410' }}>
+        <div
+          style={{
+            maxWidth: 1280, margin: '0 auto',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '20px 56px',
+          }}
+        >
+        <Link
+          href="/"
+          style={{ fontFamily: 'var(--font-cormorant)', fontSize: 20, fontWeight: 500, letterSpacing: '0.03em', color: '#1A1410', textDecoration: 'none' }}
+        >
           Virtual Watchbox
-        </span>
+        </Link>
 
         <div className="nav-links" style={{ display: 'flex', gap: 32 }}>
           {LINKS.map(link => (
-            <a
-              key={link}
-              href="#"
+            <Link
+              key={link.label}
+              href={link.href}
               style={{
                 fontFamily: 'var(--font-dm-sans)', fontSize: 12, fontWeight: 400,
                 letterSpacing: '0.04em', color: '#A89880',
                 textDecoration: 'none', cursor: 'pointer',
               }}
             >
-              {link}
-            </a>
+              {link.label}
+            </Link>
           ))}
         </div>
 
@@ -72,6 +86,7 @@ export default function NavBar() {
             </svg>
           )}
         </button>
+        </div>
       </nav>
 
       {/* Mobile drawer — always in DOM, animated via opacity/transform */}
@@ -94,9 +109,9 @@ export default function NavBar() {
         }}
       >
         {LINKS.map((link, i) => (
-          <a
-            key={link}
-            href="#"
+          <Link
+            key={link.label}
+            href={link.href}
             onClick={() => setOpen(false)}
             style={{
               fontFamily: 'var(--font-dm-sans)',
@@ -108,8 +123,8 @@ export default function NavBar() {
               display: 'block',
             }}
           >
-            {link}
-          </a>
+            {link.label}
+          </Link>
         ))}
         <button
           onClick={() => setOpen(false)}
