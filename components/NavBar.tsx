@@ -18,13 +18,18 @@ export default function NavBar() {
       <nav
         className="nav-root"
         style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '20px 56px',
           borderBottom: '1px solid #EAE5DC',
           background: '#FAF8F4',
           position: 'sticky', top: 0, zIndex: 100,
         }}
       >
+        <div
+          style={{
+            maxWidth: 1280, margin: '0 auto',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '20px 56px',
+          }}
+        >
         <Link
           href="/"
           style={{ fontFamily: 'var(--font-cormorant)', fontSize: 20, fontWeight: 500, letterSpacing: '0.03em', color: '#1A1410', textDecoration: 'none' }}
@@ -81,6 +86,7 @@ export default function NavBar() {
             </svg>
           )}
         </button>
+        </div>
       </nav>
 
       {/* Mobile drawer — always in DOM, animated via opacity/transform */}

@@ -241,12 +241,13 @@ function WatchboxView({
   frame, setFrame, lining, setLining, slotCount, setSlotCount,
   activeSlot, onSlotClick, watchboxSlotPx, watchboxMaxW, screenW, onSimulateChange,
 }: WatchboxViewProps) {
-  const [customizerOpen, setCustomizerOpen] = useState(false)
-  const [configOpen, setConfigOpen]         = useState(false)
+  const [configOpen, setConfigOpen] = useState(false)
 
   const fr = FRAMES.find(f => f.id === frame) ?? FRAMES[0]
   const ln = LININGS.find(l => l.id === lining) ?? LININGS[0]
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
+
+  const isMobile = screenW > 0 && screenW < 768
 
   const previewContainerW = Math.min(screenW > 0 ? screenW - 40 : 320, 400)
   const previewSlotPx = Math.floor(calcSlotPx(previewContainerW, 140, sc.cols, PV_W_PAD, PV_H_PAD, PV_GAP))
@@ -254,42 +255,43 @@ function WatchboxView({
 
   return (
     <div>
-      {/* Slim toolbar — sort control */}
+      {/* WatchBox + pinned controls in one relative container */}
       <div
         style={{
-          display: 'flex', justifyContent: 'flex-end', alignItems: 'center',
-          gap: 8, marginBottom: 12, flexWrap: 'wrap',
+          position: 'relative',
+          paddingTop: 36,
+          ...(watchboxMaxW !== undefined ? { maxWidth: watchboxMaxW, width: '100%', margin: '0 auto' } : {}),
         }}
       >
-        <select
-          style={{
-            fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#A89880',
-            border: '1px solid #E0DAD0', borderRadius: 4, padding: '5px 10px',
-            background: 'transparent', cursor: 'pointer', outline: 'none',
-          }}
-        >
-          <option value="manual">Sort: Manual</option>
-          <option value="brand">Brand</option>
-          <option value="value">Value</option>
-          <option value="type">Type</option>
-        </select>
+        {/* Sort + dev button — pinned to top-right, above the frame */}
+        <div style={{ position: 'absolute', top: 0, right: 0, display: 'flex', gap: 8, alignItems: 'center' }}>
+          {/* TODO: remove before launch */}
+          <button
+            onClick={onSimulateChange}
+            style={{
+              fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500,
+              letterSpacing: '0.05em', padding: '4px 10px',
+              background: 'transparent', color: '#C9A84C',
+              border: '1px solid rgba(201,168,76,0.35)', borderRadius: 4, cursor: 'pointer',
+            }}
+          >
+            Simulate
+          </button>
+          <select
+            style={{
+              fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#A89880',
+              border: '1px solid #E0DAD0', borderRadius: 4, padding: '4px 10px',
+              background: 'transparent', cursor: 'pointer', outline: 'none',
+            }}
+          >
+            <option value="manual">Sort: Manual</option>
+            <option value="brand">Brand</option>
+            <option value="value">Value</option>
+            <option value="type">Type</option>
+          </select>
+        </div>
 
-        {/* TODO: remove before launch */}
-        <button
-          onClick={onSimulateChange}
-          style={{
-            fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 500,
-            letterSpacing: '0.06em', padding: '5px 12px',
-            background: 'transparent', color: '#C9A84C',
-            border: '1px solid rgba(201,168,76,0.4)', borderRadius: 4, cursor: 'pointer',
-          }}
-        >
-          Simulate Change
-        </button>
-      </div>
-
-      {/* Watch box */}
-      <div style={watchboxMaxW !== undefined ? { maxWidth: watchboxMaxW, width: '100%', margin: '0 auto' } : {}}>
+        {/* WatchBox */}
         <WatchBox
           activeSlot={activeSlot}
           onSlotClick={onSlotClick}
@@ -298,6 +300,31 @@ function WatchboxView({
           slotCount={slotCount}
           slotWidth={watchboxSlotPx}
         />
+
+        {/* Customize button — pinned to bottom-right of watchbox frame, desktop only */}
+        {!isMobile && (
+          <button
+            onClick={() => setConfigOpen(true)}
+            style={{
+              position: 'absolute', bottom: 16, right: 16, zIndex: 5,
+              display: 'flex', alignItems: 'center', gap: 5,
+              fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600,
+              letterSpacing: '0.08em', textTransform: 'uppercase',
+              padding: '6px 12px',
+              background: 'rgba(250,248,244,0.88)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+              border: '1px solid rgba(224,218,208,0.7)',
+              borderRadius: 6, cursor: 'pointer', color: '#5A4A3A',
+              boxShadow: '0 2px 8px rgba(26,20,16,0.1)',
+            }}
+          >
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+              <path d="M1 9.5V11h1.5l4.42-4.42-1.5-1.5L1 9.5zm7.07-5.07c.2-.2.2-.51 0-.71L6.99 2.64a.5.5 0 00-.71 0L5.13 3.79l1.5 1.5 1.44-1.44z" fill="#5A4A3A"/>
+            </svg>
+            Customize
+          </button>
+        )}
       </div>
 
       {/* Customize Watchbox — mobile trigger (hidden on desktop via CSS) */}
@@ -321,36 +348,7 @@ function WatchboxView({
         Customize Watchbox
       </button>
 
-      {/* Customize Watchbox flyout — desktop only (hidden on mobile via .configurator-wrap CSS) */}
-      <div className="configurator-wrap" style={{ marginTop: 10 }}>
-        <button
-          onClick={() => setCustomizerOpen(v => !v)}
-          style={{
-            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '11px 16px', background: '#FFFFFF', border: '1px solid #EAE5DC',
-            borderRadius: 8, cursor: 'pointer', textAlign: 'left',
-          }}
-        >
-          <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1A1410' }}>
-            Customize Watchbox
-          </span>
-          <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#A89880', display: 'flex', alignItems: 'center', gap: 8 }}>
-            {fr.label} · {ln.label} · {sc.n} slots
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: customizerOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
-              <path d="M2 4L6 8L10 4" stroke="#A89880" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </span>
-        </button>
-        <div style={{ overflow: 'hidden', maxHeight: customizerOpen ? '320px' : 0, transition: 'max-height 0.28s cubic-bezier(0.32,0.72,0,1)' }}>
-          <BoxConfigurator
-            frame={frame} setFrame={setFrame}
-            lining={lining} setLining={setLining}
-            slotCount={slotCount} setSlotCount={setSlotCount}
-          />
-        </div>
-      </div>
-
-      {/* Config modal backdrop — mobile only */}
+      {/* Config modal backdrop */}
       {configOpen && (
         <div
           onClick={() => setConfigOpen(false)}
@@ -358,22 +356,33 @@ function WatchboxView({
         />
       )}
 
-      {/* Config bottom sheet — mobile only */}
+      {/* Config modal — bottom sheet on mobile, centered dialog on desktop */}
       {configOpen && (
         <div
-          className="config-modal"
-          style={{
+          className={isMobile ? 'config-modal' : ''}
+          style={isMobile ? {
             position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 201,
-            background: '#FAFAF8',
-            borderRadius: '20px 20px 0 0',
+            background: '#FAFAF8', borderRadius: '20px 20px 0 0',
+            display: 'flex', flexDirection: 'column',
+          } : {
+            position: 'fixed', top: '50%', left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 201, background: '#FAFAF8',
+            borderRadius: 16, width: '90vw', maxWidth: 460,
+            maxHeight: '85vh', overflowY: 'auto',
+            boxShadow: '0 24px 80px rgba(26,20,16,0.2)',
             display: 'flex', flexDirection: 'column',
           }}
         >
-          {/* Drag pill + header */}
-          <div style={{ padding: '12px 20px 0', flexShrink: 0 }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+          {/* Drag pill — mobile only */}
+          {isMobile && (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 0' }}>
               <div style={{ width: 36, height: 4, borderRadius: 2, background: '#E0DAD0' }} />
             </div>
+          )}
+
+          {/* Header */}
+          <div style={{ padding: isMobile ? '12px 20px 0' : '20px 24px 0', flexShrink: 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
               <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880' }}>
                 Customize Watchbox
@@ -388,7 +397,7 @@ function WatchboxView({
           </div>
 
           {/* Box preview */}
-          <div style={{ padding: '0 20px 16px', flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
+          <div style={{ padding: isMobile ? '0 20px 16px' : '0 24px 16px', flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
             <div style={{ width: '100%', maxWidth: previewMaxW }}>
               <div style={{ borderRadius: 10, padding: '12px 12px 14px', background: fr.css, boxShadow: fr.shadow, transition: 'background 0.4s ease, box-shadow 0.4s ease' }}>
                 <div style={{ background: ln.color, borderRadius: 5, padding: 7, boxShadow: 'inset 0 4px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04)', transition: 'background 0.4s ease' }}>
@@ -403,7 +412,7 @@ function WatchboxView({
           </div>
 
           {/* Controls */}
-          <div style={{ padding: '0 20px 32px', background: '#FFFFFF', flexShrink: 0 }}>
+          <div style={{ padding: isMobile ? '0 20px 32px' : '0 24px 28px', background: '#FFFFFF', flexShrink: 0 }}>
             {/* Slots */}
             <div style={{ padding: '14px 0', borderBottom: '1px solid #F0EBE3' }}>
               <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>Slots</div>
