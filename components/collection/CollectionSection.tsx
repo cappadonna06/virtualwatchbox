@@ -278,39 +278,18 @@ export default function CollectionSection() {
       )}
 
       {/* Section header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 36 }}>
-        <div>
-          <Link
-            href="/collection"
-            style={{ textDecoration: 'none', display: 'inline-block' }}
-          >
-            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 12 }}>
-              My Collection →
-            </div>
-            <h2 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 38, fontWeight: 400, lineHeight: 1.15, color: '#1A1410', whiteSpace: 'nowrap' }}>
-              Your Virtual <em>Watch Box.</em>
-            </h2>
-          </Link>
-        </div>
-
-        {/* Edit Box button — mobile only */}
-        <button
-          className="edit-box-btn"
-          onClick={() => setConfigOpen(true)}
-          style={{
-            display: 'none',
-            fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 600,
-            letterSpacing: '0.08em', textTransform: 'uppercase',
-            padding: '8px 14px',
-            background: 'transparent', color: '#A89880',
-            border: '1px solid #E0DAD0', borderRadius: 4, cursor: 'pointer',
-          }}
+      <div style={{ marginBottom: 36 }}>
+        <Link
+          href="/collection"
+          style={{ textDecoration: 'none', display: 'inline-block' }}
         >
-          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
-            <path d="M1 9.5V11h1.5l4.42-4.42-1.5-1.5L1 9.5zm7.07-5.07c.2-.2.2-.51 0-.71L6.99 2.64a.5.5 0 00-.71 0L5.13 3.79l1.5 1.5 1.44-1.44z" fill="#A89880"/>
-          </svg>
-          Customize Watchbox
-        </button>
+          <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 12 }}>
+            My Collection →
+          </div>
+          <h2 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 38, fontWeight: 400, lineHeight: 1.15, color: '#1A1410', whiteSpace: 'nowrap' }}>
+            Your Virtual <em>Watch Box.</em>
+          </h2>
+        </Link>
       </div>
 
       <div className="collection-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}>
@@ -327,11 +306,29 @@ export default function CollectionSection() {
             />
           </div>
 
+          {/* Customize Watchbox — mobile trigger (below box, centered) */}
+          <button
+            className="edit-box-btn"
+            onClick={() => setConfigOpen(true)}
+            style={{
+              display: 'none',
+              margin: '14px auto 0',
+              width: 'fit-content',
+              fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 600,
+              letterSpacing: '0.08em', textTransform: 'uppercase',
+              padding: '10px 20px',
+              background: '#FFFFFF', color: '#A89880',
+              border: '1px solid #E0DAD0', borderRadius: 8, cursor: 'pointer',
+            }}
+          >
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
+              <path d="M1 9.5V11h1.5l4.42-4.42-1.5-1.5L1 9.5zm7.07-5.07c.2-.2.2-.51 0-.71L6.99 2.64a.5.5 0 00-.71 0L5.13 3.79l1.5 1.5 1.44-1.44z" fill="#A89880"/>
+            </svg>
+            Customize Watchbox
+          </button>
+
           {/* Customize Watchbox flyout — desktop only */}
           <div className="configurator-wrap" style={{ marginTop: 12 }}>
-            <p style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#C8BFAF', marginBottom: 10, letterSpacing: '0.04em' }}>
-              Click any watch to view details · drag to rearrange
-            </p>
             <button
               onClick={() => setCustonizerOpen(v => !v)}
               style={{
@@ -359,10 +356,6 @@ export default function CollectionSection() {
             </div>
           </div>
 
-          {/* Mobile hint */}
-          <p className="mobile-hint" style={{ display: 'none', fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#C8BFAF', marginTop: 10, letterSpacing: '0.04em' }}>
-            Tap any watch to view details
-          </p>
         </div>
 
         {/* Watch detail — desktop: sticky sidebar, mobile: bottom sheet */}
