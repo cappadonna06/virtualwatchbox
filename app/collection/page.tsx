@@ -349,7 +349,7 @@ function WatchboxView({
                 {FRAMES.map(f => (
                   <div key={f.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <div onClick={() => setFrame(f.id)} title={f.label} style={{ width: 24, height: 24, borderRadius: '50%', background: f.swatchColor, cursor: 'pointer', border: frame === f.id ? '2px solid #C9A84C' : '2px solid transparent', boxShadow: '0 1px 4px rgba(0,0,0,0.15)', transition: 'border-color 0.15s' }} onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.15)')} onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')} />
-                    <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 8, color: frame === f.id ? '#1A1410' : '#A89880', fontWeight: frame === f.id ? 700 : 400, textAlign: 'center', marginTop: 3 }}>{f.label.split(' ')[0]}</div>
+                    <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 8, color: frame === f.id ? '#1A1410' : '#A89880', fontWeight: frame === f.id ? 700 : 400, textAlign: 'center', marginTop: 6 }}>{f.label.split(' ')[0]}</div>
                   </div>
                 ))}
               </div>
@@ -360,7 +360,7 @@ function WatchboxView({
                 {LININGS.map(l => (
                   <div key={l.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <div onClick={() => setLining(l.id)} title={l.label} style={{ width: 24, height: 24, borderRadius: '50%', background: l.color, cursor: 'pointer', border: lining === l.id ? '2px solid #C9A84C' : l.id === 'cream' ? '2px solid #e0dbd0' : '2px solid transparent', boxShadow: '0 1px 4px rgba(0,0,0,0.15)', transition: 'border-color 0.15s' }} onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.15)')} onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')} />
-                    <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 8, color: lining === l.id ? '#1A1410' : '#A89880', fontWeight: lining === l.id ? 700 : 400, textAlign: 'center', marginTop: 3 }}>{l.label}</div>
+                    <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 8, color: lining === l.id ? '#1A1410' : '#A89880', fontWeight: lining === l.id ? 700 : 400, textAlign: 'center', marginTop: 6 }}>{l.label}</div>
                   </div>
                 ))}
               </div>
