@@ -306,7 +306,8 @@ export default function CollectionSection() {
 
             {/* Desktop flyout — .configurator-wrap CSS hides on mobile */}
             <div className="configurator-wrap" style={{ marginTop: 10, position: 'relative' }}>
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, color: '#A89880' }}>{fr.label} · {ln.label} · {sc.n} slots</span>
                 <button
                   onClick={() => setCustomizerOpen(v => !v)}
                   style={{
@@ -340,9 +341,6 @@ export default function CollectionSection() {
                   transition: 'opacity 0.18s ease, transform 0.18s ease',
                 }}
               >
-                <div style={{ padding: '8px 12px', borderBottom: '1px solid #F0EBE3', background: '#FAF8F4' }}>
-                  <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, color: '#A89880' }}>{fr.label} · {ln.label} · {sc.n} slots</span>
-                </div>
                 <div style={{ padding: '9px 12px', borderBottom: '1px solid #F0EBE3', display: 'flex', alignItems: 'center', gap: 10 }}>
                   <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', flexShrink: 0 }}>Slots</span>
                   <div style={{ display: 'flex', gap: 4 }}>
@@ -351,10 +349,8 @@ export default function CollectionSection() {
                     ))}
                   </div>
                 </div>
-                <div style={{ padding: '9px 12px', borderBottom: '1px solid #F0EBE3' }}>
-                  <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 6 }}>
-                    Frame · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0 }}>{fr.label}</span>
-                  </div>
+                <div style={{ padding: '9px 12px', borderBottom: '1px solid #F0EBE3', display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', flexShrink: 0 }}>Frame · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0 }}>{fr.label}</span></span>
                   <div style={{ display: 'flex', gap: 7 }}>
                     {FRAMES.map(f => (
                       <div key={f.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -364,10 +360,8 @@ export default function CollectionSection() {
                     ))}
                   </div>
                 </div>
-                <div style={{ padding: '9px 12px' }}>
-                  <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 6 }}>
-                    Lining · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0 }}>{ln.label}</span>
-                  </div>
+                <div style={{ padding: '9px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', flexShrink: 0 }}>Lining · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0 }}>{ln.label}</span></span>
                   <div style={{ display: 'flex', gap: 7 }}>
                     {LININGS.map(l => (
                       <div key={l.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
