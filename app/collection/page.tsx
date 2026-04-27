@@ -254,7 +254,7 @@ function WatchboxView({
 
   return (
     <div>
-      {/* Slim toolbar — sort + layout controls */}
+      {/* Slim toolbar — sort control */}
       <div
         style={{
           display: 'flex', justifyContent: 'flex-end', alignItems: 'center',
@@ -273,18 +273,6 @@ function WatchboxView({
           <option value="value">Value</option>
           <option value="type">Type</option>
         </select>
-
-        {/* TODO: wire up in Phase 2 */}
-        <button
-          style={{
-            fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 500,
-            letterSpacing: '0.06em', padding: '5px 12px',
-            background: 'transparent', color: '#A89880',
-            border: '1px solid #E0DAD0', borderRadius: 4, cursor: 'pointer',
-          }}
-        >
-          Edit Layout
-        </button>
 
         {/* TODO: remove before launch */}
         <button
@@ -312,21 +300,19 @@ function WatchboxView({
         />
       </div>
 
-      <p style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#C8BFAF', marginTop: 10, marginBottom: 0, letterSpacing: '0.04em' }}>
-        Click any watch to view details · drag to rearrange
-      </p>
-
-      {/* Customize Watchbox — mobile trigger button (hidden on desktop via CSS) */}
+      {/* Customize Watchbox — mobile trigger (hidden on desktop via CSS) */}
       <button
         className="edit-box-btn"
         onClick={() => setConfigOpen(true)}
         style={{
-          display: 'none', marginTop: 10,
+          display: 'none',
+          margin: '14px auto 0',
+          width: 'fit-content',
           fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 600,
           letterSpacing: '0.08em', textTransform: 'uppercase',
-          padding: '8px 14px',
-          background: 'transparent', color: '#A89880',
-          border: '1px solid #E0DAD0', borderRadius: 4, cursor: 'pointer',
+          padding: '10px 20px',
+          background: '#FFFFFF', color: '#A89880',
+          border: '1px solid #E0DAD0', borderRadius: 8, cursor: 'pointer',
         }}
       >
         <svg width="11" height="11" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
