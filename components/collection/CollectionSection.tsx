@@ -40,7 +40,7 @@ export default function CollectionSection() {
   const [lining, setLining]               = useState('cream')
   const [slotCount, setSlotCount]         = useState(6)
   const [configOpen, setConfigOpen]       = useState(false)
-  const [customizerOpen, setCustonizerOpen] = useState(false)
+  const [customizerOpen, setCustomizerOpen] = useState(false)
   const [screenW, setScreenW]             = useState(0)
 
   useLayoutEffect(() => {
@@ -294,7 +294,7 @@ export default function CollectionSection() {
 
       <div className="collection-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}>
         <div>
-          {/* Wrapper centers the box; slotWidth drives explicit px grid columns in WatchBox */}
+          {/* Box + flyout — both constrained to watchboxMaxW so they visually align */}
           <div style={watchboxMaxW !== undefined ? { maxWidth: watchboxMaxW, width: '100%', margin: '0 auto' } : {}}>
             <WatchBox
               activeSlot={activeSlot}
@@ -304,9 +304,41 @@ export default function CollectionSection() {
               slotCount={slotCount}
               slotWidth={watchboxSlotPx}
             />
+
+            {/* Desktop flyout — .configurator-wrap CSS hides on mobile */}
+            <div className="configurator-wrap" style={{ marginTop: 12 }}>
+              <button
+                onClick={() => setCustomizerOpen(v => !v)}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '11px 16px', background: '#FFFFFF',
+                  border: '1px solid #EAE5DC',
+                  borderBottom: customizerOpen ? '1px solid #F0EBE3' : '1px solid #EAE5DC',
+                  borderRadius: customizerOpen ? '8px 8px 0 0' : 8,
+                  cursor: 'pointer', textAlign: 'left',
+                }}
+              >
+                <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1A1410' }}>
+                  Customize Watchbox
+                </span>
+                <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#A89880', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {fr.label} · {ln.label} · {sc.n} slots
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: customizerOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                    <path d="M2 4L6 8L10 4" stroke="#A89880" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </span>
+              </button>
+              <div style={{ overflow: 'hidden', maxHeight: customizerOpen ? '400px' : 0, transition: 'max-height 0.28s cubic-bezier(0.32,0.72,0,1)' }}>
+                <BoxConfigurator
+                  frame={frame} setFrame={setFrame}
+                  lining={lining} setLining={setLining}
+                  slotCount={slotCount} setSlotCount={setSlotCount}
+                />
+              </div>
+            </div>
           </div>
 
-          {/* Customize Watchbox — mobile trigger (below box, centered) */}
+          {/* Mobile trigger — .edit-box-btn CSS shows on mobile */}
           <button
             className="edit-box-btn"
             onClick={() => setConfigOpen(true)}
@@ -326,35 +358,6 @@ export default function CollectionSection() {
             </svg>
             Customize Watchbox
           </button>
-
-          {/* Customize Watchbox flyout — desktop only */}
-          <div className="configurator-wrap" style={{ marginTop: 12 }}>
-            <button
-              onClick={() => setCustonizerOpen(v => !v)}
-              style={{
-                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '11px 16px', background: '#FFFFFF', border: '1px solid #EAE5DC',
-                borderRadius: 8, cursor: 'pointer', textAlign: 'left',
-              }}
-            >
-              <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1A1410' }}>
-                Customize Watchbox
-              </span>
-              <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#A89880', display: 'flex', alignItems: 'center', gap: 8 }}>
-                {fr.label} · {ln.label} · {sc.n} slots
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: customizerOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
-                  <path d="M2 4L6 8L10 4" stroke="#A89880" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </span>
-            </button>
-            <div style={{ overflow: 'hidden', maxHeight: customizerOpen ? '320px' : 0, transition: 'max-height 0.28s cubic-bezier(0.32,0.72,0,1)' }}>
-              <BoxConfigurator
-                frame={frame} setFrame={setFrame}
-                lining={lining} setLining={setLining}
-                slotCount={slotCount} setSlotCount={setSlotCount}
-              />
-            </div>
-          </div>
 
         </div>
 
