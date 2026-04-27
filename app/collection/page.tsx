@@ -33,7 +33,7 @@ type View = 'watchbox' | 'cards'
 export default function CollectionPage() {
   const [activeView, setActiveView]         = useState<View>('watchbox')
   const [activeSlot, setActiveSlot]         = useState<number | null>(null)
-  const [collectionWatches, setCollectionWatches] = useState<Watch[]>(watches)
+  const [collectionWatches, setCollectionWatches] = useState<Watch[]>(watches.slice(0, 5))
   const [addWatchOpen, setAddWatchOpen] = useState(false)
   const [frame, setFrame]                   = useState('light-oak')
   const [lining, setLining]                 = useState('cream')

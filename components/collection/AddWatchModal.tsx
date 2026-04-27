@@ -76,6 +76,7 @@ export default function AddWatchModal({ isOpen, onClose, onAdd, existingWatchIds
   const [purchasePrice, setPurchasePrice] = useState('')
   const [purchaseDate, setPurchaseDate] = useState('')
   const [notes, setNotes] = useState('')
+  const [duplicateConfirmOpen, setDuplicateConfirmOpen] = useState(false)
 
   useLayoutEffect(() => {
     const update = () => setScreenW(window.innerWidth)
@@ -87,6 +88,8 @@ export default function AddWatchModal({ isOpen, onClose, onAdd, existingWatchIds
   const isMobile = screenW > 0 && screenW < 768
 
   const existingIds = useMemo(() => new Set(existingWatchIds), [existingWatchIds])
+  const isAlreadyInCollection = (watchId: string) =>
+    existingIds.has(watchId) || existingWatchIds.some(id => id.startsWith(`${watchId}-`))
 
   const filteredWatches = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -252,18 +255,16 @@ export default function AddWatchModal({ isOpen, onClose, onAdd, existingWatchIds
 
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr 1fr 1fr', gap: 10 }}>
               {filteredWatches.map(watch => {
-                const inCollection = existingIds.has(watch.id)
+                const inCollection = isAlreadyInCollection(watch.id)
                 const selected = selectedWatch?.id === watch.id
 
                 return (
                   <button
                     key={watch.id}
                     onClick={() => {
-                      if (inCollection) return
                       setSelectedWatch(watch)
                       setStep(2)
                     }}
-                    disabled={inCollection}
                     style={{
                       textAlign: 'left',
                       border: selected ? '1px solid rgba(201,168,76,0.8)' : '1px solid #EAE5DC',
@@ -271,8 +272,8 @@ export default function AddWatchModal({ isOpen, onClose, onAdd, existingWatchIds
                       padding: 12,
                       background: '#FFFFFF',
                       boxShadow: selected ? '0 0 0 1px rgba(201,168,76,0.4), 0 10px 26px rgba(201,168,76,0.18)' : '0 4px 14px rgba(26,20,16,0.04)',
-                      cursor: inCollection ? 'not-allowed' : 'pointer',
-                      opacity: inCollection ? 0.5 : 1,
+                      cursor: 'pointer',
+                      opacity: 1,
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 6 }}>
@@ -293,11 +294,9 @@ export default function AddWatchModal({ isOpen, onClose, onAdd, existingWatchIds
                       <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, color: '#A89880' }}>
                         {inCollection ? 'In Collection' : 'Select'}
                       </span>
-                      {!inCollection && (
-                        <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, color: '#C9A84C', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                          Select
-                        </span>
-                      )}
+                      <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, color: '#C9A84C', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                        Select
+                      </span>
                     </div>
                   </button>
                 )
@@ -322,6 +321,25 @@ export default function AddWatchModal({ isOpen, onClose, onAdd, existingWatchIds
               <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: 26, color: '#1A1410', lineHeight: 1.1 }}>
                 {selectedWatch.model}
               </div>
+              {isAlreadyInCollection(selectedWatch.id) && (
+                <div
+                  style={{
+                    marginTop: 8,
+                    display: 'inline-block',
+                    fontFamily: 'var(--font-dm-sans)',
+                    fontSize: 10,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                    color: '#A89880',
+                    border: '1px solid #E0DAD0',
+                    borderRadius: 999,
+                    padding: '3px 8px',
+                    background: '#FAF8F4',
+                  }}
+                >
+                  In Collection
+                </div>
+              )}
             </div>
 
             <div style={{ marginBottom: 14 }}>
@@ -415,6 +433,10 @@ export default function AddWatchModal({ isOpen, onClose, onAdd, existingWatchIds
               disabled={!canSubmit}
               onClick={() => {
                 if (!selectedWatch || !ownershipStatus || !condition) return
+                if (isAlreadyInCollection(selectedWatch.id)) {
+                  setDuplicateConfirmOpen(true)
+                  return
+                }
                 onAdd(selectedWatch, {
                   ownershipStatus,
                   condition,
@@ -440,6 +462,89 @@ export default function AddWatchModal({ isOpen, onClose, onAdd, existingWatchIds
             >
               Add to Collection
             </button>
+
+            {duplicateConfirmOpen && (
+              <>
+                <div
+                  onClick={() => setDuplicateConfirmOpen(false)}
+                  style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.45)', backdropFilter: 'blur(2px)', zIndex: 210 }}
+                />
+                <div
+                  style={{
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '90vw',
+                    maxWidth: 380,
+                    zIndex: 211,
+                    background: '#FFFFFF',
+                    borderRadius: 12,
+                    border: '1px solid #EAE5DC',
+                    boxShadow: '0 20px 60px rgba(26,20,16,0.2)',
+                    padding: 18,
+                  }}
+                >
+                  <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 6 }}>
+                    Already in Collection
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: 24, color: '#1A1410', lineHeight: 1.1, marginBottom: 10 }}>
+                    Add duplicate watch?
+                  </div>
+                  <p style={{ margin: '0 0 14px', fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#A89880', lineHeight: 1.5 }}>
+                    This watch already exists in your collection. You can still add it as another entry.
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                    <button
+                      onClick={() => setDuplicateConfirmOpen(false)}
+                      style={{
+                        fontFamily: 'var(--font-dm-sans)',
+                        fontSize: 11,
+                        fontWeight: 500,
+                        letterSpacing: '0.06em',
+                        textTransform: 'uppercase',
+                        padding: '9px 12px',
+                        background: 'transparent',
+                        color: '#1A1410',
+                        border: '1px solid #D4CBBF',
+                        borderRadius: 6,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (!selectedWatch || !ownershipStatus || !condition) return
+                        onAdd(selectedWatch, {
+                          ownershipStatus,
+                          condition,
+                          purchasePrice: purchasePrice ? Number(purchasePrice) : undefined,
+                          purchaseDate: purchaseDate || undefined,
+                          notes: notes.trim() || undefined,
+                        })
+                        setDuplicateConfirmOpen(false)
+                      }}
+                      style={{
+                        fontFamily: 'var(--font-dm-sans)',
+                        fontSize: 11,
+                        fontWeight: 600,
+                        letterSpacing: '0.06em',
+                        textTransform: 'uppercase',
+                        padding: '9px 12px',
+                        background: '#1A1410',
+                        color: '#FAF8F4',
+                        border: 'none',
+                        borderRadius: 6,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Add Duplicate
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>
