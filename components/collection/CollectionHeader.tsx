@@ -5,9 +5,10 @@ function fmt(n: number) {
 interface Props {
   totalEstValue: number
   pendingChangesCount: number
+  onAddWatch: () => void
 }
 
-export default function CollectionHeader({ totalEstValue, pendingChangesCount }: Props) {
+export default function CollectionHeader({ totalEstValue, pendingChangesCount, onAddWatch }: Props) {
   return (
     <div style={{ marginBottom: 32 }}>
       <div style={{ marginBottom: 20 }}>
@@ -56,6 +57,7 @@ export default function CollectionHeader({ totalEstValue, pendingChangesCount }:
 
         {/* Add Watch */}
         <button
+          onClick={onAddWatch}
           style={{
             fontFamily: 'var(--font-dm-sans)',
             fontSize: 11,

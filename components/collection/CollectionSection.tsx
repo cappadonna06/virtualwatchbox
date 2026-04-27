@@ -296,6 +296,7 @@ export default function CollectionSection() {
           {/* Box + flyout — both constrained to watchboxMaxW so they visually align */}
           <div style={watchboxMaxW !== undefined ? { maxWidth: watchboxMaxW, width: '100%', margin: '0 auto' } : {}}>
             <WatchBox
+              watches={watches}
               activeSlot={activeSlot}
               onSlotClick={handleSlotClick}
               frame={frame}

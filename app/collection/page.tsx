@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useLayoutEffect } from 'react'
 import { watches } from '@/lib/watches'
+import type { OwnershipStatus, Watch, WatchCondition } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import WatchBox from '@/components/collection/WatchBox'
 import WatchSidebar from '@/components/collection/WatchSidebar'
@@ -10,6 +11,7 @@ import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import CollectionStats from '@/components/collection/CollectionStats'
 import UnsavedChangesBar, { type DraftChange } from '@/components/collection/UnsavedChangesBar'
+import AddWatchModal from '@/components/collection/AddWatchModal'
 
 const WB_W_PAD = 64
 const WB_H_PAD = 72
@@ -28,11 +30,11 @@ function calcSlotPx(containerW: number, maxH: number, cols: number, wPad: number
 
 type View = 'watchbox' | 'cards'
 
-const totalEstValue = watches.reduce((s, w) => s + w.estimatedValue, 0)
-
 export default function CollectionPage() {
   const [activeView, setActiveView]         = useState<View>('watchbox')
   const [activeSlot, setActiveSlot]         = useState<number | null>(null)
+  const [collectionWatches, setCollectionWatches] = useState<Watch[]>(watches)
+  const [addWatchOpen, setAddWatchOpen] = useState(false)
   const [frame, setFrame]                   = useState('light-oak')
   const [lining, setLining]                 = useState('cream')
   const [slotCount, setSlotCount]           = useState(6)
@@ -75,7 +77,32 @@ export default function CollectionPage() {
     ])
   }
 
-  const activeWatch = activeSlot !== null ? (watches[activeSlot] ?? null) : null
+  function handleAddWatch(
+    watch: Watch,
+    config: {
+      ownershipStatus: OwnershipStatus
+      condition: WatchCondition
+      purchasePrice?: number
+      purchaseDate?: string
+      notes?: string
+    },
+  ) {
+    const newWatch: Watch = {
+      ...watch,
+      id: `${watch.id}-${Date.now()}`,
+      ownershipStatus: config.ownershipStatus,
+      condition: config.condition,
+      purchasePrice: config.purchasePrice ?? watch.purchasePrice,
+      purchaseDate: config.purchaseDate ?? watch.purchaseDate,
+      notes: config.notes ?? '',
+    }
+    setCollectionWatches(prev => [...prev, newWatch])
+    setAddWatchOpen(false)
+    handleDraftChange('add_watch', `${watch.brand} ${watch.model}`)
+  }
+
+  const totalEstValue = collectionWatches.reduce((s, w) => s + w.estimatedValue, 0)
+  const activeWatch = activeSlot !== null ? (collectionWatches[activeSlot] ?? null) : null
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
 
   const isMobile = screenW > 0 && screenW < 768
@@ -102,6 +129,7 @@ export default function CollectionPage() {
       <CollectionHeader
         totalEstValue={totalEstValue}
         pendingChangesCount={pendingChanges.length}
+        onAddWatch={() => setAddWatchOpen(true)}
       />
 
       {/* View switcher + stats scroll anchor */}
@@ -130,6 +158,7 @@ export default function CollectionPage() {
         <div>
           {activeView === 'watchbox' && (
             <WatchboxView
+              watches={collectionWatches}
               frame={frame}
               setFrame={setFrame}
               lining={lining}
@@ -147,6 +176,7 @@ export default function CollectionPage() {
 
           {activeView === 'cards' && (
             <CardsView
+              watches={collectionWatches}
               activeSlot={activeSlot}
               onCardSelect={handleCardSelect}
             />
@@ -207,13 +237,19 @@ export default function CollectionPage() {
             A factual breakdown of what you own.
           </p>
         </div>
-        <CollectionStats watches={watches} />
+        <CollectionStats watches={collectionWatches} />
       </div>
 
       <UnsavedChangesBar
         pendingChanges={pendingChanges}
         onSave={() => setPendingChanges([])}
         onDiscard={() => setPendingChanges([])}
+      />
+      <AddWatchModal
+        isOpen={addWatchOpen}
+        onClose={() => setAddWatchOpen(false)}
+        onAdd={handleAddWatch}
+        existingWatchIds={collectionWatches.map(w => w.id)}
       />
     </div>
   )
@@ -222,6 +258,7 @@ export default function CollectionPage() {
 // ─── Watchbox View ────────────────────────────────────────────────────────────
 
 interface WatchboxViewProps {
+  watches: Watch[]
   frame: string
   setFrame: (v: string) => void
   lining: string
@@ -237,6 +274,7 @@ interface WatchboxViewProps {
 }
 
 function WatchboxView({
+  watches,
   frame, setFrame, lining, setLining, slotCount, setSlotCount,
   activeSlot, onSlotClick, watchboxSlotPx, watchboxMaxW, screenW, onSimulateChange,
 }: WatchboxViewProps) {
@@ -290,6 +328,7 @@ function WatchboxView({
         </div>
 
         <WatchBox
+          watches={watches}
           activeSlot={activeSlot}
           onSlotClick={onSlotClick}
           frame={frame}
@@ -484,11 +523,12 @@ function WatchboxView({
 // ─── Cards View ───────────────────────────────────────────────────────────────
 
 interface CardsViewProps {
+  watches: Watch[]
   activeSlot: number | null
   onCardSelect: (i: number) => void
 }
 
-function CardsView({ activeSlot, onCardSelect }: CardsViewProps) {
+function CardsView({ watches, activeSlot, onCardSelect }: CardsViewProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       {watches.map((watch, i) => (

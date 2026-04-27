@@ -1,8 +1,9 @@
 import Image from 'next/image'
-import { watches } from '@/lib/watches'
+import type { Watch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 
 interface Props {
+  watches: Watch[]
   activeSlot: number | null
   onSlotClick: (i: number) => void
   frame: string
@@ -11,7 +12,7 @@ interface Props {
   slotWidth?: number
 }
 
-export default function WatchBox({ activeSlot, onSlotClick, frame, lining, slotCount, slotWidth }: Props) {
+export default function WatchBox({ watches, activeSlot, onSlotClick, frame, lining, slotCount, slotWidth }: Props) {
   const fr = FRAMES.find(f => f.id === frame) ?? FRAMES[0]
   const ln = LININGS.find(l => l.id === lining) ?? LININGS[0]
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
