@@ -6,13 +6,14 @@ interface Props {
   watches: Watch[]
   activeSlot: number | null
   onSlotClick: (i: number) => void
+  onEmptySlotClick?: () => void
   frame: string
   lining: string
   slotCount: number
   slotWidth?: number
 }
 
-export default function WatchBox({ watches, activeSlot, onSlotClick, frame, lining, slotCount, slotWidth }: Props) {
+export default function WatchBox({ watches, activeSlot, onSlotClick, onEmptySlotClick, frame, lining, slotCount, slotWidth }: Props) {
   const fr = FRAMES.find(f => f.id === frame) ?? FRAMES[0]
   const ln = LININGS.find(l => l.id === lining) ?? LININGS[0]
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
@@ -53,6 +54,7 @@ export default function WatchBox({ watches, activeSlot, onSlotClick, frame, lini
               return (
                 <div key={i} style={{ aspectRatio: '3/4', borderRadius: 3, position: 'relative' }}>
                   <div
+                    onClick={onEmptySlotClick}
                     style={{
                       width: '100%', height: '100%',
                       borderRadius: 3,
