@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import type { Watch, OwnershipStatus } from '@/types/watch'
-import DialSVG from '@/components/watchbox/DialSVG'
 import HoverCard from '@/components/watchbox/HoverCard'
 
 function fmt(n: number) {
@@ -65,20 +64,6 @@ export default function WatchCard({ watch, isActive, onSelect }: Props) {
           borderBottom: '1px solid #E8E2D8',
         }}
       >
-        {/* DialSVG as background layer */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            opacity: 0.18,
-          }}
-        >
-          <DialSVG {...watch.dialConfig} size={100} />
-        </div>
-        {/* Actual watch image */}
         <Image
           src={watch.imageUrl}
           alt={watch.model}
