@@ -4,7 +4,6 @@ import { useState, useEffect, useLayoutEffect } from 'react'
 import { watches } from '@/lib/watches'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import WatchBox from '@/components/collection/WatchBox'
-import BoxConfigurator from '@/components/collection/BoxConfigurator'
 import WatchSidebar from '@/components/collection/WatchSidebar'
 import CollectionHeader from '@/components/collection/CollectionHeader'
 import ViewSwitcher from '@/components/collection/ViewSwitcher'
@@ -300,34 +299,66 @@ function WatchboxView({
         />
 
         {/* Desktop flyout — .configurator-wrap CSS hides on mobile */}
-        <div className="configurator-wrap" style={{ marginTop: 12 }}>
-          <button
-            onClick={() => setCustomizerOpen(v => !v)}
-            style={{
-              width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '11px 16px', background: '#FFFFFF',
-              border: '1px solid #EAE5DC',
-              borderBottom: customizerOpen ? '1px solid #F0EBE3' : '1px solid #EAE5DC',
-              borderRadius: customizerOpen ? '8px 8px 0 0' : 8,
-              cursor: 'pointer', textAlign: 'left',
-            }}
-          >
-            <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1A1410' }}>
-              Customize Watchbox
-            </span>
-            <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#A89880', display: 'flex', alignItems: 'center', gap: 8 }}>
-              {fr.label} · {ln.label} · {sc.n} slots
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: customizerOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
-                <path d="M2 4L6 8L10 4" stroke="#A89880" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <div className="configurator-wrap" style={{ marginTop: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <button
+              onClick={() => setCustomizerOpen(v => !v)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 5,
+                fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500,
+                letterSpacing: '0.06em',
+                padding: '5px 12px',
+                background: '#FFFFFF', color: '#A89880',
+                border: '1px solid #EAE5DC', borderRadius: 6,
+                cursor: 'pointer',
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                <path d="M1 9.5V11h1.5l4.42-4.42-1.5-1.5L1 9.5zm7.07-5.07c.2-.2.2-.51 0-.71L6.99 2.64a.5.5 0 00-.71 0L5.13 3.79l1.5 1.5 1.44-1.44z" fill="#A89880"/>
               </svg>
-            </span>
-          </button>
+              Customize Watchbox
+            </button>
+          </div>
           <div style={{ overflow: 'hidden', maxHeight: customizerOpen ? '400px' : 0, transition: 'max-height 0.28s cubic-bezier(0.32,0.72,0,1)' }}>
-            <BoxConfigurator
-              frame={frame} setFrame={setFrame}
-              lining={lining} setLining={setLining}
-              slotCount={slotCount} setSlotCount={setSlotCount}
-            />
+            <div style={{ marginTop: 6, border: '1px solid #EAE5DC', borderRadius: 8, background: '#FFFFFF', overflow: 'hidden' }}>
+              <div style={{ padding: '10px 14px', borderBottom: '1px solid #F0EBE3', background: '#FAF8F4' }}>
+                <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#A89880' }}>{fr.label} · {ln.label} · {sc.n} slots</span>
+              </div>
+              <div style={{ padding: '12px 14px', borderBottom: '1px solid #F0EBE3' }}>
+                <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 8 }}>Slots</div>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  {SLOT_COUNTS.map(s => (
+                    <button key={s.n} onClick={() => setSlotCount(s.n)} style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 500, padding: '5px 12px', borderRadius: 4, border: slotCount === s.n ? '1px solid #C9A84C' : '1px solid #E0DAD0', background: slotCount === s.n ? 'rgba(201,168,76,0.06)' : 'transparent', color: slotCount === s.n ? '#C9A84C' : '#A89880', cursor: 'pointer', transition: 'all 0.15s' }}>{s.label}</button>
+                  ))}
+                </div>
+              </div>
+              <div style={{ padding: '12px 14px', borderBottom: '1px solid #F0EBE3' }}>
+                <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 8 }}>
+                  Frame · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0 }}>{fr.label}</span>
+                </div>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {FRAMES.map(f => (
+                    <div key={f.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <div onClick={() => setFrame(f.id)} title={f.label} style={{ width: 28, height: 28, borderRadius: '50%', background: f.swatchColor, cursor: 'pointer', border: frame === f.id ? '2px solid #C9A84C' : '2px solid transparent', boxShadow: '0 1px 4px rgba(0,0,0,0.15)', transition: 'border-color 0.15s' }} onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')} onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')} />
+                      <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, color: '#A89880', textAlign: 'center', marginTop: 4 }}>{f.label.split(' ')[0]}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ padding: '12px 14px' }}>
+                <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 8 }}>
+                  Lining · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0 }}>{ln.label}</span>
+                </div>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {LININGS.map(l => (
+                    <div key={l.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <div onClick={() => setLining(l.id)} title={l.label} style={{ width: 28, height: 28, borderRadius: '50%', background: l.color, cursor: 'pointer', border: lining === l.id ? '2px solid #C9A84C' : l.id === 'cream' ? '2px solid #e0dbd0' : '2px solid transparent', boxShadow: '0 1px 4px rgba(0,0,0,0.15)', transition: 'border-color 0.15s' }} onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')} onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')} />
+                      <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, color: '#A89880', textAlign: 'center', marginTop: 4 }}>{l.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
