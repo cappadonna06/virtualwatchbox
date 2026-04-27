@@ -200,48 +200,63 @@ export default function AddWatchSearchPage() {
             </div>
           )}
 
-          {filteredResults.map(watch => {
-            const inCollection = isInCollection(watch.id)
-            const expanded = expandedDuplicateId === watch.id
-            return (
-              <div
-                key={watch.id}
-                onClick={() => {
-                  if (inCollection) {
-                    setExpandedDuplicateId(prev => (prev === watch.id ? null : watch.id))
-                    return
-                  }
-                  router.push(`/collection/add/${watch.id}`)
-                }}
-                style={{
-                  background: '#FFFFFF',
-                  border: `1px solid ${expanded ? '#C9A84C' : '#EAE5DC'}`,
-                  borderRadius: 10,
-                  padding: '14px 16px',
-                  marginBottom: 8,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  gap: 16,
-                  transition: 'border-color 0.15s',
-                  alignItems: 'center',
-                }}
-              >
-                <div style={{ width: 56, height: 56, flexShrink: 0 }}>
-                  <DialSVG
-                    dialColor={watch.dialConfig.dialColor}
-                    markerColor={watch.dialConfig.markerColor}
-                    handColor={watch.dialConfig.handColor}
-                    size={56}
-                  />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 9, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#C9A84C', fontFamily: 'var(--font-dm-sans)' }}>{watch.brand}</div>
-                  <div style={{ fontSize: 17, fontFamily: 'var(--font-cormorant)', color: '#1A1410', marginTop: 2 }}>{watch.model}</div>
-                  <div style={{ fontSize: 10, color: '#A89880', fontFamily: 'var(--font-dm-sans)' }}>
-                    Ref. {watch.reference} · {watch.caseSizeMm}mm · {watch.caseMaterial}
+          {filteredResults.length > 0 && (
+            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#1A1410', marginBottom: 12 }}>
+              {filteredResults.length} results
+            </div>
+          )}
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+              gap: 10,
+            }}
+          >
+            {filteredResults.map(watch => {
+              const inCollection = isInCollection(watch.id)
+              const expanded = expandedDuplicateId === watch.id
+              return (
+                <div
+                  key={watch.id}
+                  onClick={() => {
+                    if (inCollection) {
+                      setExpandedDuplicateId(prev => (prev === watch.id ? null : watch.id))
+                      return
+                    }
+                    router.push(`/collection/add/${watch.id}`)
+                  }}
+                  style={{
+                    background: '#FFFFFF',
+                    border: `1px solid ${expanded ? '#C9A84C' : '#EAE5DC'}`,
+                    borderRadius: 10,
+                    padding: '10px 11px',
+                    cursor: 'pointer',
+                    transition: 'border-color 0.15s',
+                  }}
+                >
+                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                    <div style={{ width: 46, height: 46, flexShrink: 0 }}>
+                      <DialSVG
+                        dialColor={watch.dialConfig.dialColor}
+                        markerColor={watch.dialConfig.markerColor}
+                        handColor={watch.dialConfig.handColor}
+                        size={46}
+                      />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 9, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#C9A84C', fontFamily: 'var(--font-dm-sans)' }}>{watch.brand}</div>
+                      <div style={{ fontSize: 16, fontFamily: 'var(--font-cormorant)', color: '#1A1410', marginTop: 1, lineHeight: 1.05 }}>{watch.model}</div>
+                      <div style={{ fontSize: 10, color: '#A89880', fontFamily: 'var(--font-dm-sans)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        Ref. {watch.reference}
+                      </div>
+                    </div>
                   </div>
-                  <div style={{ fontSize: 15, fontFamily: 'var(--font-cormorant)', color: '#1A1410', marginTop: 4 }}>{fmt(watch.estimatedValue)}</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, alignItems: 'center' }}>
+                  <div style={{ fontSize: 10, color: '#A89880', fontFamily: 'var(--font-dm-sans)', marginTop: 6 }}>
+                    {watch.caseMaterial} · {watch.dialColor} · {watch.caseSizeMm}mm
+                  </div>
+                  <div style={{ fontSize: 14, fontFamily: 'var(--font-cormorant)', color: '#1A1410', marginTop: 4 }}>{fmt(watch.estimatedValue)}</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, alignItems: 'center' }}>
                     <span style={{ fontSize: 9, padding: '2px 7px', borderRadius: 20, background: '#1A1410', color: '#FAF8F4', fontFamily: 'var(--font-dm-sans)' }}>
                       {watch.watchType}
                     </span>
@@ -274,9 +289,9 @@ export default function AddWatchSearchPage() {
                     </div>
                   )}
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </>
       )}
     </div>

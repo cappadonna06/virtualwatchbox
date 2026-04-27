@@ -100,15 +100,6 @@ export default function WatchSidebar({ watch, onRequestDelete, onRequestEdit }: 
               <path d="M4.5 1.5h3l.3.8H10v1H2v-1h2.2l.3-.8zM3 4h6l-.5 6.2a.8.8 0 01-.8.8H4.3a.8.8 0 01-.8-.8L3 4zm2 1v5h1V5H5zm2 0v5h1V5H7z" fill="currentColor" />
             </svg>
           </button>
-          <span
-            style={{
-              display: 'inline-block', padding: '3px 10px', borderRadius: 20,
-              fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 600, letterSpacing: '0.04em',
-              background: colors.bg, color: colors.text,
-            }}
-          >
-            {watch.condition}
-          </span>
         </div>
       </div>
 
@@ -127,9 +118,20 @@ export default function WatchSidebar({ watch, onRequestDelete, onRequestEdit }: 
       <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 4 }}>
         {watch.brand.toUpperCase()}
       </div>
-      <h3 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 26, fontWeight: 400, lineHeight: 1.1, color: '#1A1410', marginBottom: 3 }}>
-        {watch.model}
-      </h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+        <h3 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 26, fontWeight: 400, lineHeight: 1.1, color: '#1A1410', margin: 0 }}>
+          {watch.model}
+        </h3>
+        <span
+          style={{
+            display: 'inline-block', padding: '3px 10px', borderRadius: 20,
+            fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 600, letterSpacing: '0.04em',
+            background: colors.bg, color: colors.text, flexShrink: 0,
+          }}
+        >
+          {watch.condition}
+        </span>
+      </div>
       <div style={{ fontSize: 12, color: '#A89880', marginBottom: 4 }}>Ref. {watch.reference}</div>
       {watch.notes && (
         <div style={{ fontSize: 11, color: '#C9A84C', fontStyle: 'italic', marginBottom: 16 }}>
