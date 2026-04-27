@@ -40,6 +40,7 @@ export default function CollectionPage() {
   const [slotCount, setSlotCount]           = useState(6)
   const [screenW, setScreenW]               = useState(0)
   const [pendingChanges, setPendingChanges] = useState<DraftChange[]>([])
+  const [deleteTarget, setDeleteTarget] = useState<Watch | null>(null)
 
   useLayoutEffect(() => {
     const update = () => setScreenW(window.innerWidth)
@@ -104,6 +105,13 @@ export default function CollectionPage() {
   const totalEstValue = collectionWatches.reduce((s, w) => s + w.estimatedValue, 0)
   const activeWatch = activeSlot !== null ? (collectionWatches[activeSlot] ?? null) : null
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
+
+  function handleDeleteWatch() {
+    if (!deleteTarget) return
+    setCollectionWatches(prev => prev.filter(w => w.id !== deleteTarget.id))
+    setActiveSlot(null)
+    setDeleteTarget(null)
+  }
 
   const isMobile = screenW > 0 && screenW < 768
   const watchboxContainerW = isMobile ? screenW - 40 : Math.max(200, screenW - 444)
@@ -203,7 +211,10 @@ export default function CollectionPage() {
             ✕
           </button>
           <div className="sidebar-content">
-            <WatchSidebar watch={activeWatch} />
+            <WatchSidebar
+              watch={activeWatch}
+              onRequestDelete={watch => setDeleteTarget(watch)}
+            />
           </div>
         </div>
       </div>
@@ -251,6 +262,79 @@ export default function CollectionPage() {
         onAdd={handleAddWatch}
         existingWatchIds={collectionWatches.map(w => w.id)}
       />
+
+      {deleteTarget && (
+        <>
+          <div
+            onClick={() => setDeleteTarget(null)}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.45)', zIndex: 210, backdropFilter: 'blur(2px)' }}
+          />
+          <div
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '90vw',
+              maxWidth: 420,
+              background: '#FFFFFF',
+              border: '1px solid #EAE5DC',
+              borderRadius: 12,
+              boxShadow: '0 20px 60px rgba(26,20,16,0.2)',
+              zIndex: 211,
+              padding: 18,
+            }}
+          >
+            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 6 }}>
+              Remove Watch
+            </div>
+            <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: 28, color: '#1A1410', lineHeight: 1.1, marginBottom: 8 }}>
+              Delete from My Collection?
+            </div>
+            <p style={{ margin: '0 0 16px', fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#A89880', lineHeight: 1.5 }}>
+              {deleteTarget.brand} {deleteTarget.model} will be removed from your collection list.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <button
+                onClick={() => setDeleteTarget(null)}
+                style={{
+                  fontFamily: 'var(--font-dm-sans)',
+                  fontSize: 11,
+                  fontWeight: 500,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  padding: '9px 12px',
+                  background: 'transparent',
+                  color: '#1A1410',
+                  border: '1px solid #D4CBBF',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteWatch}
+                style={{
+                  fontFamily: 'var(--font-dm-sans)',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  padding: '9px 12px',
+                  background: '#1A1410',
+                  color: '#FAF8F4',
+                  border: 'none',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
