@@ -7,6 +7,7 @@ import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import WatchBox from './WatchBox'
 import WatchSidebar from './WatchSidebar'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import type { Watch } from '@/types/watch'
 
 // WatchBox internal padding constants (from WatchBox.tsx)
 // Frame: padding '22px 22px 24px', Lining: padding 10, Row gap: 6
@@ -41,8 +42,9 @@ export default function CollectionSection() {
   const [slotCount, setSlotCount]         = useState(6)
   const [configOpen, setConfigOpen]       = useState(false)
   const [customizerOpen, setCustomizerOpen] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<Watch | null>(null)
   const [screenW, setScreenW]             = useState(0)
-  const { collectionWatches, selectedWatchId, setSelectedWatchId } = useCollectionSession()
+  const { collectionWatches, selectedWatchId, setSelectedWatchId, removeFromCollection } = useCollectionSession()
 
   useLayoutEffect(() => {
     const update = () => setScreenW(window.innerWidth)
@@ -98,6 +100,12 @@ export default function CollectionSection() {
   const previewContainerW = screenW > 0 ? screenW - 40 : 350
   const previewSlotPx = Math.floor(calcSlotPx(previewContainerW, 260, sc.cols, PV_W_PAD, PV_H_PAD, PV_GAP))
   const previewMaxW = PV_W_PAD + (sc.cols - 1) * PV_GAP + sc.cols * previewSlotPx
+
+  function handleDeleteWatch() {
+    if (!deleteTarget) return
+    removeFromCollection(deleteTarget.id)
+    setDeleteTarget(null)
+  }
 
   return (
     <section className="collection-section" style={{ padding: '80px 56px', borderTop: '1px solid #EAE5DC' }}>
@@ -418,10 +426,86 @@ export default function CollectionSection() {
             ✕
           </button>
           <div className="sidebar-content">
-            <WatchSidebar watch={activeWatch} />
+            <WatchSidebar
+              watch={activeWatch}
+              onRequestDelete={watch => setDeleteTarget(watch)}
+            />
           </div>
         </div>
       </div>
+
+      {deleteTarget && (
+        <>
+          <div
+            onClick={() => setDeleteTarget(null)}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.45)', zIndex: 210, backdropFilter: 'blur(2px)' }}
+          />
+          <div
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '90vw',
+              maxWidth: 420,
+              background: '#FFFFFF',
+              border: '1px solid #EAE5DC',
+              borderRadius: 12,
+              boxShadow: '0 20px 60px rgba(26,20,16,0.2)',
+              zIndex: 211,
+              padding: 18,
+            }}
+          >
+            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 6 }}>
+              Remove Watch
+            </div>
+            <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: 28, color: '#1A1410', lineHeight: 1.1, marginBottom: 8 }}>
+              Delete from My Collection?
+            </div>
+            <p style={{ margin: '0 0 16px', fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#A89880', lineHeight: 1.5 }}>
+              {deleteTarget.brand} {deleteTarget.model} will be removed from your collection list.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <button
+                onClick={() => setDeleteTarget(null)}
+                style={{
+                  fontFamily: 'var(--font-dm-sans)',
+                  fontSize: 11,
+                  fontWeight: 500,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  padding: '9px 12px',
+                  background: 'transparent',
+                  color: '#1A1410',
+                  border: '1px solid #D4CBBF',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteWatch}
+                style={{
+                  fontFamily: 'var(--font-dm-sans)',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  padding: '9px 12px',
+                  background: '#1A1410',
+                  color: '#FAF8F4',
+                  border: 'none',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </section>
   )
 }
