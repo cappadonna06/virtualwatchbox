@@ -5,6 +5,7 @@ import { watches as catalogWatches } from '@/lib/watches'
 import type { Watch, WatchCondition } from '@/types/watch'
 
 const DEFAULT_COLLECTION = catalogWatches.slice(0, 5)
+const STORAGE_KEY = 'collection-session-v1'
 
 type PurchaseDetails = {
   price?: number
@@ -12,9 +13,17 @@ type PurchaseDetails = {
   notes?: string
 }
 
+type SessionSnapshot = {
+  collectionWatches: Watch[]
+  followedWatchIds: string[]
+  selectedWatchId: string | null
+}
+
 interface CollectionSessionContextValue {
   collectionWatches: Watch[]
   followedWatchIds: string[]
+  selectedWatchId: string | null
+  setSelectedWatchId: (watchId: string | null) => void
   addToCollection: (watch: Watch, condition: WatchCondition, purchaseDetails?: PurchaseDetails) => void
   followWatch: (watchId: string) => void
   removeFromCollection: (watchId: string) => void
@@ -28,11 +37,37 @@ const CollectionSessionContext = createContext<CollectionSessionContextValue | n
 export function CollectionSessionProvider({ children }: { children: React.ReactNode }) {
   const [collectionWatches, setCollectionWatches] = useState<Watch[]>(DEFAULT_COLLECTION)
   const [followedWatchIds, setFollowedWatchIds] = useState<string[]>([])
+  const [selectedWatchId, setSelectedWatchId] = useState<string | null>(null)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
   const [toastVisible, setToastVisible] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
 
   const showTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(STORAGE_KEY)
+      if (raw) {
+        const parsed = JSON.parse(raw) as SessionSnapshot
+        if (Array.isArray(parsed.collectionWatches) && Array.isArray(parsed.followedWatchIds)) {
+          setCollectionWatches(parsed.collectionWatches)
+          setFollowedWatchIds(parsed.followedWatchIds)
+          setSelectedWatchId(parsed.selectedWatchId ?? null)
+        }
+      }
+    } catch {
+      // Ignore malformed session data.
+    } finally {
+      setHydrated(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!hydrated) return
+    const snapshot: SessionSnapshot = { collectionWatches, followedWatchIds, selectedWatchId }
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot))
+  }, [hydrated, collectionWatches, followedWatchIds, selectedWatchId])
 
   useEffect(() => {
     return () => {
@@ -65,6 +100,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       notes: purchaseDetails?.notes ?? '',
     }
     setCollectionWatches(prev => [...prev, newWatch])
+    setSelectedWatchId(newWatch.id)
     showToast(`${watch.brand} ${watch.model} added to your collection`)
   }
 
@@ -75,6 +111,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
 
   function removeFromCollection(watchId: string) {
     setCollectionWatches(prev => prev.filter(w => w.id !== watchId))
+    setSelectedWatchId(prev => (prev === watchId ? null : prev))
   }
 
   const ownedCatalogIds = useMemo(() => {
@@ -90,6 +127,8 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   const value: CollectionSessionContextValue = {
     collectionWatches,
     followedWatchIds,
+    selectedWatchId,
+    setSelectedWatchId,
     addToCollection,
     followWatch,
     removeFromCollection,

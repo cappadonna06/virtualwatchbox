@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
 import './globals.css'
 import NavBar from '@/components/NavBar'
+import { CollectionSessionProvider } from './collection/CollectionSessionProvider'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -122,9 +123,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`}>
       <body>
-        <NavBar />
+        <CollectionSessionProvider>
+          <NavBar />
 
-        <main style={{ maxWidth: 1280, margin: '0 auto' }}>{children}</main>
+          <main style={{ maxWidth: 1280, margin: '0 auto' }}>{children}</main>
+        </CollectionSessionProvider>
       </body>
     </html>
   )

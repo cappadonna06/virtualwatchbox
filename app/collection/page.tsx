@@ -32,9 +32,8 @@ type View = 'watchbox' | 'cards'
 
 export default function CollectionPage() {
   const router = useRouter()
-  const { collectionWatches, removeFromCollection } = useCollectionSession()
+  const { collectionWatches, selectedWatchId, setSelectedWatchId, removeFromCollection } = useCollectionSession()
   const [activeView, setActiveView]         = useState<View>('watchbox')
-  const [activeSlot, setActiveSlot]         = useState<number | null>(null)
   const [frame, setFrame]                   = useState('light-oak')
   const [lining, setLining]                 = useState('cream')
   const [slotCount, setSlotCount]           = useState(6)
@@ -64,11 +63,15 @@ export default function CollectionPage() {
   }, [frame, lining, slotCount])
 
   function handleSlotClick(i: number) {
-    setActiveSlot(prev => prev === i ? null : i)
+    const watch = collectionWatches[i]
+    if (!watch) return
+    setSelectedWatchId(selectedWatchId === watch.id ? null : watch.id)
   }
 
   function handleCardSelect(i: number) {
-    setActiveSlot(prev => prev === i ? null : i)
+    const watch = collectionWatches[i]
+    if (!watch) return
+    setSelectedWatchId(selectedWatchId === watch.id ? null : watch.id)
   }
 
   function handleDraftChange(type: DraftChange['type'], label: string) {
@@ -79,13 +82,14 @@ export default function CollectionPage() {
   }
 
   const totalEstValue = collectionWatches.reduce((s, w) => s + w.estimatedValue, 0)
-  const activeWatch = activeSlot !== null ? (collectionWatches[activeSlot] ?? null) : null
+  const activeSlot = selectedWatchId ? collectionWatches.findIndex(w => w.id === selectedWatchId) : -1
+  const activeWatch = activeSlot >= 0 ? collectionWatches[activeSlot] : null
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
 
   function handleDeleteWatch() {
     if (!deleteTarget) return
     removeFromCollection(deleteTarget.id)
-    setActiveSlot(null)
+    setSelectedWatchId(null)
     setDeleteTarget(null)
   }
 
@@ -107,7 +111,7 @@ export default function CollectionPage() {
       {/* Sidebar backdrop — mobile only */}
       <div
         className={`sidebar-backdrop ${activeWatch ? 'is-active' : ''}`}
-        onClick={() => setActiveSlot(null)}
+        onClick={() => setSelectedWatchId(null)}
       />
 
       <CollectionHeader
@@ -149,7 +153,7 @@ export default function CollectionPage() {
               setLining={setLining}
               slotCount={slotCount}
               setSlotCount={setSlotCount}
-              activeSlot={activeSlot}
+              activeSlot={activeSlot >= 0 ? activeSlot : null}
               onSlotClick={handleSlotClick}
               watchboxSlotPx={watchboxSlotPx}
               watchboxMaxW={watchboxMaxW}
@@ -162,7 +166,7 @@ export default function CollectionPage() {
           {activeView === 'cards' && (
             <CardsView
               watches={collectionWatches}
-              activeSlot={activeSlot}
+              activeSlot={activeSlot >= 0 ? activeSlot : null}
               onCardSelect={handleCardSelect}
             />
           )}
@@ -178,7 +182,7 @@ export default function CollectionPage() {
           </div>
           <button
             className="sidebar-close-btn"
-            onClick={() => setActiveSlot(null)}
+            onClick={() => setSelectedWatchId(null)}
             style={{
               display: 'none', position: 'absolute', top: 14, right: 16,
               background: 'none', border: 'none', cursor: 'pointer',

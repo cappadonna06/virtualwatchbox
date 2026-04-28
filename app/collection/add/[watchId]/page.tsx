@@ -52,7 +52,7 @@ export default function AddWatchConfirmPage() {
         ← Back to search
       </button>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) minmax(360px, 1fr)', gap: 24, alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) minmax(320px, 1fr)', gap: 24, alignItems: 'start' }}>
         <div style={{ border: '1px solid #EAE5DC', borderRadius: 12, padding: 18, background: '#FFFFFF' }}>
           <div style={{ width: 120, height: 120, margin: '0 auto 12px' }}>
             <DialSVG
@@ -196,8 +196,9 @@ export default function AddWatchConfirmPage() {
                 </div>
               )}
 
-              <button
-                disabled={!condition}
+              <div style={{ marginTop: 18 }}>
+                <button
+                  disabled={!condition}
                 onClick={() => {
                   if (!condition) return
                   addToCollection(watch, condition, {
@@ -208,7 +209,7 @@ export default function AddWatchConfirmPage() {
                   router.push('/collection')
                 }}
                 style={{
-                  width: '260px',
+                  width: '100%',
                   padding: '12px',
                   marginTop: 18,
                   border: 'none',
@@ -221,9 +222,10 @@ export default function AddWatchConfirmPage() {
                   background: condition ? '#1A1410' : '#C8BFAF',
                   color: '#FAF8F4',
                 }}
-              >
+                >
                 Add to My Collection
-              </button>
+                </button>
+              </div>
             </div>
           )}
 
@@ -238,7 +240,7 @@ export default function AddWatchConfirmPage() {
                   router.push('/collection')
                 }}
                 style={{
-                  width: '260px',
+                  width: '100%',
                   padding: '12px',
                   background: '#1A1410',
                   color: '#FAF8F4',

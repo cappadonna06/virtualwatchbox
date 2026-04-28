@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useLayoutEffect } from 'react'
 import Link from 'next/link'
-import { watches } from '@/lib/watches'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import WatchBox from './WatchBox'
 import WatchSidebar from './WatchSidebar'
+import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 
 // WatchBox internal padding constants (from WatchBox.tsx)
 // Frame: padding '22px 22px 24px', Lining: padding 10, Row gap: 6
@@ -34,13 +34,13 @@ function calcSlotPx(
 }
 
 export default function CollectionSection() {
-  const [activeSlot, setActiveSlot]       = useState<number | null>(null)
   const [frame, setFrame]                 = useState('light-oak')
   const [lining, setLining]               = useState('cream')
   const [slotCount, setSlotCount]         = useState(6)
   const [configOpen, setConfigOpen]       = useState(false)
   const [customizerOpen, setCustomizerOpen] = useState(false)
   const [screenW, setScreenW]             = useState(0)
+  const { collectionWatches, selectedWatchId, setSelectedWatchId } = useCollectionSession()
 
   useLayoutEffect(() => {
     const update = () => setScreenW(window.innerWidth)
@@ -66,10 +66,13 @@ export default function CollectionSection() {
   }, [frame, lining, slotCount])
 
   function handleSlotClick(i: number) {
-    setActiveSlot(prev => prev === i ? null : i)
+    const watch = collectionWatches[i]
+    if (!watch) return
+    setSelectedWatchId(selectedWatchId === watch.id ? null : watch.id)
   }
 
-  const activeWatch = activeSlot !== null ? (watches[activeSlot] ?? null) : null
+  const activeSlot = selectedWatchId ? collectionWatches.findIndex(w => w.id === selectedWatchId) : -1
+  const activeWatch = activeSlot >= 0 ? collectionWatches[activeSlot] : null
   const fr = FRAMES.find(f => f.id === frame) ?? FRAMES[0]
   const ln = LININGS.find(l => l.id === lining) ?? LININGS[0]
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
@@ -100,7 +103,7 @@ export default function CollectionSection() {
       {/* Sidebar backdrop — mobile only */}
       <div
         className={`sidebar-backdrop ${activeWatch ? 'is-active' : ''}`}
-        onClick={() => setActiveSlot(null)}
+        onClick={() => setSelectedWatchId(null)}
       />
 
       {/* Config modal backdrop */}
@@ -296,8 +299,8 @@ export default function CollectionSection() {
           {/* Box + flyout — both constrained to watchboxMaxW so they visually align */}
           <div style={watchboxMaxW !== undefined ? { maxWidth: watchboxMaxW, width: '100%', margin: '0 auto' } : {}}>
             <WatchBox
-              watches={watches}
-              activeSlot={activeSlot}
+              watches={collectionWatches}
+              activeSlot={activeSlot >= 0 ? activeSlot : null}
               onSlotClick={handleSlotClick}
               frame={frame}
               lining={lining}
@@ -406,7 +409,7 @@ export default function CollectionSection() {
           </div>
           <button
             className="sidebar-close-btn"
-            onClick={() => setActiveSlot(null)}
+            onClick={() => setSelectedWatchId(null)}
             style={{ display: 'none', position: 'absolute', top: 14, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: '#A89880', fontSize: 18, lineHeight: 1, padding: 4 }}
           >
             ✕
