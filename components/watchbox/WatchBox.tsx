@@ -23,7 +23,11 @@ function formatCurrency(n: number): string {
   }).format(n)
 }
 
-export default function WatchBox() {
+interface Props {
+  onEmptySlotClick?: () => void
+}
+
+export default function WatchBox({ onEmptySlotClick }: Props) {
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null)
   const [activeSidebar, setActiveSidebar] = useState<number | null>(null)
 
@@ -53,6 +57,7 @@ export default function WatchBox() {
                 <div
                   key={i}
                   className="flex flex-col items-center justify-center rounded-lg cursor-pointer select-none"
+                  onClick={onEmptySlotClick}
                   style={{
                     aspectRatio: '3/4',
                     border: '1.5px dashed #D0C9BE',

@@ -1,0 +1,299 @@
+'use client'
+
+import { useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { watches as catalogWatches } from '@/lib/watches'
+import type { Watch } from '@/types/watch'
+import DialSVG from '@/components/watchbox/DialSVG'
+import { useCollectionSession } from '../CollectionSessionProvider'
+
+const MATERIAL_OPTIONS = ['Stainless Steel', 'Yellow Gold', 'Rose Gold', 'White Gold', 'Titanium', 'Ceramic', 'Bronze']
+const COLOR_OPTIONS = ['Black', 'White', 'Blue', 'Green', 'Grey', 'Silver', 'Champagne', 'Brown', 'Red', 'Salmon']
+const SIZE_OPTIONS = ['≤38mm', '39–41mm', '≥42mm'] as const
+
+type SizeFilter = (typeof SIZE_OPTIONS)[number] | null
+
+function fmt(n: number) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
+}
+
+function matchesColor(watch: Watch, color: string) {
+  return watch.dialColor.toLowerCase().includes(color.toLowerCase())
+}
+
+function matchesSize(watch: Watch, size: SizeFilter) {
+  if (!size) return true
+  if (size === '≤38mm') return watch.caseSizeMm <= 38
+  if (size === '39–41mm') return watch.caseSizeMm >= 39 && watch.caseSizeMm <= 41
+  return watch.caseSizeMm >= 42
+}
+
+export default function AddWatchSearchPage() {
+  const router = useRouter()
+  const { isInCollection } = useCollectionSession()
+
+  const [searchTerm, setSearchTerm] = useState('')
+  const [materialFilter, setMaterialFilter] = useState<string | null>(null)
+  const [colorFilter, setColorFilter] = useState<string | null>(null)
+  const [sizeFilter, setSizeFilter] = useState<SizeFilter>(null)
+  const [expandedDuplicateId, setExpandedDuplicateId] = useState<string | null>(null)
+
+  const baseResults = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase()
+    if (!term) return []
+    return catalogWatches.filter(w => [w.brand, w.model, w.reference].some(v => v.toLowerCase().includes(term)))
+  }, [searchTerm])
+
+  const filteredResults = useMemo(() => {
+    return baseResults.filter(watch => {
+      const materialMatch = !materialFilter || watch.caseMaterial.toLowerCase().includes(materialFilter.toLowerCase())
+      const colorMatch = !colorFilter || matchesColor(watch, colorFilter)
+      const sizeMatch = matchesSize(watch, sizeFilter)
+      return materialMatch && colorMatch && sizeMatch
+    })
+  }, [baseResults, colorFilter, materialFilter, sizeFilter])
+
+  const counts = useMemo(() => {
+    const materialCounts: Record<string, number> = {}
+    const colorCounts: Record<string, number> = {}
+    const sizeCounts: Record<string, number> = {}
+
+    MATERIAL_OPTIONS.forEach(option => {
+      materialCounts[option] = baseResults.filter(w => {
+        const colorMatch = !colorFilter || matchesColor(w, colorFilter)
+        const sizeMatch = matchesSize(w, sizeFilter)
+        return colorMatch && sizeMatch && w.caseMaterial.toLowerCase().includes(option.toLowerCase())
+      }).length
+    })
+
+    COLOR_OPTIONS.forEach(option => {
+      colorCounts[option] = baseResults.filter(w => {
+        const materialMatch = !materialFilter || w.caseMaterial.toLowerCase().includes(materialFilter.toLowerCase())
+        const sizeMatch = matchesSize(w, sizeFilter)
+        return materialMatch && sizeMatch && matchesColor(w, option)
+      }).length
+    })
+
+    SIZE_OPTIONS.forEach(option => {
+      sizeCounts[option] = baseResults.filter(w => {
+        const materialMatch = !materialFilter || w.caseMaterial.toLowerCase().includes(materialFilter.toLowerCase())
+        const colorMatch = !colorFilter || matchesColor(w, colorFilter)
+        return materialMatch && colorMatch && matchesSize(w, option)
+      }).length
+    })
+
+    return { materialCounts, colorCounts, sizeCounts }
+  }, [baseResults, colorFilter, materialFilter, sizeFilter])
+
+  function renderChip(option: string, active: boolean, count: number, onClick: () => void) {
+    return (
+      <button
+        key={option}
+        onClick={onClick}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          padding: '5px 11px',
+          borderRadius: 20,
+          fontFamily: 'var(--font-dm-sans)',
+          fontSize: 10,
+          cursor: count === 0 ? 'default' : 'pointer',
+          border: active ? '1px solid #1A1410' : '1px solid #E0DAD0',
+          transition: 'all 0.15s',
+          color: active ? '#FAF8F4' : '#A89880',
+          background: active ? '#1A1410' : 'transparent',
+          opacity: count === 0 ? 0.38 : 1,
+          pointerEvents: count === 0 ? 'none' : 'auto',
+        }}
+      >
+        <span>{option}</span>
+        <span
+          style={{
+            fontSize: 9,
+            padding: '1px 5px',
+            borderRadius: 10,
+            background: active ? 'rgba(255,255,255,0.2)' : '#F0EBE3',
+            color: active ? '#FAF8F4' : '#A89880',
+          }}
+        >
+          {count}
+        </span>
+      </button>
+    )
+  }
+
+  return (
+    <div style={{ padding: '56px 56px 120px', borderTop: '1px solid #EAE5DC' }}>
+      <button
+        onClick={() => router.push('/collection')}
+        style={{
+          background: 'none',
+          border: 'none',
+          padding: 0,
+          marginBottom: 14,
+          cursor: 'pointer',
+          color: '#A89880',
+          fontFamily: 'var(--font-dm-sans)',
+          fontSize: 11,
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+        }}
+      >
+        ← My Collection
+      </button>
+
+      <h1 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 28, fontWeight: 400, color: '#1A1410', margin: '0 0 6px' }}>
+        Find a Watch
+      </h1>
+      <p style={{ margin: '0 0 20px', fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#A89880' }}>
+        Search by brand, model, or reference number
+      </p>
+
+      <input
+        value={searchTerm}
+        onChange={e => {
+          setSearchTerm(e.target.value)
+          setExpandedDuplicateId(null)
+        }}
+        placeholder="Search brand, model, or reference..."
+        style={{
+          width: '100%',
+          padding: '12px 16px',
+          border: '1px solid #E0DAD0',
+          borderRadius: 8,
+          fontFamily: 'var(--font-dm-sans)',
+          fontSize: 15,
+          color: '#1A1410',
+          background: '#FFFFFF',
+          outline: 'none',
+          marginBottom: 16,
+        }}
+      />
+
+      {searchTerm.length > 0 && (
+        <>
+          <div style={{ marginBottom: 10, fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A89880' }}>Case Material</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
+            {MATERIAL_OPTIONS.map(option =>
+              renderChip(option, materialFilter === option, counts.materialCounts[option] ?? 0, () => setMaterialFilter(prev => (prev === option ? null : option))),
+            )}
+          </div>
+
+          <div style={{ marginBottom: 10, fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A89880' }}>Dial Color</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
+            {COLOR_OPTIONS.map(option =>
+              renderChip(option, colorFilter === option, counts.colorCounts[option] ?? 0, () => setColorFilter(prev => (prev === option ? null : option))),
+            )}
+          </div>
+
+          <div style={{ marginBottom: 10, fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A89880' }}>Case Size</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 18 }}>
+            {SIZE_OPTIONS.map(option =>
+              renderChip(option, sizeFilter === option, counts.sizeCounts[option] ?? 0, () => setSizeFilter(prev => (prev === option ? null : option))),
+            )}
+          </div>
+
+          {filteredResults.length === 0 && (
+            <div style={{ textAlign: 'center', color: '#A89880', fontFamily: 'var(--font-dm-sans)', fontSize: 12, padding: '28px 12px' }}>
+              No watches found. Try a different search or adjust filters.
+            </div>
+          )}
+
+          {filteredResults.length > 0 && (
+            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#1A1410', marginBottom: 12 }}>
+              {filteredResults.length} results
+            </div>
+          )}
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+              gap: 10,
+            }}
+          >
+            {filteredResults.map(watch => {
+              const inCollection = isInCollection(watch.id)
+              const expanded = expandedDuplicateId === watch.id
+              return (
+                <div
+                  key={watch.id}
+                  onClick={() => {
+                    if (inCollection) {
+                      setExpandedDuplicateId(prev => (prev === watch.id ? null : watch.id))
+                      return
+                    }
+                    router.push(`/collection/add/${watch.id}`)
+                  }}
+                  style={{
+                    background: '#FFFFFF',
+                    border: `1px solid ${expanded ? '#C9A84C' : '#EAE5DC'}`,
+                    borderRadius: 10,
+                    padding: '10px 11px',
+                    cursor: 'pointer',
+                    transition: 'border-color 0.15s',
+                  }}
+                >
+                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                    <div style={{ width: 46, height: 46, flexShrink: 0 }}>
+                      <DialSVG
+                        dialColor={watch.dialConfig.dialColor}
+                        markerColor={watch.dialConfig.markerColor}
+                        handColor={watch.dialConfig.handColor}
+                        size={46}
+                      />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 9, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#C9A84C', fontFamily: 'var(--font-dm-sans)' }}>{watch.brand}</div>
+                      <div style={{ fontSize: 16, fontFamily: 'var(--font-cormorant)', color: '#1A1410', marginTop: 1, lineHeight: 1.05 }}>{watch.model}</div>
+                      <div style={{ fontSize: 10, color: '#A89880', fontFamily: 'var(--font-dm-sans)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        Ref. {watch.reference}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 10, color: '#A89880', fontFamily: 'var(--font-dm-sans)', marginTop: 6 }}>
+                    {watch.caseMaterial} · {watch.dialColor} · {watch.caseSizeMm}mm
+                  </div>
+                  <div style={{ fontSize: 14, fontFamily: 'var(--font-cormorant)', color: '#1A1410', marginTop: 4 }}>{fmt(watch.estimatedValue)}</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, alignItems: 'center' }}>
+                    <span style={{ fontSize: 9, padding: '2px 7px', borderRadius: 20, background: '#1A1410', color: '#FAF8F4', fontFamily: 'var(--font-dm-sans)' }}>
+                      {watch.watchType}
+                    </span>
+                    {inCollection && (
+                      <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 20, background: '#E8F0E8', color: '#3A6A2D', fontFamily: 'var(--font-dm-sans)' }}>
+                        In Collection
+                      </span>
+                    )}
+                  </div>
+
+                  {expanded && (
+                    <div style={{ paddingTop: 10, marginTop: 10, borderTop: '1px solid #F0EBE3' }} onClick={e => e.stopPropagation()}>
+                      <div style={{ fontSize: 11, color: '#A89880', fontFamily: 'var(--font-dm-sans)', marginBottom: 10 }}>
+                        You already own this watch. Add another?
+                      </div>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button
+                          onClick={() => setExpandedDuplicateId(null)}
+                          style={{ fontSize: 10, padding: '5px 12px', borderRadius: 6, border: '1px solid #E0DAD0', color: '#A89880', background: 'transparent', cursor: 'pointer', fontFamily: 'var(--font-dm-sans)' }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => router.push(`/collection/add/${watch.id}?duplicate=true`)}
+                          style={{ fontSize: 10, padding: '5px 12px', borderRadius: 6, border: 'none', color: '#FAF8F4', background: '#1A1410', cursor: 'pointer', fontFamily: 'var(--font-dm-sans)' }}
+                        >
+                          Add Duplicate
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useLayoutEffect } from 'react'
-import { watches } from '@/lib/watches'
+import { useRouter } from 'next/navigation'
+import type { Watch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import WatchBox from '@/components/collection/WatchBox'
 import WatchSidebar from '@/components/collection/WatchSidebar'
@@ -10,6 +11,7 @@ import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import CollectionStats from '@/components/collection/CollectionStats'
 import UnsavedChangesBar, { type DraftChange } from '@/components/collection/UnsavedChangesBar'
+import { useCollectionSession } from './CollectionSessionProvider'
 
 const WB_W_PAD = 64
 const WB_H_PAD = 72
@@ -28,16 +30,16 @@ function calcSlotPx(containerW: number, maxH: number, cols: number, wPad: number
 
 type View = 'watchbox' | 'cards'
 
-const totalEstValue = watches.reduce((s, w) => s + w.estimatedValue, 0)
-
 export default function CollectionPage() {
+  const router = useRouter()
+  const { collectionWatches, selectedWatchId, setSelectedWatchId, removeFromCollection } = useCollectionSession()
   const [activeView, setActiveView]         = useState<View>('watchbox')
-  const [activeSlot, setActiveSlot]         = useState<number | null>(null)
   const [frame, setFrame]                   = useState('light-oak')
   const [lining, setLining]                 = useState('cream')
   const [slotCount, setSlotCount]           = useState(6)
   const [screenW, setScreenW]               = useState(0)
   const [pendingChanges, setPendingChanges] = useState<DraftChange[]>([])
+  const [deleteTarget, setDeleteTarget] = useState<Watch | null>(null)
 
   useLayoutEffect(() => {
     const update = () => setScreenW(window.innerWidth)
@@ -61,11 +63,15 @@ export default function CollectionPage() {
   }, [frame, lining, slotCount])
 
   function handleSlotClick(i: number) {
-    setActiveSlot(prev => prev === i ? null : i)
+    const watch = collectionWatches[i]
+    if (!watch) return
+    setSelectedWatchId(selectedWatchId === watch.id ? null : watch.id)
   }
 
   function handleCardSelect(i: number) {
-    setActiveSlot(prev => prev === i ? null : i)
+    const watch = collectionWatches[i]
+    if (!watch) return
+    setSelectedWatchId(selectedWatchId === watch.id ? null : watch.id)
   }
 
   function handleDraftChange(type: DraftChange['type'], label: string) {
@@ -75,8 +81,17 @@ export default function CollectionPage() {
     ])
   }
 
-  const activeWatch = activeSlot !== null ? (watches[activeSlot] ?? null) : null
+  const totalEstValue = collectionWatches.reduce((s, w) => s + w.estimatedValue, 0)
+  const activeSlot = selectedWatchId ? collectionWatches.findIndex(w => w.id === selectedWatchId) : -1
+  const activeWatch = activeSlot >= 0 ? collectionWatches[activeSlot] : null
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
+
+  function handleDeleteWatch() {
+    if (!deleteTarget) return
+    removeFromCollection(deleteTarget.id)
+    setSelectedWatchId(null)
+    setDeleteTarget(null)
+  }
 
   const isMobile = screenW > 0 && screenW < 768
   const watchboxContainerW = isMobile ? screenW - 40 : Math.max(200, screenW - 444)
@@ -96,12 +111,13 @@ export default function CollectionPage() {
       {/* Sidebar backdrop — mobile only */}
       <div
         className={`sidebar-backdrop ${activeWatch ? 'is-active' : ''}`}
-        onClick={() => setActiveSlot(null)}
+        onClick={() => setSelectedWatchId(null)}
       />
 
       <CollectionHeader
         totalEstValue={totalEstValue}
         pendingChangesCount={pendingChanges.length}
+        onAddWatch={() => router.push('/collection/add')}
       />
 
       {/* View switcher + stats scroll anchor */}
@@ -130,24 +146,27 @@ export default function CollectionPage() {
         <div>
           {activeView === 'watchbox' && (
             <WatchboxView
+              watches={collectionWatches}
               frame={frame}
               setFrame={setFrame}
               lining={lining}
               setLining={setLining}
               slotCount={slotCount}
               setSlotCount={setSlotCount}
-              activeSlot={activeSlot}
+              activeSlot={activeSlot >= 0 ? activeSlot : null}
               onSlotClick={handleSlotClick}
               watchboxSlotPx={watchboxSlotPx}
               watchboxMaxW={watchboxMaxW}
               screenW={screenW}
+              onEmptySlotClick={() => router.push('/collection/add')}
               onSimulateChange={() => handleDraftChange('update_box', 'Simulated layout change')}
             />
           )}
 
           {activeView === 'cards' && (
             <CardsView
-              activeSlot={activeSlot}
+              watches={collectionWatches}
+              activeSlot={activeSlot >= 0 ? activeSlot : null}
               onCardSelect={handleCardSelect}
             />
           )}
@@ -163,7 +182,7 @@ export default function CollectionPage() {
           </div>
           <button
             className="sidebar-close-btn"
-            onClick={() => setActiveSlot(null)}
+            onClick={() => setSelectedWatchId(null)}
             style={{
               display: 'none', position: 'absolute', top: 14, right: 16,
               background: 'none', border: 'none', cursor: 'pointer',
@@ -173,7 +192,10 @@ export default function CollectionPage() {
             ✕
           </button>
           <div className="sidebar-content">
-            <WatchSidebar watch={activeWatch} />
+            <WatchSidebar
+              watch={activeWatch}
+              onRequestDelete={watch => setDeleteTarget(watch)}
+            />
           </div>
         </div>
       </div>
@@ -207,7 +229,7 @@ export default function CollectionPage() {
             A factual breakdown of what you own.
           </p>
         </div>
-        <CollectionStats watches={watches} />
+        <CollectionStats watches={collectionWatches} />
       </div>
 
       <UnsavedChangesBar
@@ -215,6 +237,79 @@ export default function CollectionPage() {
         onSave={() => setPendingChanges([])}
         onDiscard={() => setPendingChanges([])}
       />
+
+      {deleteTarget && (
+        <>
+          <div
+            onClick={() => setDeleteTarget(null)}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.45)', zIndex: 210, backdropFilter: 'blur(2px)' }}
+          />
+          <div
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '90vw',
+              maxWidth: 420,
+              background: '#FFFFFF',
+              border: '1px solid #EAE5DC',
+              borderRadius: 12,
+              boxShadow: '0 20px 60px rgba(26,20,16,0.2)',
+              zIndex: 211,
+              padding: 18,
+            }}
+          >
+            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 6 }}>
+              Remove Watch
+            </div>
+            <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: 28, color: '#1A1410', lineHeight: 1.1, marginBottom: 8 }}>
+              Delete from My Collection?
+            </div>
+            <p style={{ margin: '0 0 16px', fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#A89880', lineHeight: 1.5 }}>
+              {deleteTarget.brand} {deleteTarget.model} will be removed from your collection list.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <button
+                onClick={() => setDeleteTarget(null)}
+                style={{
+                  fontFamily: 'var(--font-dm-sans)',
+                  fontSize: 11,
+                  fontWeight: 500,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  padding: '9px 12px',
+                  background: 'transparent',
+                  color: '#1A1410',
+                  border: '1px solid #D4CBBF',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteWatch}
+                style={{
+                  fontFamily: 'var(--font-dm-sans)',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  padding: '9px 12px',
+                  background: '#1A1410',
+                  color: '#FAF8F4',
+                  border: 'none',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
@@ -222,6 +317,7 @@ export default function CollectionPage() {
 // ─── Watchbox View ────────────────────────────────────────────────────────────
 
 interface WatchboxViewProps {
+  watches: Watch[]
   frame: string
   setFrame: (v: string) => void
   lining: string
@@ -233,12 +329,14 @@ interface WatchboxViewProps {
   watchboxSlotPx: number | undefined
   watchboxMaxW: number | undefined
   screenW: number
+  onEmptySlotClick: () => void
   onSimulateChange: () => void
 }
 
 function WatchboxView({
+  watches,
   frame, setFrame, lining, setLining, slotCount, setSlotCount,
-  activeSlot, onSlotClick, watchboxSlotPx, watchboxMaxW, screenW, onSimulateChange,
+  activeSlot, onSlotClick, watchboxSlotPx, watchboxMaxW, screenW, onEmptySlotClick, onSimulateChange,
 }: WatchboxViewProps) {
   const [customizerOpen, setCustomizerOpen] = useState(false)
   const [configOpen, setConfigOpen] = useState(false)
@@ -290,8 +388,10 @@ function WatchboxView({
         </div>
 
         <WatchBox
+          watches={watches}
           activeSlot={activeSlot}
           onSlotClick={onSlotClick}
+          onEmptySlotClick={onEmptySlotClick}
           frame={frame}
           lining={lining}
           slotCount={slotCount}
@@ -484,11 +584,12 @@ function WatchboxView({
 // ─── Cards View ───────────────────────────────────────────────────────────────
 
 interface CardsViewProps {
+  watches: Watch[]
   activeSlot: number | null
   onCardSelect: (i: number) => void
 }
 
-function CardsView({ activeSlot, onCardSelect }: CardsViewProps) {
+function CardsView({ watches, activeSlot, onCardSelect }: CardsViewProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       {watches.map((watch, i) => (
