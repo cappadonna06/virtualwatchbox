@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useLayoutEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import WatchBox from './WatchBox'
 import WatchSidebar from './WatchSidebar'
@@ -34,6 +35,7 @@ function calcSlotPx(
 }
 
 export default function CollectionSection() {
+  const router = useRouter()
   const [frame, setFrame]                 = useState('light-oak')
   const [lining, setLining]               = useState('cream')
   const [slotCount, setSlotCount]         = useState(6)
@@ -306,6 +308,7 @@ export default function CollectionSection() {
               lining={lining}
               slotCount={slotCount}
               slotWidth={watchboxSlotPx}
+              onEmptySlotClick={() => router.push('/collection/add')}
             />
 
             {/* Desktop flyout — .configurator-wrap CSS hides on mobile */}
