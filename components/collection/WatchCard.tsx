@@ -1,9 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import Image from 'next/image'
 import type { Watch, OwnershipStatus, WatchCondition } from '@/types/watch'
-import HoverCard from '@/components/watchbox/HoverCard'
 import { brand } from '@/lib/brand'
 
 function fmt(n: number) {
@@ -33,15 +31,12 @@ interface Props {
 }
 
 export default function WatchCard({ watch, isActive, onSelect, mode = 'collection' }: Props) {
-  const [isHovered, setIsHovered] = useState(false)
   const status = statusStyles[watch.ownershipStatus]
   const condition = conditionStyles[watch.condition]
 
   return (
     <div
       onClick={onSelect}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       style={{
         position: 'relative',
         cursor: 'pointer',
@@ -53,15 +48,10 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
         overflow: 'hidden',
         boxShadow: isActive
           ? brand.shadow.gold
-          : isHovered
-            ? brand.shadow.md
-            : brand.shadow.xs,
-        transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
-        transition: `box-shadow ${brand.transition.base}, transform ${brand.transition.base}, border-color ${brand.transition.base}`,
+          : brand.shadow.xs,
+        transition: `box-shadow ${brand.transition.base}, border-color ${brand.transition.base}`,
       }}
     >
-      {isHovered && <HoverCard watch={watch} />}
-
       {/* Image / dial section */}
       <div
         style={{

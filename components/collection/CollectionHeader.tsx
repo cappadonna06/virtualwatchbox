@@ -36,7 +36,7 @@ export default function CollectionHeader({ totalEstValue, pendingChangesCount, o
             letterSpacing: '0.02em',
           }}
         >
-          Your source of truth.
+          Your collection, wherever you go.
         </p>
       </div>
 

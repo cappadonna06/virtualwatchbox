@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type RefCallback, type RefObject } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { PlaygroundBox, PlaygroundBoxEntry, Watch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
@@ -13,6 +13,7 @@ import WatchSidebar from '@/components/collection/WatchSidebar'
 import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import CollectionStats from '@/components/collection/CollectionStats'
+import { useDesktopSidebarOffset } from '@/components/collection/useDesktopSidebarOffset'
 import { brand } from '@/lib/brand'
 
 const STORAGE_KEY = 'playgroundBoxes'
@@ -128,6 +129,10 @@ function PlaygroundPageInner() {
   const activeSlot = selectedEntryId
     ? sortedEntries.findIndex(item => item.entry.id === selectedEntryId)
     : -1
+  const { gridRef, sidebarRef, sidebarOffset, registerCardRef } = useDesktopSidebarOffset(
+    activeView === 'cards' && activeSlot >= 0 ? activeSlot : null,
+    activeView === 'cards' && selectedItem !== null,
+  )
 
   const sc = SLOT_COUNTS.find(slot => slot.n === (activeBox?.slotCount ?? 6)) ?? SLOT_COUNTS[1]
   const overflowSummary = getOverflowSummary(
@@ -488,6 +493,8 @@ function PlaygroundPageInner() {
                 onCardSelect={handleCardSelect}
                 sortBy={sortBy}
                 setSortBy={setSortBy}
+                gridRef={gridRef}
+                registerCardRef={registerCardRef}
               />
             )}
           </div>
@@ -515,7 +522,11 @@ function PlaygroundPageInner() {
             >
               ✕
             </button>
-            <div className="sidebar-content">
+            <div
+              className="sidebar-content"
+              ref={sidebarRef}
+              style={{ marginTop: sidebarOffset }}
+            >
               <WatchSidebar
                 watch={selectedItem?.displayWatch ?? null}
                 sourceWatchId={selectedItem?.sourceWatch.id ?? null}
@@ -1003,21 +1014,28 @@ interface CardsViewProps {
   onCardSelect: (index: number) => void
   sortBy: SortMode
   setSortBy: (v: SortMode) => void
+  gridRef: RefObject<HTMLDivElement>
+  registerCardRef: (index: number) => RefCallback<HTMLDivElement>
 }
 
 const SORT_OPTIONS: { value: SortMode; label: string }[] = [
-  { value: 'manual', label: 'Watchbox Order' },
+  { value: 'manual', label: 'Manual' },
   { value: 'brand', label: 'Brand' },
   { value: 'value', label: 'Value' },
   { value: 'type', label: 'Type' },
 ]
 
-function CardsView({ watches, activeSlot, onCardSelect, sortBy, setSortBy }: CardsViewProps) {
+function CardsView({
+  watches,
+  activeSlot,
+  onCardSelect,
+  sortBy,
+  setSortBy,
+  gridRef,
+  registerCardRef,
+}: CardsViewProps) {
   return (
     <div>
-      <div style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted, marginBottom: 10 }}>
-        Reordering is available in Watchbox view.
-      </div>
       <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
         {SORT_OPTIONS.map(opt => (
           <button
@@ -1041,15 +1059,19 @@ function CardsView({ watches, activeSlot, onCardSelect, sortBy, setSortBy }: Car
           </button>
         ))}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div
+        ref={gridRef}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+      >
         {watches.map((watch, index) => (
-          <WatchCard
-            key={watch.id}
-            watch={watch}
-            mode="playground"
-            isActive={activeSlot === index}
-            onSelect={() => onCardSelect(index)}
-          />
+          <div key={watch.id} ref={registerCardRef(index)}>
+            <WatchCard
+              watch={watch}
+              mode="playground"
+              isActive={activeSlot === index}
+              onSelect={() => onCardSelect(index)}
+            />
+          </div>
         ))}
       </div>
     </div>

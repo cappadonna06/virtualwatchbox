@@ -10,6 +10,7 @@ import UnsavedChangesBar, { type DraftChange } from '@/components/collection/Uns
 import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import WatchSidebar from '@/components/collection/WatchSidebar'
+import { useDesktopSidebarOffset } from '@/components/collection/useDesktopSidebarOffset'
 import { useCollectionSession } from './CollectionSessionProvider'
 import { brand } from '@/lib/brand'
 
@@ -272,6 +273,8 @@ function CardsView({
   onCloseSidebar: () => void
   onRequestDelete: (watch: Watch) => void
 }) {
+  const { gridRef, sidebarRef, sidebarOffset, registerCardRef } = useDesktopSidebarOffset(activeSlot, activeWatch !== null)
+
   return (
     <>
       <div
@@ -281,11 +284,8 @@ function CardsView({
 
       <div className="collection-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}>
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted }}>
-              Card selection opens the same watch detail sidebar used in Watchbox view.
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
+            <div>
               <select
                 value={sortBy}
                 onChange={event => setSortBy(event.target.value as SortMode)}
@@ -301,25 +301,26 @@ function CardsView({
                   outline: 'none',
                 }}
               >
-                <option value="manual">Sort: Watchbox Order</option>
+                <option value="manual">Sort: Manual</option>
                 <option value="brand">Sort: Brand</option>
                 <option value="value">Sort: Value</option>
                 <option value="type">Sort: Type</option>
               </select>
-              <span style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted }}>
-                Reordering is available in Watchbox view.
-              </span>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 18 }}>
+          <div
+            ref={gridRef}
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 18 }}
+          >
             {watches.map((watch, index) => (
-              <WatchCard
-                key={watch.id}
-                watch={watch}
-                isActive={activeSlot === index}
-                onSelect={() => onCardSelect(index)}
-              />
+              <div key={watch.id} ref={registerCardRef(index)}>
+                <WatchCard
+                  watch={watch}
+                  isActive={activeSlot === index}
+                  onSelect={() => onCardSelect(index)}
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -347,7 +348,11 @@ function CardsView({
           >
             ✕
           </button>
-          <div className="sidebar-content">
+          <div
+            className="sidebar-content"
+            ref={sidebarRef}
+            style={{ marginTop: sidebarOffset }}
+          >
             <WatchSidebar
               watch={activeWatch}
               onRequestDelete={onRequestDelete}
