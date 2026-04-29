@@ -1,0 +1,276 @@
+/*
+ * Virtual Watchbox — Design Tokens
+ * colors_and_type.css
+ *
+ * Import Google Fonts before using:
+ * @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@400;500;600&display=swap');
+ */
+
+/* ─── Font Faces ──────────────────────────────────────────────────────── */
+/* Production uses Next.js font variables --font-cormorant, --font-dm-sans  */
+/* In plain HTML, define them here:                                         */
+:root {
+  --font-serif:    'Cormorant Garamond', Georgia, serif;
+  --font-sans:     'DM Sans', system-ui, sans-serif;
+  /* Next.js compat aliases */
+  --font-cormorant: var(--font-serif);
+  --font-dm-sans:   var(--font-sans);
+}
+
+/* ─── Base Colors ─────────────────────────────────────────────────────── */
+:root {
+  --color-bg:           #FAF8F4;   /* Page background — warm cream */
+  --color-slot:         #FFFCF7;   /* Watch slot / card / sidebar fill */
+  --color-ink:          #1A1410;   /* Primary text, dark buttons */
+  --color-muted:        #A89880;   /* Secondary text, meta labels */
+  --color-gold:         #C9A84C;   /* Accent — prices, active, brand labels */
+  --color-dark:         #2A2520;   /* Dark badge background */
+
+  /* Borders (light → mid) */
+  --color-border:       #EAE5DC;   /* Primary dividers */
+  --color-border-mid:   #E8E2D8;   /* Card borders */
+  --color-border-light: #D4CBBF;   /* Secondary button borders */
+  --color-border-slot:  #D0C9BE;   /* Empty slot dashed border */
+
+  /* Hero dark panel */
+  --color-hero-dark-1:  #1e1b16;
+  --color-hero-dark-2:  #2a2420;
+}
+
+/* ─── Semantic / Status Colors ────────────────────────────────────────── */
+:root {
+  /* Ownership status */
+  --status-owned-bg:           #E8F4E8;
+  --status-owned-text:         #2D6A2D;
+  --status-for-sale-bg:        #FFF8E6;
+  --status-for-sale-text:      #8A6A10;
+  --status-recently-added-bg:  #E8F0FA;
+  --status-recently-added-text:#1A4A8A;
+  --status-needs-service-bg:   #FFF3E0;
+  --status-needs-service-text: #8A5010;
+
+  /* Watch condition */
+  --condition-unworn-bg:       #E8F4E8;
+  --condition-unworn-text:     #2D6A2D;
+  --condition-like-new-bg:     #EDF4E8;
+  --condition-like-new-text:   #3A6A2D;
+  --condition-excellent-bg:    #FFF8E6;
+  --condition-excellent-text:  #8A6A10;
+  --condition-good-bg:         #FDF0E0;
+  --condition-good-text:       #8A5010;
+  --condition-fair-bg:         #FAE8E8;
+  --condition-fair-text:       #8A2020;
+}
+
+/* ─── Spacing Scale ───────────────────────────────────────────────────── */
+:root {
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   20px;
+  --space-6:   24px;
+  --space-7:   28px;
+  --space-8:   32px;
+  --space-10:  40px;
+  --space-14:  56px;
+  --space-20:  80px;
+
+  --page-padding-x:    56px;   /* Desktop horizontal padding */
+  --page-padding-x-sm: 20px;  /* Mobile horizontal padding */
+  --section-padding-y: 80px;  /* Desktop section vertical */
+  --section-padding-y-sm: 48px;
+  --max-width:         1280px;
+}
+
+/* ─── Radii ───────────────────────────────────────────────────────────── */
+:root {
+  --radius-btn:    4px;    /* Buttons */
+  --radius-sm:     6px;    /* Small cards, thumbnails */
+  --radius-md:     8px;    /* Modals, value pill, sidebar sections */
+  --radius-lg:     10px;   /* Watch cards */
+  --radius-xl:     12px;   /* Sidebar panel, large cards */
+  --radius-pill:   20px;   /* Badges, pills, tags */
+  --radius-circle: 9999px; /* Circle icon buttons */
+}
+
+/* ─── Shadows ─────────────────────────────────────────────────────────── */
+:root {
+  --shadow-xs:    0 1px 4px rgba(26,20,16,0.04);           /* Resting card */
+  --shadow-sm:    0 1px 4px rgba(26,20,16,0.05);           /* Watch slot */
+  --shadow-md:    0 4px 16px rgba(26,20,16,0.08);          /* Hovered card */
+  --shadow-lg:    0 4px 24px rgba(26,20,16,0.06);          /* Sidebar panel */
+  --shadow-xl:    0 8px 24px rgba(26,20,16,0.13);          /* Hover card floating */
+  --shadow-drop:  drop-shadow(0 8px 16px rgba(26,20,16,0.10)); /* Watch image */
+  --shadow-gold:  0 0 0 1px rgba(201,168,76,0.4), 0 6px 24px rgba(201,168,76,0.12); /* Active selection */
+}
+
+/* ─── Typography Scale ────────────────────────────────────────────────── */
+:root {
+  /* Display (Cormorant Garamond) */
+  --text-hero:        clamp(48px, 5vw, 78px);
+  --text-display-xl:  48px;
+  --text-display-lg:  38px;
+  --text-display-md:  26px;
+  --text-display-sm:  22px;
+  --text-display-xs:  20px;
+  --text-display-2xs: 18px;
+  --text-display-3xs: 16px;
+  --text-display-4xs: 15px;
+  --text-display-5xs: 13px;
+
+  /* UI (DM Sans) */
+  --text-body-lg:     14px;
+  --text-body-md:     13px;
+  --text-body-sm:     12px;
+  --text-body-xs:     11px;
+  --text-label-md:    10px;
+  --text-label-sm:     9px;
+
+  /* Prices */
+  --text-price-lg:    24px;
+  --text-price-md:    19px;
+  --text-price-sm:    18px;
+
+  /* Line heights */
+  --leading-tight:    1.0;
+  --leading-snug:     1.1;
+  --leading-normal:   1.15;
+  --leading-relaxed:  1.7;
+  --leading-loose:    1.9;
+
+  /* Letter spacing */
+  --tracking-tight:  -0.01em;
+  --tracking-normal:  0.02em;
+  --tracking-wide:    0.04em;
+  --tracking-wider:   0.06em;
+  --tracking-widest:  0.08em;
+  --tracking-label:   0.12em;  /* Uppercase UI labels */
+}
+
+/* ─── Semantic Type Styles ────────────────────────────────────────────── */
+/* Apply these classes or copy into components as inline styles            */
+
+.vwb-h1 {
+  font-family: var(--font-serif);
+  font-size: var(--text-hero);
+  font-weight: 300;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+}
+
+.vwb-h2 {
+  font-family: var(--font-serif);
+  font-size: var(--text-display-lg);
+  font-weight: 400;
+  line-height: var(--leading-normal);
+  color: var(--color-ink);
+}
+
+.vwb-h3 {
+  font-family: var(--font-serif);
+  font-size: var(--text-display-md);
+  font-weight: 400;
+  line-height: var(--leading-snug);
+  color: var(--color-ink);
+}
+
+.vwb-card-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-display-xs);
+  font-weight: 400;
+  line-height: var(--leading-snug);
+  color: var(--color-ink);
+}
+
+.vwb-sidebar-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: var(--leading-snug);
+  color: var(--color-ink);
+}
+
+.vwb-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-relaxed);
+  color: var(--color-muted);
+}
+
+.vwb-meta-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-label-md);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.vwb-brand-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-label-sm);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+
+.vwb-price {
+  font-family: var(--font-sans);
+  font-size: var(--text-price-md);
+  font-weight: 600;
+  color: var(--color-gold);
+  line-height: 1;
+}
+
+.vwb-btn-primary {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  padding: 9px 22px;
+  background: var(--color-ink);
+  color: var(--color-slot);
+  border: none;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+}
+
+.vwb-btn-secondary {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  padding: 8px 22px;
+  background: transparent;
+  color: var(--color-ink);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+}
+
+.vwb-badge {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: var(--text-label-sm);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+}
+
+/* ─── Global Body Defaults ────────────────────────────────────────────── */
+.vwb-root {
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Scrollbar ───────────────────────────────────────────────────────── */
+.vwb-root ::-webkit-scrollbar { width: 6px; }
+.vwb-root ::-webkit-scrollbar-track { background: var(--color-bg); }
+.vwb-root ::-webkit-scrollbar-thumb { background: var(--color-border-light); border-radius: 3px; }

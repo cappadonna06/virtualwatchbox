@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { brand } from '@/lib/brand'
 
 const LINKS: { label: string; href: string }[] = [
   { label: 'My Collection', href: '/collection' },
@@ -18,9 +19,9 @@ export default function NavBar() {
       <nav
         className="nav-root"
         style={{
-          borderBottom: '1px solid #EAE5DC',
-          background: '#FAF8F4',
-          position: 'sticky', top: 0, zIndex: 100,
+          borderBottom: `1px solid ${brand.colors.border}`,
+          background: brand.colors.bg,
+          position: 'sticky', top: 0, zIndex: brand.zIndex.nav,
         }}
       >
         <div
@@ -32,7 +33,7 @@ export default function NavBar() {
         >
         <Link
           href="/"
-          style={{ fontFamily: 'var(--font-cormorant)', fontSize: 20, fontWeight: 500, letterSpacing: '0.03em', color: '#1A1410', textDecoration: 'none' }}
+          style={{ fontFamily: brand.font.serif, fontSize: 20, fontWeight: 500, letterSpacing: '0.03em', color: brand.colors.ink, textDecoration: 'none' }}
         >
           Virtual Watchbox
         </Link>
@@ -43,8 +44,8 @@ export default function NavBar() {
               key={link.label}
               href={link.href}
               style={{
-                fontFamily: 'var(--font-dm-sans)', fontSize: 12, fontWeight: 400,
-                letterSpacing: '0.04em', color: '#A89880',
+                fontFamily: brand.font.sans, fontSize: 12, fontWeight: 400,
+                letterSpacing: '0.04em', color: brand.colors.muted,
                 textDecoration: 'none', cursor: 'pointer',
               }}
             >
@@ -56,10 +57,10 @@ export default function NavBar() {
         <button
           className="nav-signin"
           style={{
-            fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 500,
+            fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500,
             letterSpacing: '0.08em', padding: '9px 22px',
-            background: '#1A1410', color: '#FAF8F4',
-            border: 'none', borderRadius: 4, cursor: 'pointer',
+            background: brand.colors.ink, color: brand.colors.bg,
+            border: 'none', borderRadius: brand.radius.btn, cursor: 'pointer',
           }}
         >
           Sign In
@@ -73,23 +74,23 @@ export default function NavBar() {
             display: 'none',
             background: 'none', border: 'none',
             cursor: 'pointer', padding: '4px 2px',
-            color: '#1A1410', lineHeight: 1,
+            color: brand.colors.ink, lineHeight: 1,
           }}
         >
           {open ? (
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M4 4L16 16M16 4L4 16" stroke="#1A1410" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M4 4L16 16M16 4L4 16" stroke={brand.colors.ink} strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
           ) : (
             <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
-              <path d="M1 1H21M1 8H21M1 15H21" stroke="#1A1410" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M1 1H21M1 8H21M1 15H21" stroke={brand.colors.ink} strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
           )}
         </button>
         </div>
       </nav>
 
-      {/* Mobile drawer — always in DOM, animated via opacity/transform */}
+      {/* Mobile drawer */}
       <div
         className="nav-drawer"
         style={{
@@ -97,15 +98,15 @@ export default function NavBar() {
           position: 'fixed',
           top: 61,
           left: 0, right: 0,
-          background: '#FAF8F4',
-          borderBottom: '1px solid #EAE5DC',
-          zIndex: 99,
+          background: brand.colors.bg,
+          borderBottom: `1px solid ${brand.colors.border}`,
+          zIndex: brand.zIndex.nav - 1,
           flexDirection: 'column',
           padding: '8px 24px 28px',
           opacity: open ? 1 : 0,
           transform: open ? 'translateY(0)' : 'translateY(-6px)',
           pointerEvents: open ? 'auto' : 'none',
-          transition: 'transform 0.2s ease, opacity 0.2s ease',
+          transition: `transform ${brand.transition.slide}, opacity ${brand.transition.slide}`,
         }}
       >
         {LINKS.map((link, i) => (
@@ -114,12 +115,12 @@ export default function NavBar() {
             href={link.href}
             onClick={() => setOpen(false)}
             style={{
-              fontFamily: 'var(--font-dm-sans)',
+              fontFamily: brand.font.sans,
               fontSize: 14, fontWeight: 400,
-              letterSpacing: '0.04em', color: '#1A1410',
+              letterSpacing: '0.04em', color: brand.colors.ink,
               textDecoration: 'none',
               padding: '16px 0',
-              borderBottom: i < LINKS.length - 1 ? '1px solid #EAE5DC' : 'none',
+              borderBottom: i < LINKS.length - 1 ? `1px solid ${brand.colors.border}` : 'none',
               display: 'block',
             }}
           >
@@ -130,10 +131,10 @@ export default function NavBar() {
           onClick={() => setOpen(false)}
           style={{
             marginTop: 20,
-            fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 500,
+            fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500,
             letterSpacing: '0.08em', padding: '13px 22px',
-            background: '#1A1410', color: '#FAF8F4',
-            border: 'none', borderRadius: 4, cursor: 'pointer',
+            background: brand.colors.ink, color: brand.colors.bg,
+            border: 'none', borderRadius: brand.radius.btn, cursor: 'pointer',
             width: '100%',
           }}
         >

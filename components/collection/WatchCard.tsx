@@ -4,24 +4,25 @@ import { useState } from 'react'
 import Image from 'next/image'
 import type { Watch, OwnershipStatus, WatchCondition } from '@/types/watch'
 import HoverCard from '@/components/watchbox/HoverCard'
+import { brand } from '@/lib/brand'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
 }
 
 const statusStyles: Record<OwnershipStatus, { background: string; color: string }> = {
-  'Owned':          { background: '#E8F4E8', color: '#2D6A2D' },
-  'For Sale':       { background: '#FFF8E6', color: '#8A6A10' },
-  'Recently Added': { background: '#E8F0FA', color: '#1A4A8A' },
-  'Needs Service':  { background: '#FFF3E0', color: '#8A5010' },
+  'Owned':          { background: brand.status.owned.bg,          color: brand.status.owned.text },
+  'For Sale':       { background: brand.status.forSale.bg,        color: brand.status.forSale.text },
+  'Recently Added': { background: brand.status.recentlyAdded.bg,  color: brand.status.recentlyAdded.text },
+  'Needs Service':  { background: brand.status.needsService.bg,   color: brand.status.needsService.text },
 }
 
 const conditionStyles: Record<WatchCondition, { background: string; color: string }> = {
-  'Unworn': { background: '#E8F4E8', color: '#2D6A2D' },
-  'Like New': { background: '#EDF4E8', color: '#3A6A2D' },
-  'Excellent': { background: '#FFF8E6', color: '#8A6A10' },
-  'Good': { background: '#FDF0E0', color: '#8A5010' },
-  'Fair': { background: '#FAE8E8', color: '#8A2020' },
+  'Unworn':    { background: brand.condition.unworn.bg,    color: brand.condition.unworn.text },
+  'Like New':  { background: brand.condition.likeNew.bg,   color: brand.condition.likeNew.text },
+  'Excellent': { background: brand.condition.excellent.bg, color: brand.condition.excellent.text },
+  'Good':      { background: brand.condition.good.bg,      color: brand.condition.good.text },
+  'Fair':      { background: brand.condition.fair.bg,      color: brand.condition.fair.text },
 }
 
 interface Props {
@@ -44,34 +45,31 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
       style={{
         position: 'relative',
         cursor: 'pointer',
-        background: '#FFFFFF',
+        background: brand.colors.white,
         border: isActive
-          ? '2px solid rgba(201,168,76,0.8)'
-          : '1px solid #E8E2D8',
-        borderRadius: 10,
+          ? `2px solid rgba(201,168,76,0.8)`
+          : `1px solid ${brand.colors.borderMid}`,
+        borderRadius: brand.radius.lg,
         overflow: 'hidden',
         boxShadow: isActive
-          ? '0 0 0 1px rgba(201,168,76,0.4), 0 6px 24px rgba(201,168,76,0.12)'
+          ? brand.shadow.gold
           : isHovered
-            ? '0 4px 16px rgba(26,20,16,0.08)'
-            : '0 1px 4px rgba(26,20,16,0.04)',
+            ? brand.shadow.md
+            : brand.shadow.xs,
         transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
-        transition: 'box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease',
+        transition: `box-shadow ${brand.transition.base}, transform ${brand.transition.base}, border-color ${brand.transition.base}`,
       }}
     >
-      {/* HoverCard */}
-      {isHovered && (
-        <HoverCard watch={watch} />
-      )}
+      {isHovered && <HoverCard watch={watch} />}
 
       {/* Image / dial section */}
       <div
         style={{
-          background: '#FAF8F4',
+          background: brand.colors.bg,
           aspectRatio: '4/3',
           position: 'relative',
           overflow: 'hidden',
-          borderBottom: '1px solid #E8E2D8',
+          borderBottom: `1px solid ${brand.colors.borderMid}`,
         }}
       >
         <Image
@@ -87,12 +85,12 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
       <div style={{ padding: '14px 16px 16px' }}>
         <div
           style={{
-            fontFamily: 'var(--font-dm-sans)',
+            fontFamily: brand.font.sans,
             fontSize: 9,
             fontWeight: 600,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            color: '#C9A84C',
+            color: brand.colors.gold,
             marginBottom: 4,
           }}
         >
@@ -100,10 +98,10 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
         </div>
         <div
           style={{
-            fontFamily: 'var(--font-cormorant)',
+            fontFamily: brand.font.serif,
             fontSize: 20,
             fontWeight: 400,
-            color: '#1A1410',
+            color: brand.colors.ink,
             lineHeight: 1.15,
             marginBottom: 4,
           }}
@@ -112,9 +110,9 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
         </div>
         <div
           style={{
-            fontFamily: 'var(--font-dm-sans)',
+            fontFamily: brand.font.sans,
             fontSize: 11,
-            color: '#A89880',
+            color: brand.colors.muted,
             marginBottom: 2,
           }}
         >
@@ -122,9 +120,9 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
         </div>
         <div
           style={{
-            fontFamily: 'var(--font-dm-sans)',
+            fontFamily: brand.font.sans,
             fontSize: 11,
-            color: '#A89880',
+            color: brand.colors.muted,
             marginBottom: 10,
           }}
         >
@@ -135,15 +133,15 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
         <span
           style={{
             display: 'inline-block',
-            fontFamily: 'var(--font-dm-sans)',
+            fontFamily: brand.font.sans,
             fontSize: 9,
             fontWeight: 500,
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
-            background: '#2A2520',
-            color: '#FAF8F4',
+            background: brand.colors.dark,
+            color: brand.colors.bg,
             padding: '3px 9px',
-            borderRadius: 20,
+            borderRadius: brand.radius.pill,
             marginBottom: 12,
           }}
         >
@@ -153,26 +151,26 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
         {/* Estimated value */}
         <div
           style={{
-            fontFamily: 'var(--font-cormorant)',
+            fontFamily: brand.font.serif,
             fontSize: 24,
             fontWeight: 500,
-            color: '#1A1410',
+            color: brand.colors.ink,
             marginBottom: 10,
           }}
         >
           {fmt(watch.estimatedValue)}
         </div>
 
-        {/* Ownership status badge */}
+        {/* Status / condition badge */}
         <span
           style={{
             display: 'inline-block',
-            fontFamily: 'var(--font-dm-sans)',
+            fontFamily: brand.font.sans,
             fontSize: 9,
             fontWeight: 600,
             letterSpacing: '0.06em',
             padding: '3px 10px',
-            borderRadius: 20,
+            borderRadius: brand.radius.pill,
             background: mode === 'playground' ? condition.background : status.background,
             color: mode === 'playground' ? condition.color : status.color,
           }}

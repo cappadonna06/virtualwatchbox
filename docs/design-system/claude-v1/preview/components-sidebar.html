@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #FAF8F4; font-family: 'DM Sans', sans-serif; padding: 20px 24px; display: flex; gap: 20px; -webkit-font-smoothing: antialiased; }
+.divider { border: none; border-top: 1px solid #F0EBE3; margin: 0; }
+.spec-row { display: flex; justify-content: space-between; align-items: baseline; padding: 9px 0; border-bottom: 1px solid #F0EBE3; font-size: 12px; }
+</style></head><body>
+
+<div style="background:#FFFFFF;border:1px solid #EAE5DC;border-radius:12px;padding:24px;box-shadow:0 4px 24px rgba(26,20,16,0.06);width:280px;">
+  <!-- Header -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+    <span style="font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#A89880;">Watch Detail</span>
+    <div style="display:flex;gap:8px;">
+      <button style="width:24px;height:24px;border-radius:6px;border:1px solid #E8E2D8;background:#FFFFFF;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#A89880;font-size:11px;">✎</button>
+      <button style="width:24px;height:24px;border-radius:6px;border:1px solid #E8E2D8;background:#FFFFFF;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#A89880;font-size:11px;">🗑</button>
+    </div>
+  </div>
+
+  <!-- Dial -->
+  <div style="display:flex;justify-content:center;margin-bottom:16px;">
+    <svg width="100" height="100" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="44" fill="#F5F0E8" stroke="#D4CBBF" stroke-width="1.5"/>
+      <circle cx="50" cy="50" r="36" fill="none" stroke="#1A1410" stroke-width="0.8" opacity="0.15"/>
+      <circle cx="50" cy="50" r="2.5" fill="#1A1410"/>
+      <line x1="50" y1="14" x2="50" y2="50" stroke="#1A1410" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="50" y1="50" x2="68" y2="60" stroke="#1A1410" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <!-- Brand / Model -->
+  <div style="font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#A89880;margin-bottom:4px;">LONGINES</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:3px;">
+    <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;line-height:1.1;color:#1A1410;margin:0;">Legend Diver</h3>
+    <span style="font-size:9px;font-weight:600;letter-spacing:0.04em;padding:3px 10px;border-radius:20px;background:#EDF4E8;color:#3A6A2D;white-space:nowrap;">Like New</span>
+  </div>
+  <div style="font-size:12px;color:#A89880;margin-bottom:4px;">Ref. L3.764.4.16.6</div>
+  <div style="font-size:11px;color:#C9A84C;font-style:italic;margin-bottom:14px;">"AD purchase, complete set"</div>
+
+  <!-- Value -->
+  <div style="background:#FAF8F4;border:1px solid #EAE5DC;border-radius:8px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <span style="font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#A89880;">Est. Market Value</span>
+    <span style="font-size:18px;font-weight:600;color:#C9A84C;">$1,350</span>
+  </div>
+
+  <!-- Specs -->
+  <div style="margin-bottom:14px;">
+    <div class="spec-row"><span style="color:#A89880;">Case Size</span><span style="color:#1A1410;font-weight:500;">42mm</span></div>
+    <div class="spec-row"><span style="color:#A89880;">Case Material</span><span style="color:#1A1410;font-weight:500;">Stainless Steel</span></div>
+    <div class="spec-row"><span style="color:#A89880;">Dial Color</span><span style="color:#1A1410;font-weight:500;">White Lacquer</span></div>
+    <div class="spec-row" style="border:none;"><span style="color:#A89880;">Movement</span><span style="color:#1A1410;font-weight:500;">L888.4 (Auto)</span></div>
+  </div>
+
+  <!-- CTAs -->
+  <div style="display:flex;flex-direction:column;gap:8px;">
+    <button style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:0.08em;padding:9px 18px;background:#1A1410;color:#FAF8F4;border:none;border-radius:4px;cursor:pointer;width:100%;">Find For Sale ↗</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:0.08em;padding:9px;background:transparent;color:#1A1410;border:1px solid #D4CBBF;border-radius:4px;cursor:pointer;">Sell This Watch</button>
+      <button style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:0.08em;padding:9px;background:transparent;color:#1A1410;border:1px solid #D4CBBF;border-radius:4px;cursor:pointer;">Swap Strap</button>
+    </div>
+  </div>
+</div>
+
+<!-- Empty state -->
+<div style="background:#FFFFFF;border:1px solid #EAE5DC;border-radius:12px;padding:24px;box-shadow:0 4px 24px rgba(26,20,16,0.06);width:200px;display:flex;align-items:center;justify-content:center;min-height:300px;">
+  <div style="text-align:center;">
+    <div style="font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#A89880;margin-bottom:10px;">Select a Watch</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#D4CBBF;">Click any slot to view details</div>
+  </div>
+</div>
+
+</body></html>

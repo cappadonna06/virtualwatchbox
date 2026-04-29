@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #FAF8F4; font-family: 'DM Sans', sans-serif; padding: 20px 24px; -webkit-font-smoothing: antialiased; }
+.section { margin-bottom: 20px; }
+.label { font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #A89880; margin-bottom: 10px; }
+/* Spacing bars */
+.bars { display: flex; align-items: flex-end; gap: 10px; }
+.bar-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.bar { background: #C9A84C; opacity: 0.45; border-radius: 2px; width: 16px; }
+.bar-name { font-size: 8px; color: #A89880; }
+/* Radii */
+.radii { display: flex; gap: 12px; align-items: center; }
+.radius-chip { background: #FFFFFF; border: 1px solid #E8E2D8; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+.radius-label { font-size: 8px; color: #A89880; text-align: center; margin-top: 4px; }
+/* Shadows */
+.shadows { display: flex; gap: 16px; align-items: center; }
+.shadow-chip { background: #FFFFFF; width: 56px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #A89880; }
+</style></head><body>
+
+<div class="section">
+  <div class="label">Spacing Scale</div>
+  <div class="bars">
+    <div class="bar-item"><div class="bar" style="height:4px;"></div><div class="bar-name">4</div></div>
+    <div class="bar-item"><div class="bar" style="height:8px;"></div><div class="bar-name">8</div></div>
+    <div class="bar-item"><div class="bar" style="height:12px;"></div><div class="bar-name">12</div></div>
+    <div class="bar-item"><div class="bar" style="height:16px;"></div><div class="bar-name">16</div></div>
+    <div class="bar-item"><div class="bar" style="height:20px;"></div><div class="bar-name">20</div></div>
+    <div class="bar-item"><div class="bar" style="height:24px;"></div><div class="bar-name">24</div></div>
+    <div class="bar-item"><div class="bar" style="height:28px;"></div><div class="bar-name">28</div></div>
+    <div class="bar-item"><div class="bar" style="height:32px;"></div><div class="bar-name">32</div></div>
+    <div class="bar-item"><div class="bar" style="height:40px;"></div><div class="bar-name">40</div></div>
+    <div class="bar-item"><div class="bar" style="height:56px;"></div><div class="bar-name">56</div></div>
+    <div class="bar-item"><div class="bar" style="height:80px;opacity:0.3;"></div><div class="bar-name">80</div></div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+  <div class="section" style="margin-bottom:0">
+    <div class="label">Border Radii</div>
+    <div class="radii">
+      <div><div class="radius-chip" style="border-radius:4px;"></div><div class="radius-label">4px btn</div></div>
+      <div><div class="radius-chip" style="border-radius:6px;"></div><div class="radius-label">6px sm</div></div>
+      <div><div class="radius-chip" style="border-radius:8px;"></div><div class="radius-label">8px md</div></div>
+      <div><div class="radius-chip" style="border-radius:10px;"></div><div class="radius-label">10px lg</div></div>
+      <div><div class="radius-chip" style="border-radius:12px;"></div><div class="radius-label">12px xl</div></div>
+      <div><div class="radius-chip" style="border-radius:20px;"></div><div class="radius-label">20px pill</div></div>
+    </div>
+  </div>
+  <div class="section" style="margin-bottom:0">
+    <div class="label">Elevation / Shadow</div>
+    <div class="shadows">
+      <div><div class="shadow-chip" style="box-shadow:0 1px 4px rgba(26,20,16,0.04);border:1px solid #E8E2D8;">xs</div></div>
+      <div><div class="shadow-chip" style="box-shadow:0 4px 16px rgba(26,20,16,0.08);">md</div></div>
+      <div><div class="shadow-chip" style="box-shadow:0 4px 24px rgba(26,20,16,0.06);">lg</div></div>
+      <div><div class="shadow-chip" style="box-shadow:0 0 0 1.5px rgba(201,168,76,0.8), 0 6px 24px rgba(201,168,76,0.12);">gold</div></div>
+    </div>
+  </div>
+</div>
+</body></html>
