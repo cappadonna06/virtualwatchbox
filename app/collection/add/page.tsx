@@ -1,9 +1,11 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useEffect, useMemo, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { watches as catalogWatches } from '@/lib/watches'
-import type { Watch } from '@/types/watch'
+import type { PlaygroundBox, Watch } from '@/types/watch'
+import { normalizePlaygroundBoxes } from '@/lib/playground'
+import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import DialSVG from '@/components/watchbox/DialSVG'
 import { useCollectionSession } from '../CollectionSessionProvider'
 
@@ -28,15 +30,53 @@ function matchesSize(watch: Watch, size: SizeFilter) {
   return watch.caseSizeMm >= 42
 }
 
+function loadPlaygroundBoxes() {
+  try {
+    const stored = localStorage.getItem('playgroundBoxes')
+    return normalizePlaygroundBoxes(stored ? JSON.parse(stored) : null, SEEDED_PLAYGROUND_BOXES)
+  } catch {
+    return SEEDED_PLAYGROUND_BOXES
+  }
+}
+
+function buildDetailHref(watchId: string, options: { duplicate?: boolean; dest?: string | null; boxId?: string | null }) {
+  const params = new URLSearchParams()
+  if (options.duplicate) params.set('duplicate', 'true')
+  if (options.dest) params.set('dest', options.dest)
+  if (options.boxId) params.set('boxId', options.boxId)
+  const query = params.toString()
+  return `/collection/add/${watchId}${query ? `?${query}` : ''}`
+}
+
 export default function AddWatchSearchPage() {
+  return (
+    <Suspense>
+      <AddWatchSearchInner />
+    </Suspense>
+  )
+}
+
+function AddWatchSearchInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { isInCollection } = useCollectionSession()
+
+  const dest = searchParams.get('dest')
+  const boxId = searchParams.get('boxId')
+  const isPlaygroundContext = dest === 'playground'
 
   const [searchTerm, setSearchTerm] = useState('')
   const [materialFilter, setMaterialFilter] = useState<string | null>(null)
   const [colorFilter, setColorFilter] = useState<string | null>(null)
   const [sizeFilter, setSizeFilter] = useState<SizeFilter>(null)
-  const [expandedDuplicateId, setExpandedDuplicateId] = useState<string | null>(null)
+  const [playgroundBoxName, setPlaygroundBoxName] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!isPlaygroundContext || !boxId) return
+    const boxes = loadPlaygroundBoxes()
+    const box = boxes.find((item: PlaygroundBox) => item.id === boxId)
+    if (box) setPlaygroundBoxName(box.name)
+  }, [isPlaygroundContext, boxId])
 
   const baseResults = useMemo(() => {
     const term = searchTerm.trim().toLowerCase()
@@ -91,13 +131,9 @@ export default function AddWatchSearchPage() {
         key={option}
         onClick={onClick}
         style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 6,
-          padding: '5px 11px',
-          borderRadius: 20,
-          fontFamily: 'var(--font-dm-sans)',
-          fontSize: 10,
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '5px 11px', borderRadius: 20,
+          fontFamily: 'var(--font-dm-sans)', fontSize: 10,
           cursor: count === 0 ? 'default' : 'pointer',
           border: active ? '1px solid #1A1410' : '1px solid #E0DAD0',
           transition: 'all 0.15s',
@@ -110,9 +146,7 @@ export default function AddWatchSearchPage() {
         <span>{option}</span>
         <span
           style={{
-            fontSize: 9,
-            padding: '1px 5px',
-            borderRadius: 10,
+            fontSize: 9, padding: '1px 5px', borderRadius: 10,
             background: active ? 'rgba(255,255,255,0.2)' : '#F0EBE3',
             color: active ? '#FAF8F4' : '#A89880',
           }}
@@ -123,51 +157,45 @@ export default function AddWatchSearchPage() {
     )
   }
 
+  const backLabel = isPlaygroundContext ? '← Back to Playground' : '← My Collection'
+  const backHref = isPlaygroundContext ? '/playground' : '/collection'
+  const pageTitle = isPlaygroundContext
+    ? (playgroundBoxName ? `Add to ${playgroundBoxName}` : 'Add to Playground')
+    : 'Find a Watch'
+  const pageSubtitle = isPlaygroundContext
+    ? 'Search the catalog, then choose Collection or Playground on the watch detail page'
+    : 'Search by brand, model, or reference number'
+
   return (
     <div style={{ padding: '56px 56px 120px', borderTop: '1px solid #EAE5DC' }}>
       <button
-        onClick={() => router.push('/collection')}
+        onClick={() => router.push(backHref)}
         style={{
-          background: 'none',
-          border: 'none',
-          padding: 0,
-          marginBottom: 14,
-          cursor: 'pointer',
-          color: '#A89880',
-          fontFamily: 'var(--font-dm-sans)',
-          fontSize: 11,
-          letterSpacing: '0.08em',
-          textTransform: 'uppercase',
+          background: 'none', border: 'none', padding: 0, marginBottom: 14,
+          cursor: 'pointer', color: '#A89880',
+          fontFamily: 'var(--font-dm-sans)', fontSize: 11,
+          letterSpacing: '0.08em', textTransform: 'uppercase',
         }}
       >
-        ← My Collection
+        {backLabel}
       </button>
 
       <h1 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 28, fontWeight: 400, color: '#1A1410', margin: '0 0 6px' }}>
-        Find a Watch
+        {pageTitle}
       </h1>
       <p style={{ margin: '0 0 20px', fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#A89880' }}>
-        Search by brand, model, or reference number
+        {pageSubtitle}
       </p>
 
       <input
         value={searchTerm}
-        onChange={e => {
-          setSearchTerm(e.target.value)
-          setExpandedDuplicateId(null)
-        }}
+        onChange={e => setSearchTerm(e.target.value)}
         placeholder="Search brand, model, or reference..."
         style={{
-          width: '100%',
-          padding: '12px 16px',
-          border: '1px solid #E0DAD0',
-          borderRadius: 8,
-          fontFamily: 'var(--font-dm-sans)',
-          fontSize: 15,
-          color: '#1A1410',
-          background: '#FFFFFF',
-          outline: 'none',
-          marginBottom: 16,
+          width: '100%', padding: '12px 16px',
+          border: '1px solid #E0DAD0', borderRadius: 8,
+          fontFamily: 'var(--font-dm-sans)', fontSize: 15, color: '#1A1410',
+          background: '#FFFFFF', outline: 'none', marginBottom: 16,
         }}
       />
 
@@ -206,33 +234,19 @@ export default function AddWatchSearchPage() {
             </div>
           )}
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-              gap: 10,
-            }}
-          >
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 10 }}>
             {filteredResults.map(watch => {
               const inCollection = isInCollection(watch.id)
-              const expanded = expandedDuplicateId === watch.id
+
               return (
                 <div
                   key={watch.id}
-                  onClick={() => {
-                    if (inCollection) {
-                      setExpandedDuplicateId(prev => (prev === watch.id ? null : watch.id))
-                      return
-                    }
-                    router.push(`/collection/add/${watch.id}`)
-                  }}
+                  onClick={() => router.push(buildDetailHref(watch.id, { dest, boxId }))}
                   style={{
                     background: '#FFFFFF',
-                    border: `1px solid ${expanded ? '#C9A84C' : '#EAE5DC'}`,
-                    borderRadius: 10,
-                    padding: '10px 11px',
-                    cursor: 'pointer',
-                    transition: 'border-color 0.15s',
+                    border: '1px solid #EAE5DC',
+                    borderRadius: 10, padding: '10px 11px',
+                    cursor: 'pointer', transition: 'border-color 0.15s',
                   }}
                 >
                   <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
@@ -266,28 +280,6 @@ export default function AddWatchSearchPage() {
                       </span>
                     )}
                   </div>
-
-                  {expanded && (
-                    <div style={{ paddingTop: 10, marginTop: 10, borderTop: '1px solid #F0EBE3' }} onClick={e => e.stopPropagation()}>
-                      <div style={{ fontSize: 11, color: '#A89880', fontFamily: 'var(--font-dm-sans)', marginBottom: 10 }}>
-                        You already own this watch. Add another?
-                      </div>
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        <button
-                          onClick={() => setExpandedDuplicateId(null)}
-                          style={{ fontSize: 10, padding: '5px 12px', borderRadius: 6, border: '1px solid #E0DAD0', color: '#A89880', background: 'transparent', cursor: 'pointer', fontFamily: 'var(--font-dm-sans)' }}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={() => router.push(`/collection/add/${watch.id}?duplicate=true`)}
-                          style={{ fontSize: 10, padding: '5px 12px', borderRadius: 6, border: 'none', color: '#FAF8F4', background: '#1A1410', cursor: 'pointer', fontFamily: 'var(--font-dm-sans)' }}
-                        >
-                          Add Duplicate
-                        </button>
-                      </div>
-                    </div>
-                  )}
                 </div>
               )
             })}

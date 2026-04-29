@@ -41,6 +41,8 @@ body {
 
 /* Sidebar backdrop — hidden on desktop, activated on mobile via class */
 .sidebar-backdrop { display: none; }
+.watchbox-overflow-backdrop { display: none; }
+.watchbox-overflow-sheet { display: none; }
 
 /* Config modal slide-up animation */
 @keyframes config-slide-up {
@@ -117,6 +119,13 @@ body {
     backdrop-filter: blur(2px) !important;
   }
 
+  .watchbox-overflow-flyout { display: none !important; }
+  .watchbox-overflow-backdrop { display: block !important; }
+  .watchbox-overflow-sheet {
+    display: block !important;
+    animation: config-slide-up 0.28s cubic-bezier(0.32, 0.72, 0, 1) both;
+  }
+
   /* Features */
   .features-section { padding: 48px 20px !important; }
   .features-grid    { grid-template-columns: 1fr !important; gap: 48px !important; }
@@ -132,4 +141,8 @@ body {
     padding: 28px 20px !important;
     text-align: center;
   }
+}
+
+@media (min-width: 768px) {
+  .watchbox-overflow-sheet { display: none !important; }
 }

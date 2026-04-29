@@ -58,10 +58,10 @@ export default function FeaturesSection() {
               <span style={{ color: '#D4CBBF', fontSize: 14 }}>→</span>
             </div>
           ))}
-          <style>{`
+          <style dangerouslySetInnerHTML={{ __html: `
             .feature-row:first-of-type { border-top: 1px solid #EAE5DC; }
             .feature-row:hover > span:last-child { color: #C9A84C; }
-          `}</style>
+          ` }} />
         </div>
 
         {/* Right: news */}

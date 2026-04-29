@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 const LINKS: { label: string; href: string }[] = [
   { label: 'My Collection', href: '/collection' },
-  { label: 'Playground',    href: '#'           },
+  { label: 'Playground',    href: '/playground'  },
   { label: 'Discover',      href: '#'           },
   { label: 'News',          href: '#'           },
 ]

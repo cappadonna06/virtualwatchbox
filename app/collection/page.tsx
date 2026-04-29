@@ -4,6 +4,7 @@ import { useState, useEffect, useLayoutEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Watch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
+import { getEffectiveSlotCount, getOverflowSummary, getWatchboxOverflow } from '@/lib/watchboxOverflow'
 import WatchBox from '@/components/collection/WatchBox'
 import WatchSidebar from '@/components/collection/WatchSidebar'
 import CollectionHeader from '@/components/collection/CollectionHeader'
@@ -62,6 +63,11 @@ export default function CollectionPage() {
     localStorage.setItem('watchbox-config', JSON.stringify({ frame, lining, slotCount }))
   }, [frame, lining, slotCount])
 
+  useEffect(() => {
+    const effective = getEffectiveSlotCount(slotCount, collectionWatches.length)
+    if (effective !== slotCount) setSlotCount(effective)
+  }, [collectionWatches.length, slotCount])
+
   function handleSlotClick(i: number) {
     const watch = collectionWatches[i]
     if (!watch) return
@@ -85,6 +91,10 @@ export default function CollectionPage() {
   const activeSlot = selectedWatchId ? collectionWatches.findIndex(w => w.id === selectedWatchId) : -1
   const activeWatch = activeSlot >= 0 ? collectionWatches[activeSlot] : null
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
+  const overflowSummary = getOverflowSummary(
+    sc.n,
+    getWatchboxOverflow(collectionWatches, sc.n).overflowCount,
+  )
 
   function handleDeleteWatch() {
     if (!deleteTarget) return
@@ -118,6 +128,7 @@ export default function CollectionPage() {
         totalEstValue={totalEstValue}
         pendingChangesCount={pendingChanges.length}
         onAddWatch={() => router.push('/collection/add')}
+        onOpenPlayground={() => router.push('/playground')}
       />
 
       {/* View switcher + stats scroll anchor */}
@@ -160,6 +171,7 @@ export default function CollectionPage() {
               screenW={screenW}
               onEmptySlotClick={() => router.push('/collection/add')}
               onSimulateChange={() => handleDraftChange('update_box', 'Simulated layout change')}
+              overflowSummary={overflowSummary}
             />
           )}
 
@@ -331,12 +343,13 @@ interface WatchboxViewProps {
   screenW: number
   onEmptySlotClick: () => void
   onSimulateChange: () => void
+  overflowSummary: string | null
 }
 
 function WatchboxView({
   watches,
   frame, setFrame, lining, setLining, slotCount, setSlotCount,
-  activeSlot, onSlotClick, watchboxSlotPx, watchboxMaxW, screenW, onEmptySlotClick, onSimulateChange,
+  activeSlot, onSlotClick, watchboxSlotPx, watchboxMaxW, screenW, onEmptySlotClick, onSimulateChange, overflowSummary,
 }: WatchboxViewProps) {
   const [customizerOpen, setCustomizerOpen] = useState(false)
   const [configOpen, setConfigOpen] = useState(false)
@@ -401,7 +414,10 @@ function WatchboxView({
         {/* Desktop flyout — .configurator-wrap CSS hides on mobile */}
         <div className="configurator-wrap" style={{ marginTop: 10, position: 'relative' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, color: '#A89880' }}>{fr.label} · {ln.label} · {sc.n} slots</span>
+            <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, color: '#A89880' }}>
+              {fr.label} · {ln.label} · {sc.n} slots
+              {overflowSummary ? ` · ${overflowSummary}` : ''}
+            </span>
             <button
               onClick={() => setCustomizerOpen(v => !v)}
               style={{

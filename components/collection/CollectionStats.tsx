@@ -138,9 +138,10 @@ function IconTile({ icon, label, count }: { icon: string; label: string; count: 
 
 interface Props {
   watches: Watch[]
+  mode?: 'collection' | 'playground'
 }
 
-export default function CollectionStats({ watches }: Props) {
+export default function CollectionStats({ watches, mode = 'collection' }: Props) {
   const [view, setView] = useState<'overview' | 'graphical'>('overview')
 
   const totalValue = watches.reduce((s, w) => s + w.estimatedValue, 0)
@@ -149,6 +150,7 @@ export default function CollectionStats({ watches }: Props) {
   const highest    = watches.length ? watches.reduce((a, b) => a.estimatedValue > b.estimatedValue ? a : b) : null
   const sorted     = [...watches].sort((a, b) => a.estimatedValue - b.estimatedValue)
   const median     = sorted.length ? sorted[Math.floor(sorted.length / 2)] : null
+  const averageValue = watches.length > 0 ? totalValue / watches.length : 0
 
   const colorCounts: Record<string, number> = {}
   watches.forEach(w => {
@@ -197,15 +199,23 @@ export default function CollectionStats({ watches }: Props) {
       {/* ── C1 — Portfolio Value (full width) ── */}
       <div style={{ marginBottom: 16 }}>
         <Card>
-          <SectionTitle>Portfolio Value</SectionTitle>
+          <SectionTitle>{mode === 'playground' ? 'Box Value' : 'Portfolio Value'}</SectionTitle>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 24px' }}>
             <ValueRow label="Total Est. Value" value={fmt(totalValue)} prominent />
-            <ValueRow
-              label="Gain / Loss"
-              value={`${gainLoss >= 0 ? '↑' : '↓'} ${fmt(Math.abs(gainLoss))}`}
-              color={gainLoss >= 0 ? '#2D6A2D' : '#8A2020'}
-            />
-            <ValueRow label="Cost Basis"   value={fmt(costBasis)} />
+            {mode === 'collection' ? (
+              <ValueRow
+                label="Gain / Loss"
+                value={`${gainLoss >= 0 ? '↑' : '↓'} ${fmt(Math.abs(gainLoss))}`}
+                color={gainLoss >= 0 ? '#2D6A2D' : '#8A2020'}
+              />
+            ) : (
+              <ValueRow label="Average Value" value={fmt(averageValue)} />
+            )}
+            {mode === 'collection' ? (
+              <ValueRow label="Cost Basis" value={fmt(costBasis)} />
+            ) : (
+              <ValueRow label="Watch Count" value={String(watches.length)} />
+            )}
             <ValueRow label="Median Value" value={median ? fmt(median.estimatedValue) : '—'} />
             {highest && (
               <div style={{ gridColumn: '1 / -1', borderTop: '1px solid #F0EBE3', paddingTop: 10, marginTop: 2 }}>
