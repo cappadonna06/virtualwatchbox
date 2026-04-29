@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useLayoutEffect } from 'react'
+import { useState, useEffect, useLayoutEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Watch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
@@ -13,6 +13,7 @@ import WatchCard from '@/components/collection/WatchCard'
 import CollectionStats from '@/components/collection/CollectionStats'
 import UnsavedChangesBar, { type DraftChange } from '@/components/collection/UnsavedChangesBar'
 import { useCollectionSession } from './CollectionSessionProvider'
+import { brand } from '@/lib/brand'
 
 const WB_W_PAD = 64
 const WB_H_PAD = 72
@@ -30,11 +31,13 @@ function calcSlotPx(containerW: number, maxH: number, cols: number, wPad: number
 }
 
 type View = 'watchbox' | 'cards'
+type SortMode = 'manual' | 'brand' | 'value' | 'type'
 
 export default function CollectionPage() {
   const router = useRouter()
-  const { collectionWatches, selectedWatchId, setSelectedWatchId, removeFromCollection } = useCollectionSession()
+  const { collectionWatches, selectedWatchId, setSelectedWatchId, removeFromCollection, reorderCollectionWatches } = useCollectionSession()
   const [activeView, setActiveView]         = useState<View>('watchbox')
+  const [sortBy, setSortBy]                 = useState<SortMode>('manual')
   const [frame, setFrame]                   = useState('light-oak')
   const [lining, setLining]                 = useState('cream')
   const [slotCount, setSlotCount]           = useState(6)
@@ -68,14 +71,23 @@ export default function CollectionPage() {
     if (effective !== slotCount) setSlotCount(effective)
   }, [collectionWatches.length, slotCount])
 
+  const displayWatches = useMemo(() => {
+    if (sortBy === 'manual') return collectionWatches
+    const sorted = [...collectionWatches]
+    if (sortBy === 'brand') sorted.sort((a, b) => a.brand.localeCompare(b.brand))
+    else if (sortBy === 'value') sorted.sort((a, b) => b.estimatedValue - a.estimatedValue)
+    else if (sortBy === 'type') sorted.sort((a, b) => a.watchType.localeCompare(b.watchType))
+    return sorted
+  }, [collectionWatches, sortBy])
+
   function handleSlotClick(i: number) {
-    const watch = collectionWatches[i]
+    const watch = displayWatches[i]
     if (!watch) return
     setSelectedWatchId(selectedWatchId === watch.id ? null : watch.id)
   }
 
   function handleCardSelect(i: number) {
-    const watch = collectionWatches[i]
+    const watch = displayWatches[i]
     if (!watch) return
     setSelectedWatchId(selectedWatchId === watch.id ? null : watch.id)
   }
@@ -88,8 +100,8 @@ export default function CollectionPage() {
   }
 
   const totalEstValue = collectionWatches.reduce((s, w) => s + w.estimatedValue, 0)
-  const activeSlot = selectedWatchId ? collectionWatches.findIndex(w => w.id === selectedWatchId) : -1
-  const activeWatch = activeSlot >= 0 ? collectionWatches[activeSlot] : null
+  const activeSlot = selectedWatchId ? displayWatches.findIndex(w => w.id === selectedWatchId) : -1
+  const activeWatch = activeSlot >= 0 ? displayWatches[activeSlot] : null
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
   const overflowSummary = getOverflowSummary(
     sc.n,
@@ -157,7 +169,7 @@ export default function CollectionPage() {
         <div>
           {activeView === 'watchbox' && (
             <WatchboxView
-              watches={collectionWatches}
+              watches={displayWatches}
               frame={frame}
               setFrame={setFrame}
               lining={lining}
@@ -172,14 +184,23 @@ export default function CollectionPage() {
               onEmptySlotClick={() => router.push('/collection/add')}
               onSimulateChange={() => handleDraftChange('update_box', 'Simulated layout change')}
               overflowSummary={overflowSummary}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+              onReorder={sortBy === 'manual' ? (from, to) => {
+                const arr = [...collectionWatches]
+                ;[arr[from], arr[to]] = [arr[to], arr[from]]
+                reorderCollectionWatches(arr)
+              } : undefined}
             />
           )}
 
           {activeView === 'cards' && (
             <CardsView
-              watches={collectionWatches}
+              watches={displayWatches}
               activeSlot={activeSlot >= 0 ? activeSlot : null}
               onCardSelect={handleCardSelect}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
             />
           )}
         </div>
@@ -344,12 +365,16 @@ interface WatchboxViewProps {
   onEmptySlotClick: () => void
   onSimulateChange: () => void
   overflowSummary: string | null
+  sortBy: SortMode
+  setSortBy: (v: SortMode) => void
+  onReorder?: (from: number, to: number) => void
 }
 
 function WatchboxView({
   watches,
   frame, setFrame, lining, setLining, slotCount, setSlotCount,
   activeSlot, onSlotClick, watchboxSlotPx, watchboxMaxW, screenW, onEmptySlotClick, onSimulateChange, overflowSummary,
+  sortBy, setSortBy, onReorder,
 }: WatchboxViewProps) {
   const [customizerOpen, setCustomizerOpen] = useState(false)
   const [configOpen, setConfigOpen] = useState(false)
@@ -387,6 +412,8 @@ function WatchboxView({
             Simulate
           </button>
           <select
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value as SortMode)}
             style={{
               fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#A89880',
               border: '1px solid #E0DAD0', borderRadius: 4, padding: '4px 10px',
@@ -405,6 +432,7 @@ function WatchboxView({
           activeSlot={activeSlot}
           onSlotClick={onSlotClick}
           onEmptySlotClick={onEmptySlotClick}
+          onReorder={onReorder}
           frame={frame}
           lining={lining}
           slotCount={slotCount}
@@ -603,19 +631,53 @@ interface CardsViewProps {
   watches: Watch[]
   activeSlot: number | null
   onCardSelect: (i: number) => void
+  sortBy: SortMode
+  setSortBy: (v: SortMode) => void
 }
 
-function CardsView({ watches, activeSlot, onCardSelect }: CardsViewProps) {
+const SORT_OPTIONS: { value: SortMode; label: string }[] = [
+  { value: 'manual', label: 'Manual' },
+  { value: 'brand', label: 'Brand' },
+  { value: 'value', label: 'Value' },
+  { value: 'type', label: 'Type' },
+]
+
+function CardsView({ watches, activeSlot, onCardSelect, sortBy, setSortBy }: CardsViewProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-      {watches.map((watch, i) => (
-        <WatchCard
-          key={watch.id}
-          watch={watch}
-          isActive={activeSlot === i}
-          onSelect={() => onCardSelect(i)}
-        />
-      ))}
+    <div>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+        {SORT_OPTIONS.map(opt => (
+          <button
+            key={opt.value}
+            onClick={() => setSortBy(opt.value)}
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 10,
+              fontWeight: sortBy === opt.value ? 600 : 400,
+              padding: '4px 12px',
+              borderRadius: brand.radius.pill,
+              border: `1px solid ${sortBy === opt.value ? brand.colors.ink : brand.colors.borderMid}`,
+              background: sortBy === opt.value ? brand.colors.ink : brand.colors.bg,
+              color: sortBy === opt.value ? brand.colors.white : brand.colors.muted,
+              cursor: 'pointer',
+              letterSpacing: '0.04em',
+              transition: `all ${brand.transition.fast}`,
+            }}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {watches.map((watch, i) => (
+          <WatchCard
+            key={watch.id}
+            watch={watch}
+            isActive={activeSlot === i}
+            onSelect={() => onCardSelect(i)}
+          />
+        ))}
+      </div>
     </div>
   )
 }

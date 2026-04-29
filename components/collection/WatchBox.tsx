@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import type { Watch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
@@ -14,6 +14,7 @@ interface Props {
   activeSlot: number | null
   onSlotClick: (i: number) => void
   onEmptySlotClick?: () => void
+  onReorder?: (from: number, to: number) => void
   frame: string
   lining: string
   slotCount: number
@@ -127,6 +128,7 @@ export default function WatchBox({
   activeSlot,
   onSlotClick,
   onEmptySlotClick,
+  onReorder,
   frame,
   lining,
   slotCount,
@@ -135,17 +137,45 @@ export default function WatchBox({
 }: Props) {
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null)
   const [overflowOpen, setOverflowOpen] = useState(false)
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
+  const [isTouchDevice, setIsTouchDevice] = useState(false)
+  const dragCounter = useRef(0)
+  const ghostRef = useRef<HTMLDivElement | null>(null)
+  const touchDragging = useRef(false)
+  const touchGhostRef = useRef<HTMLDivElement | null>(null)
+  const slotRectsRef = useRef<{ rect: DOMRect; index: number }[]>([])
+
+  useEffect(() => {
+    setIsTouchDevice(window.matchMedia('(hover: none) and (pointer: coarse)').matches)
+    return () => {
+      ghostRef.current?.remove()
+      touchGhostRef.current?.remove()
+    }
+  }, [])
 
   const fr = FRAMES.find(f => f.id === frame) ?? FRAMES[0]
   const ln = LININGS.find(l => l.id === lining) ?? LININGS[0]
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
   const overflow = useMemo(() => getWatchboxOverflow(watches, sc.n), [watches, sc.n])
 
+  const inPreview = onReorder !== undefined
+    && draggedIndex !== null
+    && dragOverIndex !== null
+    && draggedIndex !== dragOverIndex
+
+  const previewVisibleItems = useMemo(() => {
+    if (!inPreview) return overflow.visibleItems
+    const arr = [...overflow.visibleItems]
+    ;[arr[draggedIndex!], arr[dragOverIndex!]] = [arr[dragOverIndex!], arr[draggedIndex!]]
+    return arr
+  }, [inPreview, draggedIndex, dragOverIndex, overflow.visibleItems])
+
   const slots = Array.from({ length: sc.n }, (_, i) => {
     if (overflow.hasOverflow && i === sc.n - 1) {
       return { type: 'overflow' as const }
     }
-    const watch = overflow.visibleItems[i] ?? null
+    const watch = previewVisibleItems[i] ?? null
     return watch ? { type: 'watch' as const, watch, originalIndex: i } : { type: 'empty' as const }
   })
 
@@ -309,31 +339,152 @@ export default function WatchBox({
               }
 
               const w = slot.watch
+              const isSourceInPreview = inPreview && i === draggedIndex
+              const isDestInPreview = inPreview && i === dragOverIndex
+              const isBeingDragged = !inPreview && onReorder !== undefined && draggedIndex === i
+              const isDragTarget = !inPreview && onReorder !== undefined && dragOverIndex === i && draggedIndex !== i
 
               return (
                 <div
                   key={i}
+                  data-slot-index={i}
+                  draggable={onReorder !== undefined && !isTouchDevice}
                   onClick={() => onSlotClick(slot.originalIndex)}
+                  onDragStart={onReorder ? (e: React.DragEvent<HTMLDivElement>) => {
+                    dragCounter.current = 0
+                    setDraggedIndex(i)
+                    const el = e.currentTarget as HTMLElement
+                    const clone = el.cloneNode(true) as HTMLDivElement
+                    clone.style.cssText += `;position:absolute;top:-9999px;left:-9999px;width:${el.offsetWidth}px;height:${el.offsetHeight}px;border:1.5px solid rgba(201,168,76,0.8);box-shadow:0 0 0 1px rgba(201,168,76,0.4),0 8px 24px rgba(201,168,76,0.2);opacity:1;border-radius:3px;pointer-events:none`
+                    document.body.appendChild(clone)
+                    ghostRef.current = clone
+                    e.dataTransfer.setDragImage(clone, e.nativeEvent.offsetX, e.nativeEvent.offsetY)
+                  } : undefined}
+                  onDragOver={onReorder ? e => {
+                    e.preventDefault()
+                    setDragOverIndex(i)
+                  } : undefined}
+                  onDragEnter={onReorder ? () => { dragCounter.current++ } : undefined}
+                  onDragLeave={onReorder ? () => {
+                    dragCounter.current--
+                    if (dragCounter.current === 0) setDragOverIndex(null)
+                  } : undefined}
+                  onDrop={onReorder ? () => {
+                    if (draggedIndex !== null && draggedIndex !== i) onReorder(draggedIndex, i)
+                    setDraggedIndex(null)
+                    setDragOverIndex(null)
+                  } : undefined}
+                  onDragEnd={onReorder ? () => {
+                    ghostRef.current?.remove()
+                    ghostRef.current = null
+                    setDraggedIndex(null)
+                    setDragOverIndex(null)
+                  } : undefined}
                   style={{
                     aspectRatio: '3/4',
                     borderRadius: 3,
                     position: 'relative',
                     cursor: 'pointer',
                     overflow: 'visible',
+                    opacity: isBeingDragged ? 0.5 : isSourceInPreview ? 0.4 : 1,
                     transform: 'translateY(0)',
-                    transition: 'transform 0.18s ease',
+                    transition: 'transform 0.18s ease, opacity 0.15s ease',
                   }}
                   onMouseEnter={e => {
+                    if (draggedIndex !== null) return
                     e.currentTarget.style.transform = 'translateY(-2px)'
-                    if (mode === 'playground') setHoveredSlot(i)
+                    if (mode === 'playground' || onReorder) setHoveredSlot(i)
                   }}
                   onMouseLeave={e => {
                     e.currentTarget.style.transform = 'translateY(0)'
-                    if (mode === 'playground') setHoveredSlot(null)
+                    if (mode === 'playground' || onReorder) setHoveredSlot(null)
                   }}
                 >
                   {mode === 'playground' && hoveredSlot === i && (
                     <HoverCard watch={w} />
+                  )}
+
+                  {onReorder !== undefined && (isTouchDevice || hoveredSlot === i) && !isBeingDragged && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        right: -8,
+                        top: '66%',
+                        transform: 'translateY(-50%)',
+                        zIndex: 10,
+                        cursor: isTouchDevice ? 'default' : 'grab',
+                        padding: '9px 2px 9px 11px',
+                        touchAction: 'none',
+                      }}
+                      onPointerDown={isTouchDevice ? (e: React.PointerEvent) => {
+                        e.stopPropagation()
+                        e.preventDefault()
+                        touchDragging.current = true
+                        setDraggedIndex(i)
+
+                        slotRectsRef.current = Array.from(
+                          document.querySelectorAll('[data-slot-index]')
+                        ).map(el => ({
+                          rect: (el as HTMLElement).getBoundingClientRect(),
+                          index: Number((el as HTMLElement).dataset.slotIndex),
+                        }))
+
+                        const slotEl = (e.currentTarget as HTMLElement).closest('[data-slot-index]') as HTMLElement
+                        const clone = slotEl.cloneNode(true) as HTMLDivElement
+                        clone.style.cssText += `;position:fixed;pointer-events:none;z-index:9999;width:${slotEl.offsetWidth}px;height:${slotEl.offsetHeight}px;border:1.5px solid rgba(201,168,76,0.9);box-shadow:0 0 0 1px rgba(201,168,76,0.4),0 12px 32px rgba(201,168,76,0.25);border-radius:3px;opacity:0.92;transform:scale(1.04);left:${e.clientX - slotEl.offsetWidth / 2}px;top:${e.clientY - slotEl.offsetHeight * 1.15}px`
+                        document.body.appendChild(clone)
+                        touchGhostRef.current = clone
+
+                        function onMove(ev: PointerEvent) {
+                          if (!touchGhostRef.current) return
+                          touchGhostRef.current.style.left = `${ev.clientX - slotEl.offsetWidth / 2}px`
+                          touchGhostRef.current.style.top = `${ev.clientY - slotEl.offsetHeight * 1.15}px`
+                          const hit = slotRectsRef.current.find(({ rect }) =>
+                            ev.clientX >= rect.left && ev.clientX <= rect.right &&
+                            ev.clientY >= rect.top && ev.clientY <= rect.bottom
+                          )
+                          setDragOverIndex(hit ? hit.index : null)
+                        }
+
+                        function onUp(ev: PointerEvent) {
+                          document.removeEventListener('pointermove', onMove)
+                          document.removeEventListener('pointerup', onUp)
+                          document.removeEventListener('pointercancel', onUp)
+                          touchGhostRef.current?.remove()
+                          touchGhostRef.current = null
+                          touchDragging.current = false
+                          const hit = slotRectsRef.current.find(({ rect }) =>
+                            ev.clientX >= rect.left && ev.clientX <= rect.right &&
+                            ev.clientY >= rect.top && ev.clientY <= rect.bottom
+                          )
+                          if (hit && hit.index !== i) onReorder!(i, hit.index)
+                          setDraggedIndex(null)
+                          setDragOverIndex(null)
+                        }
+
+                        document.addEventListener('pointermove', onMove)
+                        document.addEventListener('pointerup', onUp)
+                        document.addEventListener('pointercancel', onUp)
+                      } : undefined}
+                    >
+                      <div style={{
+                        width: 7,
+                        height: 21,
+                        borderRadius: '2px 4px 4px 2px',
+                        background: 'rgba(201,168,76,0.12)',
+                        border: '1px solid rgba(201,168,76,0.22)',
+                        boxShadow: '0.5px 1px 2px rgba(0,0,0,0.1)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 2,
+                      }}>
+                        {[0, 1, 2].map(d => (
+                          <div key={d} style={{ width: 3, height: 1, borderRadius: 1, background: 'rgba(201,168,76,0.42)' }} />
+                        ))}
+                      </div>
+                    </div>
                   )}
 
                   <div
@@ -344,8 +495,12 @@ export default function WatchBox({
                       overflow: 'hidden',
                       position: 'relative',
                       background: ln.slotBg,
-                      border: isActive ? '1.5px solid rgba(201,168,76,0.8)' : '1.5px solid transparent',
-                      boxShadow: isActive
+                      border: (isActive || isDragTarget || isDestInPreview)
+                        ? '1.5px solid rgba(201,168,76,0.8)'
+                        : isSourceInPreview
+                        ? '1.5px dashed rgba(201,168,76,0.6)'
+                        : '1.5px solid transparent',
+                      boxShadow: (isActive || isDragTarget || isDestInPreview)
                         ? 'inset 0 1px 4px rgba(0,0,0,0.12), 0 0 0 1px rgba(201,168,76,0.4), 0 3px 14px rgba(201,168,76,0.16)'
                         : 'inset 0 1px 4px rgba(0,0,0,0.12)',
                       transition: 'border-color 0.2s, box-shadow 0.2s',

@@ -27,6 +27,7 @@ interface CollectionSessionContextValue {
   addToCollection: (watch: Watch, condition: WatchCondition, purchaseDetails?: PurchaseDetails) => void
   followWatch: (watchId: string) => void
   removeFromCollection: (watchId: string) => void
+  reorderCollectionWatches: (newWatches: Watch[]) => void
   isInCollection: (watchId: string) => boolean
   toastMessage: string | null
   toastVisible: boolean
@@ -114,6 +115,10 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     setSelectedWatchId(prev => (prev === watchId ? null : prev))
   }
 
+  function reorderCollectionWatches(newWatches: Watch[]) {
+    setCollectionWatches(newWatches)
+  }
+
   const ownedCatalogIds = useMemo(() => {
     const ids = new Set<string>()
     collectionWatches.forEach(w => {
@@ -132,6 +137,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     addToCollection,
     followWatch,
     removeFromCollection,
+    reorderCollectionWatches,
     isInCollection: (watchId: string) => ownedCatalogIds.has(watchId),
     toastMessage,
     toastVisible,
