@@ -39,3 +39,34 @@ export interface Watch {
   watchType: WatchType
   ownershipStatus: OwnershipStatus
 }
+
+export type PlaygroundWatchOverrides = Partial<Pick<
+  Watch,
+  | 'reference'
+  | 'caseSizeMm'
+  | 'caseMaterial'
+  | 'dialColor'
+  | 'movement'
+  | 'complications'
+  | 'condition'
+  | 'estimatedValue'
+  | 'notes'
+  | 'watchType'
+>>
+
+export type PlaygroundBoxEntry = {
+  id: string
+  watchId: string
+  overrides?: PlaygroundWatchOverrides
+}
+
+export type PlaygroundBox = {
+  id: string
+  name: string
+  tags: string[]
+  entries: PlaygroundBoxEntry[]
+  frame: string
+  lining: string
+  slotCount: number
+  createdAt: string
+}

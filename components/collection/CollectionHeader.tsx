@@ -6,9 +6,10 @@ interface Props {
   totalEstValue: number
   pendingChangesCount: number
   onAddWatch: () => void
+  onOpenPlayground: () => void
 }
 
-export default function CollectionHeader({ totalEstValue, pendingChangesCount, onAddWatch }: Props) {
+export default function CollectionHeader({ totalEstValue, pendingChangesCount, onAddWatch, onOpenPlayground }: Props) {
   return (
     <div style={{ marginBottom: 32 }}>
       <div style={{ marginBottom: 20 }}>
@@ -77,6 +78,7 @@ export default function CollectionHeader({ totalEstValue, pendingChangesCount, o
 
         {/* Open Playground */}
         <button
+          onClick={onOpenPlayground}
           style={{
             fontFamily: 'var(--font-dm-sans)',
             fontSize: 11,

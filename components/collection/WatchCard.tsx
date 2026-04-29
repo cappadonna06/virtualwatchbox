@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import type { Watch, OwnershipStatus } from '@/types/watch'
+import type { Watch, OwnershipStatus, WatchCondition } from '@/types/watch'
 import HoverCard from '@/components/watchbox/HoverCard'
 
 function fmt(n: number) {
@@ -16,15 +16,25 @@ const statusStyles: Record<OwnershipStatus, { background: string; color: string 
   'Needs Service':  { background: '#FFF3E0', color: '#8A5010' },
 }
 
+const conditionStyles: Record<WatchCondition, { background: string; color: string }> = {
+  'Unworn': { background: '#E8F4E8', color: '#2D6A2D' },
+  'Like New': { background: '#EDF4E8', color: '#3A6A2D' },
+  'Excellent': { background: '#FFF8E6', color: '#8A6A10' },
+  'Good': { background: '#FDF0E0', color: '#8A5010' },
+  'Fair': { background: '#FAE8E8', color: '#8A2020' },
+}
+
 interface Props {
   watch: Watch
   isActive: boolean
   onSelect: () => void
+  mode?: 'collection' | 'playground'
 }
 
-export default function WatchCard({ watch, isActive, onSelect }: Props) {
+export default function WatchCard({ watch, isActive, onSelect, mode = 'collection' }: Props) {
   const [isHovered, setIsHovered] = useState(false)
   const status = statusStyles[watch.ownershipStatus]
+  const condition = conditionStyles[watch.condition]
 
   return (
     <div
@@ -163,11 +173,11 @@ export default function WatchCard({ watch, isActive, onSelect }: Props) {
             letterSpacing: '0.06em',
             padding: '3px 10px',
             borderRadius: 20,
-            background: status.background,
-            color: status.color,
+            background: mode === 'playground' ? condition.background : status.background,
+            color: mode === 'playground' ? condition.color : status.color,
           }}
         >
-          {watch.ownershipStatus}
+          {mode === 'playground' ? watch.condition : watch.ownershipStatus}
         </span>
       </div>
     </div>
