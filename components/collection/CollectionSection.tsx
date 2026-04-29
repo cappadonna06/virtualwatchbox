@@ -44,7 +44,7 @@ export default function CollectionSection() {
   const [customizerOpen, setCustomizerOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<Watch | null>(null)
   const [screenW, setScreenW]             = useState(0)
-  const { collectionWatches, selectedWatchId, setSelectedWatchId, removeFromCollection } = useCollectionSession()
+  const { collectionWatches, selectedWatchId, setSelectedWatchId, removeFromCollection, reorderCollectionWatches } = useCollectionSession()
 
   useLayoutEffect(() => {
     const update = () => setScreenW(window.innerWidth)
@@ -73,6 +73,12 @@ export default function CollectionSection() {
     const watch = collectionWatches[i]
     if (!watch) return
     setSelectedWatchId(selectedWatchId === watch.id ? null : watch.id)
+  }
+
+  function handleReorder(from: number, to: number) {
+    const arr = [...collectionWatches]
+    ;[arr[from], arr[to]] = [arr[to], arr[from]]
+    reorderCollectionWatches(arr)
   }
 
   const activeSlot = selectedWatchId ? collectionWatches.findIndex(w => w.id === selectedWatchId) : -1
@@ -312,6 +318,7 @@ export default function CollectionSection() {
               watches={collectionWatches}
               activeSlot={activeSlot >= 0 ? activeSlot : null}
               onSlotClick={handleSlotClick}
+              onReorder={handleReorder}
               frame={frame}
               lining={lining}
               slotCount={slotCount}

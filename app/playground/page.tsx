@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import type { PlaygroundBox, Watch } from '@/types/watch'
+import type { PlaygroundBox, PlaygroundBoxEntry, Watch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import { watches as catalogWatches } from '@/lib/watches'
 import { normalizePlaygroundBoxes, resolvePlaygroundWatches, type ResolvedPlaygroundWatch } from '@/lib/playground'
@@ -13,6 +13,7 @@ import WatchSidebar from '@/components/collection/WatchSidebar'
 import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import CollectionStats from '@/components/collection/CollectionStats'
+import { brand } from '@/lib/brand'
 
 const STORAGE_KEY = 'playgroundBoxes'
 const WB_W_PAD = 64
@@ -36,6 +37,7 @@ const TAG_OPTIONS = [
 ]
 
 type View = 'watchbox' | 'cards'
+type SortMode = 'manual' | 'brand' | 'value' | 'type'
 
 function calcSlotPx(
   containerW: number,
@@ -68,6 +70,7 @@ function PlaygroundPageInner() {
   const [activeBoxId, setActiveBoxId] = useState<string>(SEEDED_PLAYGROUND_BOXES[0].id)
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null)
   const [activeView, setActiveView] = useState<View>('watchbox')
+  const [sortBy, setSortBy] = useState<SortMode>('manual')
   const [newBoxModalOpen, setNewBoxModalOpen] = useState(false)
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
   const [deleteEntryTarget, setDeleteEntryTarget] = useState<ResolvedPlaygroundWatch | null>(null)
@@ -112,10 +115,18 @@ function PlaygroundPageInner() {
     () => resolvePlaygroundWatches(activeBox?.entries ?? [], catalogWatches),
     [activeBox],
   )
-  const displayWatches = resolvedEntries.map(item => item.displayWatch)
-  const selectedItem = resolvedEntries.find(item => item.entry.id === selectedEntryId) ?? null
+  const sortedEntries = useMemo(() => {
+    if (sortBy === 'manual') return resolvedEntries
+    const sorted = [...resolvedEntries]
+    if (sortBy === 'brand') sorted.sort((a, b) => a.displayWatch.brand.localeCompare(b.displayWatch.brand))
+    else if (sortBy === 'value') sorted.sort((a, b) => b.displayWatch.estimatedValue - a.displayWatch.estimatedValue)
+    else if (sortBy === 'type') sorted.sort((a, b) => a.displayWatch.watchType.localeCompare(b.displayWatch.watchType))
+    return sorted
+  }, [resolvedEntries, sortBy])
+  const displayWatches = sortedEntries.map(item => item.displayWatch)
+  const selectedItem = sortedEntries.find(item => item.entry.id === selectedEntryId) ?? null
   const activeSlot = selectedEntryId
-    ? resolvedEntries.findIndex(item => item.entry.id === selectedEntryId)
+    ? sortedEntries.findIndex(item => item.entry.id === selectedEntryId)
     : -1
 
   const sc = SLOT_COUNTS.find(slot => slot.n === (activeBox?.slotCount ?? 6)) ?? SLOT_COUNTS[1]
@@ -138,15 +149,19 @@ function PlaygroundPageInner() {
   }
 
   function handleSlotClick(index: number) {
-    const item = resolvedEntries[index]
+    const item = sortedEntries[index]
     if (!item) return
     setSelectedEntryId(prev => (prev === item.entry.id ? null : item.entry.id))
   }
 
   function handleCardSelect(index: number) {
-    const item = resolvedEntries[index]
+    const item = sortedEntries[index]
     if (!item) return
     setSelectedEntryId(prev => (prev === item.entry.id ? null : item.entry.id))
+  }
+
+  function reorderBoxEntries(boxId: string, newEntries: PlaygroundBoxEntry[]) {
+    setBoxes(prev => prev.map(box => box.id === boxId ? { ...box, entries: newEntries } : box))
   }
 
   function handleShareBox() {
@@ -226,6 +241,7 @@ function PlaygroundPageInner() {
     setEditingName(false)
     setDeleteConfirmId(null)
     setDeleteEntryTarget(null)
+    setSortBy('manual')
   }
 
   return (
@@ -459,12 +475,19 @@ function PlaygroundPageInner() {
                 onLiningChange={value => handleBoxConfigChange('lining', value)}
                 onSlotCountChange={value => handleBoxConfigChange('slotCount', value)}
                 overflowSummary={overflowSummary}
+                onReorder={sortBy === 'manual' ? (from, to) => {
+                  const entries = [...(activeBox?.entries ?? [])]
+                  ;[entries[from], entries[to]] = [entries[to], entries[from]]
+                  reorderBoxEntries(activeBoxId, entries)
+                } : undefined}
               />
             ) : (
               <CardsView
                 watches={displayWatches}
                 activeSlot={activeSlot >= 0 ? activeSlot : null}
                 onCardSelect={handleCardSelect}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
               />
             )}
           </div>
@@ -647,6 +670,7 @@ interface WatchboxViewProps {
   onLiningChange: (value: string) => void
   onSlotCountChange: (value: number) => void
   overflowSummary: string | null
+  onReorder?: (from: number, to: number) => void
 }
 
 function WatchboxView({
@@ -662,6 +686,7 @@ function WatchboxView({
   onLiningChange,
   onSlotCountChange,
   overflowSummary,
+  onReorder,
 }: WatchboxViewProps) {
   const [customizerOpen, setCustomizerOpen] = useState(false)
   const [configOpen, setConfigOpen] = useState(false)
@@ -688,6 +713,7 @@ function WatchboxView({
           activeSlot={activeSlot}
           onSlotClick={onSlotClick}
           onEmptySlotClick={onEmptySlotClick}
+          onReorder={onReorder}
           frame={box.frame}
           lining={box.lining}
           slotCount={box.slotCount}
@@ -975,20 +1001,54 @@ interface CardsViewProps {
   watches: Watch[]
   activeSlot: number | null
   onCardSelect: (index: number) => void
+  sortBy: SortMode
+  setSortBy: (v: SortMode) => void
 }
 
-function CardsView({ watches, activeSlot, onCardSelect }: CardsViewProps) {
+const SORT_OPTIONS: { value: SortMode; label: string }[] = [
+  { value: 'manual', label: 'Manual' },
+  { value: 'brand', label: 'Brand' },
+  { value: 'value', label: 'Value' },
+  { value: 'type', label: 'Type' },
+]
+
+function CardsView({ watches, activeSlot, onCardSelect, sortBy, setSortBy }: CardsViewProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-      {watches.map((watch, index) => (
-        <WatchCard
-          key={watch.id}
-          watch={watch}
-          mode="playground"
-          isActive={activeSlot === index}
-          onSelect={() => onCardSelect(index)}
-        />
-      ))}
+    <div>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+        {SORT_OPTIONS.map(opt => (
+          <button
+            key={opt.value}
+            onClick={() => setSortBy(opt.value)}
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 10,
+              fontWeight: sortBy === opt.value ? 600 : 400,
+              padding: '4px 12px',
+              borderRadius: brand.radius.pill,
+              border: `1px solid ${sortBy === opt.value ? brand.colors.ink : brand.colors.borderMid}`,
+              background: sortBy === opt.value ? brand.colors.ink : brand.colors.bg,
+              color: sortBy === opt.value ? brand.colors.white : brand.colors.muted,
+              cursor: 'pointer',
+              letterSpacing: '0.04em',
+              transition: `all ${brand.transition.fast}`,
+            }}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {watches.map((watch, index) => (
+          <WatchCard
+            key={watch.id}
+            watch={watch}
+            mode="playground"
+            isActive={activeSlot === index}
+            onSelect={() => onCardSelect(index)}
+          />
+        ))}
+      </div>
     </div>
   )
 }
