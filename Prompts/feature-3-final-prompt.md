@@ -6,12 +6,12 @@
 
   ## Read first — before writing any code
 
-  - `/docs/PRD-v1.4.md` — **Feature 3** (Watch Search & Add Watch Flow). This is your spec.
+  - `/docs/PRD-v1.8.md` — **Feature 3** (Watch Search & Add Watch Flow). This is your spec.
   - `/types/watch.ts` — existing Watch interface. Understand every field before touching it.
   - `/lib/watches.ts` — the full watch catalog (50+ watches should exist from prior session).
   - `/app/collection/page.tsx` — the collection page you are extending.
   - `/components/collection/CollectionHeader.tsx` — contains the "Add Watch" button stub.
-  - `/components/watchbox/WatchBox.tsx` — understand how empty slots are rendered.
+  - `/components/collection/WatchBox.tsx` — understand how empty slots are rendered.
   - `/components/watchbox/DialSVG.tsx` — you will reuse this in search results.
 
   Do not write code until you have read all of these.
@@ -499,7 +499,7 @@
   - `app/globals.css` — no changes
   - `components/collection/WatchCard.tsx` — no changes
   - `components/collection/CollectionStats.tsx` — no changes (just ensure it receives `collectionWatches`)
-  - `components/watchbox/WatchBox.tsx` — only add `onEmptySlotClick` prop if absent, nothing else
+  - `components/collection/WatchBox.tsx` — only add `onEmptySlotClick` prop if absent, nothing else
   - The 5 default Longines in `lib/watches.ts`
 
   ---

@@ -12,7 +12,7 @@
 | Source | Path / Link |
 |---|---|
 | Next.js codebase | `virtualwatchbox/` (mounted via File System Access API) |
-| Product Requirements | `virtualwatchbox/docs/PRD-v1.4_2.md` |
+| Product Requirements | `virtualwatchbox/docs/PRD-v1.8.md` |
 | Watch images | `assets/watches/` |
 | OG image | `assets/og-image.png` |
 
@@ -36,7 +36,7 @@ Virtual Watchbox is a **luxury-tech web platform** for watch collectors to showc
 ### Watch Categories (Data Model)
 1. **In My Collection** — owned watches, full metadata, source of truth
 2. **Playground** — fantasy boxes, no ownership metadata
-3. **Liked Watches** — bookmarked, heart icon
+3. **Followed Watches** — bookmarked, heart icon
 4. **Next Targets** — up to 3 acquisition shortlist items
 5. **Grail** — single aspirational dream watch
 
@@ -44,7 +44,7 @@ Virtual Watchbox is a **luxury-tech web platform** for watch collectors to showc
 - Next.js 14 (App Router), TypeScript
 - Inline styles as primary pattern; Tailwind only for responsive grid utilities
 - CSS variables: `--font-cormorant`, `--font-dm-sans`
-- Session state only (no persistence yet; Supabase planned for Phase 2)
+- Client-side session/local persistence only (Supabase planned for Phase 2)
 
 ---
 

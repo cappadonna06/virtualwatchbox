@@ -9,15 +9,15 @@ function fmt(n: number) {
 }
 
 interface Props {
-  liked: Set<string>
-  toggleLike: (id: string) => void
+  followedWatchIds: Set<string>
+  toggleFollowedWatch: (id: string) => void
 }
 
-export default function OnYourRadar({ liked, toggleLike }: Props) {
+export default function OnYourRadar({ followedWatchIds, toggleFollowedWatch }: Props) {
   const [selected, setSelected] = useState<CarouselWatch | null>(null)
 
-  if (liked.size === 0) return null
-  const likedWatches = CAROUSEL_WATCHES.filter(w => liked.has(w.id))
+  if (followedWatchIds.size === 0) return null
+  const followedWatches = CAROUSEL_WATCHES.filter(w => followedWatchIds.has(w.id))
 
   return (
     <div className="radar-section" style={{ padding: '80px 56px', borderTop: '1px solid #EAE5DC' }}>
@@ -111,18 +111,18 @@ export default function OnYourRadar({ liked, toggleLike }: Props) {
             {/* Actions */}
             <div style={{ display: 'flex', gap: 8 }}>
               <button
-                onClick={() => toggleLike(selected.id)}
+                onClick={() => toggleFollowedWatch(selected.id)}
                 style={{
                   flex: 1,
                   fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 500, letterSpacing: '0.06em',
                   padding: '11px 10px',
-                  background: liked.has(selected.id) ? 'rgba(201,168,76,0.08)' : 'transparent',
-                  color: liked.has(selected.id) ? '#C9A84C' : '#A89880',
-                  border: liked.has(selected.id) ? '1px solid rgba(201,168,76,0.4)' : '1px solid #E0DAD0',
+                  background: followedWatchIds.has(selected.id) ? 'rgba(201,168,76,0.08)' : 'transparent',
+                  color: followedWatchIds.has(selected.id) ? '#C9A84C' : '#A89880',
+                  border: followedWatchIds.has(selected.id) ? '1px solid rgba(201,168,76,0.4)' : '1px solid #E0DAD0',
                   borderRadius: 4, cursor: 'pointer',
                 }}
               >
-                {liked.has(selected.id) ? '♥ Saved' : '♡ Save'}
+                {followedWatchIds.has(selected.id) ? '♥ Followed' : '♡ Follow'}
               </button>
               <button
                 style={{
@@ -144,7 +144,7 @@ export default function OnYourRadar({ liked, toggleLike }: Props) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
         <div>
           <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 6 }}>
-            Saved · {liked.size} {liked.size === 1 ? 'watch' : 'watches'}
+            Followed · {followedWatchIds.size} {followedWatchIds.size === 1 ? 'watch' : 'watches'}
           </div>
           <h3 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 26, fontWeight: 400, color: '#1A1410' }}>
             On Your <em>Radar.</em>
@@ -157,7 +157,7 @@ export default function OnYourRadar({ liked, toggleLike }: Props) {
 
       {/* Cards */}
       <div style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 4, scrollbarWidth: 'none' }}>
-        {likedWatches.map(w => (
+        {followedWatches.map(w => (
           <div
             key={w.id}
             onClick={() => setSelected(w)}
@@ -192,8 +192,8 @@ export default function OnYourRadar({ liked, toggleLike }: Props) {
                   {w.brand}
                 </div>
                 <button
-                  onClick={e => { e.stopPropagation(); toggleLike(w.id) }}
-                  title="Remove from radar"
+                  onClick={e => { e.stopPropagation(); toggleFollowedWatch(w.id) }}
+                  title="Remove from followed"
                   style={{ fontSize: 11, color: '#C8BFAF', fontWeight: 500, background: 'none', border: 'none', padding: 0, cursor: 'pointer', lineHeight: 1 }}
                 >✕</button>
               </div>

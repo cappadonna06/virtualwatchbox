@@ -6,12 +6,12 @@ Paste this entire prompt into a fresh Claude Code session.
 
 ## Read before writing any code
 
-- `/docs/PRD-v1.4.md` — **Feature 4 (Playground Mode)** and **Feature 2B Category 2 (Playground Watches)**. Full product spec.
+- `/docs/PRD-v1.8.md` — **Feature 4 (Playground Mode)** and **Feature 2B Category 2 (Playground Watches)**. Full product spec.
 - `/types/watch.ts` — Watch interface and existing types including `PlaygroundBox`
 - `/lib/watches.ts` — the full watch catalog. Playground watches are resolved from here by ID.
 - `/app/collection/page.tsx` — reference for page structure and state patterns
 - `/app/collection/add/page.tsx` — you will extend this to handle `?dest=playground`
-- `/components/watchbox/WatchBox.tsx` — reuse this, do not rebuild it
+- `/components/collection/WatchBox.tsx` — reuse this, do not rebuild it
 - `/components/watchbox/WatchSidebar.tsx` (or equivalent) — you will add a `mode` prop
 - `/components/watchbox/DialSVG.tsx` — reuse in any new watch cards
 
