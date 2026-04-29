@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Virtual Watchbox — Logo Exploration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="../design-canvas.jsx"></script>
+<style>* { box-sizing: border-box; margin: 0; padding: 0; } body { background: #E8E3DB; }</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+
+const CREAM  = '#FAF8F4';
+const INK    = '#1A1410';
+const GOLD   = '#C9A84C';
+const MUTED  = '#A89880';
+const BORDER = '#EAE5DC';
+const SERIF  = "'Cormorant Garamond', Georgia, serif";
+const SANS   = "'DM Sans', system-ui, sans-serif";
+
+// ── Mark SVGs ───────────────────────────────────────────────────────────────
+
+// 1. The Crown — winding crown, side elevation
+const CrownMark = ({ color = INK, size = 40 }) => (
+  <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
+    <rect x="4" y="14" width="25" height="13" rx="2.5" fill={color}/>
+    <rect x="28.5" y="17.5" width="8" height="6" rx="1.8" fill={color}/>
+    <line x1="11.5" y1="15.5" x2="11.5" y2="25.5" stroke={color === INK ? CREAM : INK} strokeWidth="1" opacity="0.22"/>
+    <line x1="17"   y1="15.5" x2="17"   y2="25.5" stroke={color === INK ? CREAM : INK} strokeWidth="1" opacity="0.22"/>
+    <line x1="22.5" y1="15.5" x2="22.5" y2="25.5" stroke={color === INK ? CREAM : INK} strokeWidth="1" opacity="0.22"/>
+  </svg>
+);
+
+// 2. The Dial — minimal watch face, circle + indices + hands
+const DialMark = ({ color = INK, size = 40 }) => (
+  <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
+    <circle cx="20" cy="20" r="17" stroke={color} strokeWidth="1.5"/>
+    <line x1="20" y1="4.5" x2="20" y2="8.5"  stroke={color} strokeWidth="2" strokeLinecap="round"/>
+    <line x1="35.5" y1="20" x2="31.5" y2="20" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+    <line x1="20" y1="35.5" x2="20" y2="31.5" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+    <line x1="4.5" y1="20" x2="8.5" y2="20"  stroke={color} strokeWidth="2" strokeLinecap="round"/>
+    {/* minute hand → ~2 o'clock */}
+    <line x1="20" y1="20" x2="29.5" y2="10.5" stroke={color} strokeWidth="1.2" strokeLinecap="round"/>
+    {/* hour hand → ~10 o'clock */}
+    <line x1="20" y1="20" x2="13" y2="27.5" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
+    <circle cx="20" cy="20" r="1.8" fill={color}/>
+  </svg>
+);
+
+// 3. The Case — watch case top-down (references "watchbox")
+const CaseMark = ({ color = INK, size = 40 }) => (
+  <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
+    <rect x="5" y="9" width="30" height="22" rx="6" stroke={color} strokeWidth="2"/>
+    <rect x="9.5" y="13.5" width="21" height="13" rx="3" stroke={color} strokeWidth="1.2"/>
+    <rect x="35" y="17.5" width="4" height="5" rx="1" fill={color}/>
+    <rect x="9.5" y="5"  width="6" height="4.5" rx="1.5" fill={color}/>
+    <rect x="24.5" y="5" width="6" height="4.5" rx="1.5" fill={color}/>
+    <rect x="9.5" y="30.5"  width="6" height="4.5" rx="1.5" fill={color}/>
+    <rect x="24.5" y="30.5" width="6" height="4.5" rx="1.5" fill={color}/>
+  </svg>
+);
+
+// 4. The W — letterform mark in Cormorant Garamond
+const WMark = ({ color = INK, size = 40 }) => (
+  <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
+    <text x="20" y="33" textAnchor="middle"
+      fontFamily={SERIF} fontSize="36" fontWeight="400" fill={color}>W</text>
+  </svg>
+);
+
+// 5. The Hands — refined V-hands on filled circle (evolution of current)
+const HandsMark = ({ color = GOLD, size = 40, bgFill = INK, noBg = false }) => (
+  <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
+    {!noBg && <circle cx="20" cy="20" r="19" fill={bgFill}/>}
+    {/* symmetric V hands pointing to 10 and 2 o'clock */}
+    <line x1="20" y1="20.5" x2="9.8"  y2="13.5" stroke={color} strokeWidth="2.2" strokeLinecap="round"/>
+    <line x1="20" y1="20.5" x2="30.2" y2="13.5" stroke={color} strokeWidth="1.4" strokeLinecap="round"/>
+    <circle cx="20" cy="20.5" r="2" fill={color}/>
+  </svg>
+);
+
+// ── Direction data ───────────────────────────────────────────────────────────
+const DIRECTIONS = [
+  {
+    id: 'crown', num: '01',
+    name: 'The Crown',
+    desc: 'Winding crown, side elevation — unmistakably horological',
+    Mark: CrownMark,
+    swatchLight: { color: INK },
+    swatchDark:  { color: CREAM },
+    lockupLight: { color: INK },
+    lockupDark:  { color: CREAM },
+    iconProps:   { color: GOLD },
+    iconDark:    { color: GOLD },
+  },
+  {
+    id: 'dial', num: '02',
+    name: 'The Dial',
+    desc: 'Minimal watch face — timeless, immediately legible at any size',
+    Mark: DialMark,
+    swatchLight: { color: INK },
+    swatchDark:  { color: GOLD },
+    lockupLight: { color: INK },
+    lockupDark:  { color: GOLD },
+    iconProps:   { color: GOLD },
+    iconDark:    { color: GOLD },
+  },
+  {
+    id: 'case', num: '03',
+    name: 'The Case',
+    desc: 'Watch case outline — double-reads as both timepiece and watchbox',
+    Mark: CaseMark,
+    swatchLight: { color: INK },
+    swatchDark:  { color: CREAM },
+    lockupLight: { color: INK },
+    lockupDark:  { color: CREAM },
+    iconProps:   { color: GOLD },
+    iconDark:    { color: GOLD },
+  },
+  {
+    id: 'wmark', num: '04',
+    name: 'The W',
+    desc: 'Letterform mark — typographic, elegant, works wordmark-free',
+    Mark: WMark,
+    swatchLight: { color: INK },
+    swatchDark:  { color: GOLD },
+    lockupLight: { color: INK },
+    lockupDark:  { color: GOLD },
+    iconProps:   { color: GOLD },
+    iconDark:    { color: GOLD },
+  },
+  {
+    id: 'hands', num: '05',
+    name: 'The Hands',
+    desc: 'Refinement of the existing direction — V-form, gold on dark',
+    Mark: HandsMark,
+    swatchLight: { color: INK, noBg: true },
+    swatchDark:  { color: GOLD, noBg: true },
+    lockupLight: { color: INK, noBg: true },
+    lockupDark:  { color: GOLD, noBg: true },
+    iconProps:   { color: GOLD, bgFill: INK },
+    iconDark:    { color: GOLD, bgFill: INK },
+    // For swatches, show with bg circle
+    swatchLightFull: { color: INK,  bgFill: CREAM },
+    swatchDarkFull:  { color: GOLD, bgFill: INK },
+  },
+];
+
+// ── Artboard components ──────────────────────────────────────────────────────
+
+function ConceptArtboard({ d, index }) {
+  const { Mark } = d;
+  const LARGE = 60;
+  const swL = d.swatchLightFull || d.swatchLight;
+  const swD = d.swatchDarkFull  || d.swatchDark;
+
+  return (
+    <div style={{ width: 400, height: 600, background: CREAM, padding: '24px 22px', display: 'flex', flexDirection: 'column', gap: 14, fontFamily: SANS, WebkitFontSmoothing: 'antialiased' }}>
+      {/* Header */}
+      <div>
+        <div style={{ fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase', color: MUTED, fontWeight: 600 }}>Direction {d.num}</div>
+        <div style={{ fontFamily: SERIF, fontSize: 24, fontWeight: 500, color: INK, marginTop: 3, lineHeight: 1.1 }}>{d.name}</div>
+        <div style={{ fontSize: 11, color: MUTED, marginTop: 4, lineHeight: 1.5 }}>{d.desc}</div>
+      </div>
+
+      {/* Light + Dark swatches */}
+      <div style={{ display: 'flex', gap: 10 }}>
+        <div style={{ flex: 1, height: 150, background: CREAM, border: `1px solid ${BORDER}`, borderRadius: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+          <Mark size={LARGE} {...swL}/>
+          <div style={{ fontSize: 8.5, letterSpacing: '0.08em', color: MUTED, textTransform: 'uppercase' }}>On Cream</div>
+        </div>
+        <div style={{ flex: 1, height: 150, background: INK, borderRadius: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+          <Mark size={LARGE} {...swD}/>
+          <div style={{ fontSize: 8.5, letterSpacing: '0.08em', color: 'rgba(168,152,128,0.65)', textTransform: 'uppercase' }}>On Dark</div>
+        </div>
+      </div>
+
+      {/* Lockup — light */}
+      <div style={{ border: `1px solid ${BORDER}`, borderRadius: 6, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 11 }}>
+        <Mark size={26} {...d.lockupLight}/>
+        <div style={{ fontFamily: SERIF, fontSize: 19, fontWeight: 500, color: INK, letterSpacing: '0.02em' }}>Virtual Watchbox</div>
+      </div>
+
+      {/* Lockup — dark */}
+      <div style={{ background: INK, borderRadius: 6, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 11 }}>
+        <Mark size={26} {...d.lockupDark}/>
+        <div style={{ fontFamily: SERIF, fontSize: 19, fontWeight: 500, color: CREAM, letterSpacing: '0.02em' }}>Virtual Watchbox</div>
+      </div>
+
+      {/* Icon sizes */}
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 20, paddingTop: 4 }}>
+        {/* Favicon 32 */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 32, height: 32, background: INK, borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Mark size={24} {...d.iconDark}/>
+          </div>
+          <div style={{ fontSize: 8, color: MUTED, letterSpacing: '0.06em' }}>32px</div>
+        </div>
+        {/* iOS App Icon */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 68, height: 68, background: INK, borderRadius: 15, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Mark size={48} {...d.iconDark}/>
+          </div>
+          <div style={{ fontSize: 8, color: MUTED, letterSpacing: '0.06em' }}>iOS</div>
+        </div>
+        {/* Android */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 68, height: 68, background: INK, borderRadius: 34, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Mark size={48} {...d.iconDark}/>
+          </div>
+          <div style={{ fontSize: 8, color: MUTED, letterSpacing: '0.06em' }}>Android</div>
+        </div>
+        {/* OG image preview note */}
+        <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+          <div style={{ width: 80, height: 42, background: '#F0EBE3', borderRadius: 4, border: `1px solid ${BORDER}`, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 8px', gap: 6 }}>
+            <Mark size={14} {...d.lockupLight}/>
+            <div style={{ fontFamily: SERIF, fontSize: 9, color: INK, letterSpacing: '0.02em' }}>VWB</div>
+          </div>
+          <div style={{ fontSize: 8, color: MUTED, letterSpacing: '0.06em' }}>OG / Share</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NavArtboard({ d }) {
+  const { Mark } = d;
+  const NAV_LINKS = ['My Collection', 'Playground', 'Discover', 'News'];
+  return (
+    <div style={{ width: 720, height: 72, background: CREAM, borderBottom: `1px solid ${BORDER}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 36px', fontFamily: SANS, WebkitFontSmoothing: 'antialiased' }}>
+      {/* Brand lockup */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+        <Mark size={22} {...d.lockupLight}/>
+        <span style={{ fontFamily: SERIF, fontSize: 19, fontWeight: 500, color: INK, letterSpacing: '0.03em' }}>Virtual Watchbox</span>
+      </div>
+      {/* Nav links */}
+      <div style={{ display: 'flex', gap: 28 }}>
+        {NAV_LINKS.map(l => (
+          <span key={l} style={{ fontSize: 11, letterSpacing: '0.04em', color: MUTED, fontWeight: 400 }}>{l}</span>
+        ))}
+      </div>
+      {/* CTA */}
+      <div style={{ fontSize: 10, letterSpacing: '0.08em', fontWeight: 500, padding: '8px 18px', background: INK, color: CREAM, borderRadius: 3 }}>Sign In</div>
+    </div>
+  );
+}
+
+// Also a dark nav variant
+function NavArtboardDark({ d }) {
+  const { Mark } = d;
+  const NAV_LINKS = ['My Collection', 'Playground', 'Discover', 'News'];
+  return (
+    <div style={{ width: 720, height: 72, background: INK, borderBottom: '1px solid #2A2520', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 36px', fontFamily: SANS, WebkitFontSmoothing: 'antialiased' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+        <Mark size={22} {...d.lockupDark}/>
+        <span style={{ fontFamily: SERIF, fontSize: 19, fontWeight: 500, color: CREAM, letterSpacing: '0.03em' }}>Virtual Watchbox</span>
+      </div>
+      <div style={{ display: 'flex', gap: 28 }}>
+        {NAV_LINKS.map(l => (
+          <span key={l} style={{ fontSize: 11, letterSpacing: '0.04em', color: 'rgba(168,152,128,0.8)', fontWeight: 400 }}>{l}</span>
+        ))}
+      </div>
+      <div style={{ fontSize: 10, letterSpacing: '0.08em', fontWeight: 500, padding: '8px 18px', background: GOLD, color: INK, borderRadius: 3 }}>Sign In</div>
+    </div>
+  );
+}
+
+// ── App ──────────────────────────────────────────────────────────────────────
+
+function App() {
+  const Canvas  = window.DesignCanvas;
+  const Section = window.DCSection;
+  const Board   = window.DCArtboard;
+  return (
+    <Canvas title="Virtual Watchbox — Logo Exploration">
+
+      <Section id="s1" title="Logo Directions">
+        {DIRECTIONS.map((d, i) => (
+          <Board key={d.id} id={d.id} label={`${d.num} ${d.name}`} width={400} height={600}>
+            <ConceptArtboard d={d} index={i}/>
+          </Board>
+        ))}
+      </Section>
+
+      <Section id="s2" title="In the Nav — Light">
+        {DIRECTIONS.map(d => (
+          <Board key={`nav-${d.id}`} id={`nav-${d.id}`} label={d.name} width={720} height={72}>
+            <NavArtboard d={d}/>
+          </Board>
+        ))}
+      </Section>
+
+      <Section id="s3" title="In the Nav — Dark">
+        {DIRECTIONS.map(d => (
+          <Board key={`navd-${d.id}`} id={`navd-${d.id}`} label={d.name} width={720} height={72}>
+            <NavArtboardDark d={d}/>
+          </Board>
+        ))}
+      </Section>
+
+    </Canvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

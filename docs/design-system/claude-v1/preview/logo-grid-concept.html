@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Virtual Watchbox — Grid + W/V Mark Concepts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="../design-canvas.jsx"></script>
+<style>* { box-sizing: border-box; margin: 0; padding: 0; } body { background: #E8E3DB; }</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+const CREAM  = '#FAF8F4';
+const INK    = '#1A1410';
+const GOLD   = '#C9A84C';
+const MUTED  = '#A89880';
+const BORDER = '#EAE5DC';
+const SERIF  = "'Cormorant Garamond', Georgia, serif";
+const SANS   = "'DM Sans', system-ui, sans-serif";
+
+// ── Mark 1: W-Box Silhouette ────────────────────────────────────────────────
+// The top profile of the box IS the letter W.
+// Left & right outer walls are tallest; two inner dividers form the valleys;
+// the centre divider-gap forms the W's middle peak.
+const WBoxMark = ({ color = INK, size = 40 }) => (
+  <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
+    <path
+      d="M4 37 L4 7 L13 20 L20 12 L27 20 L36 7 L36 37"
+      stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+    <line x1="4" y1="29" x2="36" y2="29" stroke={color} strokeWidth="1" opacity="0.35"/>
+    <line x1="4" y1="37" x2="36" y2="37" stroke={color} strokeWidth="2.2" strokeLinecap="round"/>
+  </svg>
+);
+
+// ── Mark 2: Grid with V + W in corner cells ─────────────────────────────────
+// A 2×3 grid of watch slots. The top-left cell holds a "V" and
+// the top-right cell holds a "W" — like corner engravings on a display case.
+const GridCornerMark = ({ color = INK, size = 40 }) => (
+  <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
+    {/* Outer frame */}
+    <rect x="3.5" y="5" width="33" height="30" rx="3" stroke={color} strokeWidth="1.8" fill="none"/>
+    {/* Vertical centre divider */}
+    <line x1="20" y1="5" x2="20" y2="35" stroke={color} strokeWidth="1" opacity="0.45"/>
+    {/* Two horizontal dividers → 3 rows */}
+    <line x1="3.5" y1="15" x2="36.5" y2="15" stroke={color} strokeWidth="1" opacity="0.45"/>
+    <line x1="3.5" y1="25" x2="36.5" y2="25" stroke={color} strokeWidth="1" opacity="0.45"/>
+    {/* V in top-left cell */}
+    <text x="11.75" y="13.5" textAnchor="middle"
+      fontFamily={SERIF} fontSize="9.5" fontWeight="400" fill={color}>V</text>
+    {/* W in top-right cell */}
+    <text x="28.25" y="13.5" textAnchor="middle"
+      fontFamily={SERIF} fontSize="9.5" fontWeight="400" fill={color}>W</text>
+  </svg>
+);
+
+// ── Mark 3: Corner Brackets + VW Monogram ──────────────────────────────────
+// Four L-shaped corner brackets enclose a centred "VW" monogram.
+// Like a hallmark, assay mark, or photographic registration target.
+const BracketMark = ({ color = INK, size = 40 }) => {
+  const sw = 2.2;
+  const arm = 7;
+  const pad = 4;
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
+      {/* TL */}
+      <path d={`M ${pad+arm} ${pad} L ${pad} ${pad} L ${pad} ${pad+arm}`}
+        stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"/>
+      {/* TR */}
+      <path d={`M ${40-pad-arm} ${pad} L ${40-pad} ${pad} L ${40-pad} ${pad+arm}`}
+        stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"/>
+      {/* BL */}
+      <path d={`M ${pad+arm} ${40-pad} L ${pad} ${40-pad} L ${pad} ${40-pad-arm}`}
+        stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"/>
+      {/* BR */}
+      <path d={`M ${40-pad-arm} ${40-pad} L ${40-pad} ${40-pad} L ${40-pad} ${40-pad-arm}`}
+        stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"/>
+      {/* VW monogram, centred */}
+      <text x="20" y="24.5" textAnchor="middle"
+        fontFamily={SERIF} fontSize="15" fontWeight="400" fill={color} letterSpacing="0.04em">VW</text>
+    </svg>
+  );
+};
+
+// ── Mark 4: Slots W ─────────────────────────────────────────────────────────
+// Five vertical bars (watch slots in a row), bottom-aligned,
+// whose varying heights trace the silhouette of a W.
+const SlotsWMark = ({ color = INK, size = 40 }) => {
+  const heights = [28, 15, 22, 15, 28];
+  const slotW = 5;
+  const gap   = 2.5;
+  const totalW = heights.length * slotW + (heights.length - 1) * gap; // 34.5 → fits in 40
+  const startX = (40 - totalW) / 2;
+  const bottom = 36;
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
+      {heights.map((h, i) => (
+        <rect key={i}
+          x={startX + i * (slotW + gap)}
+          y={bottom - h}
+          width={slotW} height={h}
+          rx="1.5" fill={color}/>
+      ))}
+    </svg>
+  );
+};
+
+// ── Concept data ─────────────────────────────────────────────────────────────
+const CONCEPTS = [
+  {
+    id: 'wbox', num: '01',
+    name: 'W-Box',
+    desc: 'The top profile of the watchbox IS the letter W — outer walls form the legs, inner dividers the valleys',
+    Mark: WBoxMark,
+    lockupLight: { color: INK },
+    lockupDark:  { color: GOLD },
+    iconDark:    { color: GOLD },
+  },
+  {
+    id: 'grid', num: '02',
+    name: 'Grid V·W',
+    desc: 'A 2×3 display-case grid with V and W letterforms engraved into the top corner cells',
+    Mark: GridCornerMark,
+    lockupLight: { color: INK },
+    lockupDark:  { color: GOLD },
+    iconDark:    { color: GOLD },
+  },
+  {
+    id: 'bracket', num: '03',
+    name: 'Corner Marks',
+    desc: 'Four L-bracket registration marks frame a VW monogram — hallmark / assay mark feeling',
+    Mark: BracketMark,
+    lockupLight: { color: INK },
+    lockupDark:  { color: GOLD },
+    iconDark:    { color: GOLD },
+  },
+  {
+    id: 'slots', num: '04',
+    name: 'Slots W',
+    desc: 'Five watch slots, bottom-aligned, whose varying heights silhouette the letter W',
+    Mark: SlotsWMark,
+    lockupLight: { color: INK },
+    lockupDark:  { color: GOLD },
+    iconDark:    { color: GOLD },
+  },
+];
+
+// ── Shared artboard component ─────────────────────────────────────────────────
+function ConceptCard({ c }) {
+  const { Mark } = c;
+  return (
+    <div style={{ width: 400, height: 600, background: CREAM, padding: '24px 22px', display: 'flex', flexDirection: 'column', gap: 14, fontFamily: SANS, WebkitFontSmoothing: 'antialiased' }}>
+
+      {/* Header */}
+      <div>
+        <div style={{ fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase', color: MUTED, fontWeight: 600 }}>Concept {c.num}</div>
+        <div style={{ fontFamily: SERIF, fontSize: 24, fontWeight: 500, color: INK, marginTop: 3 }}>{c.name}</div>
+        <div style={{ fontSize: 11, color: MUTED, marginTop: 5, lineHeight: 1.6 }}>{c.desc}</div>
+      </div>
+
+      {/* Light + Dark swatches */}
+      <div style={{ display: 'flex', gap: 10 }}>
+        <div style={{ flex: 1, height: 150, background: CREAM, border: `1px solid ${BORDER}`, borderRadius: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+          <Mark size={66} color={INK}/>
+          <div style={{ fontSize: 8.5, letterSpacing: '0.1em', color: MUTED, textTransform: 'uppercase' }}>On Cream</div>
+        </div>
+        <div style={{ flex: 1, height: 150, background: INK, borderRadius: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+          <Mark size={66} color={GOLD}/>
+          <div style={{ fontSize: 8.5, letterSpacing: '0.1em', color: 'rgba(168,152,128,0.6)', textTransform: 'uppercase' }}>On Dark</div>
+        </div>
+      </div>
+
+      {/* Lockup — light */}
+      <div style={{ border: `1px solid ${BORDER}`, borderRadius: 6, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <Mark size={28} {...c.lockupLight}/>
+        <div style={{ fontFamily: SERIF, fontSize: 20, fontWeight: 500, color: INK, letterSpacing: '0.025em' }}>Virtual Watchbox</div>
+      </div>
+
+      {/* Lockup — dark */}
+      <div style={{ background: INK, borderRadius: 6, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <Mark size={28} {...c.lockupDark}/>
+        <div style={{ fontFamily: SERIF, fontSize: 20, fontWeight: 500, color: CREAM, letterSpacing: '0.025em' }}>Virtual Watchbox</div>
+      </div>
+
+      {/* Sizes row */}
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 20, paddingTop: 2 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 32, height: 32, background: INK, borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Mark size={24} {...c.iconDark}/>
+          </div>
+          <div style={{ fontSize: 8, color: MUTED, letterSpacing: '0.06em' }}>32px</div>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 68, height: 68, background: INK, borderRadius: 15, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Mark size={50} {...c.iconDark}/>
+          </div>
+          <div style={{ fontSize: 8, color: MUTED, letterSpacing: '0.06em' }}>iOS</div>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 68, height: 68, background: INK, borderRadius: 34, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Mark size={50} {...c.iconDark}/>
+          </div>
+          <div style={{ fontSize: 8, color: MUTED, letterSpacing: '0.06em' }}>Android</div>
+        </div>
+        {/* Mark solo on cream — big */}
+        <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 68, height: 68, background: CREAM, border: `1px solid ${BORDER}`, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Mark size={48} color={GOLD}/>
+          </div>
+          <div style={{ fontSize: 8, color: MUTED, letterSpacing: '0.06em' }}>Gold on Cream</div>
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
+// ── Nav strips ───────────────────────────────────────────────────────────────
+const NAV_LINKS = ['My Collection', 'Playground', 'Discover', 'News'];
+
+function NavLight({ c }) {
+  return (
+    <div style={{ width: 720, height: 72, background: CREAM, borderBottom: `1px solid ${BORDER}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 36px', fontFamily: SANS, WebkitFontSmoothing: 'antialiased' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <c.Mark size={22} color={INK}/>
+        <span style={{ fontFamily: SERIF, fontSize: 19, fontWeight: 500, color: INK, letterSpacing: '0.03em' }}>Virtual Watchbox</span>
+      </div>
+      <div style={{ display: 'flex', gap: 28 }}>
+        {NAV_LINKS.map(l => <span key={l} style={{ fontSize: 11, letterSpacing: '0.04em', color: MUTED }}>{l}</span>)}
+      </div>
+      <div style={{ fontSize: 10, letterSpacing: '0.08em', fontWeight: 500, padding: '8px 18px', background: INK, color: CREAM, borderRadius: 3 }}>Sign In</div>
+    </div>
+  );
+}
+
+function NavDark({ c }) {
+  return (
+    <div style={{ width: 720, height: 72, background: INK, borderBottom: '1px solid #2A2520', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 36px', fontFamily: SANS, WebkitFontSmoothing: 'antialiased' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <c.Mark size={22} color={GOLD}/>
+        <span style={{ fontFamily: SERIF, fontSize: 19, fontWeight: 500, color: CREAM, letterSpacing: '0.03em' }}>Virtual Watchbox</span>
+      </div>
+      <div style={{ display: 'flex', gap: 28 }}>
+        {NAV_LINKS.map(l => <span key={l} style={{ fontSize: 11, letterSpacing: '0.04em', color: 'rgba(168,152,128,0.75)' }}>{l}</span>)}
+      </div>
+      <div style={{ fontSize: 10, letterSpacing: '0.08em', fontWeight: 500, padding: '8px 18px', background: GOLD, color: INK, borderRadius: 3 }}>Sign In</div>
+    </div>
+  );
+}
+
+// ── App ───────────────────────────────────────────────────────────────────────
+function App() {
+  const Canvas  = window.DesignCanvas;
+  const Section = window.DCSection;
+  const Board   = window.DCArtboard;
+  return (
+    <Canvas title="Virtual Watchbox — Grid + W/V Mark Concepts">
+
+      <Section id="s1" title="Concept Directions">
+        {CONCEPTS.map((c, i) => (
+          <Board key={c.id} id={c.id} label={`${c.num} ${c.name}`} width={400} height={600}>
+            <ConceptCard c={c}/>
+          </Board>
+        ))}
+      </Section>
+
+      <Section id="s2" title="In the Nav — Light">
+        {CONCEPTS.map(c => (
+          <Board key={`nl-${c.id}`} id={`nl-${c.id}`} label={c.name} width={720} height={72}>
+            <NavLight c={c}/>
+          </Board>
+        ))}
+      </Section>
+
+      <Section id="s3" title="In the Nav — Dark">
+        {CONCEPTS.map(c => (
+          <Board key={`nd-${c.id}`} id={`nd-${c.id}`} label={c.name} width={720} height={72}>
+            <NavDark c={c}/>
+          </Board>
+        ))}
+      </Section>
+
+    </Canvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

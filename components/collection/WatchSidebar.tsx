@@ -4,13 +4,14 @@ import type { ReactNode } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import type { Watch, WatchCondition } from '@/types/watch'
+import { brand } from '@/lib/brand'
 
 const conditionColors: Record<WatchCondition, { bg: string; text: string }> = {
-  Unworn: { bg: '#E8F4E8', text: '#2D6A2D' },
-  'Like New': { bg: '#EDF4E8', text: '#3A6A2D' },
-  Excellent: { bg: '#FFF8E6', text: '#8A6A10' },
-  Good: { bg: '#FDF0E0', text: '#8A5010' },
-  Fair: { bg: '#FAE8E8', text: '#8A2020' },
+  Unworn:    { bg: brand.condition.unworn.bg,    text: brand.condition.unworn.text },
+  'Like New':{ bg: brand.condition.likeNew.bg,   text: brand.condition.likeNew.text },
+  Excellent: { bg: brand.condition.excellent.bg, text: brand.condition.excellent.text },
+  Good:      { bg: brand.condition.good.bg,      text: brand.condition.good.text },
+  Fair:      { bg: brand.condition.fair.bg,      text: brand.condition.fair.text },
 }
 
 function fmt(n: number) {
@@ -32,14 +33,14 @@ function IconButton({
       style={{
         width: 24,
         height: 24,
-        borderRadius: 6,
-        border: '1px solid #E8E2D8',
-        background: '#FFFFFF',
+        borderRadius: brand.radius.sm,
+        border: `1px solid ${brand.colors.borderMid}`,
+        background: brand.colors.white,
         cursor: 'pointer',
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: '#A89880',
+        color: brand.colors.muted,
       }}
       title={label}
       aria-label={label}
@@ -47,6 +48,56 @@ function IconButton({
       {children}
     </button>
   )
+}
+
+const sidebarPanel: React.CSSProperties = {
+  background: brand.colors.white,
+  border: `1px solid ${brand.colors.border}`,
+  borderRadius: brand.radius.xl,
+  padding: 24,
+  position: 'sticky',
+  top: 88,
+  boxShadow: brand.shadow.lg,
+}
+
+const metaLabel: React.CSSProperties = {
+  fontFamily: brand.font.sans,
+  fontSize: 10,
+  fontWeight: 500,
+  letterSpacing: '0.12em',
+  textTransform: 'uppercase',
+  color: brand.colors.muted,
+}
+
+const btnPrimary: React.CSSProperties = {
+  display: 'block',
+  fontFamily: brand.font.sans,
+  fontSize: 10,
+  fontWeight: 500,
+  letterSpacing: '0.08em',
+  padding: '9px 18px',
+  background: brand.colors.ink,
+  color: brand.colors.bg,
+  border: 'none',
+  borderRadius: brand.radius.btn,
+  cursor: 'pointer',
+  width: '100%',
+  textDecoration: 'none',
+  textAlign: 'center',
+}
+
+const btnSecondary: React.CSSProperties = {
+  fontFamily: brand.font.sans,
+  fontSize: 10,
+  fontWeight: 500,
+  letterSpacing: '0.08em',
+  padding: '9px 18px',
+  background: 'transparent',
+  color: brand.colors.ink,
+  border: `1px solid ${brand.colors.borderLight}`,
+  borderRadius: brand.radius.btn,
+  cursor: 'pointer',
+  width: '100%',
 }
 
 interface Props {
@@ -68,26 +119,12 @@ export default function WatchSidebar({
 
   if (!watch) {
     return (
-      <div
-        style={{
-          background: '#FFFFFF',
-          border: '1px solid #EAE5DC',
-          borderRadius: 12,
-          padding: 24,
-          position: 'sticky',
-          top: 88,
-          boxShadow: '0 4px 24px rgba(26,20,16,0.06)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: 400,
-        }}
-      >
+      <div style={{ ...sidebarPanel, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
+          <div style={{ ...metaLabel, marginBottom: 10 }}>
             Select a Watch
           </div>
-          <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: 18, color: '#D4CBBF' }}>
+          <div style={{ fontFamily: brand.font.serif, fontSize: 18, color: brand.colors.borderLight }}>
             Click any slot to view details
           </div>
         </div>
@@ -99,21 +136,9 @@ export default function WatchSidebar({
   const sourceId = sourceWatchId ?? watch.id
 
   return (
-    <div
-      style={{
-        background: '#FFFFFF',
-        border: '1px solid #EAE5DC',
-        borderRadius: 12,
-        padding: 24,
-        position: 'sticky',
-        top: 88,
-        boxShadow: '0 4px 24px rgba(26,20,16,0.06)',
-      }}
-    >
+    <div style={sidebarPanel}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880' }}>
-          Watch Detail
-        </div>
+        <div style={metaLabel}>Watch Detail</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <IconButton label="Edit watch" onClick={() => onRequestEdit?.(watch)}>
             <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
@@ -134,23 +159,23 @@ export default function WatchSidebar({
           alt={watch.model}
           fill
           sizes="160px"
-          style={{ objectFit: 'contain', filter: 'drop-shadow(0 8px 16px rgba(26,20,16,0.10))' }}
+          style={{ objectFit: 'contain', filter: brand.shadow.drop }}
         />
       </div>
 
-      <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 4 }}>
+      <div style={{ ...metaLabel, marginBottom: 4 }}>
         {watch.brand.toUpperCase()}
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 3 }}>
-        <h3 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 26, fontWeight: 400, lineHeight: 1.1, color: '#1A1410', margin: 0 }}>
+        <h3 style={{ fontFamily: brand.font.serif, fontSize: 26, fontWeight: 400, lineHeight: 1.1, color: brand.colors.ink, margin: 0 }}>
           {watch.model}
         </h3>
         <span
           style={{
             display: 'inline-block',
             padding: '3px 10px',
-            borderRadius: 20,
-            fontFamily: 'var(--font-dm-sans)',
+            borderRadius: brand.radius.pill,
+            fontFamily: brand.font.sans,
             fontSize: 10,
             fontWeight: 600,
             letterSpacing: '0.04em',
@@ -162,18 +187,18 @@ export default function WatchSidebar({
           {watch.condition}
         </span>
       </div>
-      <div style={{ fontSize: 12, color: '#A89880', marginBottom: 4 }}>Ref. {watch.reference}</div>
+      <div style={{ fontSize: 12, color: brand.colors.muted, marginBottom: 4 }}>Ref. {watch.reference}</div>
       {watch.notes && (
-        <div style={{ fontSize: 11, color: '#C9A84C', fontStyle: 'italic', marginBottom: 16 }}>
+        <div style={{ fontSize: 11, color: brand.colors.gold, fontStyle: 'italic', marginBottom: 16 }}>
           &ldquo;{watch.notes}&rdquo;
         </div>
       )}
 
       <div
         style={{
-          background: '#FAF8F4',
-          border: '1px solid #EAE5DC',
-          borderRadius: 8,
+          background: brand.colors.bg,
+          border: `1px solid ${brand.colors.border}`,
+          borderRadius: brand.radius.md,
           padding: '12px 16px',
           display: 'flex',
           justifyContent: 'space-between',
@@ -181,10 +206,8 @@ export default function WatchSidebar({
           margin: '16px 0',
         }}
       >
-        <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880' }}>
-          Est. Market Value
-        </span>
-        <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 18, fontWeight: 600, color: '#C9A84C' }}>
+        <span style={metaLabel}>Est. Market Value</span>
+        <span style={{ fontFamily: brand.font.sans, fontSize: 18, fontWeight: 600, color: brand.colors.gold }}>
           {fmt(watch.estimatedValue)}
         </span>
       </div>
@@ -211,8 +234,8 @@ export default function WatchSidebar({
               fontSize: 12,
             }}
           >
-            <span style={{ color: '#A89880', fontWeight: 400 }}>{label}</span>
-            <span style={{ color: '#1A1410', fontWeight: 500, textAlign: 'right', maxWidth: '55%' }}>{value}</span>
+            <span style={{ color: brand.colors.muted, fontWeight: 400 }}>{label}</span>
+            <span style={{ color: brand.colors.ink, fontWeight: 500, textAlign: 'right', maxWidth: '55%' }}>{value}</span>
           </div>
         ))}
       </div>
@@ -223,41 +246,11 @@ export default function WatchSidebar({
             href={`https://www.chrono24.com/search/index.htm?query=${encodeURIComponent(watch.brand + ' ' + watch.model)}`}
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              display: 'block',
-              fontFamily: 'var(--font-dm-sans)',
-              fontSize: 10,
-              fontWeight: 500,
-              letterSpacing: '0.08em',
-              padding: '9px 18px',
-              background: '#1A1410',
-              color: '#FAF8F4',
-              border: 'none',
-              borderRadius: 4,
-              cursor: 'pointer',
-              width: '100%',
-              textDecoration: 'none',
-              textAlign: 'center',
-            }}
+            style={btnPrimary}
           >
             Find For Sale ↗
           </a>
-          <button
-            onClick={() => router.push(`/collection/add/${sourceId}`)}
-            style={{
-              fontFamily: 'var(--font-dm-sans)',
-              fontSize: 10,
-              fontWeight: 500,
-              letterSpacing: '0.08em',
-              padding: '9px 18px',
-              background: 'transparent',
-              color: '#1A1410',
-              border: '1px solid #D4CBBF',
-              borderRadius: 4,
-              cursor: 'pointer',
-              width: '100%',
-            }}
-          >
+          <button onClick={() => router.push(`/collection/add/${sourceId}`)} style={btnSecondary}>
             Add to My Collection
           </button>
         </div>
@@ -267,58 +260,13 @@ export default function WatchSidebar({
             href={`https://www.chrono24.com/search/index.htm?query=${encodeURIComponent(watch.brand + ' ' + watch.model)}`}
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              display: 'block',
-              fontFamily: 'var(--font-dm-sans)',
-              fontSize: 10,
-              fontWeight: 500,
-              letterSpacing: '0.08em',
-              padding: '9px 18px',
-              background: '#1A1410',
-              color: '#FAF8F4',
-              border: 'none',
-              borderRadius: 4,
-              cursor: 'pointer',
-              width: '100%',
-              textDecoration: 'none',
-              textAlign: 'center',
-            }}
+            style={btnPrimary}
           >
             Find For Sale ↗
           </a>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            <button
-              style={{
-                fontFamily: 'var(--font-dm-sans)',
-                fontSize: 10,
-                fontWeight: 500,
-                letterSpacing: '0.08em',
-                padding: '9px 18px',
-                background: 'transparent',
-                color: '#1A1410',
-                border: '1px solid #D4CBBF',
-                borderRadius: 4,
-                cursor: 'pointer',
-              }}
-            >
-              Sell This Watch
-            </button>
-            <button
-              style={{
-                fontFamily: 'var(--font-dm-sans)',
-                fontSize: 10,
-                fontWeight: 500,
-                letterSpacing: '0.08em',
-                padding: '9px 18px',
-                background: 'transparent',
-                color: '#1A1410',
-                border: '1px solid #D4CBBF',
-                borderRadius: 4,
-                cursor: 'pointer',
-              }}
-            >
-              Swap Strap
-            </button>
+            <button style={btnSecondary}>Sell This Watch</button>
+            <button style={btnSecondary}>Swap Strap</button>
           </div>
         </div>
       )}

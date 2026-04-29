@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #FAF8F4; font-family: 'DM Sans', sans-serif; padding: 20px 24px; -webkit-font-smoothing: antialiased; }
+.label { font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #A89880; margin-bottom: 10px; }
+.row { display: flex; gap: 12px; align-items: flex-start; }
+.slot {
+  width: 88px; aspect-ratio: 3/4;
+  border-radius: 8px; position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.slot-num { position: absolute; top: 7px; left: 9px; font-size: 8px; color: #A89880; letter-spacing: 0.05em; }
+</style></head><body>
+<div class="label">Watch Box Slots</div>
+<div class="row">
+  <!-- Resting filled -->
+  <div>
+    <div class="slot" style="background:#FFFCF7;border:1.5px solid #E0DAD0;box-shadow:0 1px 4px rgba(26,20,16,0.05);">
+      <span class="slot-num">01</span>
+      <svg width="54" height="54" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="44" fill="#F5F0E8" stroke="#D4CBBF" stroke-width="2"/>
+        <circle cx="50" cy="50" r="36" fill="none" stroke="#1A1410" stroke-width="1" opacity="0.15"/>
+        <line x1="50" y1="18" x2="50" y2="50" stroke="#1A1410" stroke-width="2" stroke-linecap="round"/>
+        <line x1="50" y1="50" x2="66" y2="58" stroke="#1A1410" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div style="font-size:8px;color:#A89880;text-align:center;margin-top:5px;">Resting</div>
+  </div>
+  <!-- Hovered -->
+  <div>
+    <div class="slot" style="background:#FFFCF7;border:1.5px solid #C9A84C;box-shadow:0 4px 16px rgba(201,168,76,0.16);">
+      <span class="slot-num" style="color:#C9A84C;">01</span>
+      <svg width="54" height="54" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="44" fill="#1B2A4A" stroke="#C9A84C" stroke-width="1.5" opacity="0.8"/>
+        <circle cx="50" cy="50" r="36" fill="none" stroke="#FAF8F4" stroke-width="1" opacity="0.2"/>
+        <line x1="50" y1="18" x2="50" y2="50" stroke="#FAF8F4" stroke-width="2" stroke-linecap="round"/>
+        <line x1="50" y1="50" x2="66" y2="58" stroke="#FAF8F4" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div style="font-size:8px;color:#A89880;text-align:center;margin-top:5px;">Hovered</div>
+  </div>
+  <!-- Active/Selected -->
+  <div>
+    <div class="slot" style="background:#FFFCF7;border:1.5px solid #C9A84C;box-shadow:0 0 0 1px rgba(201,168,76,0.4),0 6px 24px rgba(201,168,76,0.12);">
+      <span class="slot-num" style="color:#C9A84C;">02</span>
+      <svg width="54" height="54" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="44" fill="#2A4A2E" stroke="#C9A84C" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="36" fill="none" stroke="#FAF8F4" stroke-width="1" opacity="0.2"/>
+        <line x1="50" y1="18" x2="50" y2="50" stroke="#FAF8F4" stroke-width="2" stroke-linecap="round"/>
+        <line x1="50" y1="50" x2="66" y2="58" stroke="#FAF8F4" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div style="font-size:8px;color:#A89880;text-align:center;margin-top:5px;">Active</div>
+  </div>
+  <!-- Empty slot -->
+  <div>
+    <div class="slot" style="background:#FFFCF7;border:1.5px dashed #D0C9BE;color:#A89880;gap:5px;flex-direction:column;">
+      <span style="font-size:20px;line-height:1;color:#D4CBBF;">+</span>
+      <span style="font-size:7.5px;letter-spacing:0.08em;color:#A89880;">ADD WATCH</span>
+    </div>
+    <div style="font-size:8px;color:#A89880;text-align:center;margin-top:5px;">Empty</div>
+  </div>
+  <!-- Overflow slot -->
+  <div>
+    <div class="slot" style="background:#EDE9E2;border:1.5px solid #D4CBBF;color:#A89880;gap:4px;flex-direction:column;">
+      <span style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;color:#1A1410;">+3</span>
+      <span style="font-size:7.5px;letter-spacing:0.08em;">MORE</span>
+    </div>
+    <div style="font-size:8px;color:#A89880;text-align:center;margin-top:5px;">Overflow</div>
+  </div>
+</div>
+</body></html>

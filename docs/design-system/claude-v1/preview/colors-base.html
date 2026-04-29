@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #FAF8F4; font-family: 'DM Sans', sans-serif; padding: 20px 24px; }
+.grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.swatch { display: flex; flex-direction: column; gap: 8px; }
+.chip { height: 56px; border-radius: 8px; border: 1px solid rgba(26,20,16,0.08); }
+.name { font-size: 10px; font-weight: 500; color: #1A1410; letter-spacing: 0.02em; }
+.hex  { font-size: 10px; color: #A89880; }
+.role { font-size: 9px; color: #A89880; margin-top: 1px; line-height: 1.4; }
+</style></head><body>
+<div class="grid">
+  <div class="swatch"><div class="chip" style="background:#FAF8F4; border-color: #D4CBBF;"></div><div class="name">bg</div><div class="hex">#FAF8F4</div><div class="role">Page background</div></div>
+  <div class="swatch"><div class="chip" style="background:#FFFCF7; border-color: #D4CBBF;"></div><div class="name">slot</div><div class="hex">#FFFCF7</div><div class="role">Cards & slots</div></div>
+  <div class="swatch"><div class="chip" style="background:#1A1410;"></div><div class="name">ink</div><div class="hex">#1A1410</div><div class="role">Primary text</div></div>
+  <div class="swatch"><div class="chip" style="background:#A89880;"></div><div class="name">muted</div><div class="hex">#A89880</div><div class="role">Labels & meta</div></div>
+  <div class="swatch"><div class="chip" style="background:#C9A84C;"></div><div class="name">gold</div><div class="hex">#C9A84C</div><div class="role">Accent only</div></div>
+</div>
+<div class="grid" style="margin-top:12px;">
+  <div class="swatch"><div class="chip" style="background:#2A2520;"></div><div class="name">dark</div><div class="hex">#2A2520</div><div class="role">Dark badges</div></div>
+  <div class="swatch"><div class="chip" style="background:#EAE5DC; border-color:#D4CBBF;"></div><div class="name">border</div><div class="hex">#EAE5DC</div><div class="role">Dividers</div></div>
+  <div class="swatch"><div class="chip" style="background:#E8E2D8; border-color:#D4CBBF;"></div><div class="name">border-mid</div><div class="hex">#E8E2D8</div><div class="role">Card borders</div></div>
+  <div class="swatch"><div class="chip" style="background:#D4CBBF; border-color:#C0B8AE;"></div><div class="name">border-light</div><div class="hex">#D4CBBF</div><div class="role">Secondary btn</div></div>
+  <div class="swatch"><div class="chip" style="background:linear-gradient(160deg,#1e1b16 0%,#2a2420 100%);"></div><div class="name">hero-dark</div><div class="hex">#1e1b16→</div><div class="role">Hero panel only</div></div>
+</div>
+</body></html>

@@ -7,6 +7,7 @@ import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import { getWatchboxOverflow } from '@/lib/watchboxOverflow'
 import DialSVG from '@/components/watchbox/DialSVG'
 import HoverCard from '@/components/watchbox/HoverCard'
+import { brand } from '@/lib/brand'
 
 interface Props {
   watches: Watch[]
@@ -48,9 +49,9 @@ function OverflowListItem({
         style={{
           width: 48,
           height: 48,
-          borderRadius: 8,
-          background: '#FAF8F4',
-          border: '1px solid #E8E2D8',
+          borderRadius: brand.radius.md,
+          background: brand.colors.bg,
+          border: `1px solid ${brand.colors.borderMid}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -79,12 +80,12 @@ function OverflowListItem({
       <div style={{ minWidth: 0 }}>
         <div
           style={{
-            fontFamily: 'var(--font-dm-sans)',
+            fontFamily: brand.font.sans,
             fontSize: 9,
             fontWeight: 600,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            color: '#C9A84C',
+            color: brand.colors.gold,
             marginBottom: 2,
           }}
         >
@@ -92,9 +93,9 @@ function OverflowListItem({
         </div>
         <div
           style={{
-            fontFamily: 'var(--font-cormorant)',
+            fontFamily: brand.font.serif,
             fontSize: 18,
-            color: '#1A1410',
+            color: brand.colors.ink,
             lineHeight: 1.05,
             marginBottom: 2,
             whiteSpace: 'nowrap',
@@ -106,9 +107,9 @@ function OverflowListItem({
         </div>
         <div
           style={{
-            fontFamily: 'var(--font-dm-sans)',
+            fontFamily: brand.font.sans,
             fontSize: 10,
-            color: '#A89880',
+            color: brand.colors.muted,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -218,7 +219,7 @@ export default function WatchBox({
                       }}
                     >
                       <span style={{ fontSize: 18, color: ln.emptyColor }}>+</span>
-                      <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 8, letterSpacing: '0.1em', color: ln.emptyColor }}>ADD</span>
+                      <span style={{ fontFamily: brand.font.sans, fontSize: 8, letterSpacing: '0.1em', color: ln.emptyColor }}>ADD</span>
                     </div>
                   </div>
                 )
@@ -254,7 +255,7 @@ export default function WatchBox({
                           position: 'absolute',
                           top: 5,
                           left: 6,
-                          fontFamily: 'var(--font-dm-sans)',
+                          fontFamily: brand.font.sans,
                           fontSize: 8,
                           fontWeight: 500,
                           letterSpacing: '0.08em',
@@ -267,9 +268,9 @@ export default function WatchBox({
                       </span>
                       <div
                         style={{
-                          fontFamily: 'var(--font-cormorant)',
+                          fontFamily: brand.font.serif,
                           fontSize: 26,
-                          color: '#1A1410',
+                          color: brand.colors.ink,
                           lineHeight: 1,
                         }}
                       >
@@ -277,12 +278,12 @@ export default function WatchBox({
                       </div>
                       <div
                         style={{
-                          fontFamily: 'var(--font-dm-sans)',
+                          fontFamily: brand.font.sans,
                           fontSize: 9,
                           fontWeight: 600,
                           letterSpacing: '0.12em',
                           textTransform: 'uppercase',
-                          color: '#A89880',
+                          color: brand.colors.muted,
                         }}
                       >
                         More
@@ -296,7 +297,7 @@ export default function WatchBox({
                             width: 4,
                             height: 4,
                             borderRadius: '50%',
-                            background: '#C9A84C',
+                            background: brand.colors.gold,
                             boxShadow: '0 0 6px rgba(201,168,76,0.8)',
                             zIndex: 2,
                           }}
@@ -393,7 +394,7 @@ export default function WatchBox({
                           width: 4,
                           height: 4,
                           borderRadius: '50%',
-                          background: '#C9A84C',
+                          background: brand.colors.gold,
                           boxShadow: '0 0 6px rgba(201,168,76,0.8)',
                           zIndex: 2,
                         }}
@@ -416,9 +417,9 @@ export default function WatchBox({
                   width: 260,
                   maxHeight: 320,
                   overflowY: 'auto',
-                  background: '#FFFFFF',
-                  border: '1px solid #E8E2D8',
-                  borderRadius: 10,
+                  background: brand.colors.white,
+                  border: `1px solid ${brand.colors.borderMid}`,
+                  borderRadius: brand.radius.lg,
                   boxShadow: '0 16px 40px rgba(26,20,16,0.16)',
                   opacity: overflowOpen ? 1 : 0,
                   transform: overflowOpen ? 'translateY(0)' : 'translateY(-6px)',
@@ -439,18 +440,18 @@ export default function WatchBox({
                   <div>
                     <div
                       style={{
-                        fontFamily: 'var(--font-dm-sans)',
+                        fontFamily: brand.font.sans,
                         fontSize: 9,
                         fontWeight: 600,
                         letterSpacing: '0.12em',
                         textTransform: 'uppercase',
-                        color: '#A89880',
+                        color: brand.colors.muted,
                         marginBottom: 2,
                       }}
                     >
                       Hidden Watches
                     </div>
-                    <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#1A1410' }}>
+                    <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.ink }}>
                       {overflow.overflowCount} more in this box
                     </div>
                   </div>
@@ -460,7 +461,7 @@ export default function WatchBox({
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer',
-                      color: '#A89880',
+                      color: brand.colors.muted,
                       fontSize: 16,
                       lineHeight: 1,
                       padding: 4,
@@ -493,7 +494,7 @@ export default function WatchBox({
                     left: 0,
                     right: 0,
                     zIndex: 190,
-                    background: '#FFFFFF',
+                    background: brand.colors.white,
                     borderRadius: '20px 20px 0 0',
                     transform: 'translateY(0)',
                     display: 'none',
@@ -515,18 +516,18 @@ export default function WatchBox({
                     <div>
                       <div
                         style={{
-                          fontFamily: 'var(--font-dm-sans)',
+                          fontFamily: brand.font.sans,
                           fontSize: 10,
                           fontWeight: 600,
                           letterSpacing: '0.12em',
                           textTransform: 'uppercase',
-                          color: '#A89880',
+                          color: brand.colors.muted,
                           marginBottom: 4,
                         }}
                       >
                         Hidden Watches
                       </div>
-                      <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#1A1410' }}>
+                      <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink }}>
                         {overflow.overflowCount} more in this box
                       </div>
                     </div>
@@ -536,7 +537,7 @@ export default function WatchBox({
                         background: 'none',
                         border: 'none',
                         cursor: 'pointer',
-                        color: '#A89880',
+                        color: brand.colors.muted,
                         fontSize: 18,
                         lineHeight: 1,
                         padding: 4,

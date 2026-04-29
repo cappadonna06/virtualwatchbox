@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { Watch, WatchType } from '@/types/watch'
+import { brand } from '@/lib/brand'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -68,7 +69,7 @@ function normalizeDialColor(dialColor: string): string {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 14 }}>
+    <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 14 }}>
       {children}
     </div>
   )
@@ -77,7 +78,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 // No default marginBottom — spacing handled by grid gap / wrapper
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ background: '#FFFFFF', border: '1px solid #EAE5DC', borderRadius: 10, padding: '20px 24px', height: '100%' }}>
+    <div style={{ background: brand.colors.white, border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.lg, padding: '20px 24px', height: '100%' }}>
       {children}
     </div>
   )
@@ -86,8 +87,8 @@ function Card({ children }: { children: React.ReactNode }) {
 function ValueRow({ label, value, prominent, color }: { label: string; value: string; prominent?: boolean; color?: string }) {
   return (
     <div style={{ borderBottom: '1px solid #F0EBE3', paddingBottom: 10 }}>
-      <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, color: '#A89880', marginBottom: 3, letterSpacing: '0.04em' }}>{label}</div>
-      <div style={{ fontFamily: prominent ? 'var(--font-cormorant)' : 'var(--font-dm-sans)', fontSize: prominent ? 28 : 14, fontWeight: prominent ? 400 : 600, color: color ?? '#1A1410' }}>
+      <div style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted, marginBottom: 3, letterSpacing: '0.04em' }}>{label}</div>
+      <div style={{ fontFamily: prominent ? brand.font.serif : brand.font.sans, fontSize: prominent ? 28 : 14, fontWeight: prominent ? 400 : 600, color: color ?? brand.colors.ink }}>
         {value}
       </div>
     </div>
@@ -100,13 +101,13 @@ function HorizontalBar({ label, count, maxCount, barColor, labelWidth = 90 }: { 
   const pct = maxCount > 0 ? (count / maxCount) * 100 : 0
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-      <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, color: count > 0 ? '#1A1410' : '#C8BFAF', width: labelWidth, flexShrink: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <span style={{ fontFamily: brand.font.sans, fontSize: 10, color: count > 0 ? brand.colors.ink : '#C8BFAF', width: labelWidth, flexShrink: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
         {label}
       </span>
       <div style={{ flex: 1, height: 8, background: '#F0EBE3', borderRadius: 4, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: 4, transition: 'width 0.5s ease' }} />
       </div>
-      <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 600, color: count > 0 ? '#1A1410' : '#C8BFAF', width: 16, textAlign: 'right', flexShrink: 0 }}>
+      <span style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, color: count > 0 ? brand.colors.ink : '#C8BFAF', width: 16, textAlign: 'right', flexShrink: 0 }}>
         {count}
       </span>
     </div>
@@ -118,16 +119,16 @@ function IconTile({ icon, label, count }: { icon: string; label: string; count: 
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
-      padding: '12px 6px', borderRadius: 10,
-      background: owned ? '#FAF8F4' : 'transparent',
-      border: owned ? '1px solid #E8E2D8' : '1px solid #F0EBE3',
+      padding: '12px 6px', borderRadius: brand.radius.lg,
+      background: owned ? brand.colors.bg : 'transparent',
+      border: owned ? `1px solid ${brand.colors.borderMid}` : '1px solid #F0EBE3',
       opacity: owned ? 1 : 0.4,
     }}>
       <span style={{ fontSize: 22, lineHeight: 1 }}>{icon}</span>
-      <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 7, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#1A1410', textAlign: 'center', lineHeight: 1.3 }}>
+      <span style={{ fontFamily: brand.font.sans, fontSize: 7, letterSpacing: '0.07em', textTransform: 'uppercase', color: brand.colors.ink, textAlign: 'center', lineHeight: 1.3 }}>
         {label}
       </span>
-      <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 700, color: owned ? '#C9A84C' : '#C8BFAF' }}>
+      <span style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 700, color: owned ? brand.colors.gold : '#C8BFAF' }}>
         ×{count}
       </span>
     </div>
@@ -176,18 +177,18 @@ export default function CollectionStats({ watches, mode = 'collection' }: Props)
     <div>
       {/* View toggle */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
-        <div style={{ display: 'inline-flex', border: '1px solid #E8E2D8', borderRadius: 6, overflow: 'hidden', background: '#FAF8F4' }}>
+        <div style={{ display: 'inline-flex', border: `1px solid ${brand.colors.borderMid}`, borderRadius: brand.radius.sm, overflow: 'hidden', background: brand.colors.bg }}>
           {(['overview', 'graphical'] as const).map((v, i) => (
             <button
               key={v}
               onClick={() => setView(v)}
               style={{
-                fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 500,
+                fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500,
                 letterSpacing: '0.04em', padding: '7px 18px',
-                background: view === v ? '#1A1410' : 'transparent',
-                color: view === v ? '#FAF8F4' : '#A89880',
-                border: 'none', borderLeft: i > 0 ? '1px solid #E8E2D8' : 'none',
-                cursor: 'pointer', transition: 'background 0.15s, color 0.15s',
+                background: view === v ? brand.colors.ink : 'transparent',
+                color: view === v ? brand.colors.bg : brand.colors.muted,
+                border: 'none', borderLeft: i > 0 ? `1px solid ${brand.colors.borderMid}` : 'none',
+                cursor: 'pointer', transition: `background ${brand.transition.fast}, color ${brand.transition.fast}`,
               }}
             >
               {v === 'overview' ? 'Overview' : 'Graphical'}
@@ -219,10 +220,10 @@ export default function CollectionStats({ watches, mode = 'collection' }: Props)
             <ValueRow label="Median Value" value={median ? fmt(median.estimatedValue) : '—'} />
             {highest && (
               <div style={{ gridColumn: '1 / -1', borderTop: '1px solid #F0EBE3', paddingTop: 10, marginTop: 2 }}>
-                <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, color: '#A89880' }}>
+                <span style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted }}>
                   Highest: {highest.brand} {highest.model}
                 </span>
-                <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 12, fontWeight: 600, color: '#1A1410', float: 'right' }}>
+                <span style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, color: brand.colors.ink, float: 'right' }}>
                   {fmt(highest.estimatedValue)}
                 </span>
               </div>
@@ -277,11 +278,11 @@ export default function CollectionStats({ watches, mode = 'collection' }: Props)
                   return (
                     <span key={type} style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4,
-                      fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.04em',
-                      padding: '4px 10px', borderRadius: 20,
-                      background: count > 0 ? '#1A1410' : 'transparent',
-                      color: count > 0 ? '#FAF8F4' : '#C8BFAF',
-                      border: count > 0 ? '1px solid #1A1410' : '1px solid #E0DAD0',
+                      fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.04em',
+                      padding: '4px 10px', borderRadius: brand.radius.pill,
+                      background: count > 0 ? brand.colors.ink : 'transparent',
+                      color: count > 0 ? brand.colors.bg : '#C8BFAF',
+                      border: count > 0 ? `1px solid ${brand.colors.ink}` : '1px solid #E0DAD0',
                     }}>
                       {type}
                       <span style={{ fontSize: 8, fontWeight: 700, color: count > 0 ? 'rgba(250,248,244,0.65)' : '#C8BFAF' }}>{count}</span>
@@ -302,11 +303,11 @@ export default function CollectionStats({ watches, mode = 'collection' }: Props)
                   return (
                     <span key={comp} style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4,
-                      fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.04em',
-                      padding: '4px 10px', borderRadius: 20,
-                      background: count > 0 ? '#2A2520' : 'transparent',
-                      color: count > 0 ? '#FAF8F4' : '#C8BFAF',
-                      border: count > 0 ? '1px solid #2A2520' : '1px solid #E0DAD0',
+                      fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.04em',
+                      padding: '4px 10px', borderRadius: brand.radius.pill,
+                      background: count > 0 ? brand.colors.dark : 'transparent',
+                      color: count > 0 ? brand.colors.bg : '#C8BFAF',
+                      border: count > 0 ? `1px solid ${brand.colors.dark}` : '1px solid #E0DAD0',
                     }}>
                       {comp}
                       <span style={{ fontSize: 8, fontWeight: 700, color: count > 0 ? 'rgba(250,248,244,0.65)' : '#C8BFAF' }}>{count}</span>
@@ -319,13 +320,13 @@ export default function CollectionStats({ watches, mode = 'collection' }: Props)
             <Card>
               <SectionTitle>Brands</SectionTitle>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                {sortedBrands.map(([brand, count]) => (
-                  <span key={brand} style={{
-                    fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 500,
-                    padding: '4px 12px', borderRadius: 20,
-                    background: '#FAF8F4', border: '1px solid #E0DAD0', color: '#1A1410', letterSpacing: '0.02em',
+                {sortedBrands.map(([brandName, count]) => (
+                  <span key={brandName} style={{
+                    fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500,
+                    padding: '4px 12px', borderRadius: brand.radius.pill,
+                    background: brand.colors.bg, border: '1px solid #E0DAD0', color: brand.colors.ink, letterSpacing: '0.02em',
                   }}>
-                    {brand} <span style={{ color: '#A89880' }}>×{count}</span>
+                    {brandName} <span style={{ color: brand.colors.muted }}>×{count}</span>
                   </span>
                 ))}
               </div>
@@ -395,7 +396,7 @@ export default function CollectionStats({ watches, mode = 'collection' }: Props)
                   label={comp}
                   count={compCounts[comp] ?? 0}
                   maxCount={maxCompCount}
-                  barColor="#C9A84C"
+                  barColor={brand.colors.gold}
                   labelWidth={120}
                 />
               ))}
@@ -403,13 +404,13 @@ export default function CollectionStats({ watches, mode = 'collection' }: Props)
 
             <Card>
               <SectionTitle>Brands</SectionTitle>
-              {sortedBrands.map(([brand, count]) => (
+              {sortedBrands.map(([brandName, count]) => (
                 <HorizontalBar
-                  key={brand}
-                  label={brand}
+                  key={brandName}
+                  label={brandName}
                   count={count}
                   maxCount={maxBrandCount}
-                  barColor="#1A1410"
+                  barColor={brand.colors.ink}
                   labelWidth={90}
                 />
               ))}
