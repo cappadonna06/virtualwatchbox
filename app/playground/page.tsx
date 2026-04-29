@@ -1006,7 +1006,7 @@ interface CardsViewProps {
 }
 
 const SORT_OPTIONS: { value: SortMode; label: string }[] = [
-  { value: 'manual', label: 'Manual' },
+  { value: 'manual', label: 'Watchbox Order' },
   { value: 'brand', label: 'Brand' },
   { value: 'value', label: 'Value' },
   { value: 'type', label: 'Type' },
@@ -1015,6 +1015,9 @@ const SORT_OPTIONS: { value: SortMode; label: string }[] = [
 function CardsView({ watches, activeSlot, onCardSelect, sortBy, setSortBy }: CardsViewProps) {
   return (
     <div>
+      <div style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted, marginBottom: 10 }}>
+        Reordering is available in Watchbox view.
+      </div>
       <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
         {SORT_OPTIONS.map(opt => (
           <button

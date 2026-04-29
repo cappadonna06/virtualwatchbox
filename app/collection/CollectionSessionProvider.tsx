@@ -32,7 +32,6 @@ type PurchaseDetails = {
 type SessionSnapshot = {
   collectionWatches: Watch[]
   followedWatchIds: string[]
-  selectedWatchId: string | null
   watchboxConfig: WatchboxConfig
 }
 
@@ -93,7 +92,6 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
         if (Array.isArray(parsed.collectionWatches) && Array.isArray(parsed.followedWatchIds)) {
           setCollectionWatches(parsed.collectionWatches)
           setFollowedWatchIds(parsed.followedWatchIds)
-          setSelectedWatchId(parsed.selectedWatchId ?? null)
           if (isValidWatchboxConfig(parsed.watchboxConfig)) {
             setWatchboxConfig(parsed.watchboxConfig)
           }
@@ -121,11 +119,10 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     const snapshot: SessionSnapshot = {
       collectionWatches,
       followedWatchIds,
-      selectedWatchId,
       watchboxConfig,
     }
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot))
-  }, [hydrated, collectionWatches, followedWatchIds, selectedWatchId, watchboxConfig])
+  }, [hydrated, collectionWatches, followedWatchIds, watchboxConfig])
 
   useEffect(() => {
     if (!hydrated) return

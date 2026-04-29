@@ -9,6 +9,7 @@ import CollectionWatchboxSurface from '@/components/collection/CollectionWatchbo
 import UnsavedChangesBar, { type DraftChange } from '@/components/collection/UnsavedChangesBar'
 import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
+import WatchSidebar from '@/components/collection/WatchSidebar'
 import { useCollectionSession } from './CollectionSessionProvider'
 import { brand } from '@/lib/brand'
 
@@ -23,11 +24,13 @@ export default function CollectionPage() {
     collectionWatches,
     selectedWatchId,
     setSelectedWatchId,
+    removeFromCollection,
     reorderCollectionWatches,
   } = useCollectionSession()
 
   const [activeView, setActiveView] = useState<View>('watchbox')
   const [sortBy, setSortBy] = useState<SortMode>('manual')
+  const [deleteTarget, setDeleteTarget] = useState<Watch | null>(null)
 
   const displayWatches = useMemo(() => {
     if (sortBy === 'manual') return collectionWatches
@@ -41,6 +44,7 @@ export default function CollectionPage() {
 
   const totalEstimatedValue = collectionWatches.reduce((sum, watch) => sum + watch.estimatedValue, 0)
   const activeSlot = selectedWatchId ? displayWatches.findIndex(watch => watch.id === selectedWatchId) : -1
+  const activeWatch = activeSlot >= 0 ? displayWatches[activeSlot] : null
 
   function handleCardSelect(index: number) {
     const watch = displayWatches[index]
@@ -52,6 +56,13 @@ export default function CollectionPage() {
     const next = [...collectionWatches]
     ;[next[from], next[to]] = [next[to], next[from]]
     reorderCollectionWatches(next)
+  }
+
+  function handleDeleteWatch() {
+    if (!deleteTarget) return
+    removeFromCollection(deleteTarget.id)
+    setSelectedWatchId(null)
+    setDeleteTarget(null)
   }
 
   return (
@@ -113,10 +124,13 @@ export default function CollectionPage() {
       ) : (
         <CardsView
           watches={displayWatches}
+          activeWatch={activeWatch}
           activeSlot={activeSlot >= 0 ? activeSlot : null}
           onCardSelect={handleCardSelect}
           sortBy={sortBy}
           setSortBy={setSortBy}
+          onCloseSidebar={() => setSelectedWatchId(null)}
+          onRequestDelete={watch => setDeleteTarget(watch)}
         />
       )}
 
@@ -156,58 +170,191 @@ export default function CollectionPage() {
         onSave={() => undefined}
         onDiscard={() => undefined}
       />
+
+      {deleteTarget && (
+        <>
+          <div
+            onClick={() => setDeleteTarget(null)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(26,20,16,0.45)',
+              zIndex: 210,
+              backdropFilter: 'blur(2px)',
+            }}
+          />
+          <div
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '90vw',
+              maxWidth: 420,
+              background: brand.colors.white,
+              border: `1px solid ${brand.colors.border}`,
+              borderRadius: brand.radius.xl,
+              boxShadow: brand.shadow.lg,
+              zIndex: 211,
+              padding: 18,
+            }}
+          >
+            <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
+              Remove Watch
+            </div>
+            <div style={{ fontFamily: brand.font.serif, fontSize: 28, color: brand.colors.ink, lineHeight: 1.1, marginBottom: 8 }}>
+              Delete from My Collection?
+            </div>
+            <p style={{ margin: '0 0 16px', fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.5 }}>
+              {deleteTarget.brand} {deleteTarget.model} will be removed from your collection list.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <button
+                onClick={() => setDeleteTarget(null)}
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 11,
+                  fontWeight: 500,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  padding: '9px 12px',
+                  background: 'transparent',
+                  color: brand.colors.ink,
+                  border: `1px solid ${brand.colors.borderLight}`,
+                  borderRadius: brand.radius.sm,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteWatch}
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  padding: '9px 12px',
+                  background: brand.colors.ink,
+                  color: brand.colors.bg,
+                  border: 'none',
+                  borderRadius: brand.radius.sm,
+                  cursor: 'pointer',
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
 
 function CardsView({
   watches,
+  activeWatch,
   activeSlot,
   onCardSelect,
   sortBy,
   setSortBy,
+  onCloseSidebar,
+  onRequestDelete,
 }: {
   watches: Watch[]
+  activeWatch: Watch | null
   activeSlot: number | null
   onCardSelect: (index: number) => void
   sortBy: SortMode
   setSortBy: (value: SortMode) => void
+  onCloseSidebar: () => void
+  onRequestDelete: (watch: Watch) => void
 }) {
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
-        <select
-          value={sortBy}
-          onChange={event => setSortBy(event.target.value as SortMode)}
-          style={{
-            fontFamily: brand.font.sans,
-            fontSize: 11,
-            color: brand.colors.muted,
-            border: `1px solid ${brand.colors.borderLight}`,
-            borderRadius: brand.radius.btn,
-            padding: '6px 12px',
-            background: brand.colors.white,
-            cursor: 'pointer',
-            outline: 'none',
-          }}
-        >
-          <option value="manual">Sort: Manual</option>
-          <option value="brand">Brand</option>
-          <option value="value">Value</option>
-          <option value="type">Type</option>
-        </select>
-      </div>
+    <>
+      <div
+        className={`sidebar-backdrop ${activeWatch ? 'is-active' : ''}`}
+        onClick={onCloseSidebar}
+      />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 18 }}>
-        {watches.map((watch, index) => (
-          <WatchCard
-            key={watch.id}
-            watch={watch}
-            isActive={activeSlot === index}
-            onSelect={() => onCardSelect(index)}
-          />
-        ))}
+      <div className="collection-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}>
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted }}>
+              Card selection opens the same watch detail sidebar used in Watchbox view.
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+              <select
+                value={sortBy}
+                onChange={event => setSortBy(event.target.value as SortMode)}
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 11,
+                  color: brand.colors.muted,
+                  border: `1px solid ${brand.colors.borderLight}`,
+                  borderRadius: brand.radius.btn,
+                  padding: '6px 12px',
+                  background: brand.colors.white,
+                  cursor: 'pointer',
+                  outline: 'none',
+                }}
+              >
+                <option value="manual">Sort: Watchbox Order</option>
+                <option value="brand">Sort: Brand</option>
+                <option value="value">Sort: Value</option>
+                <option value="type">Sort: Type</option>
+              </select>
+              <span style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted }}>
+                Reordering is available in Watchbox view.
+              </span>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 18 }}>
+            {watches.map((watch, index) => (
+              <WatchCard
+                key={watch.id}
+                watch={watch}
+                isActive={activeSlot === index}
+                onSelect={() => onCardSelect(index)}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className={`sidebar-sheet ${activeWatch ? 'is-active' : ''}`}>
+          <div className="sidebar-drag-pill" style={{ display: 'none', justifyContent: 'center', padding: '12px 0 4px' }}>
+            <div style={{ width: 36, height: 4, borderRadius: 2, background: brand.colors.borderLight }} />
+          </div>
+          <button
+            className="sidebar-close-btn"
+            onClick={onCloseSidebar}
+            style={{
+              display: 'none',
+              position: 'absolute',
+              top: 14,
+              right: 16,
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: brand.colors.muted,
+              fontSize: 18,
+              lineHeight: 1,
+              padding: 4,
+            }}
+          >
+            ✕
+          </button>
+          <div className="sidebar-content">
+            <WatchSidebar
+              watch={activeWatch}
+              onRequestDelete={onRequestDelete}
+            />
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
