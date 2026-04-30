@@ -13,13 +13,25 @@ export type WatchType =
 
 export type OwnershipStatus = 'Owned' | 'For Sale' | 'Recently Added' | 'Needs Service'
 
+export type WatchTargetIntent = 'Addition' | 'Replacement'
+export type WatchSavedState = 'followed' | 'target' | 'grail'
+export type WatchStateSource =
+  | 'search'
+  | 'add_flow'
+  | 'add_detail'
+  | 'hero'
+  | 'sidebar'
+  | 'playground'
+  | 'cards'
+  | 'profile'
+
 export interface DialConfig {
   dialColor: string
   markerColor: string
   handColor: string
 }
 
-export interface Watch {
+export interface CatalogWatch {
   id: string
   brand: string
   model: string
@@ -29,30 +41,69 @@ export interface Watch {
   dialColor: string
   movement: string
   complications: string[]
-  condition: WatchCondition
-  purchaseDate: string
-  purchasePrice: number
   estimatedValue: number
-  notes: string
   imageUrl: string
   dialConfig: DialConfig
   watchType: WatchType
+}
+
+export interface OwnedWatch {
+  id: string
+  watchId: string
+  condition: WatchCondition
+  purchaseDate: string
+  purchasePrice: number
+  notes: string
+  ownershipStatus: OwnershipStatus
+}
+
+export interface WatchTarget {
+  watchId: string
+  targetPrice?: number
+  desiredCondition: WatchCondition
+  intent: WatchTargetIntent
+  replacementWatchId?: string
+  playgroundBoxId?: string
+  notes?: string
+  targetDate?: string
+}
+
+export interface ResolvedWatch {
+  id: string
+  watchId: string
+  brand: string
+  model: string
+  reference: string
+  caseSizeMm: number
+  caseMaterial: string
+  dialColor: string
+  movement: string
+  complications: string[]
+  estimatedValue: number
+  imageUrl: string
+  dialConfig: DialConfig
+  watchType: WatchType
+  condition: WatchCondition
+  notes: string
+}
+
+export interface ResolvedOwnedWatch extends ResolvedWatch {
+  purchaseDate: string
+  purchasePrice: number
   ownershipStatus: OwnershipStatus
 }
 
 export type PlaygroundWatchOverrides = Partial<Pick<
-  Watch,
+  CatalogWatch,
   | 'reference'
   | 'caseSizeMm'
   | 'caseMaterial'
   | 'dialColor'
   | 'movement'
   | 'complications'
-  | 'condition'
   | 'estimatedValue'
-  | 'notes'
   | 'watchType'
->>
+>> & Partial<Pick<ResolvedWatch, 'condition' | 'notes'>>
 
 export type PlaygroundBoxEntry = {
   id: string

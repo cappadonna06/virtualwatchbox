@@ -2,9 +2,9 @@
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { watches as catalogWatches } from '@/lib/watches'
-import type { Watch } from '@/types/watch'
+import WatchStateControl from '@/components/collection/WatchStateControl'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -12,12 +12,10 @@ function fmt(n: number) {
 
 interface Props {
   followedWatchIds: Set<string>
-  toggleFollowedWatch: (id: string) => void
 }
 
-export default function OnYourRadar({ followedWatchIds, toggleFollowedWatch }: Props) {
+export default function OnYourRadar({ followedWatchIds }: Props) {
   const router = useRouter()
-  const [removeTarget, setRemoveTarget] = useState<Watch | null>(null)
 
   const followedWatches = useMemo(
     () => catalogWatches.filter(watch => followedWatchIds.has(watch.id)),
@@ -91,33 +89,11 @@ export default function OnYourRadar({ followedWatchIds, toggleFollowedWatch }: P
                 height={160}
                 style={{ width: '100%', aspectRatio: '1/1', objectFit: 'contain', background: '#F8F4EE', display: 'block', padding: 8 }}
               />
-              <button
-                onClick={event => {
-                  event.stopPropagation()
-                  setRemoveTarget(watch)
-                }}
-                title="Remove from followed"
-                style={{
-                  position: 'absolute',
-                  top: 8,
-                  right: 8,
-                  width: 28,
-                  height: 28,
-                  borderRadius: '50%',
-                  border: '1px solid rgba(212,203,191,0.8)',
-                  background: 'rgba(250,248,244,0.92)',
-                  color: '#A89880',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  lineHeight: 1,
-                  fontSize: 12,
-                  backdropFilter: 'blur(6px)',
-                }}
-              >
-                ✕
-              </button>
+              <WatchStateControl
+                catalogWatchId={watch.id}
+                source="profile"
+                size="sm"
+              />
             </div>
             <div style={{ padding: '10px 12px 12px' }}>
               <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 3 }}>
@@ -136,87 +112,6 @@ export default function OnYourRadar({ followedWatchIds, toggleFollowedWatch }: P
           </div>
         ))}
       </div>
-
-      {removeTarget && (
-        <>
-          <div
-            onClick={() => setRemoveTarget(null)}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(26,20,16,0.45)',
-              zIndex: 300,
-              backdropFilter: 'blur(2px)',
-            }}
-          />
-          <div
-            style={{
-              position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              zIndex: 301,
-              background: '#FFFFFF',
-              border: '1px solid #EAE5DC',
-              borderRadius: 12,
-              padding: '24px 24px 20px',
-              width: 'min(420px, calc(100vw - 32px))',
-              boxShadow: '0 24px 64px rgba(26,20,16,0.18)',
-            }}
-          >
-            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 6 }}>
-              Remove Followed Watch
-            </div>
-            <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: 28, color: '#1A1410', lineHeight: 1.1, marginBottom: 8 }}>
-              Remove from Radar?
-            </div>
-            <p style={{ margin: '0 0 18px', fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#A89880', lineHeight: 1.5 }}>
-              {removeTarget.brand} {removeTarget.model} will be removed from your followed watches.
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              <button
-                onClick={() => setRemoveTarget(null)}
-                style={{
-                  fontFamily: 'var(--font-dm-sans)',
-                  fontSize: 11,
-                  fontWeight: 500,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  padding: '10px 12px',
-                  background: 'transparent',
-                  color: '#1A1410',
-                  border: '1px solid #D4CBBF',
-                  borderRadius: 6,
-                  cursor: 'pointer',
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  toggleFollowedWatch(removeTarget.id)
-                  setRemoveTarget(null)
-                }}
-                style={{
-                  fontFamily: 'var(--font-dm-sans)',
-                  fontSize: 11,
-                  fontWeight: 600,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  padding: '10px 12px',
-                  background: '#1A1410',
-                  color: '#FAF8F4',
-                  border: 'none',
-                  borderRadius: 6,
-                  cursor: 'pointer',
-                }}
-              >
-                Remove
-              </button>
-            </div>
-          </div>
-        </>
-      )}
     </div>
   )
 }

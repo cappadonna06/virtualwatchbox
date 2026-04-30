@@ -2,10 +2,10 @@
 
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import type { PlaygroundBox, PlaygroundBoxEntry, Watch } from '@/types/watch'
+import type { PlaygroundBox, PlaygroundBoxEntry, ResolvedWatch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import { watches as catalogWatches } from '@/lib/watches'
-import { normalizePlaygroundBoxes, resolvePlaygroundWatches, type ResolvedPlaygroundWatch } from '@/lib/playground'
+import { createPlaygroundBox, normalizePlaygroundBoxes, resolvePlaygroundWatches, type ResolvedPlaygroundWatch } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import { getEffectiveSlotCount, getOverflowSummary, getWatchboxOverflow } from '@/lib/watchboxOverflow'
 import WatchBox from '@/components/collection/WatchBox'
@@ -184,16 +184,7 @@ function PlaygroundPageInner() {
   }
 
   function handleCreateBox(name: string, tags: string[]) {
-    const newBox: PlaygroundBox = {
-      id: `pg-${Date.now()}`,
-      name: name.trim(),
-      tags,
-      entries: [],
-      frame: 'light-oak',
-      lining: 'cream',
-      slotCount: 6,
-      createdAt: new Date().toISOString(),
-    }
+    const newBox: PlaygroundBox = createPlaygroundBox({ name, tags, entries: [] })
     setBoxes(prev => [...prev, newBox])
     setActiveBoxId(newBox.id)
     setSelectedEntryId(null)
@@ -533,7 +524,7 @@ function PlaygroundPageInner() {
               <WatchSidebar
                 watch={selectedItem?.displayWatch ?? null}
                 sticky={false}
-                sourceWatchId={selectedItem?.sourceWatch.id ?? null}
+                catalogWatchId={selectedItem?.sourceWatch.id ?? null}
                 mode="playground"
                 onRequestDelete={() => setDeleteEntryTarget(selectedItem)}
                 onRequestEdit={() => {
@@ -674,7 +665,7 @@ function PlaygroundPageInner() {
 
 interface WatchboxViewProps {
   box: PlaygroundBox
-  watches: Watch[]
+  watches: ResolvedWatch[]
   activeSlot: number | null
   onSlotClick: (index: number) => void
   watchboxSlotPx: number | undefined
@@ -1013,7 +1004,7 @@ function WatchboxView({
 }
 
 interface CardsViewProps {
-  watches: Watch[]
+  watches: ResolvedWatch[]
   activeSlot: number | null
   onCardSelect: (index: number) => void
   sortBy: SortMode
@@ -1042,6 +1033,7 @@ function CardsView({
             <WatchCard
               watch={watch}
               mode="playground"
+              stateSource="playground"
               isActive={activeSlot === index}
               onSelect={() => onCardSelect(index)}
             />

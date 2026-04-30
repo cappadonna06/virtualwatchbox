@@ -1,8 +1,10 @@
 'use client'
 
 import Image from 'next/image'
-import type { Watch, OwnershipStatus, WatchCondition } from '@/types/watch'
+import type { OwnershipStatus, ResolvedOwnedWatch, ResolvedWatch, WatchCondition } from '@/types/watch'
 import { brand } from '@/lib/brand'
+import WatchStateControl from './WatchStateControl'
+import type { WatchStateSource } from '@/types/watch'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -24,15 +26,18 @@ const conditionStyles: Record<WatchCondition, { background: string; color: strin
 }
 
 interface Props {
-  watch: Watch
+  watch: ResolvedOwnedWatch | ResolvedWatch
   isActive: boolean
   onSelect: () => void
-  mode?: 'collection' | 'playground'
+  mode?: 'collection' | 'playground' | 'saved'
+  stateSource?: WatchStateSource | null
 }
 
-export default function WatchCard({ watch, isActive, onSelect, mode = 'collection' }: Props) {
-  const status = statusStyles[watch.ownershipStatus]
+export default function WatchCard({ watch, isActive, onSelect, mode = 'collection', stateSource = null }: Props) {
+  const status = 'ownershipStatus' in watch ? statusStyles[watch.ownershipStatus] : statusStyles.Owned
   const condition = conditionStyles[watch.condition]
+  const showStateControl = stateSource !== null
+  const showMetaBadge = mode !== 'saved'
 
   return (
     <div
@@ -42,7 +47,7 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
         cursor: 'pointer',
         background: brand.colors.white,
         border: isActive
-          ? `2px solid rgba(201,168,76,0.8)`
+          ? `2px solid ${brand.colors.gold}`
           : `1px solid ${brand.colors.borderMid}`,
         borderRadius: brand.radius.lg,
         overflow: 'hidden',
@@ -69,6 +74,13 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
           style={{ objectFit: 'contain', objectPosition: 'center', padding: 12 }}
         />
+        {showStateControl && (
+          <WatchStateControl
+            catalogWatchId={watch.watchId}
+            source={stateSource}
+            size="sm"
+          />
+        )}
       </div>
 
       {/* Info section */}
@@ -152,21 +164,27 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
         </div>
 
         {/* Status / condition badge */}
-        <span
-          style={{
-            display: 'inline-block',
-            fontFamily: brand.font.sans,
-            fontSize: 9,
-            fontWeight: 600,
-            letterSpacing: '0.06em',
-            padding: '3px 10px',
-            borderRadius: brand.radius.pill,
-            background: mode === 'playground' ? condition.background : status.background,
-            color: mode === 'playground' ? condition.color : status.color,
-          }}
-        >
-          {mode === 'playground' ? watch.condition : watch.ownershipStatus}
-        </span>
+        {showMetaBadge && (
+          <span
+            style={{
+              display: 'inline-block',
+              fontFamily: brand.font.sans,
+              fontSize: 9,
+              fontWeight: 600,
+              letterSpacing: '0.06em',
+              padding: '3px 10px',
+              borderRadius: brand.radius.pill,
+              background: mode === 'playground' ? condition.background : status.background,
+              color: mode === 'playground' ? condition.color : status.color,
+            }}
+          >
+            {mode === 'playground'
+              ? watch.condition
+              : 'ownershipStatus' in watch
+                ? watch.ownershipStatus
+                : 'Owned'}
+          </span>
+        )}
       </div>
     </div>
   )

@@ -3,8 +3,10 @@
 import type { ReactNode } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import type { Watch, WatchCondition } from '@/types/watch'
+import type { ResolvedOwnedWatch, ResolvedWatch, WatchCondition } from '@/types/watch'
 import { brand } from '@/lib/brand'
+import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import WatchStateControl from './WatchStateControl'
 
 const conditionColors: Record<WatchCondition, { bg: string; text: string }> = {
   Unworn:    { bg: brand.condition.unworn.bg,    text: brand.condition.unworn.text },
@@ -101,23 +103,24 @@ const btnSecondary: React.CSSProperties = {
 }
 
 interface Props {
-  watch: Watch | null
-  mode?: 'collection' | 'playground'
+  watch: ResolvedOwnedWatch | ResolvedWatch | null
+  mode?: 'collection' | 'playground' | 'followed'
   sticky?: boolean
-  sourceWatchId?: string | null
-  onRequestDelete?: (watch: Watch) => void
-  onRequestEdit?: (watch: Watch) => void
+  catalogWatchId?: string | null
+  onRequestDelete?: (watch: ResolvedOwnedWatch | ResolvedWatch) => void
+  onRequestEdit?: (watch: ResolvedOwnedWatch | ResolvedWatch) => void
 }
 
 export default function WatchSidebar({
   watch,
   mode = 'collection',
   sticky = true,
-  sourceWatchId,
+  catalogWatchId,
   onRequestDelete,
   onRequestEdit,
 }: Props) {
   const router = useRouter()
+  const { getWatchSavedState } = useCollectionSession()
   const panelStyle: React.CSSProperties = sticky
     ? sidebarPanel
     : {
@@ -142,24 +145,36 @@ export default function WatchSidebar({
   }
 
   const colors = conditionColors[watch.condition]
-  const sourceId = sourceWatchId ?? watch.id
+  const resolvedCatalogWatchId = catalogWatchId ?? watch.watchId
+  const canEdit = mode === 'collection' || Boolean(onRequestEdit)
+  const canDelete = Boolean(onRequestDelete)
+  const isOwnedWatch = mode === 'collection'
+  const showConditionBadge = mode !== 'followed'
+  const savedState = getWatchSavedState(resolvedCatalogWatchId)
+  const marketLabel = !isOwnedWatch && savedState === 'grail' ? 'Find on Market ↗' : 'Find For Sale ↗'
 
   return (
     <div style={panelStyle}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div style={metaLabel}>Watch Detail</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <IconButton label="Edit watch" onClick={() => onRequestEdit?.(watch)}>
-            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-              <path d="M1 9.5V11h1.5l4.42-4.42-1.5-1.5L1 9.5zm7.07-5.07c.2-.2.2-.51 0-.71L6.99 2.64a.5.5 0 00-.71 0L5.13 3.79l1.5 1.5 1.44-1.44z" fill="currentColor" />
-            </svg>
-          </IconButton>
-          <IconButton label="Delete watch" onClick={() => onRequestDelete?.(watch)}>
-            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-              <path d="M4.5 1.5h3l.3.8H10v1H2v-1h2.2l.3-.8zM3 4h6l-.5 6.2a.8.8 0 01-.8.8H4.3a.8.8 0 01-.8-.8L3 4zm2 1v5h1V5H5zm2 0v5h1V5H7z" fill="currentColor" />
-            </svg>
-          </IconButton>
-        </div>
+        {(canEdit || canDelete) && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {canEdit && (
+              <IconButton label="Edit watch" onClick={() => onRequestEdit?.(watch)}>
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <path d="M1 9.5V11h1.5l4.42-4.42-1.5-1.5L1 9.5zm7.07-5.07c.2-.2.2-.51 0-.71L6.99 2.64a.5.5 0 00-.71 0L5.13 3.79l1.5 1.5 1.44-1.44z" fill="currentColor" />
+                </svg>
+              </IconButton>
+            )}
+            {canDelete && (
+              <IconButton label="Delete watch" onClick={() => onRequestDelete?.(watch)}>
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <path d="M4.5 1.5h3l.3.8H10v1H2v-1h2.2l.3-.8zM3 4h6l-.5 6.2a.8.8 0 01-.8.8H4.3a.8.8 0 01-.8-.8L3 4zm2 1v5h1V5H5zm2 0v5h1V5H7z" fill="currentColor" />
+                </svg>
+              </IconButton>
+            )}
+          </div>
+        )}
       </div>
 
       <div style={{ position: 'relative', width: 160, maxWidth: '100%', margin: '0 auto 16px', aspectRatio: '1/1' }}>
@@ -170,6 +185,10 @@ export default function WatchSidebar({
           sizes="160px"
           style={{ objectFit: 'contain', filter: brand.shadow.drop }}
         />
+        <WatchStateControl
+          catalogWatchId={resolvedCatalogWatchId}
+          source="sidebar"
+        />
       </div>
 
       <div style={{ ...metaLabel, marginBottom: 4 }}>
@@ -179,22 +198,24 @@ export default function WatchSidebar({
         <h3 style={{ fontFamily: brand.font.serif, fontSize: 26, fontWeight: 400, lineHeight: 1.1, color: brand.colors.ink, margin: 0 }}>
           {watch.model}
         </h3>
-        <span
-          style={{
-            display: 'inline-block',
-            padding: '3px 10px',
-            borderRadius: brand.radius.pill,
-            fontFamily: brand.font.sans,
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '0.04em',
-            background: colors.bg,
-            color: colors.text,
-            flexShrink: 0,
-          }}
-        >
-          {watch.condition}
-        </span>
+        {showConditionBadge && (
+          <span
+            style={{
+              display: 'inline-block',
+              padding: '3px 10px',
+              borderRadius: brand.radius.pill,
+              fontFamily: brand.font.sans,
+              fontSize: 10,
+              fontWeight: 600,
+              letterSpacing: '0.04em',
+              background: colors.bg,
+              color: colors.text,
+              flexShrink: 0,
+            }}
+          >
+            {watch.condition}
+          </span>
+        )}
       </div>
       <div style={{ fontSize: 12, color: brand.colors.muted, marginBottom: 4 }}>Ref. {watch.reference}</div>
       {watch.notes && (
@@ -229,7 +250,7 @@ export default function WatchSidebar({
             ['Dial Color', watch.dialColor],
             ['Movement', watch.movement],
             ['Complications', watch.complications.join(', ') || '—'],
-            ...(mode === 'collection' ? [['Price Paid', fmt(watch.purchasePrice)] as [string, string]] : []),
+            ...('purchasePrice' in watch ? [['Price Paid', fmt(watch.purchasePrice)] as [string, string]] : []),
           ] as [string, string][]
         ).map(([label, value]) => (
           <div
@@ -249,7 +270,7 @@ export default function WatchSidebar({
         ))}
       </div>
 
-      {mode === 'playground' ? (
+      {mode === 'playground' || mode === 'followed' ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <a
             href={`https://www.chrono24.com/search/index.htm?query=${encodeURIComponent(watch.brand + ' ' + watch.model)}`}
@@ -257,11 +278,25 @@ export default function WatchSidebar({
             rel="noopener noreferrer"
             style={btnPrimary}
           >
-            Find For Sale ↗
+            {marketLabel}
           </a>
-          <button onClick={() => router.push(`/collection/add/${sourceId}`)} style={btnSecondary}>
-            Add to My Collection
-          </button>
+          {mode === 'followed' ? (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <button onClick={() => router.push(`/collection/add/${resolvedCatalogWatchId}`)} style={btnSecondary}>
+                Add to My Collection
+              </button>
+              <button
+                onClick={() => router.push(`/collection/add/${resolvedCatalogWatchId}?dest=playground`)}
+                style={btnSecondary}
+              >
+                Add to Playground
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => router.push(`/collection/add/${resolvedCatalogWatchId}`)} style={btnSecondary}>
+              Add to My Collection
+            </button>
+          )}
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

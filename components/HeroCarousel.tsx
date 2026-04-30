@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import WatchStateControl from '@/components/collection/WatchStateControl'
 
 export interface CarouselWatch {
   id: string
@@ -25,19 +26,13 @@ function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
 }
 
-interface Props {
-  followedWatchIds: Set<string>
-  toggleFollowedWatch: (id: string) => void
-}
-
-export default function HeroCarousel({ followedWatchIds, toggleFollowedWatch }: Props) {
+export default function HeroCarousel() {
   const [idx, setIdx] = useState(0)
   const [animating, setAnimating] = useState(false)
   const [dir, setDir] = useState(1)
 
   const watch = CAROUSEL_WATCHES[idx]
   const total = CAROUSEL_WATCHES.length
-  const isFollowed = followedWatchIds.has(watch.id)
 
   function navigate(newIdx: number) {
     if (animating) return
@@ -107,23 +102,6 @@ export default function HeroCarousel({ followedWatchIds, toggleFollowedWatch }: 
             background: 'radial-gradient(ellipse 70% 55% at 50% 60%, rgba(201,168,76,0.08) 0%, transparent 70%)',
           }} />
 
-          {/* Like button */}
-          <button
-            onClick={() => toggleFollowedWatch(watch.id)}
-            title={isFollowed ? 'Remove from Followed Watches' : 'Save to Followed Watches'}
-            style={{
-              position: 'absolute', top: 16, right: 16, zIndex: 10,
-              width: 36, height: 36, borderRadius: '50%',
-              background: isFollowed ? 'rgba(201,168,76,0.25)' : 'rgba(255,255,255,0.08)',
-              border: isFollowed ? '1px solid rgba(201,168,76,0.5)' : '1px solid rgba(255,255,255,0.12)',
-              backdropFilter: 'blur(6px)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', fontSize: 16, color: isFollowed ? '#C9A84C' : 'rgba(255,255,255,0.7)',
-            }}
-          >
-            {isFollowed ? '♥' : '♡'}
-          </button>
-
           {/* Prev arrow */}
           <button
             onClick={() => navigate(idx - 1)}
@@ -171,6 +149,12 @@ export default function HeroCarousel({ followedWatchIds, toggleFollowedWatch }: 
               objectFit: 'contain',
               height: 'auto',
             }}
+          />
+
+          <WatchStateControl
+            catalogWatchId={watch.id}
+            source="hero"
+            tone="dark"
           />
 
           {/* Top-left: brand + model */}

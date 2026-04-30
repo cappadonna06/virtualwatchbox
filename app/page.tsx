@@ -1,6 +1,5 @@
 'use client'
 
-import { useMemo } from 'react'
 import HeroCarousel from '@/components/HeroCarousel'
 import Ticker from '@/components/Ticker'
 import CollectionSection from '@/components/collection/CollectionSection'
@@ -10,16 +9,16 @@ import Footer from '@/components/Footer'
 import { useCollectionSession } from './collection/CollectionSessionProvider'
 
 export default function HomePage() {
-  const { followedWatchIds, toggleFollowedWatch } = useCollectionSession()
-  const followedWatchIdSet = useMemo(() => new Set(followedWatchIds), [followedWatchIds])
+  const { followedWatchIds } = useCollectionSession()
+  const followedWatchIdSet = new Set(followedWatchIds)
 
   return (
     <>
-      <HeroCarousel followedWatchIds={followedWatchIdSet} toggleFollowedWatch={toggleFollowedWatch} />
+      <HeroCarousel />
       <Ticker />
       <CollectionSection />
       <FeaturesSection />
-      <OnYourRadar followedWatchIds={followedWatchIdSet} toggleFollowedWatch={toggleFollowedWatch} />
+      <OnYourRadar followedWatchIds={followedWatchIdSet} />
       <Footer />
     </>
   )

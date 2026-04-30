@@ -2,14 +2,14 @@
 
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import Image from 'next/image'
-import type { Watch } from '@/types/watch'
+import type { ResolvedWatch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import { getWatchboxOverflow } from '@/lib/watchboxOverflow'
 import DialSVG from '@/components/watchbox/DialSVG'
 import { brand } from '@/lib/brand'
 
 interface Props {
-  watches: Watch[]
+  watches: ResolvedWatch[]
   activeSlot: number | null
   onSlotClick: (i: number) => void
   onEmptySlotClick?: () => void
@@ -26,7 +26,7 @@ function OverflowListItem({
   onClick,
   mode,
 }: {
-  watch: Watch
+  watch: ResolvedWatch
   onClick: () => void
   mode: 'collection' | 'playground'
 }) {

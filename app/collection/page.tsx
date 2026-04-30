@@ -1,8 +1,9 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type CSSProperties } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import type { Watch } from '@/types/watch'
+import type { CatalogWatch, ResolvedOwnedWatch } from '@/types/watch'
 import CollectionHeader from '@/components/collection/CollectionHeader'
 import CollectionStats from '@/components/collection/CollectionStats'
 import SortDropdown from '@/components/collection/SortDropdown'
@@ -29,6 +30,9 @@ export default function CollectionPage() {
   const router = useRouter()
   const {
     collectionWatches,
+    followedWatches,
+    nextTargetWatches,
+    grailWatch,
     selectedWatchId,
     setSelectedWatchId,
     removeFromCollection,
@@ -37,7 +41,7 @@ export default function CollectionPage() {
 
   const [activeView, setActiveView] = useState<View>('watchbox')
   const [sortBy, setSortBy] = useState<SortMode>('manual')
-  const [deleteTarget, setDeleteTarget] = useState<Watch | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<ResolvedOwnedWatch | null>(null)
 
   const displayWatches = useMemo(() => {
     if (sortBy === 'manual') return collectionWatches
@@ -125,6 +129,13 @@ export default function CollectionPage() {
           onRequestDelete={watch => setDeleteTarget(watch)}
         />
       )}
+
+      <div style={{ marginTop: 56 }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <GrailModule grailWatch={grailWatch} />
+          <NextTargetsPanel nextTargetWatches={nextTargetWatches} followedCount={followedWatches.length} />
+        </div>
+      </div>
 
       <div
         id="collection-stats"
@@ -255,14 +266,14 @@ function CardsView({
   onCloseSidebar,
   onRequestDelete,
 }: {
-  watches: Watch[]
-  activeWatch: Watch | null
+  watches: ResolvedOwnedWatch[]
+  activeWatch: ResolvedOwnedWatch | null
   activeSlot: number | null
   onCardSelect: (index: number) => void
   sortBy: SortMode
   setSortBy: (value: SortMode) => void
   onCloseSidebar: () => void
-  onRequestDelete: (watch: Watch) => void
+  onRequestDelete: (watch: ResolvedOwnedWatch) => void
 }) {
   return (
     <>
@@ -330,11 +341,190 @@ function CardsView({
             <WatchSidebar
               watch={activeWatch}
               sticky={false}
-              onRequestDelete={onRequestDelete}
+              onRequestDelete={watch => onRequestDelete(watch as ResolvedOwnedWatch)}
             />
           </div>
         </div>
       </div>
     </>
+  )
+}
+
+function marketHref(watch: CatalogWatch) {
+  return `https://www.chrono24.com/search/index.htm?query=${encodeURIComponent(`${watch.brand} ${watch.model}`)}`
+}
+
+function moduleShellStyle(): CSSProperties {
+  return {
+    background: brand.colors.white,
+    border: `1px solid ${brand.colors.border}`,
+    borderRadius: brand.radius.xl,
+    padding: 24,
+    boxShadow: brand.shadow.xs,
+    height: '100%',
+  }
+}
+
+function emptyCopyStyle(): CSSProperties {
+  return {
+    fontFamily: brand.font.sans,
+    fontSize: 12,
+    color: brand.colors.muted,
+    lineHeight: 1.6,
+    margin: 0,
+  }
+}
+
+function GrailModule({ grailWatch }: { grailWatch: CatalogWatch | null }) {
+  return (
+    <section style={moduleShellStyle()}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+        <span style={{ color: brand.colors.gold, display: 'inline-flex' }}>
+          <svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M2 9.25h8l-.72-4.45-2.08 1.52L6 2.35 4.8 6.32 2.72 4.8 2 9.25z" fill="currentColor" stroke="currentColor" strokeLinejoin="round" strokeWidth="0.35" />
+          </svg>
+        </span>
+        <span style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold }}>
+          Grail
+        </span>
+      </div>
+
+      {grailWatch ? (
+        <>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
+            {grailWatch.brand}
+          </div>
+          <h3 style={{ fontFamily: brand.font.serif, fontSize: 32, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05, margin: '0 0 6px' }}>
+            {grailWatch.model}
+          </h3>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, marginBottom: 18 }}>
+            Ref. {grailWatch.reference}
+          </div>
+          <div style={{ fontFamily: brand.font.serif, fontSize: 28, color: brand.colors.gold, marginBottom: 16 }}>
+            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(grailWatch.estimatedValue)}
+          </div>
+          <a
+            href={marketHref(grailWatch)}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '10px 16px',
+              borderRadius: brand.radius.btn,
+              background: brand.colors.ink,
+              color: brand.colors.bg,
+              fontFamily: brand.font.sans,
+              fontSize: 10,
+              fontWeight: 600,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              textDecoration: 'none',
+            }}
+          >
+            Find on Market ↗
+          </a>
+        </>
+      ) : (
+        <>
+          <h3 style={{ fontFamily: brand.font.serif, fontSize: 28, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05, margin: '0 0 10px' }}>
+            Your north star is still open.
+          </h3>
+          <p style={emptyCopyStyle()}>
+            Follow a watch, then mark one as your Grail from the detail page or sidebar.
+          </p>
+        </>
+      )}
+    </section>
+  )
+}
+
+function NextTargetsPanel({
+  nextTargetWatches,
+  followedCount,
+}: {
+  nextTargetWatches: { target: { watchId: string }; watch: CatalogWatch }[]
+  followedCount: number
+}) {
+  return (
+    <section style={moduleShellStyle()}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, marginBottom: 14 }}>
+        <div>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
+            Next Targets
+          </div>
+          <h3 style={{ fontFamily: brand.font.serif, fontSize: 30, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05, margin: 0 }}>
+            The shortlist.
+          </h3>
+        </div>
+        <Link
+          href="/followed"
+          style={{
+            fontFamily: brand.font.sans,
+            fontSize: 10,
+            fontWeight: 600,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            color: brand.colors.gold,
+            textDecoration: 'none',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          View Followed →
+        </Link>
+      </div>
+
+      {nextTargetWatches.length > 0 ? (
+        <div style={{ display: 'grid', gap: 12 }}>
+          {nextTargetWatches.map(({ watch }) => (
+            <div
+              key={watch.id}
+              style={{
+                border: `1px solid ${brand.colors.borderMid}`,
+                borderRadius: brand.radius.lg,
+                padding: '14px 16px',
+                background: brand.colors.slot,
+              }}
+            >
+              <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 4 }}>
+                {watch.brand}
+              </div>
+              <div style={{ fontFamily: brand.font.serif, fontSize: 22, color: brand.colors.ink, lineHeight: 1.05, marginBottom: 4 }}>
+                {watch.model}
+              </div>
+              <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginBottom: 10 }}>
+                Ref. {watch.reference}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                <span style={{ fontFamily: brand.font.serif, fontSize: 22, color: brand.colors.ink }}>
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(watch.estimatedValue)}
+                </span>
+                <a
+                  href={marketHref(watch)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    fontFamily: brand.font.sans,
+                    fontSize: 10,
+                    fontWeight: 600,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    color: brand.colors.gold,
+                    textDecoration: 'none',
+                  }}
+                >
+                  Track Listings ↗
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p style={emptyCopyStyle()}>
+          You have {followedCount} followed {followedCount === 1 ? 'watch' : 'watches'}, but no Next Targets yet. Promote up to three from Followed Watches when you want a tighter acquisition plan.
+        </p>
+      )}
+    </section>
   )
 }

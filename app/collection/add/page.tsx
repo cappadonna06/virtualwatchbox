@@ -3,10 +3,11 @@
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { watches as catalogWatches } from '@/lib/watches'
-import type { PlaygroundBox, Watch } from '@/types/watch'
+import type { CatalogWatch, PlaygroundBox } from '@/types/watch'
 import { normalizePlaygroundBoxes } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import DialSVG from '@/components/watchbox/DialSVG'
+import WatchStateControl from '@/components/collection/WatchStateControl'
 import { useCollectionSession } from '../CollectionSessionProvider'
 
 const MATERIAL_OPTIONS = ['Stainless Steel', 'Yellow Gold', 'Rose Gold', 'White Gold', 'Titanium', 'Ceramic', 'Bronze']
@@ -19,11 +20,11 @@ function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
 }
 
-function matchesColor(watch: Watch, color: string) {
+function matchesColor(watch: CatalogWatch, color: string) {
   return watch.dialColor.toLowerCase().includes(color.toLowerCase())
 }
 
-function matchesSize(watch: Watch, size: SizeFilter) {
+function matchesSize(watch: CatalogWatch, size: SizeFilter) {
   if (!size) return true
   if (size === '≤38mm') return watch.caseSizeMm <= 38
   if (size === '39–41mm') return watch.caseSizeMm >= 39 && watch.caseSizeMm <= 41
@@ -243,14 +244,21 @@ function AddWatchSearchInner() {
                   key={watch.id}
                   onClick={() => router.push(buildDetailHref(watch.id, { dest, boxId }))}
                   style={{
+                    position: 'relative',
                     background: '#FFFFFF',
                     border: '1px solid #EAE5DC',
                     borderRadius: 10, padding: '10px 11px',
                     cursor: 'pointer', transition: 'border-color 0.15s',
                   }}
                 >
+                  <WatchStateControl
+                    catalogWatchId={watch.id}
+                    source="add_flow"
+                    size="sm"
+                    placement="top-right"
+                  />
                   <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                    <div style={{ width: 46, height: 46, flexShrink: 0 }}>
+                    <div style={{ width: 46, height: 46, flexShrink: 0, position: 'relative' }}>
                       <DialSVG
                         dialColor={watch.dialConfig.dialColor}
                         markerColor={watch.dialConfig.markerColor}

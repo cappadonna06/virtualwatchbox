@@ -3,11 +3,12 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import type { PlaygroundBox, PlaygroundWatchOverrides, Watch, WatchCondition, WatchType } from '@/types/watch'
+import type { PlaygroundBox, PlaygroundWatchOverrides, ResolvedWatch, WatchCondition, WatchType } from '@/types/watch'
 import { normalizePlaygroundBoxes } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import { watches as catalogWatches } from '@/lib/watches'
 import DialSVG from '@/components/watchbox/DialSVG'
+import { DEFAULT_RESOLVED_WATCH_CONDITION } from '@/lib/watchData'
 
 const STORAGE_KEY = 'playgroundBoxes'
 const CONDITIONS: WatchCondition[] = ['Unworn', 'Like New', 'Excellent', 'Good', 'Fair']
@@ -65,9 +66,9 @@ export default function EditPlaygroundWatchPage() {
     setDialColor(merged.dialColor)
     setMovement(merged.movement)
     setComplications(merged.complications.join(', '))
-    setCondition(merged.condition)
+    setCondition(entry.overrides?.condition ?? DEFAULT_RESOLVED_WATCH_CONDITION)
     setEstimatedValue(String(merged.estimatedValue))
-    setNotes(merged.notes)
+    setNotes(entry.overrides?.notes ?? '')
     setWatchType(merged.watchType)
   }, [entry, sourceWatch])
 
@@ -84,8 +85,10 @@ export default function EditPlaygroundWatchPage() {
   const activeEntry = entry!
   const baseWatch = sourceWatch!
 
-  const previewWatch: Watch = {
+  const previewWatch: ResolvedWatch = {
     ...baseWatch,
+    id: activeEntry.id,
+    watchId: baseWatch.id,
     reference,
     caseSizeMm: Number(caseSizeMm) || baseWatch.caseSizeMm,
     caseMaterial,
@@ -110,9 +113,9 @@ export default function EditPlaygroundWatchPage() {
     const parsedComplications = complications.split(',').map(value => value.trim()).filter(Boolean)
     if (parsedComplications.join('|') !== baseWatch.complications.join('|')) overrides.complications = parsedComplications
 
-    if (condition !== baseWatch.condition) overrides.condition = condition
+    if (condition !== DEFAULT_RESOLVED_WATCH_CONDITION) overrides.condition = condition
     if ((Number(estimatedValue) || baseWatch.estimatedValue) !== baseWatch.estimatedValue) overrides.estimatedValue = Number(estimatedValue)
-    if (notes !== baseWatch.notes) overrides.notes = notes
+    if (notes !== '') overrides.notes = notes
     if (watchType !== baseWatch.watchType) overrides.watchType = watchType
 
     return overrides

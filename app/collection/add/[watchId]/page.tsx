@@ -6,9 +6,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { watches as catalogWatches } from '@/lib/watches'
 import type { PlaygroundBox, WatchCondition } from '@/types/watch'
-import { createPlaygroundEntry, normalizePlaygroundBoxes } from '@/lib/playground'
+import { addWatchToPlaygroundBox, createPlaygroundBox, createPlaygroundEntry, normalizePlaygroundBoxes } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import { useCollectionSession } from '../../CollectionSessionProvider'
+import { brand } from '@/lib/brand'
+import WatchStateControl from '@/components/collection/WatchStateControl'
 
 const STORAGE_KEY = 'playgroundBoxes'
 const CONDITIONS: WatchCondition[] = ['Unworn', 'Like New', 'Excellent', 'Good', 'Fair']
@@ -31,14 +33,13 @@ export default function AddWatchConfirmPage() {
   const params = useParams<{ watchId: string }>()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { addToCollection, followWatch, followedWatchIds, isInCollection } = useCollectionSession()
+  const { addToCollection, followWatch, isInCollection } = useCollectionSession()
 
   const watch = useMemo(() => catalogWatches.find(w => w.id === params.watchId), [params.watchId])
 
   const dest = searchParams.get('dest')
   const source = searchParams.get('source')
   const incomingBoxId = searchParams.get('boxId')
-  const isDuplicate = searchParams.get('duplicate') === 'true'
   const isPlaygroundContext = dest === 'playground'
 
   const [choice, setChoice] = useState<OwnershipChoice>(isPlaygroundContext ? 'playground' : 'owned')
@@ -52,7 +53,6 @@ export default function AddWatchConfirmPage() {
   const [newBoxOpen, setNewBoxOpen] = useState(false)
   const [newBoxName, setNewBoxName] = useState('')
   const [viewportWidth, setViewportWidth] = useState(1280)
-  const [duplicateConfirmOpen, setDuplicateConfirmOpen] = useState(false)
 
   useEffect(() => {
     const boxes = loadPlaygroundBoxes()
@@ -81,9 +81,7 @@ export default function AddWatchConfirmPage() {
   }
 
   const resolvedWatch = watch
-  const isFollowed = followedWatchIds.includes(watch.id)
   const alreadyInCollection = isInCollection(resolvedWatch.id)
-  const showDuplicateMessage = isDuplicate || alreadyInCollection
   const isCompact = viewportWidth < 980
   const eyebrowLabel = source === 'followed'
     ? 'Followed Watch'
@@ -91,38 +89,29 @@ export default function AddWatchConfirmPage() {
     ? 'Add to Playground'
     : 'Add a Watch'
 
-  function persistPlaygroundBoxes(boxes: PlaygroundBox[]) {
+  function persistPlaygroundBoxes(boxes: PlaygroundBox[], autoFollowWatchId?: string) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(boxes))
     setPlaygroundBoxes(boxes)
+    if (autoFollowWatchId) followWatch(autoFollowWatchId)
   }
 
   function handleAddToPlayground() {
     if (!selectedBoxId) return
     const boxes = loadPlaygroundBoxes()
-    const updated = boxes.map(box =>
-      box.id === selectedBoxId
-        ? { ...box, entries: [...box.entries, createPlaygroundEntry(resolvedWatch.id)] }
-        : box,
-    )
-    persistPlaygroundBoxes(updated)
+    const updated = addWatchToPlaygroundBox(boxes, selectedBoxId, resolvedWatch.id)
+    persistPlaygroundBoxes(updated, resolvedWatch.id)
     router.push(`/playground?boxId=${selectedBoxId}`)
   }
 
   function handleCreateBoxAndAdd() {
     if (!newBoxName.trim()) return
     const boxes = loadPlaygroundBoxes()
-    const newBox: PlaygroundBox = {
-      id: `pg-${Date.now()}`,
+    const newBox: PlaygroundBox = createPlaygroundBox({
       name: newBoxName.trim(),
-      tags: [],
       entries: [createPlaygroundEntry(resolvedWatch.id)],
-      frame: 'light-oak',
-      lining: 'cream',
-      slotCount: 6,
-      createdAt: new Date().toISOString(),
-    }
+    })
     const updated = [...boxes, newBox]
-    persistPlaygroundBoxes(updated)
+    persistPlaygroundBoxes(updated, resolvedWatch.id)
     router.push(`/playground?boxId=${newBox.id}`)
   }
 
@@ -138,7 +127,7 @@ export default function AddWatchConfirmPage() {
   }
 
   return (
-    <div style={{ padding: isCompact ? '28px 20px 72px' : '36px 56px 80px', borderTop: '1px solid #EAE5DC' }}>
+    <div style={{ padding: isCompact ? '28px 20px 72px' : '36px 56px 80px', borderTop: `1px solid ${brand.colors.border}` }}>
       <button
         onClick={() => router.back()}
         style={{
@@ -187,56 +176,10 @@ export default function AddWatchConfirmPage() {
                 sizes={isCompact ? '100vw' : '(max-width: 1024px) 100vw, 45vw'}
                 style={{ objectFit: 'contain', padding: 32, filter: 'drop-shadow(0 16px 32px rgba(26,20,16,0.18))' }}
               />
-
-              <button
-                onClick={() => followWatch(resolvedWatch.id)}
-                style={{
-                  position: 'absolute',
-                  top: 14,
-                  right: 14,
-                  width: 38,
-                  height: 38,
-                  borderRadius: '50%',
-                  border: isFollowed ? '1px solid rgba(201,168,76,0.55)' : '1px solid rgba(212,203,191,0.7)',
-                  background: isFollowed ? 'rgba(201,168,76,0.18)' : 'rgba(250,248,244,0.80)',
-                  color: isFollowed ? '#C9A84C' : '#1A1410',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backdropFilter: 'blur(8px)',
-                  boxShadow: '0 2px 8px rgba(26,20,16,0.07)',
-                  transition: 'all 0.18s ease',
-                }}
-                title={isFollowed ? 'Saved to Followed Watches' : 'Save to Followed Watches'}
-                aria-label={isFollowed ? 'Saved to Followed Watches' : 'Save to Followed Watches'}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill={isFollowed ? 'currentColor' : 'none'} aria-hidden="true">
-                  <path d="M12 20.5s-6.8-4.35-9.22-8.05C.92 9.63 2.03 5.5 6.2 5.5c2.07 0 3.34 1.07 4.16 2.28.82-1.21 2.09-2.28 4.16-2.28 4.17 0 5.28 4.13 3.42 6.95C18.8 16.15 12 20.5 12 20.5z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-                </svg>
-              </button>
-
-              {alreadyInCollection && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: 14,
-                    bottom: 14,
-                    padding: '4px 10px',
-                    borderRadius: 20,
-                    background: 'rgba(232,244,232,0.92)',
-                    color: '#2D6A2D',
-                    backdropFilter: 'blur(4px)',
-                    fontFamily: 'var(--font-dm-sans)',
-                    fontSize: 9,
-                    fontWeight: 600,
-                    letterSpacing: '0.06em',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  In Collection
-                </div>
-              )}
+              <WatchStateControl
+                catalogWatchId={resolvedWatch.id}
+                source="add_detail"
+              />
             </div>
           </div>
 
@@ -260,8 +203,28 @@ export default function AddWatchConfirmPage() {
             <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: 8 }}>
               {resolvedWatch.brand}
             </div>
-            <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: isCompact ? 38 : 44, fontWeight: 400, lineHeight: 0.95, color: '#1A1410', marginBottom: 10 }}>
-              {resolvedWatch.model}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 10 }}>
+              <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: isCompact ? 38 : 44, fontWeight: 400, lineHeight: 0.95, color: '#1A1410' }}>
+                {resolvedWatch.model}
+              </div>
+              {alreadyInCollection && (
+                <span
+                  style={{
+                    display: 'inline-block',
+                    padding: '4px 10px',
+                    borderRadius: 20,
+                    background: 'rgba(232,244,232,0.92)',
+                    color: '#2D6A2D',
+                    fontFamily: 'var(--font-dm-sans)',
+                    fontSize: 9,
+                    fontWeight: 600,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  In Collection
+                </span>
+              )}
             </div>
             <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 13, color: '#A89880', letterSpacing: '0.02em', marginBottom: 16 }}>
               {resolvedWatch.reference}
@@ -286,24 +249,6 @@ export default function AddWatchConfirmPage() {
               <span style={{ color: '#D4CBBF', margin: '0 10px' }}>|</span>
               <span>{resolvedWatch.caseSizeMm} mm</span>
             </div>
-
-            {showDuplicateMessage && (
-              <div
-                style={{
-                  marginBottom: 16,
-                  padding: '10px 12px',
-                  borderRadius: 8,
-                  border: '1px solid rgba(201,168,76,0.28)',
-                  background: 'rgba(201,168,76,0.07)',
-                  fontSize: 11,
-                  color: '#8A6A10',
-                  fontFamily: 'var(--font-dm-sans)',
-                  lineHeight: 1.45,
-                }}
-              >
-                You already have this reference in your collection. Adding it again is allowed, but we&apos;ll ask you to confirm before saving the duplicate.
-              </div>
-            )}
 
             <div
               style={{
@@ -348,11 +293,6 @@ export default function AddWatchConfirmPage() {
                   <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 500, color: '#1A1410', textAlign: 'right' }}>{value}</span>
                 </div>
               ))}
-              {resolvedWatch.notes && (
-                <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#C9A84C', fontStyle: 'italic', paddingTop: 10 }}>
-                  &ldquo;{resolvedWatch.notes}&rdquo;
-                </div>
-              )}
             </div>
 
             <div style={{ height: 1, background: '#EAE5DC', marginBottom: 20 }} />
@@ -569,10 +509,6 @@ export default function AddWatchConfirmPage() {
                 disabled={!condition}
                 onClick={() => {
                   if (!condition) return
-                  if (showDuplicateMessage) {
-                    setDuplicateConfirmOpen(true)
-                    return
-                  }
                   commitCollectionAdd()
                 }}
                 style={primaryButtonStyle(!condition)}
@@ -592,86 +528,6 @@ export default function AddWatchConfirmPage() {
         </div>
       </div>
 
-      {duplicateConfirmOpen && (
-        <>
-          <div
-            onClick={() => setDuplicateConfirmOpen(false)}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(26,20,16,0.45)',
-              zIndex: 220,
-              backdropFilter: 'blur(2px)',
-            }}
-          />
-          <div
-            style={{
-              position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: 'min(460px, calc(100vw - 32px))',
-              background: '#FFFFFF',
-              border: '1px solid #EAE5DC',
-              borderRadius: 12,
-              boxShadow: '0 24px 64px rgba(26,20,16,0.18)',
-              zIndex: 221,
-              padding: '24px 24px 20px',
-            }}
-          >
-            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 6 }}>
-              Duplicate Watch
-            </div>
-            <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: 30, color: '#1A1410', lineHeight: 1.05, marginBottom: 10 }}>
-              Add another copy to your collection?
-            </div>
-            <p style={{ margin: '0 0 18px', fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#A89880', lineHeight: 1.55 }}>
-              This reference is already in your collection. We&apos;ll add this as a separate owned watch entry with its own condition and purchase details.
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              <button
-                onClick={() => setDuplicateConfirmOpen(false)}
-                style={{
-                  fontFamily: 'var(--font-dm-sans)',
-                  fontSize: 11,
-                  fontWeight: 500,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  padding: '10px 12px',
-                  background: 'transparent',
-                  color: '#1A1410',
-                  border: '1px solid #D4CBBF',
-                  borderRadius: 6,
-                  cursor: 'pointer',
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  setDuplicateConfirmOpen(false)
-                  commitCollectionAdd()
-                }}
-                style={{
-                  fontFamily: 'var(--font-dm-sans)',
-                  fontSize: 11,
-                  fontWeight: 600,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  padding: '10px 12px',
-                  background: '#1A1410',
-                  color: '#FAF8F4',
-                  border: 'none',
-                  borderRadius: 6,
-                  cursor: 'pointer',
-                }}
-              >
-                Add Duplicate
-              </button>
-            </div>
-          </div>
-        </>
-      )}
     </div>
   )
 }

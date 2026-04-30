@@ -3,7 +3,7 @@
 import { useLayoutEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import { getOverflowSummary, getWatchboxOverflow } from '@/lib/watchboxOverflow'
-import type { Watch } from '@/types/watch'
+import type { ResolvedOwnedWatch } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import WatchBox from './WatchBox'
@@ -281,7 +281,7 @@ function WatchboxConfigControls({
 }
 
 interface CollectionWatchboxSurfaceProps {
-  watches: Watch[]
+  watches: ResolvedOwnedWatch[]
   onEmptySlotClick: () => void
   onReorder?: (from: number, to: number) => void
   topToolbar?: ReactNode
@@ -305,7 +305,7 @@ export default function CollectionWatchboxSurface({
 
   const [customizerOpen, setCustomizerOpen] = useState(false)
   const [configOpen, setConfigOpen] = useState(false)
-  const [deleteTarget, setDeleteTarget] = useState<Watch | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<ResolvedOwnedWatch | null>(null)
   const [screenWidth, setScreenWidth] = useState(0)
 
   useLayoutEffect(() => {
@@ -618,7 +618,7 @@ export default function CollectionWatchboxSurface({
           <div className="sidebar-content">
             <WatchSidebar
               watch={activeWatch}
-              onRequestDelete={watch => setDeleteTarget(watch)}
+              onRequestDelete={watch => setDeleteTarget(watch as ResolvedOwnedWatch)}
             />
           </div>
         </div>
