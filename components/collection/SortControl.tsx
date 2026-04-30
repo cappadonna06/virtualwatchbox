@@ -12,23 +12,15 @@ interface Props {
   value: string
   options: SortOption[]
   onChange: (value: string) => void
-  label?: string
-  fullWidth?: boolean
-  minWidth?: number
 }
 
-export default function SortDropdown({
+export default function SortControl({
   value,
   options,
   onChange,
-  label = 'Order',
-  fullWidth = false,
-  minWidth,
 }: Props) {
   const [open, setOpen] = useState(false)
-  const [hoveredValue, setHoveredValue] = useState<string | null>(null)
   const rootRef = useRef<HTMLDivElement | null>(null)
-
   const activeOption = useMemo(
     () => options.find(option => option.value === value) ?? options[0],
     [options, value],
@@ -57,84 +49,44 @@ export default function SortDropdown({
   }, [open])
 
   return (
-    <div
-      ref={rootRef}
-      style={{
-        position: 'relative',
-        display: 'inline-flex',
-        width: fullWidth ? '100%' : undefined,
-      }}
-    >
+    <div ref={rootRef} style={{ position: 'relative', display: 'inline-flex' }}>
       <button
         type="button"
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen(current => !current)}
-        onKeyDown={event => {
-          if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault()
-            setOpen(true)
-          }
-        }}
         style={{
-          minWidth: minWidth ?? brand.controls.dropdown.minWidth,
-          width: fullWidth ? '100%' : undefined,
-          height: brand.controls.dropdown.triggerHeight,
-          padding: '0 12px 0 14px',
+          minWidth: 184,
+          height: 36,
+          padding: '0 11px 0 12px',
           borderRadius: brand.radius.md,
           border: `1px solid ${open ? brand.colors.goldLine : brand.colors.borderLight}`,
           background: brand.colors.white,
-          boxShadow: open ? brand.shadow.menu : brand.shadow.sm,
+          boxShadow: open ? brand.shadow.md : brand.shadow.sm,
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: 10,
           cursor: 'pointer',
-          transition: `border-color ${brand.transition.base}, box-shadow ${brand.transition.base}, transform ${brand.transition.base}`,
-          transform: open ? 'translateY(-1px)' : 'translateY(0)',
+          lineHeight: 1.05,
+          transition: `border-color ${brand.transition.base}, box-shadow ${brand.transition.base}`,
         }}
       >
         <span
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 10,
             minWidth: 0,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            fontFamily: brand.font.sans,
+            fontSize: 11,
+            fontWeight: 500,
+            color: brand.colors.ink,
+            letterSpacing: '0.02em',
           }}
         >
-          <span
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: brand.colors.muted,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {label}
-          </span>
-          <span
-            aria-hidden="true"
-            style={{
-              width: 1,
-              alignSelf: 'stretch',
-              background: brand.colors.border,
-            }}
-          />
-          <span
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 12,
-              fontWeight: 500,
-              letterSpacing: '0.02em',
-              color: brand.colors.ink,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {activeOption?.label}
-          </span>
+          <span style={{ color: brand.colors.muted }}>Sort:</span>{' '}
+          <span>{activeOption?.label}</span>
         </span>
 
         <svg
@@ -146,8 +98,8 @@ export default function SortDropdown({
           style={{
             color: open ? brand.colors.ink : brand.colors.muted,
             flexShrink: 0,
-            transition: `transform ${brand.transition.base}, color ${brand.transition.base}`,
             transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: `transform ${brand.transition.base}, color ${brand.transition.base}`,
           }}
         >
           <path d="M1 1.25L5.5 5.75L10 1.25" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
@@ -160,25 +112,23 @@ export default function SortDropdown({
         style={{
           position: 'absolute',
           top: `calc(100% + ${brand.controls.dropdown.menuOffset}px)`,
-          right: 0,
-          left: fullWidth ? 0 : undefined,
-          minWidth: fullWidth ? undefined : (minWidth ?? brand.controls.dropdown.minWidth),
-          padding: brand.controls.dropdown.menuPadding,
+          left: 0,
+          minWidth: 220,
+          padding: 4,
           borderRadius: brand.radius.lg,
           border: `1px solid ${brand.colors.borderMid}`,
           background: brand.colors.white,
-          boxShadow: brand.shadow.menu,
+          boxShadow: brand.shadow.md,
           zIndex: brand.zIndex.dropdown,
           opacity: open ? 1 : 0,
-          transform: open ? 'translateY(0) scale(1)' : 'translateY(-4px) scale(0.98)',
-          transformOrigin: 'top right',
+          transform: open ? 'translateY(0) scale(1)' : 'translateY(-4px) scale(0.985)',
+          transformOrigin: 'top left',
           pointerEvents: open ? 'auto' : 'none',
           transition: `opacity ${brand.transition.base}, transform ${brand.transition.base}`,
         }}
       >
         {options.map(option => {
           const isActive = option.value === value
-          const isHovered = hoveredValue === option.value
 
           return (
             <button
@@ -186,23 +136,17 @@ export default function SortDropdown({
               type="button"
               role="menuitemradio"
               aria-checked={isActive}
-              onMouseEnter={() => setHoveredValue(option.value)}
-              onMouseLeave={() => setHoveredValue(null)}
               onClick={() => {
                 onChange(option.value)
                 setOpen(false)
               }}
               style={{
                 width: '100%',
-                minHeight: brand.controls.dropdown.optionMinHeight,
-                padding: '0 12px',
+                minHeight: 32,
+                padding: '0 10px',
                 borderRadius: brand.radius.sm,
                 border: 'none',
-                background: isActive
-                  ? brand.colors.goldWash
-                  : isHovered
-                  ? brand.colors.slot
-                  : 'transparent',
+                background: isActive ? brand.colors.goldWash : 'transparent',
                 boxShadow: isActive ? `inset 0 0 0 1px ${brand.colors.goldLine}` : 'none',
                 display: 'flex',
                 alignItems: 'center',
@@ -210,16 +154,16 @@ export default function SortDropdown({
                 gap: 12,
                 cursor: 'pointer',
                 textAlign: 'left',
-                transition: `background ${brand.transition.fast}, box-shadow ${brand.transition.fast}, transform ${brand.transition.fast}`,
+                lineHeight: 1.1,
               }}
             >
               <span
                 style={{
                   fontFamily: brand.font.sans,
-                  fontSize: 11,
+                  fontSize: 10.5,
                   fontWeight: isActive ? 600 : 500,
-                  letterSpacing: '0.03em',
-                  color: brand.colors.ink,
+                  color: isActive ? brand.colors.ink : brand.colors.muted,
+                  opacity: isActive ? 1 : 0.78,
                 }}
               >
                 {option.label}
@@ -228,12 +172,11 @@ export default function SortDropdown({
               <span
                 aria-hidden="true"
                 style={{
-                  width: 16,
+                  width: 14,
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: isActive ? brand.colors.gold : 'transparent',
-                  transition: `color ${brand.transition.fast}`,
                   flexShrink: 0,
                 }}
               >

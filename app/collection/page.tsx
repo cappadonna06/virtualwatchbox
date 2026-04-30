@@ -1,29 +1,56 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Watch } from '@/types/watch'
-import CollectionHeader from '@/components/collection/CollectionHeader'
 import CollectionStats from '@/components/collection/CollectionStats'
-import SortDropdown from '@/components/collection/SortDropdown'
+import SortControl from '@/components/collection/SortControl'
 import CollectionWatchboxSurface from '@/components/collection/CollectionWatchboxSurface'
 import UnsavedChangesBar, { type DraftChange } from '@/components/collection/UnsavedChangesBar'
-import ViewSwitcher from '@/components/collection/ViewSwitcher'
+import WatchboxHeader from '@/components/collection/WatchboxHeader'
 import WatchCard from '@/components/collection/WatchCard'
 import WatchSidebar from '@/components/collection/WatchSidebar'
+import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarSheet'
 import { useCollectionSession } from './CollectionSessionProvider'
 import { brand } from '@/lib/brand'
 
 type View = 'watchbox' | 'cards'
-type SortMode = 'manual' | 'brand' | 'value' | 'type'
+type SortMode = 'recent' | 'price-desc' | 'price-asc' | 'brand' | 'watchbox'
 
 const EMPTY_PENDING_CHANGES: DraftChange[] = []
 const SORT_OPTIONS: { value: SortMode; label: string }[] = [
-  { value: 'manual', label: 'Watchbox' },
-  { value: 'brand', label: 'Brand' },
-  { value: 'value', label: 'Value' },
-  { value: 'type', label: 'Type' },
+  { value: 'recent', label: 'Recently Added' },
+  { value: 'price-desc', label: 'Price High \u2192 Low' },
+  { value: 'price-asc', label: 'Price Low \u2192 High' },
+  { value: 'brand', label: 'Brand A \u2192 Z' },
+  { value: 'watchbox', label: 'Watch Box' },
 ]
+
+function fmt(n: number) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(n)
+}
+
+function sortCollectionWatches(watches: Watch[], sortBy: SortMode) {
+  if (sortBy === 'watchbox') return watches
+
+  const sorted = [...watches]
+
+  if (sortBy === 'recent') {
+    sorted.sort((a, b) => new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime())
+  } else if (sortBy === 'price-desc') {
+    sorted.sort((a, b) => b.estimatedValue - a.estimatedValue)
+  } else if (sortBy === 'price-asc') {
+    sorted.sort((a, b) => a.estimatedValue - b.estimatedValue)
+  } else if (sortBy === 'brand') {
+    sorted.sort((a, b) => a.brand.localeCompare(b.brand) || a.model.localeCompare(b.model))
+  }
+
+  return sorted
+}
 
 export default function CollectionPage() {
   const router = useRouter()
@@ -36,25 +63,37 @@ export default function CollectionPage() {
   } = useCollectionSession()
 
   const [activeView, setActiveView] = useState<View>('watchbox')
-  const [sortBy, setSortBy] = useState<SortMode>('manual')
+  const [sortBy, setSortBy] = useState<SortMode>('recent')
   const [deleteTarget, setDeleteTarget] = useState<Watch | null>(null)
+  const [feedbackToast, setFeedbackToast] = useState<string | null>(null)
+  const [mobileStatsOpen, setMobileStatsOpen] = useState(true)
+  const [screenWidth, setScreenWidth] = useState(0)
 
-  const displayWatches = useMemo(() => {
-    if (sortBy === 'manual') return collectionWatches
-
-    const sorted = [...collectionWatches]
-    if (sortBy === 'brand') sorted.sort((a, b) => a.brand.localeCompare(b.brand))
-    else if (sortBy === 'value') sorted.sort((a, b) => b.estimatedValue - a.estimatedValue)
-    else if (sortBy === 'type') sorted.sort((a, b) => a.watchType.localeCompare(b.watchType))
-    return sorted
-  }, [collectionWatches, sortBy])
+  const cardsWatches = useMemo(
+    () => sortCollectionWatches(collectionWatches, sortBy),
+    [collectionWatches, sortBy],
+  )
 
   const totalEstimatedValue = collectionWatches.reduce((sum, watch) => sum + watch.estimatedValue, 0)
-  const activeSlot = selectedWatchId ? displayWatches.findIndex(watch => watch.id === selectedWatchId) : -1
-  const activeWatch = activeSlot >= 0 ? displayWatches[activeSlot] : null
+  const activeSlot = selectedWatchId ? cardsWatches.findIndex(watch => watch.id === selectedWatchId) : -1
+  const activeWatch = activeSlot >= 0 ? cardsWatches[activeSlot] : null
+  const isMobile = screenWidth > 0 && screenWidth < 768
+
+  useEffect(() => {
+    const updateWidth = () => setScreenWidth(window.innerWidth)
+    updateWidth()
+    window.addEventListener('resize', updateWidth)
+    return () => window.removeEventListener('resize', updateWidth)
+  }, [])
+
+  useEffect(() => {
+    if (!feedbackToast) return
+    const timeoutId = window.setTimeout(() => setFeedbackToast(null), 2500)
+    return () => window.clearTimeout(timeoutId)
+  }, [feedbackToast])
 
   function handleCardSelect(index: number) {
-    const watch = displayWatches[index]
+    const watch = cardsWatches[index]
     if (!watch) return
     setSelectedWatchId(selectedWatchId === watch.id ? null : watch.id)
   }
@@ -72,96 +111,173 @@ export default function CollectionPage() {
     setDeleteTarget(null)
   }
 
+  function handleShareCollection() {
+    const url = `${window.location.origin}/collection`
+
+    navigator.clipboard.writeText(url)
+      .then(() => setFeedbackToast('Collection link copied to clipboard'))
+      .catch(() => setFeedbackToast('Unable to copy collection link'))
+  }
+
   return (
     <div
       className="collection-section"
-      style={{ padding: '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}
+      style={{ padding: '0 0 120px', borderTop: `1px solid ${brand.colors.border}` }}
     >
-      <CollectionHeader
-        totalEstValue={totalEstimatedValue}
-        pendingChangesCount={0}
-        onAddWatch={() => router.push('/collection/add')}
-        onOpenPlayground={() => router.push('/playground')}
-      />
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28 }}>
-        <ViewSwitcher activeView={activeView} setActiveView={setActiveView} />
-        <a
-          href="#collection-stats"
-          style={{
-            fontFamily: brand.font.sans,
-            fontSize: 11,
-            color: brand.colors.muted,
-            textDecoration: 'none',
-            letterSpacing: '0.04em',
+      <div style={{ padding: '32px 32px 0' }}>
+        <WatchboxHeader
+          title="My Collection"
+          subtitle="Your collection, wherever you go."
+          summary={`${fmt(totalEstimatedValue)} est. value · ${collectionWatches.length} ${collectionWatches.length === 1 ? 'watch' : 'watches'}`}
+          primaryAction={{
+            label: 'Add Watch',
+            onClick: () => router.push('/collection/add'),
+            ariaLabel: 'Add Watch',
+            icon: (
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M6 2V10M2 6H10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+              </svg>
+            ),
           }}
+          activeView={activeView}
+          onViewChange={setActiveView}
+          menuItems={[
+            {
+              label: 'Import from Photo',
+              onSelect: () => setFeedbackToast('Photo import is coming soon'),
+            },
+            {
+              label: 'Share Collection',
+              onSelect: handleShareCollection,
+            },
+          ]}
+        />
+      </div>
+
+      <div style={{ padding: '0 32px' }}>
+        {activeView === 'watchbox' ? (
+          <CollectionWatchboxSurface
+            watches={collectionWatches}
+            onEmptySlotClick={() => router.push('/collection/add')}
+            onReorder={handleReorder}
+          />
+        ) : (
+          <CardsView
+            watches={cardsWatches}
+            activeWatch={activeWatch}
+            activeSlot={activeSlot >= 0 ? activeSlot : null}
+            onCardSelect={handleCardSelect}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            onCloseSidebar={() => setSelectedWatchId(null)}
+            onRequestDelete={watch => setDeleteTarget(watch)}
+          />
+        )}
+
+        {isMobile ? (
+          <div style={{ marginTop: 22 }}>
+            <button
+              type="button"
+              onClick={() => setMobileStatsOpen(open => !open)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                background: 'transparent',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+                fontFamily: brand.font.sans,
+                fontSize: 11,
+                color: brand.colors.muted,
+                letterSpacing: '0.04em',
+              }}
+            >
+              <span>Collection Stats</span>
+              <svg
+                width="11"
+                height="7"
+                viewBox="0 0 11 7"
+                fill="none"
+                aria-hidden="true"
+                style={{
+                  transform: mobileStatsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: `transform ${brand.transition.base}`,
+                }}
+              >
+                <path d="M1 1.25L5.5 5.75L10 1.25" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+
+            {mobileStatsOpen ? (
+              <div style={{ marginTop: 18, paddingTop: 24, borderTop: `1px solid ${brand.colors.border}` }}>
+                <CollectionStats watches={collectionWatches} />
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+
+      {!isMobile ? (
+        <div
+          id="collection-stats"
+          style={{ marginTop: 72, padding: '48px 32px 0', borderTop: `1px solid ${brand.colors.border}` }}
         >
-          Stats ↓
-        </a>
-      </div>
-
-      {activeView === 'watchbox' ? (
-        <CollectionWatchboxSurface
-          watches={displayWatches}
-          onEmptySlotClick={() => router.push('/collection/add')}
-          onReorder={sortBy === 'manual' ? handleReorder : undefined}
-          topToolbar={
-            <SortDropdown
-              value={sortBy}
-              options={SORT_OPTIONS}
-              onChange={value => setSortBy(value as SortMode)}
-            />
-          }
-        />
-      ) : (
-        <CardsView
-          watches={displayWatches}
-          activeWatch={activeWatch}
-          activeSlot={activeSlot >= 0 ? activeSlot : null}
-          onCardSelect={handleCardSelect}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          onCloseSidebar={() => setSelectedWatchId(null)}
-          onRequestDelete={watch => setDeleteTarget(watch)}
-        />
-      )}
-
-      <div
-        id="collection-stats"
-        style={{ marginTop: 72, paddingTop: 48, borderTop: `1px solid ${brand.colors.border}` }}
-      >
-        <div style={{ marginBottom: 32 }}>
-          <h2
-            style={{
-              fontFamily: brand.font.serif,
-              fontSize: 36,
-              fontWeight: 400,
-              color: brand.colors.ink,
-              margin: '0 0 6px',
-              lineHeight: 1.1,
-            }}
-          >
-            Collection Stats
-          </h2>
-          <p
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 13,
-              color: brand.colors.muted,
-              margin: 0,
-            }}
-          >
-            A factual breakdown of what you own.
-          </p>
+          <div style={{ marginBottom: 32 }}>
+            <h2
+              style={{
+                fontFamily: brand.font.serif,
+                fontSize: 36,
+                fontWeight: 400,
+                color: brand.colors.ink,
+                margin: '0 0 6px',
+                lineHeight: 1.1,
+              }}
+            >
+              Collection Stats
+            </h2>
+            <p
+              style={{
+                fontFamily: brand.font.sans,
+                fontSize: 13,
+                color: brand.colors.muted,
+                margin: 0,
+              }}
+            >
+              A factual breakdown of what you own.
+            </p>
+          </div>
+          <CollectionStats watches={collectionWatches} />
         </div>
-        <CollectionStats watches={collectionWatches} />
-      </div>
+      ) : null}
 
       <UnsavedChangesBar
         pendingChanges={EMPTY_PENDING_CHANGES}
         onSave={() => undefined}
         onDiscard={() => undefined}
       />
+
+      {feedbackToast ? (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 28,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: brand.colors.ink,
+            color: brand.colors.bg,
+            padding: '10px 22px',
+            borderRadius: brand.radius.md,
+            fontFamily: brand.font.sans,
+            fontSize: 12,
+            zIndex: 300,
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+          }}
+        >
+          {feedbackToast}
+        </div>
+      ) : null}
 
       {deleteTarget && (
         <>
@@ -266,21 +382,14 @@ function CardsView({
 }) {
   return (
     <>
-      <div
-        className={`sidebar-backdrop ${activeWatch ? 'is-active' : ''}`}
-        onClick={onCloseSidebar}
-      />
-
       <div className="collection-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}>
         <div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
-            <div>
-              <SortDropdown
-                value={sortBy}
-                options={SORT_OPTIONS}
-                onChange={value => setSortBy(value as SortMode)}
-              />
-            </div>
+          <div style={{ marginBottom: 10 }}>
+            <SortControl
+              value={sortBy}
+              options={SORT_OPTIONS}
+              onChange={value => setSortBy(value as SortMode)}
+            />
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 18 }}>
@@ -296,44 +405,13 @@ function CardsView({
           </div>
         </div>
 
-        <div
-          className={`sidebar-sheet ${activeWatch ? 'is-active' : ''}`}
-          style={{
-            alignSelf: 'start',
-            position: 'sticky',
-            top: 84,
-          }}
-        >
-          <div className="sidebar-drag-pill" style={{ display: 'none', justifyContent: 'center', padding: '12px 0 4px' }}>
-            <div style={{ width: 36, height: 4, borderRadius: 2, background: brand.colors.borderLight }} />
-          </div>
-          <button
-            className="sidebar-close-btn"
-            onClick={onCloseSidebar}
-            style={{
-              display: 'none',
-              position: 'absolute',
-              top: 14,
-              right: 16,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: brand.colors.muted,
-              fontSize: 18,
-              lineHeight: 1,
-              padding: 4,
-            }}
-          >
-            ✕
-          </button>
-          <div className="sidebar-content">
-            <WatchSidebar
-              watch={activeWatch}
-              sticky={false}
-              onRequestDelete={onRequestDelete}
-            />
-          </div>
-        </div>
+        <ResponsiveSidebarSheet active={Boolean(activeWatch)} onClose={onCloseSidebar}>
+          <WatchSidebar
+            watch={activeWatch}
+            sticky={false}
+            onRequestDelete={onRequestDelete}
+          />
+        </ResponsiveSidebarSheet>
       </div>
     </>
   )

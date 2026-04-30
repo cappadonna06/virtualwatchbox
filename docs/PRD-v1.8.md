@@ -467,13 +467,14 @@ Actions:
 
 #### Sharing a Box
 
-Playground sharing is part of the broader profile/share system, not a standalone temporary link mechanic.
+In the current demo scope, Playground exposes a clipboard share action that copies a direct link to the active local box state (`/playground?boxId=[id]`).
 
-- Box shares should resolve to the public box surface
-- Clipboard share links are P0
-- OG image generation is P1
-- Desktop can use hover affordances
+- Clipboard share links are P0 in the demo product
 - Mobile must expose a visible share action
+- Desktop can use hover affordances
+- This is a temporary demo/share mechanic until public box surfaces exist
+- Future share links should resolve to the public box surface
+- OG image generation is P1
 
 #### Drag to Reorder
 
@@ -504,6 +505,8 @@ Still planned. No draft workflow is required for Playground reorder interactions
 ### Feature 5 — Public Profile & Shareable Collection Surfaces
 
 Sharing should feel personal and identity-driven, not like a utility link to a temporary Playground state. The core public share surface is the collector profile, with shareable box pages beneath it.
+
+In V1 demo scope, direct clipboard links to local Collection/Playground surfaces are allowed as a lightweight interim behavior. They are not the long-term public sharing model.
 
 #### Route Model
 
@@ -798,7 +801,7 @@ export type UserCollectionState = {
 - Static My Collection section on profile
 - Playground carousel on profile
 - Followed Watches section on profile
-- Clipboard profile and box share links
+- Clipboard profile and public box share links
 - Save as Playground from Collection drafts
 - Drag-to-reorder in Collection and Playground
 
