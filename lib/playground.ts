@@ -1,5 +1,12 @@
 import { SLOT_COUNTS } from '@/lib/frameConfig'
-import type { PlaygroundBox, PlaygroundBoxEntry, PlaygroundWatchOverrides, Watch } from '@/types/watch'
+import { DEFAULT_RESOLVED_WATCH_CONDITION } from '@/lib/watchData'
+import type {
+  CatalogWatch,
+  PlaygroundBox,
+  PlaygroundBoxEntry,
+  PlaygroundWatchOverrides,
+  ResolvedWatch,
+} from '@/types/watch'
 
 type LegacyPlaygroundBox = {
   id: string
@@ -15,8 +22,8 @@ type LegacyPlaygroundBox = {
 
 export type ResolvedPlaygroundWatch = {
   entry: PlaygroundBoxEntry
-  sourceWatch: Watch
-  displayWatch: Watch
+  sourceWatch: CatalogWatch
+  displayWatch: ResolvedWatch
 }
 
 const DEFAULT_FRAME = 'light-oak'
@@ -34,6 +41,39 @@ export function createPlaygroundEntry(watchId: string, overrides?: PlaygroundWat
     watchId,
     ...(overrides ? { overrides } : {}),
   }
+}
+
+export function createPlaygroundBox({
+  name,
+  tags = [],
+  entries = [],
+  id,
+  createdAt,
+}: {
+  name: string
+  tags?: string[]
+  entries?: PlaygroundBoxEntry[]
+  id?: string
+  createdAt?: string
+}): PlaygroundBox {
+  return {
+    id: id ?? `pg-${crypto.randomUUID()}`,
+    name: name.trim(),
+    tags,
+    entries,
+    frame: DEFAULT_FRAME,
+    lining: DEFAULT_LINING,
+    slotCount: getDefaultSlotCount(entries.length),
+    createdAt: createdAt ?? new Date().toISOString(),
+  }
+}
+
+export function addWatchToPlaygroundBox(boxes: PlaygroundBox[], boxId: string, watchId: string) {
+  return boxes.map(box =>
+    box.id === boxId
+      ? { ...box, entries: [...box.entries, createPlaygroundEntry(watchId)] }
+      : box,
+  )
 }
 
 export function migratePlaygroundBox(raw: LegacyPlaygroundBox): PlaygroundBox | null {
@@ -77,14 +117,24 @@ export function normalizePlaygroundBoxes(raw: unknown, fallback: PlaygroundBox[]
   return migrated.length > 0 ? migrated : fallback
 }
 
-export function resolvePlaygroundWatch(entry: PlaygroundBoxEntry, catalog: Watch[]): ResolvedPlaygroundWatch | null {
+export function resolvePlaygroundWatch(entry: PlaygroundBoxEntry, catalog: CatalogWatch[]): ResolvedPlaygroundWatch | null {
   const sourceWatch = catalog.find(watch => watch.id === entry.watchId)
   if (!sourceWatch) return null
 
-  const displayWatch: Watch = {
+  const displayWatch: ResolvedWatch = {
     ...sourceWatch,
     id: entry.id,
-    ...entry.overrides,
+    watchId: sourceWatch.id,
+    reference: entry.overrides?.reference ?? sourceWatch.reference,
+    caseSizeMm: entry.overrides?.caseSizeMm ?? sourceWatch.caseSizeMm,
+    caseMaterial: entry.overrides?.caseMaterial ?? sourceWatch.caseMaterial,
+    dialColor: entry.overrides?.dialColor ?? sourceWatch.dialColor,
+    movement: entry.overrides?.movement ?? sourceWatch.movement,
+    complications: entry.overrides?.complications ?? sourceWatch.complications,
+    estimatedValue: entry.overrides?.estimatedValue ?? sourceWatch.estimatedValue,
+    watchType: entry.overrides?.watchType ?? sourceWatch.watchType,
+    condition: entry.overrides?.condition ?? DEFAULT_RESOLVED_WATCH_CONDITION,
+    notes: entry.overrides?.notes ?? '',
   }
 
   return {
@@ -94,7 +144,7 @@ export function resolvePlaygroundWatch(entry: PlaygroundBoxEntry, catalog: Watch
   }
 }
 
-export function resolvePlaygroundWatches(entries: PlaygroundBoxEntry[], catalog: Watch[]): ResolvedPlaygroundWatch[] {
+export function resolvePlaygroundWatches(entries: PlaygroundBoxEntry[], catalog: CatalogWatch[]): ResolvedPlaygroundWatch[] {
   return entries
     .map(entry => resolvePlaygroundWatch(entry, catalog))
     .filter((watch): watch is ResolvedPlaygroundWatch => watch !== null)

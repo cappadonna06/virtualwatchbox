@@ -1,11 +1,11 @@
-import type { Watch } from '@/types/watch'
+import type { ResolvedWatch } from '@/types/watch'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
 }
 
 interface Props {
-  watch: Watch
+  watch: ResolvedWatch
 }
 
 export default function HoverCard({ watch }: Props) {

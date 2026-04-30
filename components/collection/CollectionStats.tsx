@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import type { Watch, WatchType } from '@/types/watch'
+import type { WatchType } from '@/types/watch'
 import { brand } from '@/lib/brand'
 
 function fmt(n: number) {
@@ -138,7 +138,15 @@ function IconTile({ icon, label, count }: { icon: string; label: string; count: 
 // ─── Main component ───────────────────────────────────────────────────────────
 
 interface Props {
-  watches: Watch[]
+  watches: {
+    brand: string
+    model: string
+    dialColor: string
+    watchType: WatchType
+    complications: string[]
+    estimatedValue: number
+    purchasePrice?: number
+  }[]
   mode?: 'collection' | 'playground'
 }
 
@@ -146,7 +154,7 @@ export default function CollectionStats({ watches, mode = 'collection' }: Props)
   const [view, setView] = useState<'overview' | 'graphical'>('overview')
 
   const totalValue = watches.reduce((s, w) => s + w.estimatedValue, 0)
-  const costBasis  = watches.reduce((s, w) => s + w.purchasePrice, 0)
+  const costBasis  = watches.reduce((s, w) => s + (w.purchasePrice ?? 0), 0)
   const gainLoss   = totalValue - costBasis
   const highest    = watches.length ? watches.reduce((a, b) => a.estimatedValue > b.estimatedValue ? a : b) : null
   const sorted     = [...watches].sort((a, b) => a.estimatedValue - b.estimatedValue)
