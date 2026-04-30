@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type RefCallback, type RefObject } from 'react'
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { PlaygroundBox, PlaygroundBoxEntry, Watch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
@@ -10,10 +10,10 @@ import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import { getEffectiveSlotCount, getOverflowSummary, getWatchboxOverflow } from '@/lib/watchboxOverflow'
 import WatchBox from '@/components/collection/WatchBox'
 import WatchSidebar from '@/components/collection/WatchSidebar'
+import SortDropdown from '@/components/collection/SortDropdown'
 import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import CollectionStats from '@/components/collection/CollectionStats'
-import { useDesktopSidebarOffset } from '@/components/collection/useDesktopSidebarOffset'
 import { brand } from '@/lib/brand'
 
 const STORAGE_KEY = 'playgroundBoxes'
@@ -39,6 +39,12 @@ const TAG_OPTIONS = [
 
 type View = 'watchbox' | 'cards'
 type SortMode = 'manual' | 'brand' | 'value' | 'type'
+const SORT_OPTIONS: { value: SortMode; label: string }[] = [
+  { value: 'manual', label: 'Watchbox' },
+  { value: 'brand', label: 'Brand' },
+  { value: 'value', label: 'Value' },
+  { value: 'type', label: 'Type' },
+]
 
 function calcSlotPx(
   containerW: number,
@@ -129,10 +135,6 @@ function PlaygroundPageInner() {
   const activeSlot = selectedEntryId
     ? sortedEntries.findIndex(item => item.entry.id === selectedEntryId)
     : -1
-  const { gridRef, sidebarRef, sidebarOffset, registerCardRef } = useDesktopSidebarOffset(
-    activeView === 'cards' && activeSlot >= 0 ? activeSlot : null,
-    activeView === 'cards' && selectedItem !== null,
-  )
 
   const sc = SLOT_COUNTS.find(slot => slot.n === (activeBox?.slotCount ?? 6)) ?? SLOT_COUNTS[1]
   const overflowSummary = getOverflowSummary(
@@ -493,13 +495,18 @@ function PlaygroundPageInner() {
                 onCardSelect={handleCardSelect}
                 sortBy={sortBy}
                 setSortBy={setSortBy}
-                gridRef={gridRef}
-                registerCardRef={registerCardRef}
               />
             )}
           </div>
 
-          <div className={`sidebar-sheet ${selectedItem ? 'is-active' : ''}`}>
+          <div
+            className={`sidebar-sheet ${selectedItem ? 'is-active' : ''}`}
+            style={{
+              alignSelf: 'start',
+              position: 'sticky',
+              top: 84,
+            }}
+          >
             <div className="sidebar-drag-pill" style={{ display: 'none', justifyContent: 'center', padding: '12px 0 4px' }}>
               <div style={{ width: 36, height: 4, borderRadius: 2, background: '#E0DAD0' }} />
             </div>
@@ -522,13 +529,10 @@ function PlaygroundPageInner() {
             >
               ✕
             </button>
-            <div
-              className="sidebar-content"
-              ref={sidebarRef}
-              style={{ marginTop: sidebarOffset }}
-            >
+            <div className="sidebar-content">
               <WatchSidebar
                 watch={selectedItem?.displayWatch ?? null}
+                sticky={false}
                 sourceWatchId={selectedItem?.sourceWatch.id ?? null}
                 mode="playground"
                 onRequestDelete={() => setDeleteEntryTarget(selectedItem)}
@@ -1014,16 +1018,7 @@ interface CardsViewProps {
   onCardSelect: (index: number) => void
   sortBy: SortMode
   setSortBy: (v: SortMode) => void
-  gridRef: RefObject<HTMLDivElement>
-  registerCardRef: (index: number) => RefCallback<HTMLDivElement>
 }
-
-const SORT_OPTIONS: { value: SortMode; label: string }[] = [
-  { value: 'manual', label: 'Manual' },
-  { value: 'brand', label: 'Brand' },
-  { value: 'value', label: 'Value' },
-  { value: 'type', label: 'Type' },
-]
 
 function CardsView({
   watches,
@@ -1031,40 +1026,19 @@ function CardsView({
   onCardSelect,
   sortBy,
   setSortBy,
-  gridRef,
-  registerCardRef,
 }: CardsViewProps) {
   return (
     <div>
-      <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
-        {SORT_OPTIONS.map(opt => (
-          <button
-            key={opt.value}
-            onClick={() => setSortBy(opt.value)}
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 10,
-              fontWeight: sortBy === opt.value ? 600 : 400,
-              padding: '4px 12px',
-              borderRadius: brand.radius.pill,
-              border: `1px solid ${sortBy === opt.value ? brand.colors.ink : brand.colors.borderMid}`,
-              background: sortBy === opt.value ? brand.colors.ink : brand.colors.bg,
-              color: sortBy === opt.value ? brand.colors.white : brand.colors.muted,
-              cursor: 'pointer',
-              letterSpacing: '0.04em',
-              transition: `all ${brand.transition.fast}`,
-            }}
-          >
-            {opt.label}
-          </button>
-        ))}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+        <SortDropdown
+          value={sortBy}
+          options={SORT_OPTIONS}
+          onChange={value => setSortBy(value as SortMode)}
+        />
       </div>
-      <div
-        ref={gridRef}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
-      >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {watches.map((watch, index) => (
-          <div key={watch.id} ref={registerCardRef(index)}>
+          <div key={watch.id}>
             <WatchCard
               watch={watch}
               mode="playground"

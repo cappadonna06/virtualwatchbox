@@ -17,6 +17,10 @@ export const brand = {
     muted: '#A89880',
     /** Accent: prices, active states, brand labels */
     gold: '#C9A84C',
+    /** Soft gold wash for selected luxury controls */
+    goldWash: 'rgba(201,168,76,0.08)',
+    /** Soft gold line for selected luxury controls */
+    goldLine: 'rgba(201,168,76,0.34)',
     /** Dark badge background */
     dark: '#2A2520',
     /** Pure white — card surfaces */
@@ -75,6 +79,7 @@ export const brand = {
     xs:   '0 1px 4px rgba(26,20,16,0.04)',
     sm:   '0 1px 4px rgba(26,20,16,0.05)',
     md:   '0 4px 16px rgba(26,20,16,0.08)',
+    menu: '0 14px 32px rgba(26,20,16,0.12), 0 3px 10px rgba(26,20,16,0.06)',
     lg:   '0 4px 24px rgba(26,20,16,0.06)',
     xl:   '0 8px 24px rgba(26,20,16,0.13)',
     drop: 'drop-shadow(0 8px 16px rgba(26,20,16,0.10))',
@@ -93,8 +98,19 @@ export const brand = {
   /** Z-index stack */
   zIndex: {
     nav:       100,
+    dropdown:  110,
     sidebar:    40,
     backdrop:   30,
     overflow:  191,
+  },
+
+  controls: {
+    dropdown: {
+      minWidth: 168,
+      triggerHeight: 40,
+      menuOffset: 8,
+      menuPadding: 6,
+      optionMinHeight: 36,
+    },
   },
 } as const

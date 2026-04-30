@@ -37,14 +37,15 @@ import { brand } from '@/lib/brand'
 
 | Namespace | Contents |
 |---|---|
-| `brand.colors` | `bg`, `slot`, `ink`, `muted`, `gold`, `dark`, `white`, `border`, `borderMid`, `borderLight`, `borderSlot` |
+| `brand.colors` | `bg`, `slot`, `ink`, `muted`, `gold`, `goldWash`, `goldLine`, `dark`, `white`, `border`, `borderMid`, `borderLight`, `borderSlot` |
+| `brand.controls.dropdown` | `minWidth`, `triggerHeight`, `menuOffset`, `menuPadding`, `optionMinHeight` |
 | `brand.status` | Ownership badge colors: `owned`, `forSale`, `recentlyAdded`, `needsService` |
 | `brand.condition` | Condition badge colors: `unworn`, `likeNew`, `excellent`, `good`, `fair` |
 | `brand.font` | `serif` = `var(--font-cormorant)`, `sans` = `var(--font-dm-sans)` |
 | `brand.radius` | `btn` (4), `sm` (6), `md` (8), `lg` (10), `xl` (12), `pill` (20) |
-| `brand.shadow` | `xs`, `sm`, `md`, `lg`, `xl`, `drop`, `gold` |
+| `brand.shadow` | `xs`, `sm`, `md`, `menu`, `lg`, `xl`, `drop`, `gold` |
 | `brand.transition` | `fast`, `base`, `slide`, `sheet`, `smooth` |
-| `brand.zIndex` | `nav`, `sidebar`, `backdrop`, `overflow` |
+| `brand.zIndex` | `nav`, `dropdown`, `sidebar`, `backdrop`, `overflow` |
 
 ### CSS custom properties — `app/globals.css`
 `--color-bg`, `--color-ink`, `--color-muted`, `--color-gold`, `--color-border`, `--color-border-mid`, `--color-border-light`, `--color-slot`, `--color-dark`, `--color-white`, `--radius-btn/sm/md/lg/xl/pill`
@@ -83,6 +84,7 @@ components/
   collection/
     CollectionWatchboxSurface.tsx — Canonical collection/home watchbox surface
     CollectionSection.tsx       — Homepage wrapper around the canonical collection surface
+    SortDropdown.tsx            — Canonical luxury dropdown for collection/playground ordering
     WatchBox.tsx                — Canonical watchbox implementation (home, collection, playground)
     WatchCard.tsx               — Collection card view item
     WatchSidebar.tsx            — Watch detail sidebar (sticky right panel)
@@ -139,6 +141,7 @@ Do not recreate a second collection context or a second homepage-only saved/like
 - **Inline styles only** — no Tailwind for component-level styling, no CSS modules, no styled-components
 - **No new hardcoded hex values** — everything through `brand.colors.*`
 - **No new font var strings** — use `brand.font.serif` / `brand.font.sans`
+- **No browser-native `<select>` on premium product surfaces** — use `components/collection/SortDropdown.tsx` for luxury ordering controls
 - **No comments explaining what code does** — only comment non-obvious WHY (constraints, workarounds)
 - **No emoji in UI copy or headings** — arrow glyphs (→ ↗ ✕) used as text characters only
 - **Currency formatting** via `Intl.NumberFormat` — `$1,350` no decimals

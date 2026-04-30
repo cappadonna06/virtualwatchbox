@@ -24,13 +24,14 @@ import { brand } from '@/lib/brand'
 Exports a single `brand` object with:
 
 - **`brand.colors`** — all palette values (`bg`, `ink`, `muted`, `gold`, `border`, etc.)
+- **`brand.controls.dropdown`** — dropdown sizing and spacing tokens (`minWidth`, `triggerHeight`, `menuOffset`, `menuPadding`, `optionMinHeight`)
 - **`brand.status`** — ownership status badge `{ bg, text }` pairs
 - **`brand.condition`** — condition badge `{ bg, text }` pairs
 - **`brand.font`** — `serif` (`var(--font-cormorant)`) and `sans` (`var(--font-dm-sans)`)
 - **`brand.radius`** — border radius scale in px (`btn`, `sm`, `md`, `lg`, `xl`, `pill`)
-- **`brand.shadow`** — box shadow strings (`xs`, `sm`, `md`, `lg`, `xl`, `drop`, `gold`)
+- **`brand.shadow`** — box shadow strings (`xs`, `sm`, `md`, `menu`, `lg`, `xl`, `drop`, `gold`)
 - **`brand.transition`** — transition shorthands (`fast`, `base`, `slide`, `sheet`, `smooth`)
-- **`brand.zIndex`** — z-index stack (`nav`, `sidebar`, `backdrop`, `overflow`)
+- **`brand.zIndex`** — z-index stack (`nav`, `dropdown`, `sidebar`, `backdrop`, `overflow`)
 
 ---
 
@@ -61,6 +62,24 @@ Both layers reference the same underlying values. Do not introduce a third sourc
 4. **Status and condition badge colors are in `brand.status` and `brand.condition`.** Do not re-declare them inline in new components.
 
 5. **Design reference files in `docs/design-system/` are read-only history.** Update `lib/brand.ts` and `app/globals.css` as the living source; the reference files capture the v1 design intent.
+
+6. **Do not use browser-native `<select>` controls on premium product surfaces.** Collection and Playground ordering controls should use the branded dropdown pattern instead.
+
+---
+
+## Dropdown Spec
+
+The canonical product dropdown is the shared sort control in `components/collection/SortDropdown.tsx`.
+
+- **Use case** — luxury control surfaces like ordering, sorting, and compact product filters.
+- **Trigger copy** — use a semantic label like `Order`, then show the active value. Do not repeat prefixes like `Sort: Brand`, `Sort: Value`, etc.
+- **Option copy** — use plain domain labels. For collection ordering, the canonical set is `Watchbox`, `Brand`, `Value`, `Type`.
+- **Trigger surface** — white fill, light border, soft shadow, 40px height, right-aligned chevron.
+- **Menu surface** — white card, 8px offset below trigger, rounded corners, elevated shadow, compact inner padding.
+- **Selected option** — subtle gold wash, soft gold outline, gold check, ink text.
+- **Hover state** — warm slot-toned fill, not browser blue.
+
+This control should feel like jewelry-case hardware, not OS chrome.
 
 ---
 

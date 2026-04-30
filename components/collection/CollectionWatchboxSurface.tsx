@@ -480,7 +480,7 @@ export default function CollectionWatchboxSurface({
           <div
             style={{
               position: 'relative',
-              paddingTop: topToolbar ? 36 : 0,
+              paddingTop: topToolbar ? brand.controls.dropdown.triggerHeight + 8 : 0,
               ...(watchboxMaxWidth !== undefined ? { maxWidth: watchboxMaxWidth, width: '100%', margin: '0 auto' } : {}),
             }}
           >

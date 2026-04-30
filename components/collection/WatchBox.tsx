@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, type DragEvent as ReactDragEvent, type PointerEvent as ReactPointerEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import Image from 'next/image'
 import type { Watch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
@@ -208,28 +208,6 @@ export default function WatchBox({
   })
 
   const overflowSlotActive = overflow.hasOverflow && activeSlot !== null && activeSlot >= overflow.visibleItems.length
-
-  function beginDesktopDrag(index: number, event: ReactDragEvent<HTMLButtonElement>) {
-    dragCounter.current = 0
-    setDraggedIndex(index)
-
-    const slotEl = event.currentTarget.closest('[data-slot-index]') as HTMLElement | null
-    if (!slotEl) return
-
-    const clone = slotEl.cloneNode(true) as HTMLDivElement
-    clone.style.cssText += ';position:absolute;top:-9999px;left:-9999px;border:1.5px solid rgba(201,168,76,0.8);box-shadow:0 0 0 1px rgba(201,168,76,0.4),0 8px 24px rgba(201,168,76,0.2);opacity:1;border-radius:3px;pointer-events:none'
-    document.body.appendChild(clone)
-    ghostRef.current = clone
-    event.dataTransfer.setDragImage(clone, slotEl.offsetWidth / 2, slotEl.offsetHeight / 2)
-  }
-
-  function endDesktopDrag() {
-    ghostRef.current?.remove()
-    ghostRef.current = null
-    setDraggedIndex(null)
-    setDragOverIndex(null)
-  }
-
   return (
     <>
       {overflowOpen && (
@@ -397,7 +375,18 @@ export default function WatchBox({
                 <div
                   key={i}
                   data-slot-index={i}
+                  draggable={onReorder !== undefined && !isTouchDevice}
                   onClick={() => onSlotClick(slot.originalIndex)}
+                  onDragStart={onReorder ? e => {
+                    dragCounter.current = 0
+                    setDraggedIndex(i)
+                    const el = e.currentTarget as HTMLElement
+                    const clone = el.cloneNode(true) as HTMLDivElement
+                    clone.style.cssText += `;position:absolute;top:-9999px;left:-9999px;width:${el.offsetWidth}px;height:${el.offsetHeight}px;border:1.5px solid rgba(201,168,76,0.8);box-shadow:0 0 0 1px rgba(201,168,76,0.4),0 8px 24px rgba(201,168,76,0.2);opacity:1;border-radius:3px;pointer-events:none`
+                    document.body.appendChild(clone)
+                    ghostRef.current = clone
+                    e.dataTransfer.setDragImage(clone, e.nativeEvent.offsetX, e.nativeEvent.offsetY)
+                  } : undefined}
                   onDragOver={onReorder ? e => {
                     e.preventDefault()
                     setDragOverIndex(i)
@@ -409,6 +398,12 @@ export default function WatchBox({
                   } : undefined}
                   onDrop={onReorder ? () => {
                     if (draggedIndex !== null && draggedIndex !== i) onReorder(draggedIndex, i)
+                    setDraggedIndex(null)
+                    setDragOverIndex(null)
+                  } : undefined}
+                  onDragEnd={onReorder ? () => {
+                    ghostRef.current?.remove()
+                    ghostRef.current = null
                     setDraggedIndex(null)
                     setDragOverIndex(null)
                   } : undefined}
@@ -444,7 +439,7 @@ export default function WatchBox({
                         cursor: isTouchDevice ? 'default' : isBeingDragged ? 'grabbing' : 'grab',
                         padding: isTouchDevice ? '9px 2px 9px 11px' : 0,
                         touchAction: 'none',
-                        pointerEvents: 'auto',
+                        pointerEvents: isTouchDevice ? 'auto' : 'none',
                       }}
                       onPointerDown={isTouchDevice ? (e: ReactPointerEvent) => {
                         e.stopPropagation()
@@ -516,25 +511,14 @@ export default function WatchBox({
                           ))}
                         </div>
                       ) : (
-                        <button
-                          type="button"
-                          aria-label={`Reorder ${w.brand} ${w.model}`}
-                          draggable
-                          onClick={event => event.stopPropagation()}
-                          onDragStart={event => beginDesktopDrag(i, event)}
-                          onDragEnd={endDesktopDrag}
+                        <div
+                          aria-hidden="true"
                           style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(2, 3px)',
                             gap: 2,
                             padding: '2px 1px',
                             opacity: 0.82,
-                            background: 'transparent',
-                            border: 'none',
-                            appearance: 'none',
-                            outline: 'none',
-                            cursor: isBeingDragged ? 'grabbing' : 'grab',
-                            userSelect: 'none',
                           }}
                         >
                           {Array.from({ length: 4 }).map((_, dotIndex) => (
@@ -549,7 +533,7 @@ export default function WatchBox({
                               }}
                             />
                           ))}
-                        </button>
+                        </div>
                       )}
                     </div>
                   )}

@@ -5,12 +5,12 @@ import { useRouter } from 'next/navigation'
 import type { Watch } from '@/types/watch'
 import CollectionHeader from '@/components/collection/CollectionHeader'
 import CollectionStats from '@/components/collection/CollectionStats'
+import SortDropdown from '@/components/collection/SortDropdown'
 import CollectionWatchboxSurface from '@/components/collection/CollectionWatchboxSurface'
 import UnsavedChangesBar, { type DraftChange } from '@/components/collection/UnsavedChangesBar'
 import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import WatchSidebar from '@/components/collection/WatchSidebar'
-import { useDesktopSidebarOffset } from '@/components/collection/useDesktopSidebarOffset'
 import { useCollectionSession } from './CollectionSessionProvider'
 import { brand } from '@/lib/brand'
 
@@ -18,6 +18,12 @@ type View = 'watchbox' | 'cards'
 type SortMode = 'manual' | 'brand' | 'value' | 'type'
 
 const EMPTY_PENDING_CHANGES: DraftChange[] = []
+const SORT_OPTIONS: { value: SortMode; label: string }[] = [
+  { value: 'manual', label: 'Watchbox' },
+  { value: 'brand', label: 'Brand' },
+  { value: 'value', label: 'Value' },
+  { value: 'type', label: 'Type' },
+]
 
 export default function CollectionPage() {
   const router = useRouter()
@@ -100,26 +106,11 @@ export default function CollectionPage() {
           onEmptySlotClick={() => router.push('/collection/add')}
           onReorder={sortBy === 'manual' ? handleReorder : undefined}
           topToolbar={
-            <select
+            <SortDropdown
               value={sortBy}
-              onChange={event => setSortBy(event.target.value as SortMode)}
-              style={{
-                fontFamily: brand.font.sans,
-                fontSize: 11,
-                color: brand.colors.muted,
-                border: `1px solid ${brand.colors.borderLight}`,
-                borderRadius: brand.radius.btn,
-                padding: '4px 10px',
-                background: 'transparent',
-                cursor: 'pointer',
-                outline: 'none',
-              }}
-            >
-              <option value="manual">Sort: Manual</option>
-              <option value="brand">Brand</option>
-              <option value="value">Value</option>
-              <option value="type">Type</option>
-            </select>
+              options={SORT_OPTIONS}
+              onChange={value => setSortBy(value as SortMode)}
+            />
           }
         />
       ) : (
@@ -273,8 +264,6 @@ function CardsView({
   onCloseSidebar: () => void
   onRequestDelete: (watch: Watch) => void
 }) {
-  const { gridRef, sidebarRef, sidebarOffset, registerCardRef } = useDesktopSidebarOffset(activeSlot, activeWatch !== null)
-
   return (
     <>
       <div
@@ -286,35 +275,17 @@ function CardsView({
         <div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
             <div>
-              <select
+              <SortDropdown
                 value={sortBy}
-                onChange={event => setSortBy(event.target.value as SortMode)}
-                style={{
-                  fontFamily: brand.font.sans,
-                  fontSize: 11,
-                  color: brand.colors.muted,
-                  border: `1px solid ${brand.colors.borderLight}`,
-                  borderRadius: brand.radius.btn,
-                  padding: '6px 12px',
-                  background: brand.colors.white,
-                  cursor: 'pointer',
-                  outline: 'none',
-                }}
-              >
-                <option value="manual">Sort: Manual</option>
-                <option value="brand">Sort: Brand</option>
-                <option value="value">Sort: Value</option>
-                <option value="type">Sort: Type</option>
-              </select>
+                options={SORT_OPTIONS}
+                onChange={value => setSortBy(value as SortMode)}
+              />
             </div>
           </div>
 
-          <div
-            ref={gridRef}
-            style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 18 }}
-          >
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 18 }}>
             {watches.map((watch, index) => (
-              <div key={watch.id} ref={registerCardRef(index)}>
+              <div key={watch.id}>
                 <WatchCard
                   watch={watch}
                   isActive={activeSlot === index}
@@ -325,7 +296,14 @@ function CardsView({
           </div>
         </div>
 
-        <div className={`sidebar-sheet ${activeWatch ? 'is-active' : ''}`}>
+        <div
+          className={`sidebar-sheet ${activeWatch ? 'is-active' : ''}`}
+          style={{
+            alignSelf: 'start',
+            position: 'sticky',
+            top: 84,
+          }}
+        >
           <div className="sidebar-drag-pill" style={{ display: 'none', justifyContent: 'center', padding: '12px 0 4px' }}>
             <div style={{ width: 36, height: 4, borderRadius: 2, background: brand.colors.borderLight }} />
           </div>
@@ -348,13 +326,10 @@ function CardsView({
           >
             ✕
           </button>
-          <div
-            className="sidebar-content"
-            ref={sidebarRef}
-            style={{ marginTop: sidebarOffset }}
-          >
+          <div className="sidebar-content">
             <WatchSidebar
               watch={activeWatch}
+              sticky={false}
               onRequestDelete={onRequestDelete}
             />
           </div>
