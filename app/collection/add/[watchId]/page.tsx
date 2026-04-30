@@ -36,6 +36,7 @@ export default function AddWatchConfirmPage() {
   const watch = useMemo(() => catalogWatches.find(w => w.id === params.watchId), [params.watchId])
 
   const dest = searchParams.get('dest')
+  const source = searchParams.get('source')
   const incomingBoxId = searchParams.get('boxId')
   const isDuplicate = searchParams.get('duplicate') === 'true'
   const isPlaygroundContext = dest === 'playground'
@@ -51,6 +52,7 @@ export default function AddWatchConfirmPage() {
   const [newBoxOpen, setNewBoxOpen] = useState(false)
   const [newBoxName, setNewBoxName] = useState('')
   const [viewportWidth, setViewportWidth] = useState(1280)
+  const [duplicateConfirmOpen, setDuplicateConfirmOpen] = useState(false)
 
   useEffect(() => {
     const boxes = loadPlaygroundBoxes()
@@ -83,6 +85,11 @@ export default function AddWatchConfirmPage() {
   const alreadyInCollection = isInCollection(resolvedWatch.id)
   const showDuplicateMessage = isDuplicate || alreadyInCollection
   const isCompact = viewportWidth < 980
+  const eyebrowLabel = source === 'followed'
+    ? 'Followed Watch'
+    : isPlaygroundContext
+    ? 'Add to Playground'
+    : 'Add a Watch'
 
   function persistPlaygroundBoxes(boxes: PlaygroundBox[]) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(boxes))
@@ -117,6 +124,17 @@ export default function AddWatchConfirmPage() {
     const updated = [...boxes, newBox]
     persistPlaygroundBoxes(updated)
     router.push(`/playground?boxId=${newBox.id}`)
+  }
+
+  function commitCollectionAdd() {
+    if (!condition) return
+
+    addToCollection(resolvedWatch, condition, {
+      price: purchasePrice ? Number(purchasePrice) : undefined,
+      date: purchaseDate || undefined,
+      notes: notes.trim() || undefined,
+    })
+    router.push('/collection')
   }
 
   return (
@@ -235,7 +253,7 @@ export default function AddWatchConfirmPage() {
                   color: '#A89880',
                 }}
               >
-                Add a Watch
+                {eyebrowLabel}
               </span>
             </div>
 
@@ -270,8 +288,20 @@ export default function AddWatchConfirmPage() {
             </div>
 
             {showDuplicateMessage && (
-              <div style={{ marginBottom: 16, fontSize: 11, color: '#A89880', fontFamily: 'var(--font-dm-sans)' }}>
-                Adding a duplicate of a watch already in your collection.
+              <div
+                style={{
+                  marginBottom: 16,
+                  padding: '10px 12px',
+                  borderRadius: 8,
+                  border: '1px solid rgba(201,168,76,0.28)',
+                  background: 'rgba(201,168,76,0.07)',
+                  fontSize: 11,
+                  color: '#8A6A10',
+                  fontFamily: 'var(--font-dm-sans)',
+                  lineHeight: 1.45,
+                }}
+              >
+                You already have this reference in your collection. Adding it again is allowed, but we&apos;ll ask you to confirm before saving the duplicate.
               </div>
             )}
 
@@ -539,12 +569,11 @@ export default function AddWatchConfirmPage() {
                 disabled={!condition}
                 onClick={() => {
                   if (!condition) return
-                  addToCollection(resolvedWatch, condition, {
-                    price: purchasePrice ? Number(purchasePrice) : undefined,
-                    date: purchaseDate || undefined,
-                    notes: notes.trim() || undefined,
-                  })
-                  router.push('/collection')
+                  if (showDuplicateMessage) {
+                    setDuplicateConfirmOpen(true)
+                    return
+                  }
+                  commitCollectionAdd()
                 }}
                 style={primaryButtonStyle(!condition)}
               >
@@ -562,6 +591,87 @@ export default function AddWatchConfirmPage() {
           </div>
         </div>
       </div>
+
+      {duplicateConfirmOpen && (
+        <>
+          <div
+            onClick={() => setDuplicateConfirmOpen(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(26,20,16,0.45)',
+              zIndex: 220,
+              backdropFilter: 'blur(2px)',
+            }}
+          />
+          <div
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 'min(460px, calc(100vw - 32px))',
+              background: '#FFFFFF',
+              border: '1px solid #EAE5DC',
+              borderRadius: 12,
+              boxShadow: '0 24px 64px rgba(26,20,16,0.18)',
+              zIndex: 221,
+              padding: '24px 24px 20px',
+            }}
+          >
+            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 6 }}>
+              Duplicate Watch
+            </div>
+            <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: 30, color: '#1A1410', lineHeight: 1.05, marginBottom: 10 }}>
+              Add another copy to your collection?
+            </div>
+            <p style={{ margin: '0 0 18px', fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#A89880', lineHeight: 1.55 }}>
+              This reference is already in your collection. We&apos;ll add this as a separate owned watch entry with its own condition and purchase details.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <button
+                onClick={() => setDuplicateConfirmOpen(false)}
+                style={{
+                  fontFamily: 'var(--font-dm-sans)',
+                  fontSize: 11,
+                  fontWeight: 500,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  padding: '10px 12px',
+                  background: 'transparent',
+                  color: '#1A1410',
+                  border: '1px solid #D4CBBF',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setDuplicateConfirmOpen(false)
+                  commitCollectionAdd()
+                }}
+                style={{
+                  fontFamily: 'var(--font-dm-sans)',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  padding: '10px 12px',
+                  background: '#1A1410',
+                  color: '#FAF8F4',
+                  border: 'none',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                }}
+              >
+                Add Duplicate
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }

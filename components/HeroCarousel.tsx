@@ -14,11 +14,11 @@ export interface CarouselWatch {
 }
 
 const CAROUSEL_WATCHES: CarouselWatch[] = [
-  { id: 'c1', img: '/watches/longines-05.avif', brand: 'Longines', model: 'Legend Diver', ref: 'L3.764.4.16.6', dial: 'White Lacquer', value: 1350 },
-  { id: 'c2', img: '/watches/longines-02.avif', brand: 'Longines', model: 'Legend Diver', ref: 'L3.764.4.96.6', dial: 'Navy Blue',     value: 1380 },
-  { id: 'c3', img: '/watches/longines-03.avif', brand: 'Longines', model: 'Legend Diver', ref: 'L3.764.4.06.6', dial: 'Forest Green',  value: 1450 },
-  { id: 'c4', img: '/watches/longines-04.avif', brand: 'Longines', model: 'Legend Diver', ref: 'L3.764.4.50.0', dial: 'Black',         value: 1250 },
-  { id: 'c5', img: '/watches/longines-01.avif', brand: 'Longines', model: 'Legend Diver', ref: 'L3.764.4.99.6', dial: 'Grey Anthracite',value: 1340 },
+  { id: 'longines-ld-white', img: '/watches/longines-05.avif', brand: 'Longines', model: 'Legend Diver', ref: 'L3.764.4.16.6', dial: 'White Lacquer', value: 1350 },
+  { id: 'longines-ld-navy', img: '/watches/longines-02.avif', brand: 'Longines', model: 'Legend Diver', ref: 'L3.764.4.96.6', dial: 'Navy Blue', value: 1380 },
+  { id: 'longines-ld-green', img: '/watches/longines-03.avif', brand: 'Longines', model: 'Legend Diver', ref: 'L3.764.4.06.6', dial: 'Forest Green', value: 1450 },
+  { id: 'longines-ld-black', img: '/watches/longines-04.avif', brand: 'Longines', model: 'Legend Diver', ref: 'L3.764.4.50.0', dial: 'Black', value: 1250 },
+  { id: 'longines-ld-grey', img: '/watches/longines-01.avif', brand: 'Longines', model: 'Legend Diver', ref: 'L3.764.4.99.6', dial: 'Grey Anthracite', value: 1340 },
 ]
 
 function fmt(n: number) {
@@ -26,18 +26,18 @@ function fmt(n: number) {
 }
 
 interface Props {
-  liked: Set<string>
-  toggleLike: (id: string) => void
+  followedWatchIds: Set<string>
+  toggleFollowedWatch: (id: string) => void
 }
 
-export default function HeroCarousel({ liked, toggleLike }: Props) {
+export default function HeroCarousel({ followedWatchIds, toggleFollowedWatch }: Props) {
   const [idx, setIdx] = useState(0)
   const [animating, setAnimating] = useState(false)
   const [dir, setDir] = useState(1)
 
   const watch = CAROUSEL_WATCHES[idx]
   const total = CAROUSEL_WATCHES.length
-  const isLiked = liked.has(watch.id)
+  const isFollowed = followedWatchIds.has(watch.id)
 
   function navigate(newIdx: number) {
     if (animating) return
@@ -109,19 +109,19 @@ export default function HeroCarousel({ liked, toggleLike }: Props) {
 
           {/* Like button */}
           <button
-            onClick={() => toggleLike(watch.id)}
-            title={isLiked ? 'Unlike' : 'Like this watch'}
+            onClick={() => toggleFollowedWatch(watch.id)}
+            title={isFollowed ? 'Remove from Followed Watches' : 'Save to Followed Watches'}
             style={{
               position: 'absolute', top: 16, right: 16, zIndex: 10,
               width: 36, height: 36, borderRadius: '50%',
-              background: isLiked ? 'rgba(201,168,76,0.25)' : 'rgba(255,255,255,0.08)',
-              border: isLiked ? '1px solid rgba(201,168,76,0.5)' : '1px solid rgba(255,255,255,0.12)',
+              background: isFollowed ? 'rgba(201,168,76,0.25)' : 'rgba(255,255,255,0.08)',
+              border: isFollowed ? '1px solid rgba(201,168,76,0.5)' : '1px solid rgba(255,255,255,0.12)',
               backdropFilter: 'blur(6px)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', fontSize: 16, color: isLiked ? '#C9A84C' : 'rgba(255,255,255,0.7)',
+              cursor: 'pointer', fontSize: 16, color: isFollowed ? '#C9A84C' : 'rgba(255,255,255,0.7)',
             }}
           >
-            {isLiked ? '♥' : '♡'}
+            {isFollowed ? '♥' : '♡'}
           </button>
 
           {/* Prev arrow */}

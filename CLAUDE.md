@@ -20,7 +20,7 @@ Read the PRD before implementing any feature. It defines the product vision, wat
 - **Framework:** Next.js 14, App Router, TypeScript
 - **Styling:** Inline styles as the primary pattern. Tailwind used only for responsive grid utilities (`grid-cols-*`, `gap-*`, `md:` breakpoints).
 - **Fonts:** Loaded via `next/font/google` in `app/layout.tsx`, exposed as CSS variables `--font-cormorant` (Cormorant Garamond) and `--font-dm-sans` (DM Sans)
-- **State:** Session state only via React context (`app/collection/CollectionSessionProvider.tsx`). No database yet — Supabase planned for Phase 2.
+- **State:** Collection/followed/select/watchbox state lives in `app/collection/CollectionSessionProvider.tsx`. Collection/followed/selection state is mirrored to `sessionStorage`; shared watchbox config is mirrored to `localStorage`. Playground boxes remain local-only via `localStorage`.
 - **Data:** Watch data in `lib/watches.ts`, playground data in `lib/playgroundData.ts`
 
 ---
@@ -37,14 +37,15 @@ import { brand } from '@/lib/brand'
 
 | Namespace | Contents |
 |---|---|
-| `brand.colors` | `bg`, `slot`, `ink`, `muted`, `gold`, `dark`, `white`, `border`, `borderMid`, `borderLight`, `borderSlot` |
+| `brand.colors` | `bg`, `slot`, `ink`, `muted`, `gold`, `goldWash`, `goldLine`, `dark`, `white`, `border`, `borderMid`, `borderLight`, `borderSlot` |
+| `brand.controls.dropdown` | `minWidth`, `triggerHeight`, `menuOffset`, `menuPadding`, `optionMinHeight` |
 | `brand.status` | Ownership badge colors: `owned`, `forSale`, `recentlyAdded`, `needsService` |
 | `brand.condition` | Condition badge colors: `unworn`, `likeNew`, `excellent`, `good`, `fair` |
 | `brand.font` | `serif` = `var(--font-cormorant)`, `sans` = `var(--font-dm-sans)` |
 | `brand.radius` | `btn` (4), `sm` (6), `md` (8), `lg` (10), `xl` (12), `pill` (20) |
-| `brand.shadow` | `xs`, `sm`, `md`, `lg`, `xl`, `drop`, `gold` |
+| `brand.shadow` | `xs`, `sm`, `md`, `menu`, `lg`, `xl`, `drop`, `gold` |
 | `brand.transition` | `fast`, `base`, `slide`, `sheet`, `smooth` |
-| `brand.zIndex` | `nav`, `sidebar`, `backdrop`, `overflow` |
+| `brand.zIndex` | `nav`, `dropdown`, `sidebar`, `backdrop`, `overflow` |
 
 ### CSS custom properties — `app/globals.css`
 `--color-bg`, `--color-ink`, `--color-muted`, `--color-gold`, `--color-border`, `--color-border-mid`, `--color-border-light`, `--color-slot`, `--color-dark`, `--color-white`, `--radius-btn/sm/md/lg/xl/pill`
@@ -66,11 +67,10 @@ Use CSS vars for global/class-based CSS; use `brand.*` for inline styles. Both r
 app/
   layout.tsx                    — Root layout, font loading, NavBar, CollectionSessionProvider
   globals.css                   — Global styles, CSS token vars, mobile overrides
-  page.tsx                      — Homepage (hero, watchbox demo, features, news ticker)
+  page.tsx                      — Homepage shell (hero, canonical collection preview, features, followed radar)
   collection/
-    page.tsx                    — My Collection page (watchbox + cards + stats views)
+    page.tsx                    — My Collection route shell (watchbox/cards/stats composition)
     layout.tsx                  — Collection layout wrapper
-    CollectionContext.tsx        — Collection state (watches, frame, lining, active slot)
     CollectionSessionProvider.tsx — Session-scoped collection provider
     add/
       page.tsx                  — Add Watch search page
@@ -82,18 +82,17 @@ app/
 components/
   NavBar.tsx                    — Sticky nav, mobile drawer
   collection/
-    WatchBox.tsx                — Watch box grid + overflow + hover card
+    CollectionWatchboxSurface.tsx — Canonical collection/home watchbox surface
+    CollectionSection.tsx       — Homepage wrapper around the canonical collection surface
+    SortDropdown.tsx            — Canonical luxury dropdown for collection/playground ordering
+    WatchBox.tsx                — Canonical watchbox implementation (home, collection, playground)
     WatchCard.tsx               — Collection card view item
     WatchSidebar.tsx            — Watch detail sidebar (sticky right panel)
     CollectionHeader.tsx        — Page title, value pill, action buttons
     CollectionStats.tsx         — Portfolio stats (overview + graphical views)
-    CollectionSection.tsx       — Collection section wrapper with view switcher
-    BoxConfigurator.tsx         — Frame/lining/slot selector
-    AddWatchModal.tsx           — Add watch trigger modal
     UnsavedChangesBar.tsx       — Draft changes save/discard bar
     ViewSwitcher.tsx            — Watchbox / Cards / Stats toggle
   watchbox/
-    WatchBox.tsx                — Shared watchbox used on homepage
     HoverCard.tsx               — Floating hover card on watch slot
     DialSVG.tsx                 — SVG dial renderer for playground mode
 
@@ -115,15 +114,38 @@ docs/
 
 ---
 
+## Current Collection Architecture
+
+- **Canonical watchbox path:** `components/collection/WatchBox.tsx`
+- **Canonical collection/home surface:** `components/collection/CollectionWatchboxSurface.tsx`
+- **Homepage wrapper:** `components/collection/CollectionSection.tsx`
+- **Collection route shell:** `app/collection/page.tsx`
+- **Canonical session provider:** `app/collection/CollectionSessionProvider.tsx`
+- **Canonical aspirational save state:** `followedWatchIds`
+- **Canonical add-watch flow:** routed only via `app/collection/add/page.tsx` and `app/collection/add/[watchId]/page.tsx`
+
+The homepage and `/collection` should share watchbox behavior through `CollectionWatchboxSurface.tsx`. Route-level files may differ in presentation, but watchbox config, layout math, overflow behavior, selection/sidebar behavior, and reorder behavior should not be reimplemented in multiple places.
+
+`CollectionSessionProvider.tsx` owns:
+- `collectionWatches`
+- `followedWatchIds`
+- `selectedWatchId`
+- `watchboxConfig`
+
+Do not recreate a second collection context or a second homepage-only saved/liked state.
+
+---
+
 ## Coding Conventions
 
 - **Inline styles only** — no Tailwind for component-level styling, no CSS modules, no styled-components
 - **No new hardcoded hex values** — everything through `brand.colors.*`
 - **No new font var strings** — use `brand.font.serif` / `brand.font.sans`
+- **No browser-native `<select>` on premium product surfaces** — use `components/collection/SortDropdown.tsx` for luxury ordering controls
 - **No comments explaining what code does** — only comment non-obvious WHY (constraints, workarounds)
 - **No emoji in UI copy or headings** — arrow glyphs (→ ↗ ✕) used as text characters only
 - **Currency formatting** via `Intl.NumberFormat` — `$1,350` no decimals
-- **Session state only** — no localStorage, no fetch/API calls yet; Supabase is Phase 2
+- **Client-only state for now** — `CollectionSessionProvider` + localStorage/sessionStorage only, no auth/API/database yet; Supabase is Phase 2
 - **Max content width:** 1280px, `margin: 0 auto`
 - **Sticky nav height:** ~61px — sidebar `top: 88` accounts for this
 

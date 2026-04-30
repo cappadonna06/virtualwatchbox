@@ -1,12 +1,11 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import Image from 'next/image'
 import type { Watch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import { getWatchboxOverflow } from '@/lib/watchboxOverflow'
 import DialSVG from '@/components/watchbox/DialSVG'
-import HoverCard from '@/components/watchbox/HoverCard'
 import { brand } from '@/lib/brand'
 
 interface Props {
@@ -123,6 +122,30 @@ function OverflowListItem({
   )
 }
 
+function hexToRgb(hex: string) {
+  const normalized = hex.replace('#', '')
+  const value = normalized.length === 3
+    ? normalized.split('').map(char => `${char}${char}`).join('')
+    : normalized
+
+  if (value.length !== 6) return null
+
+  const red = Number.parseInt(value.slice(0, 2), 16)
+  const green = Number.parseInt(value.slice(2, 4), 16)
+  const blue = Number.parseInt(value.slice(4, 6), 16)
+
+  if ([red, green, blue].some(channel => Number.isNaN(channel))) return null
+  return { red, green, blue }
+}
+
+function isDarkColor(color: string) {
+  const rgb = hexToRgb(color)
+  if (!rgb) return false
+  const { red, green, blue } = rgb
+  const luminance = (0.2126 * red) + (0.7152 * green) + (0.0722 * blue)
+  return luminance < 132
+}
+
 export default function WatchBox({
   watches,
   activeSlot,
@@ -158,6 +181,11 @@ export default function WatchBox({
   const ln = LININGS.find(l => l.id === lining) ?? LININGS[0]
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
   const overflow = useMemo(() => getWatchboxOverflow(watches, sc.n), [watches, sc.n])
+  const useHighContrastSlotText = isDarkColor(ln.slotBg) || isDarkColor(ln.color)
+  const slotMetaColor = useHighContrastSlotText ? 'rgba(201,168,76,0.52)' : 'rgba(80,60,40,0.3)'
+  const emptyPrimaryColor = useHighContrastSlotText ? brand.colors.gold : ln.emptyColor
+  const overflowPrimaryColor = useHighContrastSlotText ? brand.colors.gold : brand.colors.ink
+  const overflowSecondaryColor = useHighContrastSlotText ? 'rgba(201,168,76,0.82)' : brand.colors.muted
 
   const inPreview = onReorder !== undefined
     && draggedIndex !== null
@@ -180,7 +208,6 @@ export default function WatchBox({
   })
 
   const overflowSlotActive = overflow.hasOverflow && activeSlot !== null && activeSlot >= overflow.visibleItems.length
-
   return (
     <>
       {overflowOpen && (
@@ -244,12 +271,12 @@ export default function WatchBox({
                         justifyContent: 'center',
                         gap: 5,
                         cursor: 'pointer',
-                        opacity: 0.4,
+                        opacity: useHighContrastSlotText ? 0.88 : 0.4,
                         background: ln.slotBg,
                       }}
                     >
-                      <span style={{ fontSize: 18, color: ln.emptyColor }}>+</span>
-                      <span style={{ fontFamily: brand.font.sans, fontSize: 8, letterSpacing: '0.1em', color: ln.emptyColor }}>ADD</span>
+                      <span style={{ fontSize: 18, color: emptyPrimaryColor }}>+</span>
+                      <span style={{ fontFamily: brand.font.sans, fontSize: 8, letterSpacing: '0.1em', color: emptyPrimaryColor }}>ADD</span>
                     </div>
                   </div>
                 )
@@ -289,7 +316,7 @@ export default function WatchBox({
                           fontSize: 8,
                           fontWeight: 500,
                           letterSpacing: '0.08em',
-                          color: 'rgba(80,60,40,0.3)',
+                          color: slotMetaColor,
                           pointerEvents: 'none',
                           zIndex: 2,
                         }}
@@ -300,7 +327,7 @@ export default function WatchBox({
                         style={{
                           fontFamily: brand.font.serif,
                           fontSize: 26,
-                          color: brand.colors.ink,
+                          color: overflowPrimaryColor,
                           lineHeight: 1,
                         }}
                       >
@@ -313,7 +340,7 @@ export default function WatchBox({
                           fontWeight: 600,
                           letterSpacing: '0.12em',
                           textTransform: 'uppercase',
-                          color: brand.colors.muted,
+                          color: overflowSecondaryColor,
                         }}
                       >
                         More
@@ -350,7 +377,7 @@ export default function WatchBox({
                   data-slot-index={i}
                   draggable={onReorder !== undefined && !isTouchDevice}
                   onClick={() => onSlotClick(slot.originalIndex)}
-                  onDragStart={onReorder ? (e: React.DragEvent<HTMLDivElement>) => {
+                  onDragStart={onReorder ? e => {
                     dragCounter.current = 0
                     setDraggedIndex(i)
                     const el = e.currentTarget as HTMLElement
@@ -393,30 +420,28 @@ export default function WatchBox({
                   onMouseEnter={e => {
                     if (draggedIndex !== null) return
                     e.currentTarget.style.transform = 'translateY(-2px)'
-                    if (mode === 'playground' || onReorder) setHoveredSlot(i)
+                    if (onReorder !== undefined) setHoveredSlot(i)
                   }}
                   onMouseLeave={e => {
                     e.currentTarget.style.transform = 'translateY(0)'
-                    if (mode === 'playground' || onReorder) setHoveredSlot(null)
+                    if (onReorder !== undefined) setHoveredSlot(null)
                   }}
                 >
-                  {mode === 'playground' && hoveredSlot === i && (
-                    <HoverCard watch={w} />
-                  )}
-
                   {onReorder !== undefined && (isTouchDevice || hoveredSlot === i) && !isBeingDragged && (
                     <div
                       style={{
                         position: 'absolute',
-                        right: -8,
-                        top: '66%',
-                        transform: 'translateY(-50%)',
+                        right: isTouchDevice ? -8 : 7,
+                        top: isTouchDevice ? '66%' : 'auto',
+                        bottom: isTouchDevice ? 'auto' : 7,
+                        transform: isTouchDevice ? 'translateY(-50%)' : 'none',
                         zIndex: 10,
-                        cursor: isTouchDevice ? 'default' : 'grab',
-                        padding: '9px 2px 9px 11px',
+                        cursor: isTouchDevice ? 'default' : isBeingDragged ? 'grabbing' : 'grab',
+                        padding: isTouchDevice ? '9px 2px 9px 11px' : 0,
                         touchAction: 'none',
+                        pointerEvents: isTouchDevice ? 'auto' : 'none',
                       }}
-                      onPointerDown={isTouchDevice ? (e: React.PointerEvent) => {
+                      onPointerDown={isTouchDevice ? (e: ReactPointerEvent) => {
                         e.stopPropagation()
                         e.preventDefault()
                         touchDragging.current = true
@@ -467,23 +492,49 @@ export default function WatchBox({
                         document.addEventListener('pointercancel', onUp)
                       } : undefined}
                     >
-                      <div style={{
-                        width: 7,
-                        height: 21,
-                        borderRadius: '2px 4px 4px 2px',
-                        background: 'rgba(201,168,76,0.12)',
-                        border: '1px solid rgba(201,168,76,0.22)',
-                        boxShadow: '0.5px 1px 2px rgba(0,0,0,0.1)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 2,
-                      }}>
-                        {[0, 1, 2].map(d => (
-                          <div key={d} style={{ width: 3, height: 1, borderRadius: 1, background: 'rgba(201,168,76,0.42)' }} />
-                        ))}
-                      </div>
+                      {isTouchDevice ? (
+                        <div style={{
+                          width: 7,
+                          height: 21,
+                          borderRadius: '2px 4px 4px 2px',
+                          background: 'rgba(201,168,76,0.12)',
+                          border: '1px solid rgba(201,168,76,0.22)',
+                          boxShadow: '0.5px 1px 2px rgba(0,0,0,0.1)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 2,
+                        }}>
+                          {[0, 1, 2].map(d => (
+                            <div key={d} style={{ width: 3, height: 1, borderRadius: 1, background: 'rgba(201,168,76,0.42)' }} />
+                          ))}
+                        </div>
+                      ) : (
+                        <div
+                          aria-hidden="true"
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(2, 3px)',
+                            gap: 2,
+                            padding: '2px 1px',
+                            opacity: 0.82,
+                          }}
+                        >
+                          {Array.from({ length: 4 }).map((_, dotIndex) => (
+                            <span
+                              key={dotIndex}
+                              style={{
+                                width: 3,
+                                height: 3,
+                                borderRadius: '50%',
+                                background: 'rgba(201,168,76,0.7)',
+                                boxShadow: '0 0 4px rgba(26,20,16,0.12)',
+                              }}
+                            />
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -495,6 +546,7 @@ export default function WatchBox({
                       overflow: 'hidden',
                       position: 'relative',
                       background: ln.slotBg,
+                      cursor: 'pointer',
                       border: (isActive || isDragTarget || isDestInPreview)
                         ? '1.5px solid rgba(201,168,76,0.8)'
                         : isSourceInPreview
@@ -515,7 +567,7 @@ export default function WatchBox({
                         fontSize: 8,
                         fontWeight: 500,
                         letterSpacing: '0.08em',
-                        color: 'rgba(80,60,40,0.3)',
+                        color: slotMetaColor,
                         pointerEvents: 'none',
                         zIndex: 2,
                       }}

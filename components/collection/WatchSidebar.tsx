@@ -103,6 +103,7 @@ const btnSecondary: React.CSSProperties = {
 interface Props {
   watch: Watch | null
   mode?: 'collection' | 'playground'
+  sticky?: boolean
   sourceWatchId?: string | null
   onRequestDelete?: (watch: Watch) => void
   onRequestEdit?: (watch: Watch) => void
@@ -111,15 +112,23 @@ interface Props {
 export default function WatchSidebar({
   watch,
   mode = 'collection',
+  sticky = true,
   sourceWatchId,
   onRequestDelete,
   onRequestEdit,
 }: Props) {
   const router = useRouter()
+  const panelStyle: React.CSSProperties = sticky
+    ? sidebarPanel
+    : {
+        ...sidebarPanel,
+        position: 'static',
+        top: undefined,
+      }
 
   if (!watch) {
     return (
-      <div style={{ ...sidebarPanel, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
+      <div style={{ ...panelStyle, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ ...metaLabel, marginBottom: 10 }}>
             Select a Watch
@@ -136,7 +145,7 @@ export default function WatchSidebar({
   const sourceId = sourceWatchId ?? watch.id
 
   return (
-    <div style={sidebarPanel}>
+    <div style={panelStyle}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div style={metaLabel}>Watch Detail</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

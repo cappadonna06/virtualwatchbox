@@ -1,31 +1,25 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo } from 'react'
 import HeroCarousel from '@/components/HeroCarousel'
 import Ticker from '@/components/Ticker'
 import CollectionSection from '@/components/collection/CollectionSection'
 import FeaturesSection from '@/components/FeaturesSection'
 import OnYourRadar from '@/components/OnYourRadar'
 import Footer from '@/components/Footer'
+import { useCollectionSession } from './collection/CollectionSessionProvider'
 
 export default function HomePage() {
-  const [liked, setLiked] = useState(new Set<string>())
-
-  function toggleLike(id: string) {
-    setLiked(prev => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
-  }
+  const { followedWatchIds, toggleFollowedWatch } = useCollectionSession()
+  const followedWatchIdSet = useMemo(() => new Set(followedWatchIds), [followedWatchIds])
 
   return (
     <>
-      <HeroCarousel liked={liked} toggleLike={toggleLike} />
+      <HeroCarousel followedWatchIds={followedWatchIdSet} toggleFollowedWatch={toggleFollowedWatch} />
       <Ticker />
       <CollectionSection />
       <FeaturesSection />
-      <OnYourRadar liked={liked} toggleLike={toggleLike} />
+      <OnYourRadar followedWatchIds={followedWatchIdSet} toggleFollowedWatch={toggleFollowedWatch} />
       <Footer />
     </>
   )

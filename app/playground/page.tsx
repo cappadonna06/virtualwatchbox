@@ -10,6 +10,7 @@ import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import { getEffectiveSlotCount, getOverflowSummary, getWatchboxOverflow } from '@/lib/watchboxOverflow'
 import WatchBox from '@/components/collection/WatchBox'
 import WatchSidebar from '@/components/collection/WatchSidebar'
+import SortDropdown from '@/components/collection/SortDropdown'
 import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import CollectionStats from '@/components/collection/CollectionStats'
@@ -38,6 +39,12 @@ const TAG_OPTIONS = [
 
 type View = 'watchbox' | 'cards'
 type SortMode = 'manual' | 'brand' | 'value' | 'type'
+const SORT_OPTIONS: { value: SortMode; label: string }[] = [
+  { value: 'manual', label: 'Watchbox' },
+  { value: 'brand', label: 'Brand' },
+  { value: 'value', label: 'Value' },
+  { value: 'type', label: 'Type' },
+]
 
 function calcSlotPx(
   containerW: number,
@@ -492,7 +499,14 @@ function PlaygroundPageInner() {
             )}
           </div>
 
-          <div className={`sidebar-sheet ${selectedItem ? 'is-active' : ''}`}>
+          <div
+            className={`sidebar-sheet ${selectedItem ? 'is-active' : ''}`}
+            style={{
+              alignSelf: 'start',
+              position: 'sticky',
+              top: 84,
+            }}
+          >
             <div className="sidebar-drag-pill" style={{ display: 'none', justifyContent: 'center', padding: '12px 0 4px' }}>
               <div style={{ width: 36, height: 4, borderRadius: 2, background: '#E0DAD0' }} />
             </div>
@@ -518,6 +532,7 @@ function PlaygroundPageInner() {
             <div className="sidebar-content">
               <WatchSidebar
                 watch={selectedItem?.displayWatch ?? null}
+                sticky={false}
                 sourceWatchId={selectedItem?.sourceWatch.id ?? null}
                 mode="playground"
                 onRequestDelete={() => setDeleteEntryTarget(selectedItem)}
@@ -1005,48 +1020,32 @@ interface CardsViewProps {
   setSortBy: (v: SortMode) => void
 }
 
-const SORT_OPTIONS: { value: SortMode; label: string }[] = [
-  { value: 'manual', label: 'Manual' },
-  { value: 'brand', label: 'Brand' },
-  { value: 'value', label: 'Value' },
-  { value: 'type', label: 'Type' },
-]
-
-function CardsView({ watches, activeSlot, onCardSelect, sortBy, setSortBy }: CardsViewProps) {
+function CardsView({
+  watches,
+  activeSlot,
+  onCardSelect,
+  sortBy,
+  setSortBy,
+}: CardsViewProps) {
   return (
     <div>
-      <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
-        {SORT_OPTIONS.map(opt => (
-          <button
-            key={opt.value}
-            onClick={() => setSortBy(opt.value)}
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 10,
-              fontWeight: sortBy === opt.value ? 600 : 400,
-              padding: '4px 12px',
-              borderRadius: brand.radius.pill,
-              border: `1px solid ${sortBy === opt.value ? brand.colors.ink : brand.colors.borderMid}`,
-              background: sortBy === opt.value ? brand.colors.ink : brand.colors.bg,
-              color: sortBy === opt.value ? brand.colors.white : brand.colors.muted,
-              cursor: 'pointer',
-              letterSpacing: '0.04em',
-              transition: `all ${brand.transition.fast}`,
-            }}
-          >
-            {opt.label}
-          </button>
-        ))}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+        <SortDropdown
+          value={sortBy}
+          options={SORT_OPTIONS}
+          onChange={value => setSortBy(value as SortMode)}
+        />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {watches.map((watch, index) => (
-          <WatchCard
-            key={watch.id}
-            watch={watch}
-            mode="playground"
-            isActive={activeSlot === index}
-            onSelect={() => onCardSelect(index)}
-          />
+          <div key={watch.id}>
+            <WatchCard
+              watch={watch}
+              mode="playground"
+              isActive={activeSlot === index}
+              onSelect={() => onCardSelect(index)}
+            />
+          </div>
         ))}
       </div>
     </div>
