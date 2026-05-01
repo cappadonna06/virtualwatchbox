@@ -1,5 +1,7 @@
 import type { ResolvedWatch, WatchSavedState } from '@/types/watch'
 
+export type FeaturedProfileWatch = 'grail' | 'jewel' | 'none'
+
 export type ProfileVisibilitySettings = {
   showCollection: boolean
   showCollectionStats: boolean
@@ -27,6 +29,7 @@ export type ProfileDemoState = {
   profileImageCrop?: ProfileImageCropState
   coverImageUrl: string
   collectionHeroImageUrl: string
+  featuredProfileWatch: FeaturedProfileWatch
   visibility: ProfileVisibilitySettings
   updatedAt: string
 }
@@ -73,5 +76,6 @@ export type PublicProfileSnapshot = {
   playgroundBoxes: PublicBoxSnapshot[]
   followedWatches: PublicFollowedWatchSnapshot[]
   grailWatch: ResolvedWatch | null
+  jewelWatch: ResolvedWatch | null
   updatedAt: string
 }

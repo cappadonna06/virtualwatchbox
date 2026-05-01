@@ -7,6 +7,8 @@ import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import { getWatchboxOverflow } from '@/lib/watchboxOverflow'
 import DialSVG from '@/components/watchbox/DialSVG'
 import { brand } from '@/lib/brand'
+import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import { IntentBadge } from './WatchStateIcons'
 
 interface Props {
   watches: ResolvedWatch[]
@@ -20,16 +22,19 @@ interface Props {
   slotWidth?: number
   mode?: 'collection' | 'playground'
   readonly?: boolean
+  jewelWatchIds?: string[]
 }
 
 function OverflowListItem({
   watch,
   onClick,
   mode,
+  showJewelBadge = false,
 }: {
   watch: ResolvedWatch
   onClick: () => void
   mode: 'collection' | 'playground'
+  showJewelBadge?: boolean
 }) {
   return (
     <button
@@ -79,18 +84,24 @@ function OverflowListItem({
         )}
       </div>
       <div style={{ minWidth: 0 }}>
-        <div
-          style={{
-            fontFamily: brand.font.sans,
-            fontSize: 9,
-            fontWeight: 600,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            color: brand.colors.gold,
-            marginBottom: 2,
-          }}
-        >
-          {watch.brand}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2, flexWrap: 'wrap' }}>
+          <div
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 9,
+              fontWeight: 600,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: brand.colors.gold,
+            }}
+          >
+            {watch.brand}
+          </div>
+          {showJewelBadge && (
+            <span className={mode === 'collection' ? 'watchbox-jewel-mobile-hide' : undefined}>
+              <IntentBadge state="jewel" compact />
+            </span>
+          )}
         </div>
         <div
           style={{
@@ -159,7 +170,9 @@ export default function WatchBox({
   slotWidth,
   mode = 'collection',
   readonly = false,
+  jewelWatchIds,
 }: Props) {
+  const { isWatchJewel } = useCollectionSession()
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null)
   const [overflowOpen, setOverflowOpen] = useState(false)
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
@@ -182,12 +195,18 @@ export default function WatchBox({
   const fr = FRAMES.find(f => f.id === frame) ?? FRAMES[0]
   const ln = LININGS.find(l => l.id === lining) ?? LININGS[0]
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
+  const publicJewelSet = useMemo(() => new Set(jewelWatchIds ?? []), [jewelWatchIds])
   const overflow = useMemo(() => getWatchboxOverflow(watches, sc.n), [watches, sc.n])
   const useHighContrastSlotText = isDarkColor(ln.slotBg) || isDarkColor(ln.color)
   const slotMetaColor = useHighContrastSlotText ? 'rgba(201,168,76,0.52)' : 'rgba(80,60,40,0.3)'
   const emptyPrimaryColor = useHighContrastSlotText ? brand.colors.gold : ln.emptyColor
   const overflowPrimaryColor = useHighContrastSlotText ? brand.colors.gold : brand.colors.ink
   const overflowSecondaryColor = useHighContrastSlotText ? 'rgba(201,168,76,0.82)' : brand.colors.muted
+  const shouldShowJewel = (watchId: string) => (
+    jewelWatchIds
+      ? publicJewelSet.has(watchId)
+      : mode === 'collection' && isWatchJewel(watchId)
+  )
 
   const inPreview = onReorder !== undefined
     && draggedIndex !== null
@@ -602,6 +621,14 @@ export default function WatchBox({
                         style={{ objectFit: 'contain', objectPosition: 'center center' }}
                       />
                     )}
+                    {shouldShowJewel(w.watchId) && (
+                      <div
+                        className={mode === 'collection' && !readonly ? 'watchbox-jewel-mobile-hide' : undefined}
+                        style={{ position: 'absolute', top: 5, right: 5, zIndex: 3 }}
+                      >
+                        <IntentBadge state="jewel" compact iconOnly />
+                      </div>
+                    )}
                     {isActive && (
                       <span
                         style={{
@@ -693,6 +720,7 @@ export default function WatchBox({
                       key={item.id}
                       watch={item}
                       mode={mode}
+                      showJewelBadge={shouldShowJewel(item.watchId)}
                       onClick={() => {
                         onSlotClick(index)
                         setOverflowOpen(false)
@@ -769,6 +797,7 @@ export default function WatchBox({
                         key={item.id}
                         watch={item}
                         mode={mode}
+                        showJewelBadge={shouldShowJewel(item.watchId)}
                         onClick={() => {
                           onSlotClick(index)
                           setOverflowOpen(false)

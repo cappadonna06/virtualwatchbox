@@ -3,8 +3,10 @@
 import Image from 'next/image'
 import type { OwnershipStatus, ResolvedOwnedWatch, ResolvedWatch, WatchCondition } from '@/types/watch'
 import { brand } from '@/lib/brand'
+import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import WatchStateControl from './WatchStateControl'
 import type { WatchStateSource } from '@/types/watch'
+import { IntentBadge } from './WatchStateIcons'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -34,10 +36,12 @@ interface Props {
 }
 
 export default function WatchCard({ watch, isActive, onSelect, mode = 'collection', stateSource = null }: Props) {
+  const { isWatchJewel } = useCollectionSession()
   const status = 'ownershipStatus' in watch ? statusStyles[watch.ownershipStatus] : statusStyles.Owned
   const condition = conditionStyles[watch.condition]
   const showStateControl = stateSource !== null
   const showMetaBadge = mode !== 'saved'
+  const showJewelBadge = mode === 'collection' && isWatchJewel(watch.watchId)
 
   return (
     <div
@@ -74,6 +78,11 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
           style={{ objectFit: 'contain', objectPosition: 'center', padding: 12 }}
         />
+        {showJewelBadge && (
+          <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 3 }}>
+            <IntentBadge state="jewel" compact />
+          </div>
+        )}
         {showStateControl && (
           <WatchStateControl
             catalogWatchId={watch.watchId}

@@ -10,7 +10,13 @@ import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarShe
 import WatchBox from '@/components/collection/WatchBox'
 import WatchCard from '@/components/collection/WatchCard'
 import WatchSidebar from '@/components/collection/WatchSidebar'
-import { getStateIcon } from '@/components/collection/WatchStateIcons'
+import {
+  CheckIcon,
+  CrownIcon as SavedStateCrownIcon,
+  JewelIcon as SavedStateJewelIcon,
+  getStateIcon,
+  getStateLabel,
+} from '@/components/collection/WatchStateIcons'
 import { useIsMobile } from '@/components/collection/useResponsiveState'
 import DialSVG from '@/components/watchbox/DialSVG'
 import { brand } from '@/lib/brand'
@@ -32,6 +38,7 @@ import {
 } from '@/lib/profileDemo'
 import { getOverflowSummary, getWatchboxOverflow } from '@/lib/watchboxOverflow'
 import type {
+  FeaturedProfileWatch,
   ProfileDemoState,
   ProfileImageCropState,
   ProfileVisibilitySettings,
@@ -93,6 +100,30 @@ function getProfileHeroSummary(
 
 function hasAnyPublicProfileModules(visibility: ProfileVisibilitySettings, showGrail: boolean) {
   return visibility.showCollection || visibility.showPlayground || visibility.showFollowedWatches || showGrail
+}
+
+function getFeaturedProfileLabel(featuredProfileWatch: Exclude<FeaturedProfileWatch, 'none'>) {
+  return featuredProfileWatch === 'jewel' ? 'Jewel' : 'Grail'
+}
+
+function getFeaturedEmptyCopy(featuredProfileWatch: FeaturedProfileWatch) {
+  if (featuredProfileWatch === 'none') {
+    return 'Choose a Grail or Jewel to feature on your profile.'
+  }
+
+  return featuredProfileWatch === 'jewel'
+    ? 'Mark the centerpiece of your collection.'
+    : 'Choose the watch you’re chasing.'
+}
+
+function getFeaturedProfileWatch(
+  featuredProfileWatch: FeaturedProfileWatch,
+  grailWatch: ResolvedWatch | null,
+  jewelWatch: ResolvedWatch | null,
+) {
+  if (featuredProfileWatch === 'grail') return grailWatch
+  if (featuredProfileWatch === 'jewel') return jewelWatch
+  return null
 }
 
 function calcSlotPx(
@@ -462,11 +493,13 @@ function IconCircleButton({
   onClick,
   children,
   tone = 'light',
+  size = 34,
 }: {
   label: string
   onClick: () => void
   children: ReactNode
   tone?: 'light' | 'dark'
+  size?: number
 }) {
   return (
     <button
@@ -474,8 +507,8 @@ function IconCircleButton({
       aria-label={label}
       title={label}
       style={{
-        width: 34,
-        height: 34,
+        width: size,
+        height: size,
         borderRadius: brand.radius.circle,
         border: `1px solid ${tone === 'dark' ? brand.colors.borderLight : brand.colors.border}`,
         background: tone === 'dark' ? brand.colors.ink : brand.colors.white,
@@ -1050,8 +1083,8 @@ function VisibilityModal({
               Hero
             </div>
             <VisibilityToggle
-              label="Grail"
-              description="Feature your Grail in the profile hero."
+              label="Featured Watch"
+              description="Show your selected Grail or Jewel in the profile hero."
               checked={visibility.showGrail}
               onChange={checked => onChange({ ...visibility, showGrail: checked })}
             />
@@ -1271,10 +1304,165 @@ function CollectionStatsRow({
 function CrownIcon() {
   return (
     <span style={{ color: brand.colors.gold, display: 'inline-flex' }}>
-      <svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-        <path d="M2 9.25h8l-.72-4.45-2.08 1.52L6 2.35 4.8 6.32 2.72 4.8 2 9.25z" fill="currentColor" stroke="currentColor" strokeLinejoin="round" strokeWidth="0.35" />
-      </svg>
+      <SavedStateCrownIcon size={14} />
     </span>
+  )
+}
+
+function JewelIcon() {
+  return (
+    <span style={{ color: brand.colors.gold, display: 'inline-flex' }}>
+      <SavedStateJewelIcon size={14} />
+    </span>
+  )
+}
+
+function FeaturedWatchEditPopover({
+  value,
+  compact = false,
+  onChange,
+}: {
+  value: FeaturedProfileWatch
+  compact?: boolean
+  onChange: (value: FeaturedProfileWatch) => void
+}) {
+  const rootRef = useRef<HTMLDivElement | null>(null)
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    if (!open) return
+
+    function handlePointerDown(event: PointerEvent) {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setOpen(false)
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setOpen(false)
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown)
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [open])
+
+  const options: Array<{
+    value: FeaturedProfileWatch
+    label: string
+    helper: string
+    icon?: ReactNode
+  }> = [
+    {
+      value: 'jewel',
+      label: 'Jewel',
+      helper: 'The pride of your collection',
+      icon: <JewelIcon />,
+    },
+    {
+      value: 'grail',
+      label: 'Grail',
+      helper: 'The watch you’re chasing',
+      icon: <CrownIcon />,
+    },
+    {
+      value: 'none',
+      label: 'None',
+      helper: 'Hide featured watch',
+    },
+  ]
+
+  return (
+    <div ref={rootRef} style={{ position: 'relative', display: 'inline-flex' }}>
+      <IconCircleButton
+        label="Edit featured watch"
+        onClick={() => setOpen(current => !current)}
+        size={compact ? 28 : 30}
+      >
+        <PencilIcon />
+      </IconCircleButton>
+
+      <div
+        style={{
+          position: 'absolute',
+          top: `calc(100% + ${compact ? 8 : 10}px)`,
+          right: 0,
+          width: compact ? 228 : 244,
+          padding: 8,
+          borderRadius: brand.radius.lg,
+          border: `1px solid ${brand.colors.borderMid}`,
+          background: brand.colors.white,
+          boxShadow: brand.shadow.menu,
+          opacity: open ? 1 : 0,
+          transform: open ? 'translateY(0) scale(1)' : 'translateY(-4px) scale(0.98)',
+          transformOrigin: 'top right',
+          pointerEvents: open ? 'auto' : 'none',
+          transition: `opacity ${brand.transition.base}, transform ${brand.transition.base}`,
+          zIndex: brand.zIndex.dropdown,
+        }}
+      >
+        <div style={{ padding: '6px 10px 8px' }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+            Featured Watch
+          </div>
+        </div>
+
+        {options.map(option => {
+          const isActive = value === option.value
+
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => {
+                onChange(option.value)
+                setOpen(false)
+              }}
+              style={{
+                width: '100%',
+                border: 'none',
+                background: isActive ? brand.colors.goldWash : 'transparent',
+                boxShadow: isActive ? `inset 0 0 0 1px ${brand.colors.goldLine}` : 'none',
+                borderRadius: brand.radius.sm,
+                padding: '10px 12px',
+                display: 'flex',
+                alignItems: 'flex-start',
+                justifyContent: 'space-between',
+                gap: 12,
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                {option.icon ? (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: brand.colors.gold, marginTop: 1 }}>
+                    {option.icon}
+                  </span>
+                ) : (
+                  <span style={{ width: 14, display: 'inline-flex' }} />
+                )}
+                <div>
+                  <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, color: brand.colors.ink, marginBottom: 3 }}>
+                    {option.label}
+                  </div>
+                  <div style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted, lineHeight: 1.45 }}>
+                    {option.helper}
+                  </div>
+                </div>
+              </div>
+
+              <span style={{ color: isActive ? brand.colors.gold : 'transparent', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, paddingTop: 2 }}>
+                <CheckIcon />
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    </div>
   )
 }
 
@@ -1660,6 +1848,7 @@ function ReadonlyBoxShowcase({
   heroImageUrl = '',
   showCollectionStats = false,
   collectionStats,
+  jewelWatchIds,
   actions,
   footerContent,
 }: {
@@ -1670,6 +1859,7 @@ function ReadonlyBoxShowcase({
   heroImageUrl?: string
   showCollectionStats?: boolean
   collectionStats?: PublicCollectionStats
+  jewelWatchIds?: string[]
   actions?: ReactNode
   footerContent?: ReactNode
 }) {
@@ -1742,6 +1932,7 @@ function ReadonlyBoxShowcase({
               slotCount={box.slotCount}
               slotWidth={watchboxSlotWidth}
               mode={box.source === 'playground' ? 'playground' : 'collection'}
+              jewelWatchIds={jewelWatchIds}
               readonly
             />
 
@@ -1853,8 +2044,26 @@ function CompactStatNav({
   )
 }
 
-function PublicGrailHeroPanel({ watch, compact = false }: { watch: ResolvedWatch | null; compact?: boolean }) {
-  if (!watch) return null
+function FeaturedHeroPanel({
+  featuredProfileWatch,
+  watch,
+  compact = false,
+  hiddenFromPreview = false,
+  editControl,
+}: {
+  featuredProfileWatch: FeaturedProfileWatch
+  watch: ResolvedWatch | null
+  compact?: boolean
+  hiddenFromPreview?: boolean
+  editControl?: ReactNode
+}) {
+  const label = featuredProfileWatch === 'none' ? 'Featured Watch' : getFeaturedProfileLabel(featuredProfileWatch)
+  const emptyCopy = getFeaturedEmptyCopy(featuredProfileWatch)
+  const FeatureIcon = featuredProfileWatch === 'none'
+    ? null
+    : featuredProfileWatch === 'jewel'
+      ? JewelIcon
+      : CrownIcon
 
   if (compact) {
     return (
@@ -1871,6 +2080,7 @@ function PublicGrailHeroPanel({ watch, compact = false }: { watch: ResolvedWatch
           minWidth: 0,
           width: 'fit-content',
           maxWidth: '100%',
+          minHeight: 106,
           position: 'relative',
           overflow: 'visible',
         }}
@@ -1882,53 +2092,76 @@ function PublicGrailHeroPanel({ watch, compact = false }: { watch: ResolvedWatch
             right: 14,
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 5,
-            padding: '5px 8px',
-            borderRadius: brand.radius.pill,
-            background: brand.colors.white,
-            border: `1px solid ${brand.colors.border}`,
-            boxShadow: brand.shadow.xs,
+            gap: 6,
+            zIndex: 3,
           }}
         >
-          <CrownIcon />
-          <span style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold }}>
-            Grail
-          </span>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 5,
+              padding: '5px 8px',
+              borderRadius: brand.radius.pill,
+              background: brand.colors.white,
+              border: `1px solid ${brand.colors.border}`,
+              boxShadow: brand.shadow.xs,
+            }}
+          >
+            {FeatureIcon ? <FeatureIcon /> : null}
+            <span style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: featuredProfileWatch === 'none' ? brand.colors.muted : brand.colors.gold }}>
+              {label}
+            </span>
+          </div>
+          {editControl}
         </div>
 
-        <img
-          src={watch.imageUrl}
-          alt={watch.model}
-          draggable={false}
-          style={{
-            position: 'absolute',
-            left: 48,
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-            height: 'calc(100% + 8px)',
-            width: 'auto',
-            filter: brand.shadow.drop,
-            userSelect: 'none',
-            pointerEvents: 'none',
-          }}
-        />
-        <div style={{ display: 'grid', gridTemplateColumns: '68px minmax(0, 1fr)', gap: 10 }}>
-          <div style={{ width: 68 }} />
-          <div style={{ minWidth: 0, maxWidth: 120, paddingRight: 2, paddingTop: 6 }}>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 3 }}>
-              {watch.brand}
+        {watch ? (
+          <>
+            <img
+              src={watch.imageUrl}
+              alt={watch.model}
+              draggable={false}
+              style={{
+                position: 'absolute',
+                left: 48,
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                height: 'calc(100% + 8px)',
+                width: 'auto',
+                filter: brand.shadow.drop,
+                userSelect: 'none',
+                pointerEvents: 'none',
+              }}
+            />
+            <div style={{ display: 'grid', gridTemplateColumns: '68px minmax(0, 1fr)', gap: 10 }}>
+              <div style={{ width: 68 }} />
+              <div style={{ minWidth: 0, maxWidth: 120, paddingRight: 2, paddingTop: 2 }}>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 3 }}>
+                  {watch.brand}
+                </div>
+                <div style={{ fontFamily: brand.font.serif, fontSize: 16, color: brand.colors.ink, lineHeight: 1.02, marginBottom: 3, overflowWrap: 'break-word' }}>
+                  {watch.model}
+                </div>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 8, color: brand.colors.muted, marginBottom: 5 }}>
+                  Ref. {watch.reference}
+                </div>
+                <div style={{ fontFamily: brand.font.serif, fontSize: 15, color: brand.colors.gold }}>
+                  {fmtCurrency(watch.estimatedValue)}
+                </div>
+              </div>
             </div>
-            <div style={{ fontFamily: brand.font.serif, fontSize: 16, color: brand.colors.ink, lineHeight: 1.02, marginBottom: 3, overflowWrap: 'break-word' }}>
-              {watch.model}
+          </>
+        ) : (
+          <div style={{ paddingTop: 22, maxWidth: 156 }}>
+            <div style={{ fontFamily: brand.font.serif, fontSize: 18, color: brand.colors.ink, lineHeight: 1.05, marginBottom: 6 }}>
+              {featuredProfileWatch === 'none' ? 'No featured watch selected.' : `No ${label.toLowerCase()} selected yet.`}
             </div>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 8, color: brand.colors.muted, marginBottom: 5 }}>
-              Ref. {watch.reference}
-            </div>
-            <div style={{ fontFamily: brand.font.serif, fontSize: 15, color: brand.colors.gold }}>
-              {fmtCurrency(watch.estimatedValue)}
+            <div style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted, lineHeight: 1.55 }}>
+              {emptyCopy}
             </div>
           </div>
-        </div>
+        )}
       </section>
     )
   }
@@ -1944,6 +2177,7 @@ function PublicGrailHeroPanel({ watch, compact = false }: { watch: ResolvedWatch
         backdropFilter: 'blur(10px)',
         position: 'relative',
         overflow: 'visible',
+        minHeight: 208,
       }}
     >
       <div
@@ -1953,55 +2187,118 @@ function PublicGrailHeroPanel({ watch, compact = false }: { watch: ResolvedWatch
           right: 18,
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 6,
-          padding: '6px 10px',
-          borderRadius: brand.radius.pill,
-          background: brand.colors.white,
-          border: `1px solid ${brand.colors.border}`,
-          boxShadow: brand.shadow.xs,
+          gap: 8,
+          zIndex: 3,
         }}
       >
-        <CrownIcon />
-        <span style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold }}>
-          Grail
-        </span>
+        <div
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '6px 10px',
+            borderRadius: brand.radius.pill,
+            background: brand.colors.white,
+            border: `1px solid ${brand.colors.border}`,
+            boxShadow: brand.shadow.xs,
+          }}
+        >
+          {FeatureIcon ? <FeatureIcon /> : null}
+          <span style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: featuredProfileWatch === 'none' ? brand.colors.muted : brand.colors.gold }}>
+            {label}
+          </span>
+          {hiddenFromPreview && (
+            <span style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: brand.colors.muted }}>
+              Hidden in public preview
+            </span>
+          )}
+        </div>
+        {editControl}
       </div>
 
-      <img
-        src={watch.imageUrl}
-        alt={watch.model}
-        draggable={false}
-        style={{
-          position: 'absolute',
-          left: 85,
-          top: '50%',
-          transform: 'translate(-50%, -50%)',
-          height: 'calc(100% + 16px)',
-          width: 'auto',
-          filter: brand.shadow.drop,
-          userSelect: 'none',
-          pointerEvents: 'none',
-        }}
-      />
-      <div className="grid" style={{ gridTemplateColumns: '130px minmax(0,1fr)', gap: 12 }}>
-        <div style={{ width: 130 }} />
+      {watch ? (
+        <>
+          <img
+            src={watch.imageUrl}
+            alt={watch.model}
+            draggable={false}
+            style={{
+              position: 'absolute',
+              left: 85,
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+              height: 'calc(100% + 16px)',
+              width: 'auto',
+              filter: brand.shadow.drop,
+              userSelect: 'none',
+              pointerEvents: 'none',
+            }}
+          />
+          <div className="grid" style={{ gridTemplateColumns: '130px minmax(0,1fr)', gap: 12 }}>
+            <div style={{ width: 130 }} />
 
-        <div style={{ paddingRight: 6 }}>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 7 }}>
-            {watch.brand}
+            <div style={{ paddingRight: 6 }}>
+              <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 7 }}>
+                {watch.brand}
+              </div>
+              <div style={{ fontFamily: brand.font.serif, fontSize: 30, color: brand.colors.ink, lineHeight: 1, marginBottom: 5 }}>
+                {watch.model}
+              </div>
+              <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginBottom: 11 }}>
+                Ref. {watch.reference}
+              </div>
+              <div style={{ fontFamily: brand.font.serif, fontSize: 28, color: brand.colors.gold }}>
+                {fmtCurrency(watch.estimatedValue)}
+              </div>
+            </div>
           </div>
-          <div style={{ fontFamily: brand.font.serif, fontSize: 30, color: brand.colors.ink, lineHeight: 1, marginBottom: 5 }}>
-            {watch.model}
+        </>
+      ) : (
+        <div style={{ paddingTop: 40, maxWidth: 220 }}>
+          <div style={{ fontFamily: brand.font.serif, fontSize: 28, color: brand.colors.ink, lineHeight: 1.02, marginBottom: 8 }}>
+            {featuredProfileWatch === 'none' ? 'No featured watch selected.' : `No ${label.toLowerCase()} selected yet.`}
           </div>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginBottom: 11 }}>
-            Ref. {watch.reference}
-          </div>
-          <div style={{ fontFamily: brand.font.serif, fontSize: 28, color: brand.colors.gold }}>
-            {fmtCurrency(watch.estimatedValue)}
+          <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.7 }}>
+            {emptyCopy}
           </div>
         </div>
-      </div>
+      )}
     </section>
+  )
+}
+
+function OwnerFeaturedHeroControl({
+  featuredProfileWatch,
+  grailWatch,
+  jewelWatch,
+  showInPublicPreview,
+  compact = false,
+  onChange,
+}: {
+  featuredProfileWatch: FeaturedProfileWatch
+  grailWatch: ResolvedWatch | null
+  jewelWatch: ResolvedWatch | null
+  showInPublicPreview: boolean
+  compact?: boolean
+  onChange: (value: FeaturedProfileWatch) => void
+}) {
+  const featuredWatch = getFeaturedProfileWatch(featuredProfileWatch, grailWatch, jewelWatch)
+  const editControl = (
+    <FeaturedWatchEditPopover
+      value={featuredProfileWatch}
+      compact={compact}
+      onChange={onChange}
+    />
+  )
+
+  return (
+    <FeaturedHeroPanel
+      featuredProfileWatch={featuredProfileWatch}
+      watch={featuredWatch}
+      compact={compact}
+      hiddenFromPreview={!showInPublicPreview}
+      editControl={editControl}
+    />
   )
 }
 
@@ -2016,6 +2313,10 @@ function PublicProfileHero({
 }) {
   const isMobile = useIsMobile()
   const heroSummary = getProfileHeroSummary(snapshot.summaryStats, snapshot.visibility)
+  const featuredProfileWatch = snapshot.profile.featuredProfileWatch
+  const featuredWatch = featuredProfileWatch === 'none'
+    ? null
+    : getFeaturedProfileWatch(featuredProfileWatch, snapshot.grailWatch, snapshot.jewelWatch)
 
   const coverActionStyle: CSSProperties = {
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -2028,7 +2329,7 @@ function PublicProfileHero({
     textDecoration: 'none', cursor: 'pointer',
   }
 
-  const showGrail = snapshot.visibility.showGrail && snapshot.grailWatch
+  const showFeaturedPanel = snapshot.visibility.showGrail && featuredProfileWatch !== 'none'
 
   return (
     <section
@@ -2057,17 +2358,17 @@ function PublicProfileHero({
       </ProfileCoverArt>
 
       <div style={{ padding: isMobile ? '0 20px 18px' : '0 24px 24px', position: 'relative' }}>
-        <div className="grid gap-5 items-start" style={{ gridTemplateColumns: !isMobile && showGrail ? 'minmax(0,1fr) 360px' : '1fr' }}>
+        <div className="grid gap-5 items-start" style={{ gridTemplateColumns: !isMobile && showFeaturedPanel ? 'minmax(0,1fr) 360px' : '1fr' }}>
           <div>
             {isMobile ? (
               <>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginTop: -48 }}>
                   <div style={{ flexShrink: 0 }}>
-                    <ProfileAvatar displayName={snapshot.profile.displayName} imageUrl={snapshot.profile.profileImageUrl} imageCrop={snapshot.profile.profileImageCrop} size={96} />
+                    <ProfileAvatar displayName={snapshot.profile.displayName} imageUrl={snapshot.profile.profileImageUrl} imageCrop={snapshot.profile.profileImageCrop} size={106} />
                   </div>
-                  {showGrail ? (
+                  {showFeaturedPanel ? (
                     <div style={{ minWidth: 0, flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-                      <PublicGrailHeroPanel watch={snapshot.grailWatch} compact />
+                      <FeaturedHeroPanel featuredProfileWatch={featuredProfileWatch} watch={featuredWatch} compact />
                     </div>
                   ) : null}
                 </div>
@@ -2112,9 +2413,9 @@ function PublicProfileHero({
 
           </div>
 
-          {!isMobile && showGrail ? (
+          {!isMobile && showFeaturedPanel ? (
             <div style={{ paddingTop: 16 }}>
-              <PublicGrailHeroPanel watch={snapshot.grailWatch} />
+              <FeaturedHeroPanel featuredProfileWatch={featuredProfileWatch} watch={featuredWatch} />
             </div>
           ) : null}
         </div>
@@ -2127,22 +2428,26 @@ function OwnerProfileHero({
   profile,
   summaryStats,
   grailWatch,
+  jewelWatch,
   visibility,
   onShareProfile,
   onEditText,
   onEditAvatar,
   onEditCover,
   onOpenVisibility,
+  onFeaturedProfileWatchChange,
 }: {
   profile: ProfileDemoState
   summaryStats: PublicProfileSummaryStats
   grailWatch: ResolvedWatch | null
+  jewelWatch: ResolvedWatch | null
   visibility: ProfileVisibilitySettings
   onShareProfile: () => void
   onEditText: () => void
   onEditAvatar: () => void
   onEditCover: () => void
   onOpenVisibility: () => void
+  onFeaturedProfileWatchChange: (value: FeaturedProfileWatch) => void
 }) {
   const isMobile = useIsMobile()
   const heroSummary = getProfileHeroSummary(summaryStats, visibility)
@@ -2158,7 +2463,7 @@ function OwnerProfileHero({
     textDecoration: 'none', cursor: 'pointer',
   }
 
-  const showGrail = visibility.showGrail && grailWatch
+  const showFeaturedPanel = true
 
   return (
     <section
@@ -2187,22 +2492,29 @@ function OwnerProfileHero({
       </ProfileCoverArt>
 
       <div style={{ padding: isMobile ? '0 20px 18px' : '0 24px 24px', position: 'relative' }}>
-        <div className="grid gap-5 items-start" style={{ gridTemplateColumns: !isMobile && showGrail ? 'minmax(0,1fr) 360px' : '1fr' }}>
+        <div className="grid gap-5 items-start" style={{ gridTemplateColumns: !isMobile && showFeaturedPanel ? 'minmax(0,1fr) 360px' : '1fr' }}>
           <div>
             {isMobile ? (
               <>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginTop: -48 }}>
                   <div style={{ position: 'relative', flexShrink: 0 }}>
-                    <ProfileAvatar displayName={profile.displayName} imageUrl={profile.profileImageUrl} imageCrop={profile.profileImageCrop} size={96} />
+                    <ProfileAvatar displayName={profile.displayName} imageUrl={profile.profileImageUrl} imageCrop={profile.profileImageCrop} size={106} />
                     <div style={{ position: 'absolute', right: 2, bottom: 2 }}>
                       <IconCircleButton label="Edit profile image" onClick={onEditAvatar}>
                         <PencilIcon />
                       </IconCircleButton>
                     </div>
                   </div>
-                  {showGrail ? (
+                  {showFeaturedPanel ? (
                     <div style={{ minWidth: 0, flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-                      <PublicGrailHeroPanel watch={grailWatch} compact />
+                      <OwnerFeaturedHeroControl
+                        featuredProfileWatch={profile.featuredProfileWatch}
+                        grailWatch={grailWatch}
+                        jewelWatch={jewelWatch}
+                        showInPublicPreview={visibility.showGrail}
+                        compact
+                        onChange={onFeaturedProfileWatchChange}
+                      />
                     </div>
                   ) : null}
                 </div>
@@ -2264,9 +2576,15 @@ function OwnerProfileHero({
 
           </div>
 
-          {!isMobile && showGrail ? (
+          {!isMobile && showFeaturedPanel ? (
             <div style={{ paddingTop: 16 }}>
-              <PublicGrailHeroPanel watch={grailWatch} />
+              <OwnerFeaturedHeroControl
+                featuredProfileWatch={profile.featuredProfileWatch}
+                grailWatch={grailWatch}
+                jewelWatch={jewelWatch}
+                showInPublicPreview={visibility.showGrail}
+                onChange={onFeaturedProfileWatchChange}
+              />
             </div>
           ) : null}
         </div>
@@ -2411,7 +2729,7 @@ function PublicDreamBoxesSection({
 }
 
 function PublicWatchStateBadge({ state }: { state: WatchSavedState }) {
-  const label = state === 'target' ? 'Target' : state === 'grail' ? 'Grail' : 'Followed'
+  const label = getStateLabel(state)
 
   return (
     <div
@@ -2426,7 +2744,7 @@ function PublicWatchStateBadge({ state }: { state: WatchSavedState }) {
         borderRadius: brand.radius.circle,
         background: brand.colors.white,
         border: `1px solid ${brand.colors.border}`,
-        color: state === 'target' || state === 'grail' ? brand.colors.gold : brand.colors.ink,
+        color: state === 'target' || state === 'grail' || state === 'jewel' ? brand.colors.gold : brand.colors.ink,
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -2685,8 +3003,8 @@ function OwnerProfileCard({
             }))}
           />
           <VisibilityToggle
-            label="Grail"
-            description="Feature your grail watch near the top of the public profile."
+            label="Featured Watch"
+            description="Show your selected Grail or Jewel near the top of the public profile."
             checked={profile.visibility.showGrail}
             onChange={checked => onProfileChange(current => ({
               ...current,
@@ -2742,6 +3060,7 @@ function buildProfileSnapshotFromOwnerState({
   followedWatches,
   nextTargets,
   grailWatch,
+  collectionJewelWatch,
   watchboxConfig,
   playgroundBoxes,
 }: {
@@ -2750,6 +3069,7 @@ function buildProfileSnapshotFromOwnerState({
   followedWatches: ReturnType<typeof useCollectionSession>['followedWatches']
   nextTargets: ReturnType<typeof useCollectionSession>['nextTargets']
   grailWatch: ReturnType<typeof useCollectionSession>['grailWatch']
+  collectionJewelWatch: ReturnType<typeof useCollectionSession>['collectionJewelWatch']
   watchboxConfig: ReturnType<typeof useCollectionSession>['watchboxConfig']
   playgroundBoxes: PlaygroundBox[]
 }) {
@@ -2759,6 +3079,7 @@ function buildProfileSnapshotFromOwnerState({
     followedWatches,
     nextTargets,
     grailWatch,
+    collectionJewelWatch,
     watchboxConfig,
     playgroundBoxes,
   })
@@ -2771,6 +3092,7 @@ export function OwnerProfilePage() {
     followedWatches,
     nextTargets,
     grailWatch,
+    collectionJewelWatch,
     watchboxConfig,
   } = useCollectionSession()
   const { message, showToast } = useToast()
@@ -2792,15 +3114,21 @@ export function OwnerProfilePage() {
     () => grailWatch ? { ...grailWatch, watchId: grailWatch.id, condition: 'Excellent', notes: '' } : null,
     [grailWatch],
   )
+  const ownerJewelWatch = useMemo<ResolvedWatch | null>(
+    () => collectionJewelWatch ? { ...collectionJewelWatch, watchId: collectionJewelWatch.id, condition: 'Excellent', notes: '' } : null,
+    [collectionJewelWatch],
+  )
 
   const ownerRadarWatches = useMemo<PublicFollowedWatchSnapshot[]>(() => {
     const targetIds = new Set(nextTargets.map(target => target.watchId))
     const grailId = ownerGrailWatch?.watchId ?? null
+    const jewelId = ownerJewelWatch?.watchId ?? null
 
     return followedWatches
       .map(watch => {
         let profileState: WatchSavedState = 'followed'
         if (grailId && watch.id === grailId) profileState = 'grail'
+        else if (jewelId && watch.id === jewelId) profileState = 'jewel'
         else if (targetIds.has(watch.id)) profileState = 'target'
 
         return {
@@ -2814,8 +3142,9 @@ export function OwnerProfilePage() {
       .sort((a, b) => {
         const priority: Record<WatchSavedState, number> = {
           target: 0,
-          followed: 1,
-          grail: 2,
+          jewel: 1,
+          followed: 2,
+          grail: 3,
         }
 
         const stateDelta = priority[a.profileState] - priority[b.profileState]
@@ -2823,7 +3152,7 @@ export function OwnerProfilePage() {
         return b.estimatedValue - a.estimatedValue
       })
       .filter(watch => watch.profileState !== 'grail')
-  }, [followedWatches, nextTargets, ownerGrailWatch])
+  }, [followedWatches, nextTargets, ownerGrailWatch, ownerJewelWatch])
 
   const summaryStats = useMemo<PublicProfileSummaryStats>(() => ({
     collectionCount: collectionWatches.length,
@@ -2843,8 +3172,8 @@ export function OwnerProfilePage() {
     () => playgroundBoxes.map(box => createPlaygroundBoxSnapshot(box, new Date().toISOString())),
     [playgroundBoxes],
   )
-  const showOwnerGrail = profile.visibility.showGrail && Boolean(ownerGrailWatch)
-  const ownerProfilePrivate = !hasAnyPublicProfileModules(profile.visibility, showOwnerGrail)
+  const showOwnerFeaturedWatch = profile.visibility.showGrail && profile.featuredProfileWatch !== 'none'
+  const ownerProfilePrivate = !hasAnyPublicProfileModules(profile.visibility, showOwnerFeaturedWatch)
 
   useEffect(() => {
     if (!hydrated) return
@@ -2856,10 +3185,11 @@ export function OwnerProfilePage() {
       followedWatches,
       nextTargets,
       grailWatch,
+      collectionJewelWatch,
       watchboxConfig,
       playgroundBoxes,
     })
-  }, [profile, hydrated, collectionWatches, followedWatches, nextTargets, grailWatch, watchboxConfig, playgroundBoxes])
+  }, [profile, hydrated, collectionWatches, followedWatches, nextTargets, grailWatch, collectionJewelWatch, watchboxConfig, playgroundBoxes])
 
   const collectionBox = useMemo(
     () => createCollectionBoxSnapshot(collectionWatches, watchboxConfig, new Date().toISOString()),
@@ -2893,12 +3223,14 @@ export function OwnerProfilePage() {
           profile={profile}
           summaryStats={summaryStats}
           grailWatch={ownerGrailWatch}
+          jewelWatch={ownerJewelWatch}
           visibility={profile.visibility}
           onShareProfile={() => handleCopy(getProfileSharePath(), 'Profile link copied to clipboard.')}
           onEditText={() => setTextEditOpen(true)}
           onEditAvatar={() => setAvatarEditOpen(true)}
           onEditCover={() => setCoverEditOpen(true)}
           onOpenVisibility={() => setVisibilityOpen(true)}
+          onFeaturedProfileWatchChange={value => setProfile(current => ({ ...current, featuredProfileWatch: value }))}
         />
 
         {ownerProfilePrivate ? <PrivateProfileNotice /> : null}
@@ -2968,8 +3300,8 @@ function ProfilePreviewLayout({
 }) {
   const isMobile = useIsMobile()
   const { message, showToast } = useToast()
-  const showPublicGrail = snapshot.visibility.showGrail && Boolean(snapshot.grailWatch)
-  const profileIsPrivate = !hasAnyPublicProfileModules(snapshot.visibility, showPublicGrail)
+  const showPublicFeaturedWatch = snapshot.visibility.showGrail && snapshot.profile.featuredProfileWatch !== 'none'
+  const profileIsPrivate = !hasAnyPublicProfileModules(snapshot.visibility, showPublicFeaturedWatch)
 
   async function handleCopy(path: string, successMessage: string) {
     await copyProfileDemoUrl(path)
@@ -3156,6 +3488,7 @@ export function PublicBoxPage({ slug }: { slug: string }) {
           heroImageUrl={box.source === 'collection' ? snapshot.profile.coverImageUrl : ''}
           showCollectionStats={box.source === 'collection' && snapshot.visibility.showCollectionStats}
           collectionStats={box.source === 'collection' ? snapshot.collectionStats : undefined}
+          jewelWatchIds={box.source === 'collection' && snapshot.jewelWatch ? [snapshot.jewelWatch.watchId] : undefined}
         />
       </div>
 

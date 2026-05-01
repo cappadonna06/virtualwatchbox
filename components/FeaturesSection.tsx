@@ -45,8 +45,8 @@ export default function FeaturesSection() {
   }
 
   return (
-    <section className="features-section" style={{ padding: '80px 56px', borderTop: '1px solid #EAE5DC', position: 'relative' }}>
-      <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80 }}>
+    <section className="features-section" style={{ padding: '56px 56px 60px', borderTop: '1px solid #EAE5DC', position: 'relative' }}>
+      <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 56 }}>
 
         {/* Left: numbered feature list */}
         <div>

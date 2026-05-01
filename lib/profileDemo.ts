@@ -22,6 +22,7 @@ import type {
   WatchTarget,
 } from '@/types/watch'
 import type {
+  FeaturedProfileWatch,
   ProfileDemoState,
   ProfileImageCropState,
   ProfileVisibilitySettings,
@@ -41,6 +42,7 @@ type StoredCollectionSession = {
   followedWatchIds?: unknown
   nextTargets?: unknown
   grailWatchId?: unknown
+  collectionJewelWatchId?: unknown
   watchboxConfig?: unknown
 }
 
@@ -50,6 +52,7 @@ type SnapshotSyncOptions = {
   followedWatches?: Array<CatalogWatch | ResolvedWatch>
   nextTargets?: WatchTarget[]
   grailWatch?: CatalogWatch | ResolvedWatch | null
+  collectionJewelWatch?: CatalogWatch | ResolvedWatch | null
   watchboxConfig?: WatchboxConfig
   playgroundBoxes?: PlaygroundBox[]
 }
@@ -78,6 +81,7 @@ export function createDefaultProfileDemoState(): ProfileDemoState {
     profileImageCrop: undefined,
     coverImageUrl: '',
     collectionHeroImageUrl: '',
+    featuredProfileWatch: 'grail',
     visibility: DEFAULT_PROFILE_VISIBILITY,
     updatedAt: new Date().toISOString(),
   }
@@ -178,6 +182,10 @@ function normalizeProfileImageCrop(value: unknown): ProfileImageCropState | unde
   }
 }
 
+function normalizeFeaturedProfileWatch(value: unknown): FeaturedProfileWatch {
+  return value === 'grail' || value === 'jewel' || value === 'none' ? value : 'grail'
+}
+
 function normalizeProfileDemoState(value: unknown): ProfileDemoState {
   const fallback = createDefaultProfileDemoState()
 
@@ -200,6 +208,7 @@ function normalizeProfileDemoState(value: unknown): ProfileDemoState {
         ? state.collectionHeroImageUrl
         : '',
     collectionHeroImageUrl: typeof state.collectionHeroImageUrl === 'string' ? state.collectionHeroImageUrl : '',
+    featuredProfileWatch: normalizeFeaturedProfileWatch(state.featuredProfileWatch),
     visibility: normalizeVisibility(state.visibility),
     updatedAt: typeof state.updatedAt === 'string' ? state.updatedAt : fallback.updatedAt,
   }
@@ -256,6 +265,7 @@ function readStoredCollectionSession() {
       followedWatches: [] as CatalogWatch[],
       nextTargets: [] as WatchTarget[],
       grailWatch: null as CatalogWatch | null,
+      collectionJewelWatch: null as CatalogWatch | null,
       watchboxConfig: DEFAULT_WATCHBOX_CONFIG,
     }
   }
@@ -266,9 +276,27 @@ function readStoredCollectionSession() {
   )
 
   const collectionEntries = normalizeOwnedWatches(sessionSnapshot?.collectionWatches)
-  const followedWatchIds = normalizeFollowedWatchIds(sessionSnapshot?.followedWatchIds)
   const nextTargets = normalizeNextTargets(sessionSnapshot?.nextTargets)
   const grailWatchId = typeof sessionSnapshot?.grailWatchId === 'string' ? sessionSnapshot.grailWatchId : null
+  const collectionJewelWatchId = typeof sessionSnapshot?.collectionJewelWatchId === 'string'
+    ? sessionSnapshot.collectionJewelWatchId
+    : null
+  const collectionWatchIds = new Set(collectionEntries.map(watch => watch.watchId))
+  const followedFromSnapshot = normalizeFollowedWatchIds(sessionSnapshot?.followedWatchIds)
+  const followedWatchIds = [...new Set([
+    ...followedFromSnapshot,
+    ...nextTargets.map(target => target.watchId).filter(watchId => catalogWatchMap.has(watchId)),
+    ...(grailWatchId && catalogWatchMap.has(grailWatchId) ? [grailWatchId] : []),
+  ])]
+  const followedWatchIdSet = new Set(followedWatchIds)
+  const normalizedTargets = nextTargets.filter(target => !collectionWatchIds.has(target.watchId)).slice(0, 3)
+  const normalizedFollowedTargets = normalizedTargets.filter(target => followedWatchIdSet.has(target.watchId)).slice(0, 3)
+  const normalizedGrailWatchId = grailWatchId && followedWatchIdSet.has(grailWatchId) && !collectionWatchIds.has(grailWatchId)
+    ? grailWatchId
+    : null
+  const normalizedCollectionJewelWatchId = collectionJewelWatchId && collectionWatchIds.has(collectionJewelWatchId)
+    ? collectionJewelWatchId
+    : null
 
   const storedConfig = safeParseJson<WatchboxConfig>(window.localStorage.getItem(WATCHBOX_CONFIG_STORAGE_KEY))
   const watchboxConfig = isValidWatchboxConfig(sessionSnapshot?.watchboxConfig)
@@ -282,8 +310,11 @@ function readStoredCollectionSession() {
     followedWatches: followedWatchIds
       .map(watchId => catalogWatchMap.get(watchId))
       .filter((watch): watch is CatalogWatch => watch !== undefined),
-    nextTargets,
-    grailWatch: grailWatchId ? catalogWatchMap.get(grailWatchId) ?? null : null,
+    nextTargets: normalizedFollowedTargets,
+    grailWatch: normalizedGrailWatchId ? catalogWatchMap.get(normalizedGrailWatchId) ?? null : null,
+    collectionJewelWatch: normalizedCollectionJewelWatchId
+      ? catalogWatchMap.get(normalizedCollectionJewelWatchId) ?? null
+      : null,
     watchboxConfig,
   }
 }
@@ -362,6 +393,7 @@ function buildPublicProfileSnapshot({
   followedWatches,
   nextTargets,
   grailWatch,
+  collectionJewelWatch,
   watchboxConfig,
   playgroundBoxes,
 }: {
@@ -370,6 +402,7 @@ function buildPublicProfileSnapshot({
   followedWatches: Array<CatalogWatch | ResolvedWatch>
   nextTargets: WatchTarget[]
   grailWatch: CatalogWatch | ResolvedWatch | null
+  collectionJewelWatch: CatalogWatch | ResolvedWatch | null
   watchboxConfig: WatchboxConfig
   playgroundBoxes: PlaygroundBox[]
 }): PublicProfileSnapshot {
@@ -377,15 +410,18 @@ function buildPublicProfileSnapshot({
   const collectionBox = createCollectionBoxSnapshot(collectionWatches, watchboxConfig, updatedAt)
   const resolvedFollowedWatches = followedWatches.map(toResolvedWatch)
   const resolvedGrailWatch = grailWatch ? toResolvedWatch(grailWatch) : null
+  const resolvedCollectionJewelWatch = collectionJewelWatch ? toResolvedWatch(collectionJewelWatch) : null
   const collectionValue = collectionWatches.reduce((sum, watch) => sum + watch.estimatedValue, 0)
   const collectionBrandCount = new Set(collectionWatches.map(watch => watch.brand)).size
   const targetIds = new Set(nextTargets.map(target => target.watchId))
   const grailWatchId = resolvedGrailWatch?.watchId ?? null
+  const collectionJewelWatchId = resolvedCollectionJewelWatch?.watchId ?? null
 
   const followedSnapshots: PublicFollowedWatchSnapshot[] = resolvedFollowedWatches
     .map(watch => {
       let profileState: WatchSavedState = 'followed'
       if (grailWatchId && watch.watchId === grailWatchId) profileState = 'grail'
+      else if (collectionJewelWatchId && watch.watchId === collectionJewelWatchId) profileState = 'jewel'
       else if (targetIds.has(watch.watchId)) profileState = 'target'
 
       return {
@@ -396,8 +432,9 @@ function buildPublicProfileSnapshot({
     .sort((a, b) => {
       const priority: Record<WatchSavedState, number> = {
         target: 0,
-        followed: 1,
-        grail: 2,
+        jewel: 1,
+        followed: 2,
+        grail: 3,
       }
 
       const stateDelta = priority[a.profileState] - priority[b.profileState]
@@ -430,6 +467,7 @@ function buildPublicProfileSnapshot({
     playgroundBoxes: playgroundBoxes.map(box => createPlaygroundBoxSnapshot(box, updatedAt)),
     followedWatches: followedSnapshots,
     grailWatch: resolvedGrailWatch,
+    jewelWatch: resolvedCollectionJewelWatch,
     updatedAt,
   }
 }
@@ -471,6 +509,9 @@ export function syncPublicProfileSnapshot(options: SnapshotSyncOptions = {}) {
   const followedWatches = options.followedWatches ?? storedCollection.followedWatches
   const nextTargets = options.nextTargets ?? storedCollection.nextTargets
   const grailWatch = options.grailWatch === undefined ? storedCollection.grailWatch : options.grailWatch
+  const collectionJewelWatch = options.collectionJewelWatch === undefined
+    ? storedCollection.collectionJewelWatch
+    : options.collectionJewelWatch
   const watchboxConfig = options.watchboxConfig ?? storedCollection.watchboxConfig
   const playgroundBoxes = options.playgroundBoxes ?? getStoredPlaygroundBoxes()
 
@@ -480,6 +521,7 @@ export function syncPublicProfileSnapshot(options: SnapshotSyncOptions = {}) {
     followedWatches,
     nextTargets,
     grailWatch,
+    collectionJewelWatch,
     watchboxConfig,
     playgroundBoxes,
   })

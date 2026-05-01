@@ -15,8 +15,8 @@ export default function HomePage() {
   return (
     <>
       <HeroCarousel />
-      <Ticker />
       <CollectionSection />
+      <Ticker />
       <FeaturesSection />
       <OnYourRadar followedWatchIds={followedWatchIdSet} />
       <Footer />

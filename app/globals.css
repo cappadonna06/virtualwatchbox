@@ -64,6 +64,98 @@ body {
   to   { opacity: 1; transform: translateX(0); }
 }
 
+.nav-link-button {
+  color: var(--nav-link-color, var(--color-muted));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 8px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--nav-link-underline, transparent);
+  cursor: pointer;
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.nav-link-button:hover {
+  color: var(--color-ink);
+  border-bottom-color: rgba(201, 168, 76, 0.6);
+}
+
+.nav-link-button:focus-visible,
+.nav-signin:focus-visible,
+.nav-mobile-row:focus-visible,
+.nav-hamburger:focus-visible {
+  outline: 2px solid rgba(201, 168, 76, 0.4);
+  outline-offset: 3px;
+}
+
+.nav-signin {
+  transition:
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.nav-signin:hover {
+  box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.28), 0 6px 18px rgba(26, 20, 16, 0.12);
+}
+
+.nav-mobile-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+  padding: 16px 12px 16px 14px;
+  text-align: left;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+}
+
+.nav-mobile-row-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--nav-mobile-color, var(--color-muted));
+  transition: color 0.18s ease;
+}
+
+.nav-mobile-row-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nav-mobile-icon, var(--color-muted));
+  transition: color 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.nav-mobile-row-icon.is-profile-active {
+  border-radius: 9999px;
+  box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.34);
+}
+
+.nav-mobile-row:hover,
+.nav-mobile-row:focus-visible {
+  background: var(--nav-mobile-bg, transparent);
+}
+
+.nav-mobile-row:hover .nav-mobile-row-main,
+.nav-mobile-row:hover .nav-mobile-row-icon,
+.nav-mobile-row:focus-visible .nav-mobile-row-main,
+.nav-mobile-row:focus-visible .nav-mobile-row-icon {
+  color: var(--color-ink);
+}
+
+.watchbox-jewel-mobile-hide {
+  display: inline-flex;
+}
+
 /* Sidebar backdrop — hidden on desktop, activated on mobile via class */
 .nav-scrim { display: none; }
 .sidebar-backdrop { display: none; }
@@ -88,20 +180,31 @@ body {
   .nav-links     { display: none !important; }
   .nav-signin    { display: none !important; }
   .nav-hamburger { display: flex !important; align-items: center; justify-content: center; }
-  .nav-drawer    { display: flex !important; }
+  .nav-drawer    {
+    display: flex !important;
+    top: 80px !important;
+    left: 50% !important;
+    right: auto !important;
+    width: min(calc(100vw - 56px), 360px) !important;
+    max-width: 360px !important;
+    transform: translate(-50%, -8px) !important;
+  }
+  .nav-drawer.is-open {
+    transform: translate(-50%, 0) !important;
+  }
   .nav-scrim.is-active { display: block !important; }
   .site-main     { width: 100% !important; max-width: none !important; margin: 0 !important; }
 
   /* Hero — hide the dark carousel panel entirely on mobile */
   .hero-grid  { grid-template-columns: 1fr !important; min-height: unset !important; }
-  .hero-text  { padding: 40px 20px 32px !important; }
+  .hero-text  { padding: 36px 20px 28px !important; }
   .hero-h1    { font-size: clamp(36px, 10vw, 52px) !important; }
   .hero-panel { display: none !important; }
   .hero-actions { flex-direction: column !important; align-items: stretch !important; }
   .hero-action  { width: 100% !important; }
 
   /* Collection */
-  .collection-section { padding: 48px 20px !important; }
+  .collection-section { padding: 36px 20px 40px !important; }
   .collection-grid    { grid-template-columns: 1fr !important; }
   .box-configurator   { flex-wrap: wrap !important; gap: 20px !important; }
 
@@ -190,11 +293,20 @@ body {
   }
 
   /* Features */
-  .features-section { padding: 48px 20px !important; }
+  .features-section { padding: 36px 20px 40px !important; }
   .features-grid    { grid-template-columns: 1fr !important; gap: 48px !important; }
 
   /* On Your Radar */
-  .radar-section { padding: 48px 20px !important; }
+  .radar-section { padding: 36px 20px 40px !important; }
+
+  .ticker-shell {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .watchbox-jewel-mobile-hide {
+    display: none !important;
+  }
 
   /* Footer */
   .site-footer {

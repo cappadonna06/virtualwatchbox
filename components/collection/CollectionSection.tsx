@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { useIsMobile } from './useResponsiveState'
 import CollectionWatchboxSurface from './CollectionWatchboxSurface'
+import { brand } from '@/lib/brand'
 
 export default function CollectionSection() {
   const router = useRouter()
@@ -20,9 +21,9 @@ export default function CollectionSection() {
   return (
     <section
       className="collection-section"
-      style={{ padding: isMobile ? '56px 20px' : '80px 56px', borderTop: '1px solid var(--color-border)' }}
+      style={{ padding: isMobile ? '40px 20px 44px' : '56px 56px 60px', borderTop: `1px solid ${brand.colors.border}` }}
     >
-      <div style={{ marginBottom: 36 }}>
+      <div style={{ marginBottom: isMobile ? 28 : 32 }}>
         <Link
           href="/collection"
           style={{ textDecoration: 'none', display: 'inline-block' }}
@@ -34,19 +35,19 @@ export default function CollectionSection() {
               fontWeight: 500,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              color: 'var(--color-muted)',
+              color: brand.colors.muted,
               marginBottom: 12,
             }}
           >
-            My Collection →
+            Your Collection →
           </div>
           <h2
             style={{
-              fontFamily: 'var(--font-cormorant)',
+              fontFamily: brand.font.serif,
               fontSize: 38,
               fontWeight: 400,
               lineHeight: 1.15,
-              color: 'var(--color-ink)',
+              color: brand.colors.ink,
               whiteSpace: 'nowrap',
               margin: 0,
             }}
