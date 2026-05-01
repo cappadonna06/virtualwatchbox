@@ -151,6 +151,7 @@ Unsaved changes bar:
 #### Near-Term Expansion
 - Next Targets panel with affiliate CTAs
 - Grail section
+- Mobile `...` overflow should eventually include `Add from Photo` as a lightweight collection entry point
 - Save as Playground flow
 - Review Changes drawer
 - Card filters

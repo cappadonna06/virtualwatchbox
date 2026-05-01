@@ -1,0 +1,6 @@
+export const COLLECTION_SESSION_STORAGE_KEY = 'collection-session-v2'
+export const LEGACY_COLLECTION_SESSION_STORAGE_KEY = 'collection-session-v1'
+export const WATCHBOX_CONFIG_STORAGE_KEY = 'watchbox-config'
+export const PLAYGROUND_BOXES_STORAGE_KEY = 'playgroundBoxes'
+export const PROFILE_DEMO_STORAGE_KEY = 'profile-demo-state-v1'
+export const PUBLIC_PROFILE_SNAPSHOT_STORAGE_KEY = 'public-profile-snapshot-v1'

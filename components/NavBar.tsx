@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { brand } from '@/lib/brand'
 
 const LINKS: { label: string; href: string }[] = [
@@ -13,6 +14,33 @@ const LINKS: { label: string; href: string }[] = [
 
 export default function NavBar() {
   const [open, setOpen] = useState(false)
+  const pathname = usePathname()
+
+  useEffect(() => {
+    setOpen(false)
+  }, [pathname])
+
+  useEffect(() => {
+    if (!open) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false)
+    }
+    const handleResize = () => {
+      if (window.innerWidth >= 768) setOpen(false)
+    }
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [open])
 
   return (
     <>
@@ -23,16 +51,21 @@ export default function NavBar() {
           background: brand.colors.bg,
           position: 'sticky', top: 0, zIndex: brand.zIndex.nav,
         }}
-      >
-        <div
+        >
+          <div
+          className="nav-shell"
           style={{
+            position: 'relative',
             maxWidth: 1280, margin: '0 auto',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            gap: 16,
             padding: '20px 56px',
           }}
         >
         <Link
           href="/"
+          className="nav-wordmark"
+          onClick={() => setOpen(false)}
           style={{ fontFamily: brand.font.serif, fontSize: 20, fontWeight: 500, letterSpacing: '0.03em', color: brand.colors.ink, textDecoration: 'none' }}
         >
           Virtual Watchbox
@@ -43,6 +76,7 @@ export default function NavBar() {
             <Link
               key={link.label}
               href={link.href}
+              onClick={() => setOpen(false)}
               style={{
                 fontFamily: brand.font.sans, fontSize: 12, fontWeight: 400,
                 letterSpacing: '0.04em', color: brand.colors.muted,
@@ -54,27 +88,48 @@ export default function NavBar() {
           ))}
         </div>
 
-        <button
+        <Link
+          href="/profile"
           className="nav-signin"
           style={{
-            fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500,
-            letterSpacing: '0.08em', padding: '9px 22px',
-            background: brand.colors.ink, color: brand.colors.bg,
-            border: 'none', borderRadius: brand.radius.btn, cursor: 'pointer',
+            width: 38,
+            height: 38,
+            borderRadius: brand.radius.circle,
+            background: brand.colors.ink,
+            color: brand.colors.bg,
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: brand.shadow.sm,
           }}
         >
-          Sign In
-        </button>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="8" cy="5.25" r="2.35" stroke="currentColor" strokeWidth="1.3" />
+            <path d="M3.25 13.2c.65-2.05 2.45-3.2 4.75-3.2s4.1 1.15 4.75 3.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+          </svg>
+        </Link>
 
         <button
           className="nav-hamburger"
           onClick={() => setOpen(o => !o)}
+          aria-expanded={open}
           aria-label={open ? 'Close menu' : 'Open menu'}
           style={{
             display: 'none',
-            background: 'none', border: 'none',
-            cursor: 'pointer', padding: '4px 2px',
-            color: brand.colors.ink, lineHeight: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 44,
+            height: 44,
+            padding: 0,
+            background: brand.colors.slot,
+            border: `1px solid ${brand.colors.border}`,
+            borderRadius: brand.radius.md,
+            cursor: 'pointer',
+            color: brand.colors.ink,
+            lineHeight: 1,
+            flexShrink: 0,
+            boxShadow: brand.shadow.xs,
           }}
         >
           {open ? (
@@ -92,21 +147,24 @@ export default function NavBar() {
 
       {/* Mobile drawer */}
       <div
-        className="nav-drawer"
+        className={`nav-drawer ${open ? 'is-open' : ''}`}
         style={{
           display: 'none',
           position: 'fixed',
-          top: 61,
-          left: 0, right: 0,
-          background: brand.colors.bg,
-          borderBottom: `1px solid ${brand.colors.border}`,
-          zIndex: brand.zIndex.nav - 1,
+          top: 76,
+          left: 20,
+          right: 20,
+          zIndex: brand.zIndex.dropdown,
           flexDirection: 'column',
-          padding: '8px 24px 28px',
+          padding: '10px 18px 18px',
+          background: brand.colors.white,
+          border: `1px solid ${brand.colors.borderMid}`,
+          borderRadius: brand.radius.xl,
+          boxShadow: brand.shadow.menu,
           opacity: open ? 1 : 0,
-          transform: open ? 'translateY(0)' : 'translateY(-6px)',
+          transform: open ? 'translateY(0)' : 'translateY(-8px)',
           pointerEvents: open ? 'auto' : 'none',
-          transition: `transform ${brand.transition.slide}, opacity ${brand.transition.slide}`,
+          transition: `transform ${brand.transition.smooth}, opacity ${brand.transition.smooth}`,
         }}
       >
         {LINKS.map((link, i) => (
@@ -127,20 +185,40 @@ export default function NavBar() {
             {link.label}
           </Link>
         ))}
-        <button
+        <Link
+          href="/profile"
           onClick={() => setOpen(false)}
           style={{
-            marginTop: 20,
+            marginTop: 18,
             fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500,
             letterSpacing: '0.08em', padding: '13px 22px',
             background: brand.colors.ink, color: brand.colors.bg,
-            border: 'none', borderRadius: brand.radius.btn, cursor: 'pointer',
+            borderRadius: brand.radius.btn,
             width: '100%',
+            textDecoration: 'none',
+            textAlign: 'center',
+            display: 'block',
           }}
         >
-          Sign In
-        </button>
+          Profile
+        </Link>
       </div>
+
+      <div
+        className={`nav-scrim ${open ? 'is-active' : ''}`}
+        onClick={() => setOpen(false)}
+        style={{
+          display: 'none',
+          position: 'fixed',
+          inset: 0,
+          zIndex: brand.zIndex.nav - 1,
+          background: 'rgba(26,20,16,0.16)',
+          backdropFilter: 'blur(3px)',
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? 'auto' : 'none',
+          transition: `opacity ${brand.transition.smooth}`,
+        }}
+      />
     </>
   )
 }

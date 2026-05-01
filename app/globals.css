@@ -64,7 +64,10 @@ body {
 }
 
 /* Sidebar backdrop — hidden on desktop, activated on mobile via class */
+.nav-scrim { display: none; }
 .sidebar-backdrop { display: none; }
+.sidebar-desktop { display: block; }
+.sidebar-mobile-sheet { display: none; }
 .watchbox-overflow-backdrop { display: none; }
 .watchbox-overflow-sheet { display: none; }
 
@@ -78,17 +81,22 @@ body {
 @media (max-width: 767px) {
 
   /* Nav */
-  .nav-root      { padding: 16px 20px !important; }
+  .nav-root      { padding: 0 !important; }
+  .nav-shell     { padding: 18px 20px !important; }
+  .nav-wordmark  { font-size: 18px !important; }
   .nav-links     { display: none !important; }
   .nav-signin    { display: none !important; }
   .nav-hamburger { display: flex !important; align-items: center; justify-content: center; }
   .nav-drawer    { display: flex !important; }
+  .nav-scrim.is-active { display: block !important; }
 
   /* Hero — hide the dark carousel panel entirely on mobile */
   .hero-grid  { grid-template-columns: 1fr !important; min-height: unset !important; }
-  .hero-text  { padding: 40px 24px 32px !important; }
+  .hero-text  { padding: 40px 20px 32px !important; }
   .hero-h1    { font-size: clamp(36px, 10vw, 52px) !important; }
   .hero-panel { display: none !important; }
+  .hero-actions { flex-direction: column !important; align-items: stretch !important; }
+  .hero-action  { width: 100% !important; }
 
   /* Collection */
   .collection-section { padding: 48px 20px !important; }
@@ -143,6 +151,35 @@ body {
     backdrop-filter: blur(2px) !important;
   }
 
+  .sidebar-desktop { display: none !important; }
+  .sidebar-mobile-sheet {
+    display: block !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 200 !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    border-radius: 20px 20px 0 0 !important;
+    background: var(--color-white) !important;
+    overflow: hidden !important;
+    transform: translateY(110%) !important;
+    transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1) !important;
+  }
+  .sidebar-mobile-sheet.is-active {
+    transform: translateY(0) !important;
+  }
+  .sidebar-mobile-sheet .sidebar-content > div {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    position: static !important;
+    min-height: unset !important;
+    background: transparent !important;
+  }
+
   .watchbox-overflow-flyout { display: none !important; }
   .watchbox-overflow-backdrop { display: block !important; }
   .watchbox-overflow-sheet {
@@ -168,5 +205,6 @@ body {
 }
 
 @media (min-width: 768px) {
+  .sidebar-mobile-sheet { display: none !important; }
   .watchbox-overflow-sheet { display: none !important; }
 }

@@ -3,10 +3,12 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import { useIsMobile } from './useResponsiveState'
 import CollectionWatchboxSurface from './CollectionWatchboxSurface'
 
 export default function CollectionSection() {
   const router = useRouter()
+  const isMobile = useIsMobile()
   const { collectionWatches, reorderCollectionWatches } = useCollectionSession()
 
   function handleReorder(from: number, to: number) {
@@ -18,7 +20,7 @@ export default function CollectionSection() {
   return (
     <section
       className="collection-section"
-      style={{ padding: '80px 56px', borderTop: '1px solid var(--color-border)' }}
+      style={{ padding: isMobile ? '56px 20px' : '80px 56px', borderTop: '1px solid var(--color-border)' }}
     >
       <div style={{ marginBottom: 36 }}>
         <Link

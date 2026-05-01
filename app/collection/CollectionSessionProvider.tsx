@@ -2,6 +2,12 @@
 
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
+import { syncPublicProfileSnapshot } from '@/lib/profileDemo'
+import {
+  COLLECTION_SESSION_STORAGE_KEY,
+  LEGACY_COLLECTION_SESSION_STORAGE_KEY,
+  WATCHBOX_CONFIG_STORAGE_KEY,
+} from '@/lib/storageKeys'
 import { watches as catalogWatches } from '@/lib/watches'
 import { SEEDED_OWNED_WATCHES } from '@/lib/collectionData'
 import { createCatalogWatchMap, resolveCatalogWatchId, resolveOwnedWatches } from '@/lib/watchData'
@@ -17,10 +23,6 @@ import type {
   WatchTarget,
 } from '@/types/watch'
 import { brand } from '@/lib/brand'
-
-const STORAGE_KEY = 'collection-session-v2'
-const LEGACY_STORAGE_KEY = 'collection-session-v1'
-const WATCHBOX_STORAGE_KEY = 'watchbox-config'
 
 const WATCH_CONDITIONS: WatchCondition[] = ['Unworn', 'Like New', 'Excellent', 'Good', 'Fair']
 const OWNERSHIP_STATUSES: OwnershipStatus[] = ['Owned', 'For Sale', 'Recently Added', 'Needs Service']
@@ -108,6 +110,7 @@ interface CollectionSessionContextValue {
   getCatalogWatch: (watchId: string) => CatalogWatch | undefined
   toastMessage: string | null
   toastVisible: boolean
+  showToast: (message: string) => void
 }
 
 const CollectionSessionContext = createContext<CollectionSessionContextValue | null>(null)
@@ -267,8 +270,8 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
 
   useEffect(() => {
     try {
-      const raw = sessionStorage.getItem(STORAGE_KEY)
-      const legacyRaw = sessionStorage.getItem(LEGACY_STORAGE_KEY)
+      const raw = sessionStorage.getItem(COLLECTION_SESSION_STORAGE_KEY)
+      const legacyRaw = sessionStorage.getItem(LEGACY_COLLECTION_SESSION_STORAGE_KEY)
       const normalized = normalizeSessionSnapshot(
         raw ? JSON.parse(raw) : legacyRaw ? JSON.parse(legacyRaw) : null,
         catalogIds,
@@ -287,7 +290,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     }
 
     try {
-      const rawConfig = localStorage.getItem(WATCHBOX_STORAGE_KEY)
+      const rawConfig = localStorage.getItem(WATCHBOX_CONFIG_STORAGE_KEY)
       if (!rawConfig) return
 
       const parsedConfig = JSON.parse(rawConfig)
@@ -310,13 +313,25 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       watchboxConfig,
     }
 
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot))
+    sessionStorage.setItem(COLLECTION_SESSION_STORAGE_KEY, JSON.stringify(snapshot))
   }, [hydrated, collectionEntries, followedWatchIds, nextTargets, grailWatchId, watchboxConfig])
 
   useEffect(() => {
     if (!hydrated) return
-    localStorage.setItem(WATCHBOX_STORAGE_KEY, JSON.stringify(watchboxConfig))
+    localStorage.setItem(WATCHBOX_CONFIG_STORAGE_KEY, JSON.stringify(watchboxConfig))
   }, [hydrated, watchboxConfig])
+
+  useEffect(() => {
+    if (!hydrated) return
+
+    syncPublicProfileSnapshot({
+      collectionWatches,
+      followedWatches,
+      nextTargets,
+      grailWatch,
+      watchboxConfig,
+    })
+  }, [hydrated, collectionWatches, followedWatches, nextTargets, grailWatch, watchboxConfig])
 
   useEffect(() => {
     setWatchboxConfig(prev => {
@@ -564,6 +579,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     getCatalogWatch: (watchId: string) => catalogWatchMap.get(watchId),
     toastMessage,
     toastVisible,
+    showToast,
   }
 
   return (
