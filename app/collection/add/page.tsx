@@ -65,6 +65,7 @@ function AddWatchSearchInner() {
   const dest = searchParams.get('dest')
   const boxId = searchParams.get('boxId')
   const isPlaygroundContext = dest === 'playground'
+  const isExploreContext = dest === 'explore'
 
   const [searchTerm, setSearchTerm] = useState('')
   const [materialFilter, setMaterialFilter] = useState<string | null>(null)
@@ -158,13 +159,17 @@ function AddWatchSearchInner() {
     )
   }
 
-  const backLabel = isPlaygroundContext ? '← Back to Playground' : '← My Collection'
-  const backHref = isPlaygroundContext ? '/playground' : '/collection'
+  const backLabel = isPlaygroundContext ? '← Back to Playground' : isExploreContext ? '← Back' : '← My Collection'
+  const backHref = isPlaygroundContext ? '/playground' : isExploreContext ? '/' : '/collection'
   const pageTitle = isPlaygroundContext
     ? (playgroundBoxName ? `Add to ${playgroundBoxName}` : 'Add to Playground')
+    : isExploreContext
+    ? 'Explore Watches'
     : 'Find a Watch'
   const pageSubtitle = isPlaygroundContext
     ? 'Search the catalog, then choose Collection or Playground on the watch detail page'
+    : isExploreContext
+    ? 'Browse over 200 watches from the world\'s finest makers'
     : 'Search by brand, model, or reference number'
 
   return (

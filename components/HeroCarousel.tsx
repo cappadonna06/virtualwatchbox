@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import WatchStateControl from '@/components/collection/WatchStateControl'
 import { brand } from '@/lib/brand'
 
@@ -73,7 +74,8 @@ export default function HeroCarousel() {
             Organize what you own, explore what you want,<br />discover what&apos;s next.
           </p>
           <div className="hero-actions" style={{ display: 'flex', gap: 12 }}>
-            <button
+            <Link
+              href="/collection"
               className="hero-action"
               style={{
                 fontFamily: brand.font.sans,
@@ -86,11 +88,16 @@ export default function HeroCarousel() {
                 border: 'none',
                 borderRadius: brand.radius.btn,
                 cursor: 'pointer',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
               Build Your Box
-            </button>
-            <button
+            </Link>
+            <Link
+              href="/collection/add?dest=explore"
               className="hero-action"
               style={{
                 fontFamily: brand.font.sans,
@@ -103,10 +110,14 @@ export default function HeroCarousel() {
                 border: `1px solid ${brand.colors.borderLight}`,
                 borderRadius: brand.radius.btn,
                 cursor: 'pointer',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
               Explore Watches
-            </button>
+            </Link>
           </div>
         </div>
 

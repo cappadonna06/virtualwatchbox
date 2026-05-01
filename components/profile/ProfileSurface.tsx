@@ -1463,9 +1463,58 @@ function CompactStatNav({
   )
 }
 
-function PublicGrailHeroPanel({ watch }: { watch: ResolvedWatch | null }) {
-  const isMobile = useIsMobile()
+function PublicGrailHeroPanel({ watch, compact = false }: { watch: ResolvedWatch | null; compact?: boolean }) {
   if (!watch) return null
+
+  if (compact) {
+    return (
+      <section
+        style={{
+          background: 'rgba(255,255,255,0.92)',
+          border: `1px solid ${brand.colors.border}`,
+          borderRadius: brand.radius.xl,
+          padding: 12,
+          boxShadow: brand.shadow.md,
+          backdropFilter: 'blur(10px)',
+          minWidth: 0,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+          <CrownIcon />
+          <span style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold }}>
+            Grail
+          </span>
+        </div>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <div
+            style={{
+              position: 'relative',
+              width: 56,
+              height: 56,
+              flexShrink: 0,
+              borderRadius: brand.radius.md,
+              overflow: 'hidden',
+              background: brand.colors.bg,
+              border: `1px solid ${brand.colors.border}`,
+            }}
+          >
+            <Image src={watch.imageUrl} alt={watch.model} fill sizes="56px" style={{ objectFit: 'contain', padding: 6 }} />
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 3 }}>
+              {watch.brand}
+            </div>
+            <div style={{ fontFamily: brand.font.serif, fontSize: 15, color: brand.colors.ink, lineHeight: 1.1, marginBottom: 4, overflowWrap: 'break-word' }}>
+              {watch.model}
+            </div>
+            <div style={{ fontFamily: brand.font.serif, fontSize: 14, color: brand.colors.gold }}>
+              {fmtCurrency(watch.estimatedValue)}
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section
@@ -1485,11 +1534,11 @@ function PublicGrailHeroPanel({ watch }: { watch: ResolvedWatch | null }) {
         </span>
       </div>
 
-      <div className={isMobile ? 'grid grid-cols-1 gap-4 items-start' : 'grid grid-cols-[96px,1fr] gap-4 items-center'}>
+      <div className="grid grid-cols-[96px,1fr] gap-4 items-center">
         <div
           style={{
             position: 'relative',
-            width: isMobile ? 96 : '100%',
+            width: '100%',
             aspectRatio: '1/1',
             borderRadius: brand.radius.lg,
             overflow: 'hidden',
@@ -1510,7 +1559,7 @@ function PublicGrailHeroPanel({ watch }: { watch: ResolvedWatch | null }) {
           <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 5 }}>
             {watch.brand}
           </div>
-          <div style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 22 : 26, color: brand.colors.ink, lineHeight: 1.04, marginBottom: 4 }}>
+          <div style={{ fontFamily: brand.font.serif, fontSize: 26, color: brand.colors.ink, lineHeight: 1.04, marginBottom: 4 }}>
             {watch.model}
           </div>
           <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginBottom: 10 }}>
@@ -1572,6 +1621,18 @@ function PublicProfileHero({
       : null,
   ].filter(Boolean) as Array<{ id: string; label: string; value: string }>
 
+  const coverActionStyle: CSSProperties = {
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    padding: '8px 12px', borderRadius: brand.radius.btn,
+    background: 'rgba(26,20,16,0.62)', backdropFilter: 'blur(8px)',
+    border: '1px solid rgba(255,255,255,0.15)', color: brand.colors.white,
+    fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600,
+    letterSpacing: '0.08em', textTransform: 'uppercase',
+    textDecoration: 'none', cursor: 'pointer',
+  }
+
+  const showGrail = snapshot.visibility.showGrail && snapshot.grailWatch
+
   return (
     <section
       style={{
@@ -1586,42 +1647,75 @@ function PublicProfileHero({
         imageUrl={snapshot.profile.coverImageUrl}
         alt={`${snapshot.profile.displayName} cover`}
         minHeight={isMobile ? 152 : 236}
-      />
+      >
+        <div style={{ position: 'absolute', top: 12, right: 12, zIndex: 2, display: 'flex', gap: 8 }}>
+          {showEditProfile ? <Link href="/profile" style={coverActionStyle}>Edit Profile</Link> : null}
+          <button onClick={onShareProfile} style={coverActionStyle}>Share Profile</button>
+        </div>
+      </ProfileCoverArt>
 
       <div style={{ padding: isMobile ? '0 16px 18px' : '0 24px 24px', position: 'relative' }}>
-        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr),360px] gap-5 items-start">
+        <div className="grid gap-5 items-start" style={{ gridTemplateColumns: !isMobile && showGrail ? 'minmax(0,1fr) 360px' : '1fr' }}>
           <div>
-            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'flex-start', gap: isMobile ? 12 : 18, flexWrap: 'wrap', marginTop: isMobile ? -48 : -62 }}>
-              <ProfileAvatar displayName={snapshot.profile.displayName} imageUrl={snapshot.profile.profileImageUrl} size={isMobile ? 96 : 124} />
-
-              <div style={{ paddingTop: isMobile ? 0 : 70, minWidth: 0, width: '100%' }}>
-                <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
-                  Collector Profile
+            {isMobile ? (
+              <>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginTop: -48 }}>
+                  <div style={{ flexShrink: 0 }}>
+                    <ProfileAvatar displayName={snapshot.profile.displayName} imageUrl={snapshot.profile.profileImageUrl} size={96} />
+                  </div>
+                  {showGrail ? (
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <PublicGrailHeroPanel watch={snapshot.grailWatch} compact />
+                    </div>
+                  ) : null}
                 </div>
-                <h1 style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 34 : 48, fontWeight: 400, color: brand.colors.ink, lineHeight: 0.98, margin: '0 0 8px', overflowWrap: 'anywhere' }}>
-                  {snapshot.profile.displayName}
-                </h1>
-                <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.gold, marginBottom: 10, lineHeight: 1.5 }}>
-                  {getPublicHandle(snapshot.profile.displayName)} · {getProfileHeroSummary(snapshot.summaryStats)}
+                <div style={{ minWidth: 0, marginTop: 12 }}>
+                  <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
+                    Collector Profile
+                  </div>
+                  <h1 style={{ fontFamily: brand.font.serif, fontSize: 34, fontWeight: 400, color: brand.colors.ink, lineHeight: 0.98, margin: '0 0 8px', overflowWrap: 'break-word' }}>
+                    {snapshot.profile.displayName}
+                  </h1>
+                  <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.gold, marginBottom: 10, lineHeight: 1.5, overflowWrap: 'break-word' }}>
+                    {getPublicHandle(snapshot.profile.displayName)} · {getProfileHeroSummary(snapshot.summaryStats)}
+                  </div>
+                  {snapshot.profile.bio ? (
+                    <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.7 }}>
+                      {snapshot.profile.bio}
+                    </p>
+                  ) : null}
                 </div>
-                {snapshot.profile.bio ? (
-                  <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: isMobile ? 13 : 14, color: brand.colors.muted, lineHeight: 1.7, maxWidth: 760 }}>
-                    {snapshot.profile.bio}
-                  </p>
-                ) : null}
+              </>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 18, flexWrap: 'wrap', marginTop: -62 }}>
+                <ProfileAvatar displayName={snapshot.profile.displayName} imageUrl={snapshot.profile.profileImageUrl} size={124} />
+                <div style={{ paddingTop: 70, minWidth: 0, flex: 1 }}>
+                  <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
+                    Collector Profile
+                  </div>
+                  <h1 style={{ fontFamily: brand.font.serif, fontSize: 48, fontWeight: 400, color: brand.colors.ink, lineHeight: 0.98, margin: '0 0 8px', overflowWrap: 'anywhere' }}>
+                    {snapshot.profile.displayName}
+                  </h1>
+                  <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.gold, marginBottom: 10, lineHeight: 1.5, overflowWrap: 'break-word' }}>
+                    {getPublicHandle(snapshot.profile.displayName)} · {getProfileHeroSummary(snapshot.summaryStats)}
+                  </div>
+                  {snapshot.profile.bio ? (
+                    <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, lineHeight: 1.7, maxWidth: 760 }}>
+                      {snapshot.profile.bio}
+                    </p>
+                  ) : null}
+                </div>
               </div>
-            </div>
+            )}
 
             <CompactStatNav items={statItems} />
           </div>
 
-          <div style={{ display: 'grid', gap: 12 }}>
-            <div style={{ display: 'flex', justifyContent: isMobile ? 'flex-start' : 'flex-end', gap: 8, flexWrap: 'wrap', marginTop: isMobile ? 0 : 16 }}>
-              {showEditProfile ? <ActionButton href="/profile" tone="secondary">Edit Profile</ActionButton> : null}
-              <ActionButton onClick={onShareProfile}>Share Profile</ActionButton>
+          {!isMobile && showGrail ? (
+            <div style={{ paddingTop: 16 }}>
+              <PublicGrailHeroPanel watch={snapshot.grailWatch} />
             </div>
-            {snapshot.visibility.showGrail ? <PublicGrailHeroPanel watch={snapshot.grailWatch} /> : null}
-          </div>
+          ) : null}
         </div>
       </div>
     </section>
@@ -1667,6 +1761,18 @@ function OwnerProfileHero({
       : null,
   ].filter(Boolean) as Array<{ id: string; label: string; value: string }>
 
+  const coverActionStyle: CSSProperties = {
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    padding: '8px 12px', borderRadius: brand.radius.btn,
+    background: 'rgba(26,20,16,0.62)', backdropFilter: 'blur(8px)',
+    border: '1px solid rgba(255,255,255,0.15)', color: brand.colors.white,
+    fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600,
+    letterSpacing: '0.08em', textTransform: 'uppercase',
+    textDecoration: 'none', cursor: 'pointer',
+  }
+
+  const showGrail = visibility.showGrail && grailWatch
+
   return (
     <section
       style={{
@@ -1678,7 +1784,9 @@ function OwnerProfileHero({
       }}
     >
       <ProfileCoverArt imageUrl={profile.coverImageUrl} alt={`${profile.displayName} cover`} minHeight={isMobile ? 152 : 236}>
-        <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 2 }}>
+        <div style={{ position: 'absolute', top: 12, right: 12, zIndex: 2, display: 'flex', gap: 8, alignItems: 'center' }}>
+          <Link href={getProfileSharePath()} style={coverActionStyle}>Preview</Link>
+          <button onClick={onShareProfile} style={coverActionStyle}>Share Profile</button>
           <IconCircleButton label="Edit cover image" onClick={onEditCover} tone="dark">
             <PencilIcon />
           </IconCircleButton>
@@ -1686,40 +1794,80 @@ function OwnerProfileHero({
       </ProfileCoverArt>
 
       <div style={{ padding: isMobile ? '0 16px 18px' : '0 24px 24px', position: 'relative' }}>
-        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr),360px] gap-5 items-start">
+        <div className="grid gap-5 items-start" style={{ gridTemplateColumns: !isMobile && showGrail ? 'minmax(0,1fr) 360px' : '1fr' }}>
           <div>
-            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'flex-start', gap: isMobile ? 12 : 18, flexWrap: 'wrap', marginTop: isMobile ? -48 : -62 }}>
-              <div style={{ position: 'relative' }}>
-                <ProfileAvatar displayName={profile.displayName} imageUrl={profile.profileImageUrl} size={isMobile ? 96 : 124} />
-                <div style={{ position: 'absolute', right: 2, bottom: 2 }}>
-                  <IconCircleButton label="Edit profile image" onClick={onEditAvatar}>
-                    <PencilIcon />
-                  </IconCircleButton>
+            {isMobile ? (
+              <>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginTop: -48 }}>
+                  <div style={{ position: 'relative', flexShrink: 0 }}>
+                    <ProfileAvatar displayName={profile.displayName} imageUrl={profile.profileImageUrl} size={96} />
+                    <div style={{ position: 'absolute', right: 2, bottom: 2 }}>
+                      <IconCircleButton label="Edit profile image" onClick={onEditAvatar}>
+                        <PencilIcon />
+                      </IconCircleButton>
+                    </div>
+                  </div>
+                  {showGrail ? (
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <PublicGrailHeroPanel watch={grailWatch} compact />
+                    </div>
+                  ) : null}
+                </div>
+                <div style={{ minWidth: 0, marginTop: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
+                    <span style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+                      Collector Profile
+                    </span>
+                    <IconCircleButton label="Edit name and bio" onClick={onEditText}>
+                      <PencilIcon />
+                    </IconCircleButton>
+                  </div>
+                  <h1 style={{ fontFamily: brand.font.serif, fontSize: 34, fontWeight: 400, color: brand.colors.ink, lineHeight: 0.98, margin: '0 0 8px', overflowWrap: 'break-word' }}>
+                    {profile.displayName}
+                  </h1>
+                  <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.gold, marginBottom: 10, lineHeight: 1.5, overflowWrap: 'break-word' }}>
+                    {getPublicHandle(profile.displayName)} · {getProfileHeroSummary(summaryStats)}
+                  </div>
+                  {profile.bio ? (
+                    <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.7 }}>
+                      {profile.bio}
+                    </p>
+                  ) : null}
+                </div>
+              </>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 18, flexWrap: 'wrap', marginTop: -62 }}>
+                <div style={{ position: 'relative' }}>
+                  <ProfileAvatar displayName={profile.displayName} imageUrl={profile.profileImageUrl} size={124} />
+                  <div style={{ position: 'absolute', right: 2, bottom: 2 }}>
+                    <IconCircleButton label="Edit profile image" onClick={onEditAvatar}>
+                      <PencilIcon />
+                    </IconCircleButton>
+                  </div>
+                </div>
+                <div style={{ paddingTop: 70, minWidth: 0, flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
+                    <span style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+                      Collector Profile
+                    </span>
+                    <IconCircleButton label="Edit name and bio" onClick={onEditText}>
+                      <PencilIcon />
+                    </IconCircleButton>
+                  </div>
+                  <h1 style={{ fontFamily: brand.font.serif, fontSize: 48, fontWeight: 400, color: brand.colors.ink, lineHeight: 0.98, margin: '0 0 8px', overflowWrap: 'anywhere' }}>
+                    {profile.displayName}
+                  </h1>
+                  <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.gold, marginBottom: 10, lineHeight: 1.5, overflowWrap: 'break-word' }}>
+                    {getPublicHandle(profile.displayName)} · {getProfileHeroSummary(summaryStats)}
+                  </div>
+                  {profile.bio ? (
+                    <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, lineHeight: 1.7, maxWidth: 760 }}>
+                      {profile.bio}
+                    </p>
+                  ) : null}
                 </div>
               </div>
-
-              <div style={{ paddingTop: isMobile ? 0 : 70, minWidth: 0, width: '100%' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
-                  <span style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
-                    Collector Profile
-                  </span>
-                  <IconCircleButton label="Edit name and bio" onClick={onEditText}>
-                    <PencilIcon />
-                  </IconCircleButton>
-                </div>
-                <h1 style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 34 : 48, fontWeight: 400, color: brand.colors.ink, lineHeight: 0.98, margin: '0 0 8px', overflowWrap: 'anywhere' }}>
-                  {profile.displayName}
-                </h1>
-                <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.gold, marginBottom: 10, lineHeight: 1.5 }}>
-                  {getPublicHandle(profile.displayName)} · {getProfileHeroSummary(summaryStats)}
-                </div>
-                {profile.bio ? (
-                  <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: isMobile ? 13 : 14, color: brand.colors.muted, lineHeight: 1.7, maxWidth: 760 }}>
-                    {profile.bio}
-                  </p>
-                ) : null}
-              </div>
-            </div>
+            )}
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
               <CompactStatNav items={statItems} />
@@ -1729,13 +1877,11 @@ function OwnerProfileHero({
             </div>
           </div>
 
-          <div style={{ display: 'grid', gap: 12 }}>
-            <div style={{ display: 'flex', justifyContent: isMobile ? 'flex-start' : 'flex-end', gap: 8, flexWrap: 'wrap', marginTop: isMobile ? 0 : 16 }}>
-              <ActionButton href={getProfileSharePath()} tone="secondary">Preview Public Profile</ActionButton>
-              <ActionButton onClick={onShareProfile}>Share Profile</ActionButton>
+          {!isMobile && showGrail ? (
+            <div style={{ paddingTop: 16 }}>
+              <PublicGrailHeroPanel watch={grailWatch} />
             </div>
-            {visibility.showGrail && grailWatch ? <PublicGrailHeroPanel watch={grailWatch} /> : null}
-          </div>
+          ) : null}
         </div>
       </div>
     </section>
@@ -2358,7 +2504,7 @@ export function OwnerProfilePage() {
 
   return (
     <div className="collection-section" style={{ padding: isMobile ? '24px 20px 96px' : '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}>
-      <div style={{ display: 'grid', gap: 20 }}>
+      <div style={{ display: 'grid', gap: 20, gridTemplateColumns: 'minmax(0, 1fr)' }}>
         <OwnerProfileHero
           profile={profile}
           summaryStats={summaryStats}
@@ -2440,7 +2586,7 @@ function ProfilePreviewLayout({
 
   return (
     <div className="collection-section" style={{ padding: isMobile ? '24px 20px 96px' : '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}>
-      <div style={{ display: 'grid', gap: 20 }}>
+      <div style={{ display: 'grid', gap: 20, gridTemplateColumns: 'minmax(0, 1fr)' }}>
         <PublicProfileHero
           snapshot={snapshot}
           onShareProfile={() => handleCopy(getProfileSharePath(), 'Profile link copied to clipboard.')}
@@ -2536,7 +2682,7 @@ export function PublicBoxPage({ slug }: { slug: string }) {
 
   return (
     <div className="collection-section" style={{ padding: isMobile ? '24px 20px 96px' : '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}>
-      <div style={{ display: 'grid', gap: 20 }}>
+      <div style={{ display: 'grid', gap: 20, gridTemplateColumns: 'minmax(0, 1fr)' }}>
         <section style={getSectionShellStyle()}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
             <div>

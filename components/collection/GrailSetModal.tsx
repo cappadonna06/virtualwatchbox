@@ -82,6 +82,8 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
         left: 0,
         right: 0,
         bottom: 0,
+        maxHeight: '88vh',
+        overflowY: 'auto',
         padding: '18px 16px 20px',
         borderRadius: '22px 22px 0 0',
         background: brand.colors.bg,
@@ -158,14 +160,14 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
             }}
           />
 
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: isMobile ? 22 : 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: isMobile ? 22 : 24, position: 'relative', zIndex: 2 }}>
             <div
               style={{
                 width: 56,
                 height: 56,
                 borderRadius: brand.radius.circle,
                 border: `1px solid ${brand.colors.goldLine}`,
-                background: brand.colors.white,
+                background: isMobile ? brand.colors.slot : brand.colors.white,
                 color: brand.colors.gold,
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -191,13 +193,13 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
               transition: prefersReducedMotion ? 'none' : `transform ${ceremonialTransition} 110ms, opacity ${ceremonialTransition} 110ms`,
             }}
           >
-            <div style={{ fontFamily: brand.font.serif, fontSize: 36, fontWeight: 400, color: brand.colors.white, lineHeight: 1.02, marginBottom: 14 }}>
+            <div style={{ fontFamily: brand.font.serif, fontSize: 36, fontWeight: 400, color: isMobile ? brand.colors.ink : brand.colors.white, lineHeight: 1.02, marginBottom: 14 }}>
               Your Grail
             </div>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 14, fontWeight: 500, color: brand.colors.white, marginBottom: 10 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 14, fontWeight: 500, color: isMobile ? brand.colors.ink : brand.colors.white, marginBottom: 10 }}>
               {watch.brand} {watch.model}
             </div>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.bg }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: isMobile ? brand.colors.muted : brand.colors.bg }}>
               {isChange ? 'The crown moves to a new watch.' : 'The watch worth chasing.'}
             </div>
           </div>
