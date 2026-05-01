@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import WatchStateControl from '@/components/collection/WatchStateControl'
 import { brand } from '@/lib/brand'
+import { usePrefersReducedMotion } from '@/components/collection/useResponsiveState'
 
 export interface CarouselWatch {
   id: string
@@ -32,12 +33,16 @@ export default function HeroCarousel() {
   const [idx, setIdx] = useState(0)
   const [animating, setAnimating] = useState(false)
   const [dir, setDir] = useState(1)
+  const [hovered, setHovered] = useState(false)
+  const [manualPaused, setManualPaused] = useState(false)
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   const watch = CAROUSEL_WATCHES[idx]
   const total = CAROUSEL_WATCHES.length
 
-  function navigate(newIdx: number) {
+  function navigate(newIdx: number, options?: { manual?: boolean }) {
     if (animating) return
+    if (options?.manual) setManualPaused(true)
     setDir(newIdx > idx ? 1 : -1)
     setAnimating(true)
     setTimeout(() => {
@@ -46,31 +51,49 @@ export default function HeroCarousel() {
     }, 300)
   }
 
+  useEffect(() => {
+    if (prefersReducedMotion || hovered || manualPaused || animating) return
+
+    const timer = window.setTimeout(() => {
+      navigate(idx + 1)
+    }, 7000)
+
+    return () => window.clearTimeout(timer)
+  }, [animating, hovered, idx, manualPaused, prefersReducedMotion, total])
+
   return (
     <section style={{ padding: 0, borderBottom: `1px solid ${brand.colors.border}` }}>
-      <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 440px', minHeight: 420, alignItems: 'stretch' }}>
+      <div
+        className="hero-grid"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(0, 1fr) 392px',
+          minHeight: 'clamp(350px, 44vh, 430px)',
+          alignItems: 'stretch',
+        }}
+      >
 
         {/* Left: static text */}
-        <div className="hero-text" style={{ padding: '72px 56px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 20 }}>
+        <div className="hero-text" style={{ padding: '60px 56px 56px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 18 }}>
             The Digital Home for Every Collector
           </div>
           <h1
             className="hero-h1"
             style={{
-              fontFamily: 'var(--font-cormorant)',
-              fontSize: 'clamp(48px, 5vw, 78px)',
+              fontFamily: brand.font.serif,
+              fontSize: 'clamp(46px, 5vw, 72px)',
               fontWeight: 300,
               lineHeight: 1.0,
               letterSpacing: '-0.01em',
-              color: '#1A1410',
-              marginBottom: 24,
+              color: brand.colors.ink,
+              marginBottom: 22,
             }}
           >
             Showcase Your<br />
             <em style={{ fontStyle: 'italic', fontWeight: 300 }}>Timepieces.</em>
           </h1>
-          <p style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 13, lineHeight: 1.9, color: '#A89880', maxWidth: 360, marginBottom: 32 }}>
+          <p style={{ fontFamily: brand.font.sans, fontSize: 13, lineHeight: 1.8, color: brand.colors.muted, maxWidth: 360, marginBottom: 28 }}>
             Organize what you own, explore what you want,<br />discover what&apos;s next.
           </p>
           <div className="hero-actions" style={{ display: 'flex', gap: 12 }}>
@@ -92,6 +115,7 @@ export default function HeroCarousel() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                boxShadow: brand.shadow.sm,
               }}
             >
               Build Your Box
@@ -119,15 +143,26 @@ export default function HeroCarousel() {
               Explore Watches
             </Link>
           </div>
+          <div style={{ marginTop: 12, fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, letterSpacing: '0.03em' }}>
+            Free to build. No account required.
+          </div>
         </div>
 
         {/* Right: dark carousel panel */}
-        <div className="hero-panel" style={{
-          position: 'relative', overflow: 'hidden',
-          background: 'linear-gradient(160deg, #1e1b16 0%, #2a2420 100%)',
-          display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
-          padding: '28px 24px 0',
-        }}>
+        <div
+          className="hero-panel"
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            position: 'relative',
+            overflow: 'hidden',
+            background: `linear-gradient(160deg, ${brand.colors.heroDark1} 0%, ${brand.colors.heroDark2} 100%)`,
+            display: 'flex',
+            alignItems: 'stretch',
+            justifyContent: 'center',
+            padding: '14px 14px 0',
+          }}
+        >
           {/* Glow */}
           <div style={{
             position: 'absolute', inset: 0, pointerEvents: 'none',
@@ -136,7 +171,7 @@ export default function HeroCarousel() {
 
           {/* Prev arrow */}
           <button
-            onClick={() => navigate(idx - 1)}
+            onClick={() => navigate(idx - 1, { manual: true })}
             style={{
               position: 'absolute', top: '50%', left: 12, zIndex: 10,
               transform: 'translateY(-50%)',
@@ -151,7 +186,7 @@ export default function HeroCarousel() {
 
           {/* Next arrow */}
           <button
-            onClick={() => navigate(idx + 1)}
+            onClick={() => navigate(idx + 1, { manual: true })}
             style={{
               position: 'absolute', top: '50%', right: 12, zIndex: 10,
               transform: 'translateY(-50%)',
@@ -164,24 +199,48 @@ export default function HeroCarousel() {
             }}
           >›</button>
 
-          {/* Watch image */}
-          <Image
-            key={idx}
-            src={watch.img}
-            alt={watch.model}
-            width={420}
-            height={480}
+          <div
             style={{
-              width: '100%', maxWidth: 420,
-              display: 'block', position: 'relative', zIndex: 1,
-              opacity: animating ? 0 : 1,
-              transform: animating ? `translateX(${dir * 24}px)` : 'translateX(0)',
-              transition: 'opacity 0.3s ease, transform 0.3s ease',
-              filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.55))',
-              objectFit: 'contain',
-              height: 'auto',
+              position: 'relative',
+              zIndex: 1,
+              flex: 1,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '74px 16px 26px',
+              minHeight: 0,
             }}
-          />
+          >
+            <div
+              style={{
+                position: 'relative',
+                width: '100%',
+                height: '100%',
+                maxWidth: 266,
+                maxHeight: '100%',
+                opacity: animating ? 0 : 1,
+                transform: animating ? `translateX(${dir * 24}px)` : 'translateX(0)',
+                transition: prefersReducedMotion ? 'none' : 'opacity 0.3s ease, transform 0.3s ease',
+                willChange: 'transform, opacity',
+                pointerEvents: 'none',
+              }}
+            >
+              <Image
+                key={idx}
+                src={watch.img}
+                alt={watch.model}
+                fill
+                sizes="392px"
+                style={{
+                  display: 'block',
+                  filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.55))',
+                  objectFit: 'contain',
+                  objectPosition: 'center center',
+                }}
+              />
+            </div>
+          </div>
 
           <WatchStateControl
             catalogWatchId={watch.id}
@@ -190,38 +249,45 @@ export default function HeroCarousel() {
           />
 
           {/* Top-left: brand + model */}
-          <div style={{ position: 'absolute', top: 18, left: 18, zIndex: 3 }}>
-            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(201,168,76,0.85)', marginBottom: 4 }}>
+          <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 3, maxWidth: 150 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>
+              Featured Watch
+            </div>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(201,168,76,0.85)', marginBottom: 4 }}>
               {watch.brand.toUpperCase()}
             </div>
-            <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: 22, color: '#faf8f4', fontWeight: 400, lineHeight: 1.1 }}>
+            <div style={{ fontFamily: brand.font.serif, fontSize: 18, color: '#faf8f4', fontWeight: 400, lineHeight: 1.1 }}>
               {watch.model}
             </div>
           </div>
 
-          {/* Bottom-right: price pill */}
+          {/* Top-right: value pill */}
           <div style={{
-            position: 'absolute', bottom: 20, right: 16, zIndex: 3,
+            position: 'absolute', top: 14, right: 14, zIndex: 3,
             background: 'rgba(20,16,12,0.72)',
             border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: 8, padding: '10px 14px',
+            borderRadius: 8, padding: '8px 12px',
             backdropFilter: 'blur(10px)',
             textAlign: 'right',
+            minWidth: 132,
           }}>
-            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 19, fontWeight: 600, color: '#C9A84C', lineHeight: 1 }}>{fmt(watch.value)}</div>
-            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginTop: 5 }}>{watch.dial}</div>
-            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.22)', marginTop: 2 }}>{watch.ref}</div>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.32)', marginBottom: 6 }}>
+              Estimated Value
+            </div>
+            <div style={{ fontFamily: brand.font.serif, fontSize: 18, fontWeight: 500, color: '#C9A84C', lineHeight: 1 }}>{fmt(watch.value)}</div>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginTop: 6 }}>{watch.dial}</div>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.22)', marginTop: 2 }}>{watch.ref}</div>
           </div>
 
           {/* Dots */}
           <div style={{
             display: 'flex', gap: 5, justifyContent: 'center',
-            position: 'absolute', bottom: 14, left: 0, right: 0, zIndex: 10,
+            position: 'absolute', bottom: 10, left: 0, right: 0, zIndex: 10,
           }}>
             {CAROUSEL_WATCHES.map((_, i) => (
               <div
                 key={i}
-                onClick={() => navigate(i)}
+                onClick={() => navigate(i, { manual: true })}
                 style={{
                   width: i === idx ? 14 : 4, height: 4,
                   borderRadius: i === idx ? 2 : '50%',

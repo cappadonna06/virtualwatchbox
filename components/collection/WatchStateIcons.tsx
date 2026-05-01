@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import type { WatchSavedState } from '@/types/watch'
+import { brand } from '@/lib/brand'
 
 export function HeartOutlineIcon({ size = 16 }: { size?: number }) {
   return (
@@ -52,6 +53,21 @@ export function CrownIcon({ size = 16 }: { size?: number }) {
   )
 }
 
+export function JewelIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M4.05 5.1L6.22 2.7h3.56l2.17 2.4-3.95 7.2-3.95-7.2z"
+        fill="currentColor"
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="0.45"
+      />
+      <path d="M4.05 5.1h7.9M6.22 2.7 8 5.1l1.78-2.4" stroke="rgba(255,255,255,0.42)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="0.5" />
+    </svg>
+  )
+}
+
 export function CheckIcon() {
   return (
     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
@@ -60,9 +76,71 @@ export function CheckIcon() {
   )
 }
 
+export function getStateLabel(state: WatchSavedState): string {
+  if (state === 'target') return 'Target'
+  if (state === 'grail') return 'Grail'
+  if (state === 'jewel') return 'Jewel'
+  return 'Followed'
+}
+
+export function IntentBadge({
+  state,
+  compact = false,
+  iconOnly = false,
+}: {
+  state: Extract<WatchSavedState, 'grail' | 'jewel'>
+  compact?: boolean
+  iconOnly?: boolean
+}) {
+  const label = getStateLabel(state)
+  const icon = state === 'grail'
+    ? <CrownIcon size={compact ? 11 : 12} />
+    : <JewelIcon size={compact ? 11 : 12} />
+
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: iconOnly ? 0 : 5,
+        padding: compact
+          ? iconOnly
+            ? '4px 5px'
+            : '4px 8px'
+          : '5px 10px',
+        borderRadius: brand.radius.pill,
+        background: brand.colors.slot,
+        border: `1px solid ${brand.colors.goldLine}`,
+        color: brand.colors.gold,
+        boxShadow: brand.shadow.xs,
+        whiteSpace: 'nowrap',
+      }}
+    >
+      <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+        {icon}
+      </span>
+      {!iconOnly && (
+        <span
+          style={{
+            fontFamily: brand.font.sans,
+            fontSize: compact ? 8 : 9,
+            fontWeight: 600,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            lineHeight: 1,
+          }}
+        >
+          {label}
+        </span>
+      )}
+    </span>
+  )
+}
+
 export function getStateIcon(state: WatchSavedState | null, size: number): ReactNode {
   if (state === 'followed') return <HeartFilledIcon size={size} />
   if (state === 'target') return <TargetIcon size={size} />
   if (state === 'grail') return <CrownIcon size={size} />
+  if (state === 'jewel') return <JewelIcon size={size} />
   return <HeartOutlineIcon size={size} />
 }

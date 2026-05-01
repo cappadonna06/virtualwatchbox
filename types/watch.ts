@@ -14,7 +14,7 @@ export type WatchType =
 export type OwnershipStatus = 'Owned' | 'For Sale' | 'Recently Added' | 'Needs Service'
 
 export type WatchTargetIntent = 'Addition' | 'Replacement'
-export type WatchSavedState = 'followed' | 'target' | 'grail'
+export type WatchSavedState = 'followed' | 'target' | 'grail' | 'jewel'
 export type WatchStateSource =
   | 'search'
   | 'add_flow'

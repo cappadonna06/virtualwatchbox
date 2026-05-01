@@ -7,7 +7,7 @@ import { useCollectionSession } from '@/app/collection/CollectionSessionProvider
 import type { CatalogWatch, WatchSavedState, WatchStateSource } from '@/types/watch'
 import GrailSetModal from './GrailSetModal'
 import GrailRemoveConfirmation from './GrailRemoveConfirmation'
-import { CheckIcon, getStateIcon } from './WatchStateIcons'
+import { CheckIcon, getStateIcon, getStateLabel } from './WatchStateIcons'
 import { useIsMobile } from './useResponsiveState'
 
 type WatchStateControlProps = {
@@ -26,12 +26,6 @@ type PickerPosition = {
 const PICKER_WIDTH = 220
 const PICKER_GAP = 8
 const PICKER_HEIGHT_ESTIMATE = 248
-
-const STATE_LABELS: Record<WatchSavedState, string> = {
-  followed: 'Follow',
-  target: 'Target',
-  grail: 'Grail',
-}
 
 function getButtonMetrics(size: 'sm' | 'md') {
   return size === 'sm'
@@ -69,7 +63,7 @@ function getButtonStyle({
         : brand.colors.white,
     color: state === 'followed'
       ? brand.colors.gold
-      : state === 'target' || state === 'grail'
+      : state === 'target' || state === 'grail' || state === 'jewel'
         ? brand.colors.gold
         : tone === 'dark'
           ? brand.colors.ink
@@ -107,6 +101,8 @@ export default function WatchStateControl({
 
   const currentState = typeof session.getWatchSavedState === 'function'
     ? session.getWatchSavedState(catalogWatchId)
+    : typeof session.isWatchJewel === 'function' && session.isWatchJewel(catalogWatchId)
+      ? 'jewel'
     : typeof session.isWatchGrail === 'function' && session.isWatchGrail(catalogWatchId)
       ? 'grail'
       : typeof session.isWatchTarget === 'function' && session.isWatchTarget(catalogWatchId)
@@ -115,21 +111,21 @@ export default function WatchStateControl({
           ? 'followed'
           : null
 
+  const intent = typeof session.getWatchIntentAvailability === 'function'
+    ? session.getWatchIntentAvailability(catalogWatchId)
+    : null
   const canSetTarget = typeof session.canSetWatchAsTarget === 'function'
     ? session.canSetWatchAsTarget(catalogWatchId)
     : session.nextTargets.some(target => target.watchId === catalogWatchId) || session.nextTargets.length < 3
-  const isOwnedWatch = typeof session.isInCollection === 'function'
+  const isOwnedWatch = intent?.isOwned ?? (typeof session.isInCollection === 'function'
     ? session.isInCollection(catalogWatchId)
-    : false
+    : false)
+  const visibleStates = isOwnedWatch
+    ? (['followed', 'jewel'] as WatchSavedState[])
+    : (['followed', 'target', 'grail'] as WatchSavedState[])
 
-  const targetBlockedByOwnership = isOwnedWatch
-  const targetLimitReached = !targetBlockedByOwnership && !canSetTarget && currentState !== 'target'
-  const targetDisabled = targetBlockedByOwnership || targetLimitReached
-  const targetHelperMessage = targetBlockedByOwnership
-    ? "Targets are only for watches you don't own yet."
-    : targetLimitReached
-      ? "You've reached your 3 target limit."
-      : null
+  const targetLimitReached = !isOwnedWatch && !canSetTarget && currentState !== 'target'
+  const targetHelperMessage = targetLimitReached ? "You've reached your 3 target limit." : null
   const metrics = getButtonMetrics(size)
 
   useEffect(() => {
@@ -275,8 +271,8 @@ export default function WatchStateControl({
         }}
         onClick={event => event.stopPropagation()}
       >
-        {(['followed', 'target', 'grail'] as WatchSavedState[]).map(state => {
-          const disabled = state === 'target' && targetDisabled
+        {visibleStates.map(state => {
+          const disabled = state === 'target' && targetLimitReached
           const checked = currentState === state
 
           return (
@@ -292,12 +288,12 @@ export default function WatchStateControl({
                   background: checked ? brand.colors.goldWash : 'transparent',
                   color: state === 'grail' || state === 'target' || checked ? brand.colors.ink : brand.colors.ink,
                 }}
-              >
+                >
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
                   <span style={{ color: state === 'followed' ? brand.colors.gold : brand.colors.gold }}>
                     {getStateIcon(state, 14)}
                   </span>
-                  <span>{STATE_LABELS[state]}</span>
+                  <span>{state === 'followed' ? 'Follow' : getStateLabel(state)}</span>
                 </span>
                 {checked && (
                   <span style={{ color: brand.colors.gold }}>
@@ -335,7 +331,7 @@ export default function WatchStateControl({
             color: brand.colors.muted,
           }}
         >
-          Remove saved state
+          {currentState ? `Remove ${getStateLabel(currentState)}` : 'Remove saved state'}
         </button>
       </div>
     )
@@ -385,7 +381,7 @@ export default function WatchStateControl({
       </div>,
       document.body,
     )
-  }, [currentState, isMobile, open, pickerPosition, targetDisabled, targetHelperMessage])
+  }, [currentState, isMobile, open, pickerPosition, targetHelperMessage, targetLimitReached, visibleStates])
 
   return (
     <>
@@ -394,8 +390,8 @@ export default function WatchStateControl({
         type="button"
         onClick={toggleOpen}
         style={getButtonStyle({ size, tone, state: currentState, placement })}
-        aria-label={currentState ? `${STATE_LABELS[currentState]} saved state` : 'Save watch state'}
-        title={currentState ? STATE_LABELS[currentState] : 'Follow'}
+        aria-label={currentState ? `${getStateLabel(currentState)} saved state` : 'Save watch state'}
+        title={currentState ? getStateLabel(currentState) : 'Follow'}
       >
         {getStateIcon(currentState, metrics.icon)}
       </button>

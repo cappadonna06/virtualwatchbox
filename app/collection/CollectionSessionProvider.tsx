@@ -45,11 +45,21 @@ type PurchaseDetails = {
   notes?: string
 }
 
+type WatchIntentAvailability = {
+  isOwned: boolean
+  isFollowed: boolean
+  canFollow: boolean
+  canSetTarget: boolean
+  canSetGrail: boolean
+  canSetJewel: boolean
+}
+
 type SessionSnapshot = {
   collectionWatches: OwnedWatch[]
   followedWatchIds: string[]
   nextTargets: WatchTarget[]
   grailWatchId: string | null
+  collectionJewelWatchId: string | null
   watchboxConfig: WatchboxConfig
 }
 
@@ -68,6 +78,7 @@ type LegacySessionSnapshot = {
   followedWatchIds?: unknown
   nextTargets?: unknown
   grailWatchId?: unknown
+  collectionJewelWatchId?: unknown
   watchboxConfig?: unknown
 }
 
@@ -79,6 +90,8 @@ interface CollectionSessionContextValue {
   nextTargetWatches: { target: WatchTarget; watch: CatalogWatch }[]
   grailWatchId: string | null
   grailWatch: CatalogWatch | null
+  collectionJewelWatchId: string | null
+  collectionJewelWatch: CatalogWatch | null
   selectedWatchId: string | null
   watchboxConfig: WatchboxConfig
   setSelectedWatchId: (watchId: string | null) => void
@@ -90,11 +103,13 @@ interface CollectionSessionContextValue {
   removeFromNextTargets: (watchId: string) => void
   setGrailWatch: (watchId: string) => void
   clearGrailWatch: () => void
+  setCollectionJewelWatch: (watchId: string) => void
+  clearCollectionJewelWatch: () => void
   setWatchSavedState: (
     watchId: string,
     state: WatchSavedState,
     options?: { source?: WatchStateSource },
-  ) => { ok: boolean; reason?: 'target_limit' | 'invalid_watch' }
+  ) => { ok: boolean; reason?: 'target_limit' | 'invalid_watch' | 'owned_watch' | 'not_in_collection' }
   removeSavedWatchState: (watchId: string, options?: { source?: WatchStateSource }) => void
   removeFromCollection: (watchId: string) => void
   reorderCollectionWatches: (newWatches: ResolvedOwnedWatch[]) => void
@@ -105,7 +120,11 @@ interface CollectionSessionContextValue {
   isWatchFollowed: (watchId: string) => boolean
   isWatchTarget: (watchId: string) => boolean
   isWatchGrail: (watchId: string) => boolean
+  isWatchJewel: (watchId: string) => boolean
   canSetWatchAsTarget: (watchId: string) => boolean
+  canSetWatchAsGrail: (watchId: string) => boolean
+  canSetWatchAsJewel: (watchId: string) => boolean
+  getWatchIntentAvailability: (watchId: string) => WatchIntentAvailability | null
   getWatchSavedState: (watchId: string) => WatchSavedState | null
   getCatalogWatch: (watchId: string) => CatalogWatch | undefined
   toastMessage: string | null
@@ -205,6 +224,8 @@ function normalizeSessionSnapshot(rawValue: unknown, catalogIds: string[], catal
   const collectionWatches = normalizeCollectionWatches(snapshot.collectionWatches, catalogIds)
   const nextTargets = normalizeNextTargets(snapshot.nextTargets)
   const grailWatchId = typeof snapshot.grailWatchId === 'string' ? snapshot.grailWatchId : null
+  const collectionJewelWatchId = typeof snapshot.collectionJewelWatchId === 'string' ? snapshot.collectionJewelWatchId : null
+  const collectionWatchIds = new Set(collectionWatches.map(watch => watch.watchId))
 
   const followedFromSnapshot = normalizeFollowedWatchIds(snapshot.followedWatchIds, catalogIdSet)
   const followedWatchIds = [...new Set([
@@ -214,14 +235,22 @@ function normalizeSessionSnapshot(rawValue: unknown, catalogIds: string[], catal
   ])]
 
   const followedSet = new Set(followedWatchIds)
-  const normalizedTargets = nextTargets.filter(target => followedSet.has(target.watchId)).slice(0, 3)
-  const normalizedGrailWatchId = grailWatchId && followedSet.has(grailWatchId) ? grailWatchId : null
+  const normalizedTargets = nextTargets
+    .filter(target => followedSet.has(target.watchId) && !collectionWatchIds.has(target.watchId))
+    .slice(0, 3)
+  const normalizedGrailWatchId = grailWatchId && followedSet.has(grailWatchId) && !collectionWatchIds.has(grailWatchId)
+    ? grailWatchId
+    : null
+  const normalizedCollectionJewelWatchId = collectionJewelWatchId && collectionWatchIds.has(collectionJewelWatchId)
+    ? collectionJewelWatchId
+    : null
 
   return {
     collectionWatches,
     followedWatchIds,
     nextTargets: normalizedTargets,
     grailWatchId: normalizedGrailWatchId,
+    collectionJewelWatchId: normalizedCollectionJewelWatchId,
     watchboxConfig: isValidWatchboxConfig(snapshot.watchboxConfig) ? snapshot.watchboxConfig : DEFAULT_WATCHBOX_CONFIG,
   }
 }
@@ -235,6 +264,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   const [followedWatchIds, setFollowedWatchIds] = useState<string[]>([])
   const [nextTargets, setNextTargets] = useState<WatchTarget[]>([])
   const [grailWatchId, setGrailWatchId] = useState<string | null>(null)
+  const [collectionJewelWatchId, setCollectionJewelWatchId] = useState<string | null>(null)
   const [selectedWatchId, setSelectedWatchId] = useState<string | null>(null)
   const [watchboxConfig, setWatchboxConfig] = useState<WatchboxConfig>(DEFAULT_WATCHBOX_CONFIG)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
@@ -267,6 +297,10 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     () => (grailWatchId ? catalogWatchMap.get(grailWatchId) ?? null : null),
     [catalogWatchMap, grailWatchId],
   )
+  const collectionJewelWatch = useMemo(
+    () => (collectionJewelWatchId ? catalogWatchMap.get(collectionJewelWatchId) ?? null : null),
+    [catalogWatchMap, collectionJewelWatchId],
+  )
 
   useEffect(() => {
     try {
@@ -283,6 +317,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
         setFollowedWatchIds(normalized.followedWatchIds)
         setNextTargets(normalized.nextTargets)
         setGrailWatchId(normalized.grailWatchId)
+        setCollectionJewelWatchId(normalized.collectionJewelWatchId)
         setWatchboxConfig(normalized.watchboxConfig)
       }
     } catch {
@@ -310,11 +345,12 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       followedWatchIds,
       nextTargets,
       grailWatchId,
+      collectionJewelWatchId,
       watchboxConfig,
     }
 
     sessionStorage.setItem(COLLECTION_SESSION_STORAGE_KEY, JSON.stringify(snapshot))
-  }, [hydrated, collectionEntries, followedWatchIds, nextTargets, grailWatchId, watchboxConfig])
+  }, [hydrated, collectionEntries, followedWatchIds, nextTargets, grailWatchId, collectionJewelWatchId, watchboxConfig])
 
   useEffect(() => {
     if (!hydrated) return
@@ -329,9 +365,10 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       followedWatches,
       nextTargets,
       grailWatch,
+      collectionJewelWatch,
       watchboxConfig,
     })
-  }, [hydrated, collectionWatches, followedWatches, nextTargets, grailWatch, watchboxConfig])
+  }, [hydrated, collectionWatches, followedWatches, nextTargets, grailWatch, collectionJewelWatch, watchboxConfig])
 
   useEffect(() => {
     setWatchboxConfig(prev => {
@@ -362,13 +399,57 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     }, 2500)
   }
 
-  function silentlyRemoveSavedState(watchId: string) {
+  function isOwnedWatch(watchId: string) {
+    return collectionEntries.some(watch => watch.watchId === watchId)
+  }
+
+  function getWatchIntentAvailability(watchId: string): WatchIntentAvailability | null {
+    if (!catalogIdSet.has(watchId)) return null
+
+    const isOwned = isOwnedWatch(watchId)
+    const isFollowed = followedWatchIds.includes(watchId)
+
+    return {
+      isOwned,
+      isFollowed,
+      canFollow: true,
+      canSetTarget: !isOwned && isFollowed,
+      canSetGrail: !isOwned && isFollowed,
+      canSetJewel: isOwned,
+    }
+  }
+
+  function removeFollowedState(watchId: string) {
     setFollowedWatchIds(prev => prev.filter(id => id !== watchId))
     setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
     setGrailWatchId(prev => (prev === watchId ? null : prev))
   }
 
+  function removeCurrentWatchState(watchId: string) {
+    const currentState = getSavedState(watchId)
+
+    if (currentState === 'followed') {
+      removeFollowedState(watchId)
+      return
+    }
+
+    if (currentState === 'target') {
+      setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
+      return
+    }
+
+    if (currentState === 'grail') {
+      setGrailWatchId(prev => (prev === watchId ? null : prev))
+      return
+    }
+
+    if (currentState === 'jewel') {
+      setCollectionJewelWatchId(prev => (prev === watchId ? null : prev))
+    }
+  }
+
   function getSavedState(watchId: string): WatchSavedState | null {
+    if (collectionJewelWatchId === watchId) return 'jewel'
     if (grailWatchId === watchId) return 'grail'
     if (nextTargets.some(target => target.watchId === watchId)) return 'target'
     if (followedWatchIds.includes(watchId)) return 'followed'
@@ -376,11 +457,25 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   }
 
   function canTargetWatch(watchId: string) {
+    const intent = getWatchIntentAvailability(watchId)
+    if (!intent || intent.isOwned) return false
+
     return nextTargets.some(target => target.watchId === watchId) || nextTargets.length < 3
+  }
+
+  function canSetGrail(watchId: string) {
+    const intent = getWatchIntentAvailability(watchId)
+    return Boolean(intent && !intent.isOwned)
+  }
+
+  function canSetJewel(watchId: string) {
+    const intent = getWatchIntentAvailability(watchId)
+    return Boolean(intent?.canSetJewel)
   }
 
   function addToCollection(watch: CatalogWatch, condition: WatchCondition, purchaseDetails?: PurchaseDetails) {
     const wasTarget = nextTargets.some(target => target.watchId === watch.id)
+    const wasGrail = grailWatchId === watch.id
     const newWatch: OwnedWatch = {
       id: `owned-${crypto.randomUUID()}`,
       watchId: watch.id,
@@ -392,11 +487,14 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     }
 
     setCollectionEntries(prev => [...prev, newWatch])
-    if (wasTarget) {
-      setNextTargets(prev => prev.filter(target => target.watchId !== watch.id))
-    }
+    setNextTargets(prev => prev.filter(target => target.watchId !== watch.id))
+    setGrailWatchId(prev => (prev === watch.id ? null : prev))
     setSelectedWatchId(newWatch.id)
-    showToast(wasTarget ? 'Target acquired — welcome to the box.' : `${watch.brand} ${watch.model} added to your collection`)
+    showToast(
+      wasTarget || wasGrail
+        ? 'Aspirational notes cleared now that it is in your collection.'
+        : `${watch.brand} ${watch.model} added to your collection`,
+    )
   }
 
   function followWatch(watchId: string) {
@@ -408,7 +506,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   function unfollowWatch(watchId: string) {
     if (!followedWatchIds.includes(watchId)) return
 
-    silentlyRemoveSavedState(watchId)
+    removeFollowedState(watchId)
   }
 
   function toggleFollowedWatch(watchId: string) {
@@ -423,8 +521,13 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   function promoteToNextTarget(watchId: string) {
     if (!catalogIdSet.has(watchId)) return
     if (nextTargets.some(target => target.watchId === watchId)) return
+    if (isOwnedWatch(watchId)) {
+      showToast('Owned watches can be marked as your Jewel instead.')
+      return
+    }
 
     if (nextTargets.length >= 3) {
+      showToast("You've reached your 3 target limit.")
       return
     }
 
@@ -449,6 +552,10 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   function setGrailWatch(watchId: string) {
     if (!catalogIdSet.has(watchId)) return
     if (grailWatchId === watchId) return
+    if (isOwnedWatch(watchId)) {
+      showToast('Owned watches can be marked as your Jewel instead.')
+      return
+    }
 
     setFollowedWatchIds(prev => (prev.includes(watchId) ? prev : [...prev, watchId]))
     setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
@@ -458,6 +565,22 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   function clearGrailWatch() {
     if (!grailWatchId) return
     setGrailWatchId(null)
+  }
+
+  function setCollectionJewelWatch(watchId: string) {
+    if (!catalogIdSet.has(watchId)) return
+    if (collectionJewelWatchId === watchId) return
+    if (!isOwnedWatch(watchId)) {
+      showToast('Only watches in your collection can be marked as your Jewel.')
+      return
+    }
+
+    setCollectionJewelWatchId(watchId)
+  }
+
+  function clearCollectionJewelWatch() {
+    if (!collectionJewelWatchId) return
+    setCollectionJewelWatchId(null)
   }
 
   function setWatchSavedState(
@@ -473,11 +596,17 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       setFollowedWatchIds(prev => (prev.includes(watchId) ? prev : [...prev, watchId]))
       setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
       setGrailWatchId(prev => (prev === watchId ? null : prev))
+      setCollectionJewelWatchId(prev => (prev === watchId ? null : prev))
       showToast('Saved to your followed watches.')
       return { ok: true as const }
     }
 
     if (state === 'target') {
+      if (isOwnedWatch(watchId)) {
+        showToast('Owned watches can be marked as your Jewel instead.')
+        return { ok: false as const, reason: 'owned_watch' as const }
+      }
+
       if (!canTargetWatch(watchId)) {
         return { ok: false as const, reason: 'target_limit' as const }
       }
@@ -500,9 +629,24 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       return { ok: true as const }
     }
 
-    setFollowedWatchIds(prev => (prev.includes(watchId) ? prev : [...prev, watchId]))
-    setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
-    setGrailWatchId(watchId)
+    if (state === 'grail') {
+      if (!canSetGrail(watchId)) {
+        showToast('Owned watches can be marked as your Jewel instead.')
+        return { ok: false as const, reason: 'owned_watch' as const }
+      }
+
+      setFollowedWatchIds(prev => (prev.includes(watchId) ? prev : [...prev, watchId]))
+      setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
+      setGrailWatchId(watchId)
+      return { ok: true as const }
+    }
+
+    if (!canSetJewel(watchId)) {
+      showToast('Only watches in your collection can be marked as your Jewel.')
+      return { ok: false as const, reason: 'not_in_collection' as const }
+    }
+
+    setCollectionJewelWatchId(watchId)
     return { ok: true as const }
   }
 
@@ -510,10 +654,17 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     watchId: string,
     _options?: { source?: WatchStateSource },
   ) {
-    silentlyRemoveSavedState(watchId)
+    removeCurrentWatchState(watchId)
   }
 
   function removeFromCollection(watchId: string) {
+    const removedWatch = collectionEntries.find(watch => watch.id === watchId) ?? null
+    if (removedWatch?.watchId) {
+      const hasAnotherOwnedCopy = collectionEntries.some(watch => watch.id !== watchId && watch.watchId === removedWatch.watchId)
+      if (!hasAnotherOwnedCopy) {
+        setCollectionJewelWatchId(prev => (prev === removedWatch.watchId ? null : prev))
+      }
+    }
     setCollectionEntries(prev => prev.filter(watch => watch.id !== watchId))
     setSelectedWatchId(prev => (prev === watchId ? null : prev))
   }
@@ -552,6 +703,8 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     nextTargetWatches,
     grailWatchId,
     grailWatch,
+    collectionJewelWatchId,
+    collectionJewelWatch,
     selectedWatchId,
     watchboxConfig,
     setSelectedWatchId,
@@ -563,6 +716,8 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     removeFromNextTargets,
     setGrailWatch,
     clearGrailWatch,
+    setCollectionJewelWatch,
+    clearCollectionJewelWatch,
     setWatchSavedState,
     removeSavedWatchState,
     removeFromCollection,
@@ -570,11 +725,15 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     setWatchboxFrame,
     setWatchboxLining,
     setWatchboxSlotCount,
-    isInCollection: (watchId: string) => collectionEntries.some(watch => watch.watchId === watchId),
+    isInCollection: (watchId: string) => isOwnedWatch(watchId),
     isWatchFollowed: (watchId: string) => followedWatchIds.includes(watchId),
     isWatchTarget: (watchId: string) => nextTargets.some(target => target.watchId === watchId),
     isWatchGrail: (watchId: string) => grailWatchId === watchId,
+    isWatchJewel: (watchId: string) => collectionJewelWatchId === watchId,
     canSetWatchAsTarget: (watchId: string) => canTargetWatch(watchId),
+    canSetWatchAsGrail: (watchId: string) => canSetGrail(watchId),
+    canSetWatchAsJewel: (watchId: string) => canSetJewel(watchId),
+    getWatchIntentAvailability,
     getWatchSavedState: (watchId: string) => getSavedState(watchId),
     getCatalogWatch: (watchId: string) => catalogWatchMap.get(watchId),
     toastMessage,

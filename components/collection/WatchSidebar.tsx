@@ -7,6 +7,7 @@ import type { ResolvedOwnedWatch, ResolvedWatch, WatchCondition } from '@/types/
 import { brand } from '@/lib/brand'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import WatchStateControl from './WatchStateControl'
+import { IntentBadge } from './WatchStateIcons'
 
 const conditionColors: Record<WatchCondition, { bg: string; text: string }> = {
   Unworn:    { bg: brand.condition.unworn.bg,    text: brand.condition.unworn.text },
@@ -120,7 +121,7 @@ export default function WatchSidebar({
   onRequestEdit,
 }: Props) {
   const router = useRouter()
-  const { getWatchSavedState, showToast } = useCollectionSession()
+  const { getWatchSavedState, isWatchJewel, showToast } = useCollectionSession()
   const panelStyle: React.CSSProperties = sticky
     ? sidebarPanel
     : {
@@ -152,6 +153,7 @@ export default function WatchSidebar({
   const isPublicMode = mode === 'public'
   const showConditionBadge = mode !== 'followed'
   const savedState = getWatchSavedState(resolvedCatalogWatchId)
+  const showJewelBadge = mode === 'collection' && isWatchJewel(resolvedCatalogWatchId)
   const marketLabel = !isOwnedWatch && savedState === 'grail' && !isPublicMode ? 'Find on Market ↗' : 'Find For Sale ↗'
 
   return (
@@ -230,6 +232,11 @@ export default function WatchSidebar({
           </span>
         )}
       </div>
+      {showJewelBadge && (
+        <div style={{ marginBottom: 8 }}>
+          <IntentBadge state="jewel" />
+        </div>
+      )}
       <div style={{ fontSize: 12, color: brand.colors.muted, marginBottom: 4 }}>Ref. {watch.reference}</div>
       {watch.notes && (
         <div style={{ fontSize: 11, color: brand.colors.gold, fontStyle: 'italic', marginBottom: 16 }}>
