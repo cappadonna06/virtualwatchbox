@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import WatchStateControl from '@/components/collection/WatchStateControl'
 import { brand } from '@/lib/brand'
@@ -28,6 +29,7 @@ function fmt(n: number) {
 }
 
 export default function HeroCarousel() {
+  const router = useRouter()
   const [idx, setIdx] = useState(0)
   const [animating, setAnimating] = useState(false)
   const [dir, setDir] = useState(1)
@@ -75,6 +77,7 @@ export default function HeroCarousel() {
           <div className="hero-actions" style={{ display: 'flex', gap: 12 }}>
             <button
               className="hero-action"
+              onClick={() => router.push('/collection')}
               style={{
                 fontFamily: brand.font.sans,
                 fontSize: 11,
@@ -92,6 +95,7 @@ export default function HeroCarousel() {
             </button>
             <button
               className="hero-action"
+              onClick={() => router.push('/collection/add?source=explore')}
               style={{
                 fontFamily: brand.font.sans,
                 fontSize: 11,

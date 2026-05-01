@@ -1428,7 +1428,7 @@ function CompactStatNav({
   if (items.length === 0) return null
 
   return (
-    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 22 }}>
+    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 22, width: '100%', minWidth: 0 }}>
       {items.map(item => (
         <button
           key={item.id}
@@ -1442,6 +1442,7 @@ function CompactStatNav({
             alignItems: 'center',
             gap: isMobile ? 8 : 10,
             padding: isMobile ? '9px 11px' : '10px 12px',
+            minWidth: 0,
             borderRadius: brand.radius.pill,
             border: `1px solid ${brand.colors.border}`,
             background: brand.colors.white,
@@ -1451,7 +1452,7 @@ function CompactStatNav({
             maxWidth: '100%',
           }}
         >
-          <span style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 8 : 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+          <span style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 8 : 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, whiteSpace: 'normal', wordBreak: 'break-word' }}>
             {item.label}
           </span>
           <span style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 18 : 20, lineHeight: 1, color: brand.colors.ink }}>
@@ -1586,7 +1587,12 @@ function PublicProfileHero({
         imageUrl={snapshot.profile.coverImageUrl}
         alt={`${snapshot.profile.displayName} cover`}
         minHeight={isMobile ? 152 : 236}
-      />
+      >
+        <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 2, display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          {showEditProfile ? <ActionButton href="/profile" tone="secondary">Edit Profile</ActionButton> : null}
+          <ActionButton onClick={onShareProfile}>Share Profile</ActionButton>
+        </div>
+      </ProfileCoverArt>
 
       <div style={{ padding: isMobile ? '0 16px 18px' : '0 24px 24px', position: 'relative' }}>
         <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr),360px] gap-5 items-start">
@@ -1616,10 +1622,6 @@ function PublicProfileHero({
           </div>
 
           <div style={{ display: 'grid', gap: 12 }}>
-            <div style={{ display: 'flex', justifyContent: isMobile ? 'flex-start' : 'flex-end', gap: 8, flexWrap: 'wrap', marginTop: isMobile ? 0 : 16 }}>
-              {showEditProfile ? <ActionButton href="/profile" tone="secondary">Edit Profile</ActionButton> : null}
-              <ActionButton onClick={onShareProfile}>Share Profile</ActionButton>
-            </div>
             {snapshot.visibility.showGrail ? <PublicGrailHeroPanel watch={snapshot.grailWatch} /> : null}
           </div>
         </div>
@@ -1678,10 +1680,12 @@ function OwnerProfileHero({
       }}
     >
       <ProfileCoverArt imageUrl={profile.coverImageUrl} alt={`${profile.displayName} cover`} minHeight={isMobile ? 152 : 236}>
-        <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 2 }}>
+        <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 2, display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           <IconCircleButton label="Edit cover image" onClick={onEditCover} tone="dark">
             <PencilIcon />
           </IconCircleButton>
+          <ActionButton href={getProfileSharePath()} tone="secondary">Preview Public Profile</ActionButton>
+          <ActionButton onClick={onShareProfile}>Share Profile</ActionButton>
         </div>
       </ProfileCoverArt>
 
@@ -1730,10 +1734,6 @@ function OwnerProfileHero({
           </div>
 
           <div style={{ display: 'grid', gap: 12 }}>
-            <div style={{ display: 'flex', justifyContent: isMobile ? 'flex-start' : 'flex-end', gap: 8, flexWrap: 'wrap', marginTop: isMobile ? 0 : 16 }}>
-              <ActionButton href={getProfileSharePath()} tone="secondary">Preview Public Profile</ActionButton>
-              <ActionButton onClick={onShareProfile}>Share Profile</ActionButton>
-            </div>
             {visibility.showGrail && grailWatch ? <PublicGrailHeroPanel watch={grailWatch} /> : null}
           </div>
         </div>

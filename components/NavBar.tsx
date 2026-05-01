@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { COMING_SOON_FEATURES } from '@/lib/comingSoon'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { brand } from '@/lib/brand'
@@ -14,11 +15,20 @@ const LINKS: { label: string; href: string }[] = [
 
 export default function NavBar() {
   const [open, setOpen] = useState(false)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
   const pathname = usePathname()
+
+  const isProfileRoute = pathname?.startsWith('/profile')
 
   useEffect(() => {
     setOpen(false)
   }, [pathname])
+
+  useEffect(() => {
+    if (!toastMessage) return
+    const t = window.setTimeout(() => setToastMessage(null), 2200)
+    return () => window.clearTimeout(t)
+  }, [toastMessage])
 
   useEffect(() => {
     if (!open) return
@@ -72,20 +82,35 @@ export default function NavBar() {
         </Link>
 
         <div className="nav-links" style={{ display: 'flex', gap: 32 }}>
-          {LINKS.map(link => (
-            <Link
-              key={link.label}
-              href={link.href}
-              onClick={() => setOpen(false)}
-              style={{
-                fontFamily: brand.font.sans, fontSize: 12, fontWeight: 400,
-                letterSpacing: '0.04em', color: brand.colors.muted,
-                textDecoration: 'none', cursor: 'pointer',
-              }}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {LINKS.map(link => {
+            const isPlaceholder = link.href === '#'
+            return isPlaceholder ? (
+              <button
+                key={link.label}
+                onClick={() => setToastMessage(link.label === 'News' ? COMING_SOON_FEATURES.news.message : COMING_SOON_FEATURES.discover.message)}
+                style={{
+                  fontFamily: brand.font.sans, fontSize: 12, fontWeight: 400,
+                  letterSpacing: '0.04em', color: brand.colors.muted,
+                  textDecoration: 'none', cursor: 'pointer', background: 'none', border: 'none', padding: 0,
+                }}
+              >
+                {link.label}
+              </button>
+            ) : (
+              <Link
+                key={link.label}
+                href={link.href}
+                onClick={() => setOpen(false)}
+                style={{
+                  fontFamily: brand.font.sans, fontSize: 12, fontWeight: 400,
+                  letterSpacing: '0.04em', color: brand.colors.muted,
+                  textDecoration: 'none', cursor: 'pointer',
+                }}
+              >
+                {link.label}
+              </Link>
+            )
+          })}
         </div>
 
         <Link
@@ -95,13 +120,13 @@ export default function NavBar() {
             width: 38,
             height: 38,
             borderRadius: brand.radius.circle,
-            background: brand.colors.ink,
-            color: brand.colors.bg,
+            background: isProfileRoute ? brand.colors.gold : brand.colors.ink,
+            color: isProfileRoute ? brand.colors.ink : brand.colors.bg,
             textDecoration: 'none',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: brand.shadow.sm,
+            boxShadow: isProfileRoute ? brand.shadow.gold : brand.shadow.sm,
           }}
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -167,7 +192,26 @@ export default function NavBar() {
           transition: `transform ${brand.transition.smooth}, opacity ${brand.transition.smooth}`,
         }}
       >
-        {LINKS.map((link, i) => (
+        {LINKS.map((link, i) => {
+          const isPlaceholder = link.href === '#'
+          return isPlaceholder ? (
+          <button
+            key={link.label}
+            onClick={() => { setOpen(false); setToastMessage(link.label === 'News' ? COMING_SOON_FEATURES.news.message : COMING_SOON_FEATURES.discover.message) }}
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 14, fontWeight: 400,
+              letterSpacing: '0.04em', color: brand.colors.ink,
+              textDecoration: 'none',
+              background: 'none', border: 'none', width: '100%', textAlign: 'left',
+              padding: '16px 0',
+              borderBottom: i < LINKS.length - 1 ? `1px solid ${brand.colors.border}` : 'none',
+              display: 'block',
+            }}
+          >
+            {link.label}
+          </button>
+          ) : (
           <Link
             key={link.label}
             href={link.href}
@@ -184,7 +228,8 @@ export default function NavBar() {
           >
             {link.label}
           </Link>
-        ))}
+          )
+        })}
         <Link
           href="/profile"
           onClick={() => setOpen(false)}
@@ -203,6 +248,12 @@ export default function NavBar() {
           Profile
         </Link>
       </div>
+
+      {toastMessage ? (
+        <div style={{ position: 'fixed', left: '50%', bottom: 24, transform: 'translateX(-50%)', background: brand.colors.ink, color: brand.colors.bg, borderRadius: brand.radius.md, padding: '10px 14px', fontFamily: brand.font.sans, fontSize: 11, letterSpacing: '0.04em', zIndex: brand.zIndex.dropdown + 2, boxShadow: brand.shadow.lg }}>
+          {toastMessage}
+        </div>
+      ) : null}
 
       <div
         className={`nav-scrim ${open ? 'is-active' : ''}`}

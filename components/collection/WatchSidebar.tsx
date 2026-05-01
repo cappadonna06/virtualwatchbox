@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import type { ResolvedOwnedWatch, ResolvedWatch, WatchCondition } from '@/types/watch'
 import { brand } from '@/lib/brand'
+import { COMING_SOON_FEATURES } from '@/lib/comingSoon'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import WatchStateControl from './WatchStateControl'
 
@@ -120,7 +121,7 @@ export default function WatchSidebar({
   onRequestEdit,
 }: Props) {
   const router = useRouter()
-  const { getWatchSavedState } = useCollectionSession()
+  const { getWatchSavedState, showToast } = useCollectionSession()
   const panelStyle: React.CSSProperties = sticky
     ? sidebarPanel
     : {
@@ -146,7 +147,7 @@ export default function WatchSidebar({
 
   const colors = conditionColors[watch.condition]
   const resolvedCatalogWatchId = catalogWatchId ?? watch.watchId
-  const canEdit = mode === 'collection' || Boolean(onRequestEdit)
+  const canEdit = Boolean(onRequestEdit) || mode === 'collection'
   const canDelete = Boolean(onRequestDelete)
   const isOwnedWatch = mode === 'collection'
   const isPublicMode = mode === 'public'
@@ -161,7 +162,16 @@ export default function WatchSidebar({
         {(canEdit || canDelete) && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {canEdit && (
-              <IconButton label="Edit watch" onClick={() => onRequestEdit?.(watch)}>
+              <IconButton
+                label="Edit watch"
+                onClick={() => {
+                  if (onRequestEdit) {
+                    onRequestEdit(watch)
+                    return
+                  }
+                  showToast(COMING_SOON_FEATURES.editCollectionWatchDetails.message)
+                }}
+              >
                 <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                   <path d="M1 9.5V11h1.5l4.42-4.42-1.5-1.5L1 9.5zm7.07-5.07c.2-.2.2-.51 0-.71L6.99 2.64a.5.5 0 00-.71 0L5.13 3.79l1.5 1.5 1.44-1.44z" fill="currentColor" />
                 </svg>
