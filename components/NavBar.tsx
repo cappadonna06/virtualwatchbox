@@ -1,20 +1,26 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { brand } from '@/lib/brand'
 
-const LINKS: { label: string; href: string }[] = [
+type NavLink = { label: string; href: string; coming?: boolean }
+
+const LINKS: NavLink[] = [
   { label: 'My Collection', href: '/collection' },
   { label: 'Playground',    href: '/playground'  },
-  { label: 'Discover',      href: '#'           },
-  { label: 'News',          href: '#'           },
+  { label: 'Discover',      href: '#', coming: true },  // TODO(coming-soon): Discover / explore page
+  { label: 'News',          href: '#', coming: true },  // TODO(coming-soon): News / editorial page
 ]
 
 export default function NavBar() {
   const [open, setOpen] = useState(false)
+  const [toastMsg, setToastMsg] = useState<string | null>(null)
+  const [toastVisible, setToastVisible] = useState(false)
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pathname = usePathname()
+  const isProfilePage = pathname.startsWith('/profile')
 
   useEffect(() => {
     setOpen(false)
@@ -41,6 +47,36 @@ export default function NavBar() {
       window.removeEventListener('resize', handleResize)
     }
   }, [open])
+
+  function showComingSoon() {
+    if (hideTimer.current) clearTimeout(hideTimer.current)
+    setToastMsg('Coming soon.')
+    setToastVisible(true)
+    hideTimer.current = setTimeout(() => {
+      setToastVisible(false)
+      hideTimer.current = setTimeout(() => setToastMsg(null), 300)
+    }, 2400)
+  }
+
+  const linkStyle = {
+    fontFamily: brand.font.sans, fontSize: 12, fontWeight: 400,
+    letterSpacing: '0.04em', color: brand.colors.muted,
+    textDecoration: 'none', cursor: 'pointer',
+    background: 'none', border: 'none', padding: 0,
+  } as const
+
+  const drawerLinkStyle = (i: number, total: number) => ({
+    fontFamily: brand.font.sans,
+    fontSize: 14, fontWeight: 400,
+    letterSpacing: '0.04em', color: brand.colors.ink,
+    textDecoration: 'none',
+    padding: '16px 0',
+    borderBottom: i < total - 1 ? `1px solid ${brand.colors.border}` : 'none',
+    display: 'block',
+    background: 'none', border: 'none', width: '100%', textAlign: 'left' as const,
+    borderBottomColor: i < total - 1 ? brand.colors.border : 'transparent',
+    cursor: 'pointer',
+  })
 
   return (
     <>
@@ -72,20 +108,26 @@ export default function NavBar() {
         </Link>
 
         <div className="nav-links" style={{ display: 'flex', gap: 32 }}>
-          {LINKS.map(link => (
-            <Link
-              key={link.label}
-              href={link.href}
-              onClick={() => setOpen(false)}
-              style={{
-                fontFamily: brand.font.sans, fontSize: 12, fontWeight: 400,
-                letterSpacing: '0.04em', color: brand.colors.muted,
-                textDecoration: 'none', cursor: 'pointer',
-              }}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {LINKS.map(link =>
+            link.coming ? (
+              <button
+                key={link.label}
+                onClick={showComingSoon}
+                style={linkStyle}
+              >
+                {link.label}
+              </button>
+            ) : (
+              <Link
+                key={link.label}
+                href={link.href}
+                onClick={() => setOpen(false)}
+                style={linkStyle}
+              >
+                {link.label}
+              </Link>
+            )
+          )}
         </div>
 
         <Link
@@ -102,7 +144,10 @@ export default function NavBar() {
             alignItems: 'center',
             justifyContent: 'center',
             boxShadow: brand.shadow.sm,
+            outline: isProfilePage ? `2px solid ${brand.colors.gold}` : 'none',
+            outlineOffset: 2,
           }}
+          aria-label="Profile"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <circle cx="8" cy="5.25" r="2.35" stroke="currentColor" strokeWidth="1.3" />
@@ -167,24 +212,37 @@ export default function NavBar() {
           transition: `transform ${brand.transition.smooth}, opacity ${brand.transition.smooth}`,
         }}
       >
-        {LINKS.map((link, i) => (
-          <Link
-            key={link.label}
-            href={link.href}
-            onClick={() => setOpen(false)}
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 14, fontWeight: 400,
-              letterSpacing: '0.04em', color: brand.colors.ink,
-              textDecoration: 'none',
-              padding: '16px 0',
-              borderBottom: i < LINKS.length - 1 ? `1px solid ${brand.colors.border}` : 'none',
-              display: 'block',
-            }}
-          >
-            {link.label}
-          </Link>
-        ))}
+        {LINKS.map((link, i) =>
+          link.coming ? (
+            <button
+              key={link.label}
+              onClick={() => { showComingSoon(); setOpen(false) }}
+              style={{
+                ...drawerLinkStyle(i, LINKS.length),
+                borderBottom: i < LINKS.length - 1 ? `1px solid ${brand.colors.border}` : 'none',
+              }}
+            >
+              {link.label}
+            </button>
+          ) : (
+            <Link
+              key={link.label}
+              href={link.href}
+              onClick={() => setOpen(false)}
+              style={{
+                fontFamily: brand.font.sans,
+                fontSize: 14, fontWeight: 400,
+                letterSpacing: '0.04em', color: brand.colors.ink,
+                textDecoration: 'none',
+                padding: '16px 0',
+                borderBottom: i < LINKS.length - 1 ? `1px solid ${brand.colors.border}` : 'none',
+                display: 'block',
+              }}
+            >
+              {link.label}
+            </Link>
+          )
+        )}
         <Link
           href="/profile"
           onClick={() => setOpen(false)}
@@ -219,6 +277,35 @@ export default function NavBar() {
           transition: `opacity ${brand.transition.smooth}`,
         }}
       />
+
+      {/* Coming soon toast */}
+      {toastMsg && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 28,
+            left: '50%',
+            transform: `translateX(-50%) translateY(${toastVisible ? '0' : '12px'})`,
+            opacity: toastVisible ? 1 : 0,
+            transition: 'opacity 0.22s, transform 0.22s',
+            background: brand.colors.ink,
+            color: brand.colors.bg,
+            borderRadius: brand.radius.pill,
+            padding: '10px 20px',
+            fontFamily: brand.font.sans,
+            fontSize: 12,
+            fontWeight: 500,
+            letterSpacing: '0.04em',
+            boxShadow: brand.shadow.lg,
+            zIndex: brand.zIndex.dropdown + 10,
+            pointerEvents: 'none',
+            whiteSpace: 'nowrap',
+          }}
+          aria-live="polite"
+        >
+          {toastMsg}
+        </div>
+      )}
     </>
   )
 }

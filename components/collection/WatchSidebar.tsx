@@ -120,7 +120,7 @@ export default function WatchSidebar({
   onRequestEdit,
 }: Props) {
   const router = useRouter()
-  const { getWatchSavedState } = useCollectionSession()
+  const { getWatchSavedState, showToast } = useCollectionSession()
   const panelStyle: React.CSSProperties = sticky
     ? sidebarPanel
     : {
@@ -161,7 +161,17 @@ export default function WatchSidebar({
         {(canEdit || canDelete) && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {canEdit && (
-              <IconButton label="Edit watch" onClick={() => onRequestEdit?.(watch)}>
+              <IconButton
+                label="Edit watch"
+                onClick={() => {
+                  if (onRequestEdit) {
+                    onRequestEdit(watch)
+                  } else {
+                    // TODO(coming-soon): Inline watch edit modal
+                    showToast('Coming soon.')
+                  }
+                }}
+              >
                 <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                   <path d="M1 9.5V11h1.5l4.42-4.42-1.5-1.5L1 9.5zm7.07-5.07c.2-.2.2-.51 0-.71L6.99 2.64a.5.5 0 00-.71 0L5.13 3.79l1.5 1.5 1.44-1.44z" fill="currentColor" />
                 </svg>
@@ -312,8 +322,10 @@ export default function WatchSidebar({
             Find For Sale ↗
           </a>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            <button style={btnSecondary}>Sell This Watch</button>
-            <button style={btnSecondary}>Swap Strap</button>
+            {/* TODO(coming-soon): Sell watch listing flow */}
+            <button style={btnSecondary} onClick={() => showToast('Coming soon.')}>Sell This Watch</button>
+            {/* TODO(coming-soon): Virtual strap swap / matchmaker */}
+            <button style={btnSecondary} onClick={() => showToast('Coming soon.')}>Swap Strap</button>
           </div>
         </div>
       )}
