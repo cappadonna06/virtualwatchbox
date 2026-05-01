@@ -1504,7 +1504,7 @@ function PublicGrailHeroPanel({ watch, compact = false }: { watch: ResolvedWatch
             <div style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 3 }}>
               {watch.brand}
             </div>
-            <div style={{ fontFamily: brand.font.serif, fontSize: 15, color: brand.colors.ink, lineHeight: 1.1, marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ fontFamily: brand.font.serif, fontSize: 15, color: brand.colors.ink, lineHeight: 1.1, marginBottom: 4, overflowWrap: 'break-word' }}>
               {watch.model}
             </div>
             <div style={{ fontFamily: brand.font.serif, fontSize: 14, color: brand.colors.gold }}>
@@ -2504,7 +2504,7 @@ export function OwnerProfilePage() {
 
   return (
     <div className="collection-section" style={{ padding: isMobile ? '24px 20px 96px' : '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}>
-      <div style={{ display: 'grid', gap: 20 }}>
+      <div style={{ display: 'grid', gap: 20, gridTemplateColumns: 'minmax(0, 1fr)' }}>
         <OwnerProfileHero
           profile={profile}
           summaryStats={summaryStats}
@@ -2586,7 +2586,7 @@ function ProfilePreviewLayout({
 
   return (
     <div className="collection-section" style={{ padding: isMobile ? '24px 20px 96px' : '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}>
-      <div style={{ display: 'grid', gap: 20 }}>
+      <div style={{ display: 'grid', gap: 20, gridTemplateColumns: 'minmax(0, 1fr)' }}>
         <PublicProfileHero
           snapshot={snapshot}
           onShareProfile={() => handleCopy(getProfileSharePath(), 'Profile link copied to clipboard.')}
@@ -2682,7 +2682,7 @@ export function PublicBoxPage({ slug }: { slug: string }) {
 
   return (
     <div className="collection-section" style={{ padding: isMobile ? '24px 20px 96px' : '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}>
-      <div style={{ display: 'grid', gap: 20 }}>
+      <div style={{ display: 'grid', gap: 20, gridTemplateColumns: 'minmax(0, 1fr)' }}>
         <section style={getSectionShellStyle()}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
             <div>
