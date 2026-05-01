@@ -547,6 +547,7 @@ function ProfileCoverArt({
         minHeight,
         background: `linear-gradient(135deg, ${brand.colors.heroDark1}, ${brand.colors.heroDark2})`,
         overflow: 'hidden',
+        borderRadius: `${brand.radius.xl}px ${brand.radius.xl}px 0 0`,
       }}
     >
       {activeSrc ? (
@@ -1480,7 +1481,7 @@ function BoxPreviewVisual({
                     alt={watch.model}
                     fill
                     sizes={isFeature ? '140px' : '90px'}
-                    style={{ objectFit: 'cover', objectPosition: 'center 45%' }}
+                    style={{ objectFit: 'contain', objectPosition: 'center center' }}
                   />
                 )}
               </div>
@@ -1864,11 +1865,10 @@ function PublicGrailHeroPanel({ watch, compact = false }: { watch: ResolvedWatch
           background: 'rgba(255,255,255,0.92)',
           border: `1px solid ${brand.colors.border}`,
           borderRadius: brand.radius.xl,
-          padding: '18px 12px 12px',
+          padding: '11px 14px 11px',
           boxShadow: brand.shadow.md,
           backdropFilter: 'blur(10px)',
           minWidth: 0,
-          minHeight: 104,
           width: 'fit-content',
           maxWidth: '100%',
           position: 'relative',
@@ -1878,8 +1878,8 @@ function PublicGrailHeroPanel({ watch, compact = false }: { watch: ResolvedWatch
         <div
           style={{
             position: 'absolute',
-            top: -10,
-            right: 12,
+            top: -18,
+            right: 14,
             display: 'inline-flex',
             alignItems: 'center',
             gap: 5,
@@ -1896,42 +1896,35 @@ function PublicGrailHeroPanel({ watch, compact = false }: { watch: ResolvedWatch
           </span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '84px minmax(0, 1fr)', gap: 8, alignItems: 'center' }}>
-          <div
-            style={{
-              position: 'relative',
-              width: 84,
-              height: 96,
-              flexShrink: 0,
-              overflow: 'visible',
-            }}
-          >
-            <img
-              src={watch.imageUrl}
-              alt={watch.model}
-              draggable={false}
-              style={{
-                position: 'absolute',
-                left: '50%',
-                top: -28,
-                width: 108,
-                height: 148,
-                transform: 'translateX(-50%)',
-                objectFit: 'contain',
-                filter: brand.shadow.drop,
-                userSelect: 'none',
-                pointerEvents: 'none',
-              }}
-            />
-          </div>
-          <div style={{ minWidth: 0, maxWidth: 116, paddingRight: 2 }}>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 4 }}>
+        <img
+          src={watch.imageUrl}
+          alt={watch.model}
+          draggable={false}
+          style={{
+            position: 'absolute',
+            left: 48,
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            height: 'calc(100% + 8px)',
+            width: 'auto',
+            filter: brand.shadow.drop,
+            userSelect: 'none',
+            pointerEvents: 'none',
+          }}
+        />
+        <div style={{ display: 'grid', gridTemplateColumns: '68px minmax(0, 1fr)', gap: 10 }}>
+          <div style={{ width: 68 }} />
+          <div style={{ minWidth: 0, maxWidth: 120, paddingRight: 2, paddingTop: 6 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 3 }}>
               {watch.brand}
             </div>
-            <div style={{ fontFamily: brand.font.serif, fontSize: 16, color: brand.colors.ink, lineHeight: 1.02, marginBottom: 4, overflowWrap: 'break-word' }}>
+            <div style={{ fontFamily: brand.font.serif, fontSize: 16, color: brand.colors.ink, lineHeight: 1.02, marginBottom: 3, overflowWrap: 'break-word' }}>
               {watch.model}
             </div>
-            <div style={{ fontFamily: brand.font.serif, fontSize: 16, color: brand.colors.gold }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 8, color: brand.colors.muted, marginBottom: 5 }}>
+              Ref. {watch.reference}
+            </div>
+            <div style={{ fontFamily: brand.font.serif, fontSize: 15, color: brand.colors.gold }}>
               {fmtCurrency(watch.estimatedValue)}
             </div>
           </div>
@@ -1974,35 +1967,26 @@ function PublicGrailHeroPanel({ watch, compact = false }: { watch: ResolvedWatch
         </span>
       </div>
 
-      <div className="grid items-center" style={{ gridTemplateColumns: '154px minmax(0,1fr)', gap: 10 }}>
-        <div
-          style={{
-            position: 'relative',
-            width: '100%',
-            height: 166,
-            overflow: 'visible',
-          }}
-        >
-          <img
-            src={watch.imageUrl}
-            alt={watch.model}
-            draggable={false}
-            style={{
-              position: 'absolute',
-              left: '50%',
-              top: -44,
-              width: 184,
-              height: 254,
-              transform: 'translateX(-50%)',
-              objectFit: 'contain',
-              filter: brand.shadow.drop,
-              userSelect: 'none',
-              pointerEvents: 'none',
-            }}
-          />
-        </div>
+      <img
+        src={watch.imageUrl}
+        alt={watch.model}
+        draggable={false}
+        style={{
+          position: 'absolute',
+          left: 85,
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+          height: 'calc(100% + 16px)',
+          width: 'auto',
+          filter: brand.shadow.drop,
+          userSelect: 'none',
+          pointerEvents: 'none',
+        }}
+      />
+      <div className="grid" style={{ gridTemplateColumns: '130px minmax(0,1fr)', gap: 12 }}>
+        <div style={{ width: 130 }} />
 
-        <div style={{ paddingRight: 4 }}>
+        <div style={{ paddingRight: 6 }}>
           <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 7 }}>
             {watch.brand}
           </div>
@@ -2057,7 +2041,7 @@ function PublicProfileHero({
             background: brand.colors.white,
             border: `1px solid ${brand.colors.border}`,
             borderRadius: brand.radius.xl,
-            overflow: 'hidden',
+            overflow: 'visible',
             boxShadow: brand.shadow.xs,
           }}
     >
@@ -2187,7 +2171,7 @@ function OwnerProfileHero({
             background: brand.colors.white,
             border: `1px solid ${brand.colors.border}`,
             borderRadius: brand.radius.xl,
-            overflow: 'hidden',
+            overflow: 'visible',
             boxShadow: brand.shadow.xs,
           }}
     >
