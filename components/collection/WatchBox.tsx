@@ -74,7 +74,7 @@ function OverflowListItem({
             alt={watch.model}
             fill
             sizes="48px"
-            style={{ objectFit: 'cover', objectPosition: 'center 45%' }}
+            style={{ objectFit: 'contain', objectPosition: 'center center' }}
           />
         )}
       </div>
@@ -599,7 +599,7 @@ export default function WatchBox({
                         alt={w.model}
                         fill
                         sizes="(max-width: 768px) 20vw, 10vw"
-                        style={{ objectFit: 'cover', objectPosition: 'center 45%' }}
+                        style={{ objectFit: 'contain', objectPosition: 'center center' }}
                       />
                     )}
                     {isActive && (
