@@ -1589,8 +1589,21 @@ function PublicProfileHero({
         minHeight={isMobile ? 152 : 236}
       >
         <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 2, display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-          {showEditProfile ? <ActionButton href="/profile" tone="secondary">Edit Profile</ActionButton> : null}
-          <ActionButton onClick={onShareProfile}>Share Profile</ActionButton>
+          {isMobile ? (
+            <>
+              {showEditProfile ? (
+                <IconCircleButton label="Edit Profile" onClick={() => window.location.href = '/profile'}>
+                  <PencilIcon />
+                </IconCircleButton>
+              ) : null}
+              <ShareIconButton onClick={onShareProfile} label="Share Profile" />
+            </>
+          ) : (
+            <>
+              {showEditProfile ? <ActionButton href="/profile" tone="secondary">Edit Profile</ActionButton> : null}
+              <ActionButton onClick={onShareProfile}>Share Profile</ActionButton>
+            </>
+          )}
         </div>
       </ProfileCoverArt>
 
@@ -1684,8 +1697,14 @@ function OwnerProfileHero({
           <IconCircleButton label="Edit cover image" onClick={onEditCover} tone="dark">
             <PencilIcon />
           </IconCircleButton>
-          <ActionButton href={getProfileSharePath()} tone="secondary">Preview Public Profile</ActionButton>
-          <ActionButton onClick={onShareProfile}>Share Profile</ActionButton>
+          {isMobile ? (
+            <ShareIconButton onClick={onShareProfile} label="Share Profile" />
+          ) : (
+            <>
+              <ActionButton href={getProfileSharePath()} tone="secondary">Preview Public Profile</ActionButton>
+              <ActionButton onClick={onShareProfile}>Share Profile</ActionButton>
+            </>
+          )}
         </div>
       </ProfileCoverArt>
 

@@ -82,9 +82,10 @@ body {
 
   /* Nav */
   .nav-root      { padding: 0 !important; }
-  .nav-shell     { padding: 18px 20px !important; }
-  .nav-wordmark  { font-size: 18px !important; }
-  .nav-links     { display: none !important; }
+  .hero-text  { padding: 30px 20px 16px !important; }
+  .hero-h1    { margin-bottom: 16px !important; }
+  .hero-text p { margin-bottom: 16px !important; }
+  .collection-section { padding: 40px 20px !important; }
   .nav-signin    { display: none !important; }
   .nav-hamburger { display: flex !important; align-items: center; justify-content: center; }
   .nav-drawer    { display: flex !important; }
