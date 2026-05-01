@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import Cropper, { type Area, type Point } from 'react-easy-crop'
+import 'react-easy-crop/react-easy-crop.css'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
@@ -31,6 +33,7 @@ import {
 import { getOverflowSummary, getWatchboxOverflow } from '@/lib/watchboxOverflow'
 import type {
   ProfileDemoState,
+  ProfileImageCropState,
   ProfileVisibilitySettings,
   PublicBoxSnapshot,
   PublicCollectionStats,
@@ -75,8 +78,21 @@ function getPublicHandle(displayName: string) {
   return `@${normalized || 'collector'}`
 }
 
-function getProfileHeroSummary(stats: PublicProfileSummaryStats) {
-  return `${stats.collectionCount} in the box · ${stats.playgroundBoxCount} dream boxes · ${stats.followedCount} on the radar`
+function getProfileHeroSummary(
+  stats: PublicProfileSummaryStats,
+  visibility: ProfileVisibilitySettings,
+) {
+  const items = [
+    visibility.showCollection ? `${stats.collectionCount} in the box` : null,
+    visibility.showPlayground ? `${stats.playgroundBoxCount} dream boxes` : null,
+    visibility.showFollowedWatches ? `${stats.followedCount} on the radar` : null,
+  ].filter(Boolean) as string[]
+
+  return items.join(' · ')
+}
+
+function hasAnyPublicProfileModules(visibility: ProfileVisibilitySettings, showGrail: boolean) {
+  return visibility.showCollection || visibility.showPlayground || visibility.showFollowedWatches || showGrail
 }
 
 function calcSlotPx(
@@ -109,6 +125,14 @@ function getSectionShellStyle(): CSSProperties {
     borderRadius: brand.radius.xl,
     padding: 24,
     boxShadow: brand.shadow.xs,
+  }
+}
+
+function getMobileFlowSectionStyle(): CSSProperties {
+  return {
+    marginTop: 14,
+    padding: '12px 20px 20px',
+    background: brand.colors.white,
   }
 }
 
@@ -307,18 +331,32 @@ function StatsStrip({ stats }: { stats: PublicProfileSummaryStats }) {
 function ProfileAvatar({
   displayName,
   imageUrl,
+  imageCrop,
   size = 112,
 }: {
   displayName: string
   imageUrl: string
+  imageCrop?: ProfileImageCropState
   size?: number
 }) {
+  const cropArea = imageCrop?.area
+  const hasSavedCrop = Boolean(
+    imageUrl
+    && cropArea
+    && cropArea.x >= 0
+    && cropArea.y >= 0
+    && cropArea.width > 0
+    && cropArea.width <= 100
+    && cropArea.height > 0
+    && cropArea.height <= 100
+  )
+
   return (
     <div
       style={{
         width: size,
         height: size,
-        borderRadius: brand.radius.circle,
+        borderRadius: brand.radius.xl,
         overflow: 'hidden',
         background: brand.colors.slot,
         border: `1px solid ${brand.colors.border}`,
@@ -328,13 +366,31 @@ function ProfileAvatar({
       }}
     >
       {imageUrl ? (
-        <Image
-          src={imageUrl}
-          alt={displayName}
-          fill
-          sizes={`${size}px`}
-          style={{ objectFit: 'cover' }}
-        />
+        hasSavedCrop ? (
+          <img
+            src={imageUrl}
+            alt={displayName}
+            draggable={false}
+            style={{
+              position: 'absolute',
+              width: `${10000 / cropArea!.width}%`,
+              height: `${10000 / cropArea!.height}%`,
+              maxWidth: 'none',
+              left: `${-(cropArea!.x / cropArea!.width) * 100}%`,
+              top: `${-(cropArea!.y / cropArea!.height) * 100}%`,
+              userSelect: 'none',
+              pointerEvents: 'none',
+            }}
+          />
+        ) : (
+          <Image
+            src={imageUrl}
+            alt={displayName}
+            fill
+            sizes={`${size}px`}
+            style={{ objectFit: 'cover', objectPosition: 'center center' }}
+          />
+        )
       ) : (
         <div
           style={{
@@ -444,11 +500,24 @@ function PencilIcon() {
   )
 }
 
-function SettingsIcon() {
+function EyeIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M6.95 1.9h2.1l.35 1.45c.3.12.58.28.84.48l1.42-.43 1.05 1.82-1.08 1c.03.18.05.36.05.55s-.02.37-.05.55l1.08 1-1.05 1.82-1.42-.43c-.26.2-.54.36-.84.48l-.35 1.45h-2.1l-.35-1.45a4.4 4.4 0 01-.84-.48l-1.42.43-1.05-1.82 1.08-1a3.9 3.9 0 010-1.1l-1.08-1L4.74 3.4l1.42.43c.26-.2.54-.36.84-.48L6.95 1.9z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
-      <circle cx="8" cy="8" r="1.7" stroke="currentColor" strokeWidth="1.2" />
+      <path
+        d="M1.6 8c1.54-2.47 3.74-3.7 6.4-3.7S12.86 5.53 14.4 8c-1.54 2.47-3.74 3.7-6.4 3.7S3.14 10.47 1.6 8z"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+      <circle cx="8" cy="8" r="2.05" stroke="currentColor" strokeWidth="1.2" />
+    </svg>
+  )
+}
+
+function CloseIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M3.25 3.25L12.75 12.75M12.75 3.25L3.25 12.75" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
     </svg>
   )
 }
@@ -690,6 +759,214 @@ function ImageAssetModal({
   )
 }
 
+async function readFileAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        resolve(reader.result)
+        return
+      }
+
+      reject(new Error('Unable to read file'))
+    }
+    reader.onerror = () => reject(reader.error ?? new Error('Unable to read file'))
+    reader.readAsDataURL(file)
+  })
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max)
+}
+
+function ProfileImageCropModal({
+  open,
+  imageUrl,
+  imageCrop,
+  onClose,
+  onSave,
+  onRemove,
+}: {
+  open: boolean
+  imageUrl: string
+  imageCrop?: ProfileImageCropState
+  onClose: () => void
+  onSave: (nextValue: { imageUrl: string; imageCrop: ProfileImageCropState }) => Promise<void> | void
+  onRemove: () => void
+}) {
+  const [sourceUrl, setSourceUrl] = useState(imageUrl)
+  const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+  const [croppedArea, setCroppedArea] = useState<Area | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const isMobile = useIsMobile()
+  const previewSize = isMobile ? 264 : 280
+  const canSave = Boolean(sourceUrl && croppedArea)
+
+  useEffect(() => {
+    if (!open) return
+    setSourceUrl(imageUrl)
+    setCrop(imageCrop ? { x: imageCrop.x, y: imageCrop.y } : { x: 0, y: 0 })
+    setZoom(imageCrop?.zoom ?? 1)
+    setCroppedArea(imageCrop?.area ?? null)
+  }, [open, imageCrop, imageUrl])
+
+  return (
+    <ModalShell open={open} title="Profile Photo" onClose={onClose}>
+      <p style={{ margin: '0 0 16px', fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.7 }}>
+        Drag to center. Pinch or scroll to zoom.
+      </p>
+
+      <div style={{ display: 'grid', gap: 16 }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <UploadButton
+            label={sourceUrl ? 'Replace Photo' : 'Upload Photo'}
+            onSelect={async file => {
+              const nextUrl = await readFileAsDataUrl(file)
+              setSourceUrl(nextUrl)
+              setCrop({ x: 0, y: 0 })
+              setZoom(1)
+              setCroppedArea(null)
+            }}
+          />
+          {sourceUrl ? <ActionButton onClick={() => { onRemove(); onClose() }}>Remove</ActionButton> : null}
+        </div>
+
+        <div style={{ display: 'grid', gap: 14 }}>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div
+              style={{
+                position: 'relative',
+                width: previewSize,
+                height: previewSize,
+                borderRadius: brand.radius.xl,
+                overflow: 'hidden',
+                background: brand.colors.slot,
+                border: `1px solid ${brand.colors.border}`,
+                boxShadow: brand.shadow.xs,
+                touchAction: 'none',
+                overscrollBehavior: 'contain',
+              }}
+            >
+              {sourceUrl ? (
+                <Cropper
+                  image={sourceUrl}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  cropShape="rect"
+                  showGrid={false}
+                  zoomWithScroll
+                  objectFit="cover"
+                  minZoom={1}
+                  maxZoom={3}
+                  restrictPosition
+                  onCropChange={setCrop}
+                  onZoomChange={value => setZoom(clamp(value, 1, 3))}
+                  onCropComplete={(croppedAreaPercentages) => setCroppedArea(croppedAreaPercentages)}
+                  style={{
+                    containerStyle: {
+                      width: '100%',
+                      height: '100%',
+                      background: brand.colors.slot,
+                    },
+                    cropAreaStyle: {
+                      borderRadius: brand.radius.xl,
+                      border: `1px solid ${brand.colors.borderLight}`,
+                      boxShadow: `0 0 0 9999px rgba(26,20,16,0.16)`,
+                    },
+                    mediaStyle: {
+                      willChange: 'transform',
+                    },
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    padding: 24,
+                    fontFamily: brand.font.sans,
+                    fontSize: 12,
+                    color: brand.colors.muted,
+                    lineHeight: 1.6,
+                  }}
+                >
+                  Upload a square or portrait image and position it here.
+                </div>
+              )}
+            </div>
+          </div>
+
+          {sourceUrl ? (
+            <div style={{ display: 'grid', gap: 12 }}>
+              <label style={{ display: 'grid', gap: 8 }}>
+                <span style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+                  Zoom
+                </span>
+                <div style={{ display: 'grid', gridTemplateColumns: '34px minmax(0, 1fr) 34px', gap: 10, alignItems: 'center' }}>
+                  <IconCircleButton label="Zoom out" onClick={() => setZoom(current => clamp(current - 0.1, 1, 3))}>
+                    <span aria-hidden="true" style={{ fontSize: 16, lineHeight: 1 }}>−</span>
+                  </IconCircleButton>
+                  <input
+                    type="range"
+                    min="1"
+                    max="3"
+                    step="0.01"
+                    value={zoom}
+                    aria-label="Zoom"
+                    onChange={event => setZoom(Number(event.target.value))}
+                  />
+                  <IconCircleButton label="Zoom in" onClick={() => setZoom(current => clamp(current + 0.1, 1, 3))}>
+                    <span aria-hidden="true" style={{ fontSize: 16, lineHeight: 1 }}>+</span>
+                  </IconCircleButton>
+                </div>
+              </label>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 18, flexWrap: 'wrap' }}>
+        <ActionButton onClick={onClose}>Cancel</ActionButton>
+        <ActionButton
+          tone="primary"
+          onClick={async () => {
+            if (!sourceUrl || !croppedArea || isSaving) return
+            setIsSaving(true)
+            try {
+              await onSave({
+                imageUrl: sourceUrl,
+                imageCrop: {
+                  x: crop.x,
+                  y: crop.y,
+                  zoom,
+                  area: {
+                    x: croppedArea.x,
+                    y: croppedArea.y,
+                    width: croppedArea.width,
+                    height: croppedArea.height,
+                  },
+                },
+              })
+              onClose()
+            } finally {
+              setIsSaving(false)
+            }
+          }}
+          aria-disabled={!canSave || isSaving}
+        >
+          Save Photo
+        </ActionButton>
+      </div>
+    </ModalShell>
+  )
+}
+
 function VisibilityModal({
   open,
   visibility,
@@ -701,41 +978,152 @@ function VisibilityModal({
   onClose: () => void
   onChange: (nextVisibility: ProfileVisibilitySettings) => void
 }) {
+  const isMobile = useIsMobile()
+
+  if (!open) return null
+
   return (
-    <ModalShell open={open} title="Profile Visibility" onClose={onClose}>
-      <div className="grid grid-cols-1 gap-3">
-        <VisibilityToggle
-          label="My Collection"
-          description="Show The Box on the profile."
-          checked={visibility.showCollection}
-          onChange={checked => onChange({ ...visibility, showCollection: checked })}
-        />
-        <VisibilityToggle
-          label="Collection Stats"
-          description="Show the value and collection stat chips."
-          checked={visibility.showCollectionStats}
-          onChange={checked => onChange({ ...visibility, showCollectionStats: checked })}
-        />
-        <VisibilityToggle
-          label="Dream Boxes"
-          description="Show the Playground carousel."
-          checked={visibility.showPlayground}
-          onChange={checked => onChange({ ...visibility, showPlayground: checked })}
-        />
-        <VisibilityToggle
-          label="On the Radar"
-          description="Show the followed and target watches section."
-          checked={visibility.showFollowedWatches}
-          onChange={checked => onChange({ ...visibility, showFollowedWatches: checked })}
-        />
-        <VisibilityToggle
-          label="Grail"
-          description="Feature the grail in the hero."
-          checked={visibility.showGrail}
-          onChange={checked => onChange({ ...visibility, showGrail: checked })}
-        />
+    <>
+      <div
+        onClick={onClose}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(26,20,16,0.42)',
+          backdropFilter: 'blur(3px)',
+          zIndex: 260,
+        }}
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
+        style={{
+          position: 'fixed',
+          inset: isMobile ? 'auto 0 0 0' : '50% auto auto 50%',
+          transform: isMobile ? 'none' : 'translate(-50%, -50%)',
+          width: isMobile ? '100%' : 'min(92vw, 860px)',
+          maxHeight: isMobile ? '88dvh' : '84vh',
+          overflowY: 'auto',
+          background: brand.colors.white,
+          border: `1px solid ${brand.colors.border}`,
+          borderRadius: isMobile ? '22px 22px 0 0' : brand.radius.xl,
+          boxShadow: brand.shadow.xl,
+          zIndex: 261,
+          padding: isMobile ? '18px 18px calc(20px + env(safe-area-inset-bottom))' : 20,
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 16 }}>
+          <div>
+            <div style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 24 : 30, color: brand.colors.ink, lineHeight: 1.05, marginBottom: 8 }}>
+              Profile Visibility
+            </div>
+            <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.7 }}>
+              Choose what appears on your public profile.
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            aria-label="Close profile visibility"
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: brand.radius.circle,
+              border: `1px solid ${brand.colors.border}`,
+              background: brand.colors.white,
+              color: brand.colors.muted,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: brand.shadow.sm,
+              flexShrink: 0,
+            }}
+          >
+            <CloseIcon />
+          </button>
+        </div>
+
+        <div style={{ display: 'grid', gap: 18 }}>
+          <div style={{ display: 'grid', gap: 10 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+              Hero
+            </div>
+            <VisibilityToggle
+              label="Grail"
+              description="Feature your Grail in the profile hero."
+              checked={visibility.showGrail}
+              onChange={checked => onChange({ ...visibility, showGrail: checked })}
+            />
+          </div>
+
+          <div style={{ display: 'grid', gap: 10 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+              Collection
+            </div>
+            <VisibilityToggle
+              label="My Collection"
+              description="Show your collection box."
+              checked={visibility.showCollection}
+              onChange={checked => onChange({ ...visibility, showCollection: checked })}
+            />
+            <VisibilityToggle
+              label="Collection Stats"
+              description="Show value and collection stats."
+              checked={visibility.showCollectionStats}
+              onChange={checked => onChange({ ...visibility, showCollectionStats: checked })}
+            />
+          </div>
+
+          <div style={{ display: 'grid', gap: 10 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+              Aspirations
+            </div>
+            <VisibilityToggle
+              label="Dream Boxes"
+              description="Show your dream boxes."
+              checked={visibility.showPlayground}
+              onChange={checked => onChange({ ...visibility, showPlayground: checked })}
+            />
+            <VisibilityToggle
+              label="On the Radar"
+              description="Show watches you’re tracking."
+              checked={visibility.showFollowedWatches}
+              onChange={checked => onChange({ ...visibility, showFollowedWatches: checked })}
+            />
+          </div>
+        </div>
       </div>
-    </ModalShell>
+    </>
+  )
+}
+
+function PrivateProfileNotice() {
+  return (
+    <section style={getSectionShellStyle()}>
+      <h2 style={{ margin: '0 0 8px', fontFamily: brand.font.serif, fontSize: 34, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05 }}>
+        This profile is private.
+      </h2>
+      <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.7 }}>
+        Choose what appears on your public profile.
+      </p>
+    </section>
+  )
+}
+
+function HeroVisibilityAction({
+  label,
+  onClick,
+  style,
+}: {
+  label: string
+  onClick: () => void
+  style: CSSProperties
+}) {
+  return (
+    <button onClick={onClick} style={style}>
+      <EyeIcon />
+      <span>{label}</span>
+    </button>
   )
 }
 
@@ -992,6 +1380,7 @@ function BoxPreviewVisual({
   box: PublicBoxSnapshot
   variant?: 'card' | 'feature'
 }) {
+  const isMobile = useIsMobile()
   const frame = FRAMES.find(item => item.id === box.frame) ?? FRAMES[0]
   const lining = LININGS.find(item => item.id === box.lining) ?? LININGS[0]
   const slotConfig = SLOT_COUNTS.find(item => item.n === box.slotCount) ?? SLOT_COUNTS[1]
@@ -1007,7 +1396,7 @@ function BoxPreviewVisual({
         borderRadius: brand.radius.lg,
         padding: isFeature ? '18px 18px 20px' : '14px 14px 16px',
         background: frame.css,
-        boxShadow: frame.shadow,
+        boxShadow: isMobile && isFeature ? brand.shadow.md : frame.shadow,
       }}
     >
       <div
@@ -1470,44 +1859,79 @@ function PublicGrailHeroPanel({ watch, compact = false }: { watch: ResolvedWatch
     return (
       <section
         style={{
+          display: 'inline-flex',
+          alignItems: 'center',
           background: 'rgba(255,255,255,0.92)',
           border: `1px solid ${brand.colors.border}`,
           borderRadius: brand.radius.xl,
-          padding: 12,
+          padding: '18px 12px 12px',
           boxShadow: brand.shadow.md,
           backdropFilter: 'blur(10px)',
           minWidth: 0,
+          minHeight: 104,
+          width: 'fit-content',
+          maxWidth: '100%',
+          position: 'relative',
+          overflow: 'visible',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+        <div
+          style={{
+            position: 'absolute',
+            top: -10,
+            right: 12,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 5,
+            padding: '5px 8px',
+            borderRadius: brand.radius.pill,
+            background: brand.colors.white,
+            border: `1px solid ${brand.colors.border}`,
+            boxShadow: brand.shadow.xs,
+          }}
+        >
           <CrownIcon />
           <span style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold }}>
             Grail
           </span>
         </div>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '84px minmax(0, 1fr)', gap: 8, alignItems: 'center' }}>
           <div
             style={{
               position: 'relative',
-              width: 56,
-              height: 56,
+              width: 84,
+              height: 96,
               flexShrink: 0,
-              borderRadius: brand.radius.md,
-              overflow: 'hidden',
-              background: brand.colors.bg,
-              border: `1px solid ${brand.colors.border}`,
+              overflow: 'visible',
             }}
           >
-            <Image src={watch.imageUrl} alt={watch.model} fill sizes="56px" style={{ objectFit: 'contain', padding: 6 }} />
+            <img
+              src={watch.imageUrl}
+              alt={watch.model}
+              draggable={false}
+              style={{
+                position: 'absolute',
+                left: '50%',
+                top: -28,
+                width: 108,
+                height: 148,
+                transform: 'translateX(-50%)',
+                objectFit: 'contain',
+                filter: brand.shadow.drop,
+                userSelect: 'none',
+                pointerEvents: 'none',
+              }}
+            />
           </div>
-          <div style={{ minWidth: 0 }}>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 3 }}>
+          <div style={{ minWidth: 0, maxWidth: 116, paddingRight: 2 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 4 }}>
               {watch.brand}
             </div>
-            <div style={{ fontFamily: brand.font.serif, fontSize: 15, color: brand.colors.ink, lineHeight: 1.1, marginBottom: 4, overflowWrap: 'break-word' }}>
+            <div style={{ fontFamily: brand.font.serif, fontSize: 16, color: brand.colors.ink, lineHeight: 1.02, marginBottom: 4, overflowWrap: 'break-word' }}>
               {watch.model}
             </div>
-            <div style={{ fontFamily: brand.font.serif, fontSize: 14, color: brand.colors.gold }}>
+            <div style={{ fontFamily: brand.font.serif, fontSize: 16, color: brand.colors.gold }}>
               {fmtCurrency(watch.estimatedValue)}
             </div>
           </div>
@@ -1522,74 +1946,75 @@ function PublicGrailHeroPanel({ watch, compact = false }: { watch: ResolvedWatch
         background: 'rgba(255,255,255,0.92)',
         border: `1px solid ${brand.colors.border}`,
         borderRadius: brand.radius.xl,
-        padding: 18,
+        padding: '24px 20px 18px',
         boxShadow: brand.shadow.lg,
         backdropFilter: 'blur(10px)',
+        position: 'relative',
+        overflow: 'visible',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+      <div
+        style={{
+          position: 'absolute',
+          top: -11,
+          right: 18,
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          padding: '6px 10px',
+          borderRadius: brand.radius.pill,
+          background: brand.colors.white,
+          border: `1px solid ${brand.colors.border}`,
+          boxShadow: brand.shadow.xs,
+        }}
+      >
         <CrownIcon />
         <span style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold }}>
           Grail
         </span>
       </div>
 
-      <div className="grid grid-cols-[96px,1fr] gap-4 items-center">
+      <div className="grid items-center" style={{ gridTemplateColumns: '154px minmax(0,1fr)', gap: 10 }}>
         <div
           style={{
             position: 'relative',
             width: '100%',
-            aspectRatio: '1/1',
-            borderRadius: brand.radius.lg,
-            overflow: 'hidden',
-            background: brand.colors.bg,
-            border: `1px solid ${brand.colors.border}`,
+            height: 166,
+            overflow: 'visible',
           }}
         >
-          <Image
+          <img
             src={watch.imageUrl}
             alt={watch.model}
-            fill
-            sizes="96px"
-            style={{ objectFit: 'contain', padding: 10 }}
+            draggable={false}
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: -44,
+              width: 184,
+              height: 254,
+              transform: 'translateX(-50%)',
+              objectFit: 'contain',
+              filter: brand.shadow.drop,
+              userSelect: 'none',
+              pointerEvents: 'none',
+            }}
           />
         </div>
 
-        <div>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 5 }}>
+        <div style={{ paddingRight: 4 }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 7 }}>
             {watch.brand}
           </div>
-          <div style={{ fontFamily: brand.font.serif, fontSize: 26, color: brand.colors.ink, lineHeight: 1.04, marginBottom: 4 }}>
+          <div style={{ fontFamily: brand.font.serif, fontSize: 30, color: brand.colors.ink, lineHeight: 1, marginBottom: 5 }}>
             {watch.model}
           </div>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginBottom: 10 }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginBottom: 11 }}>
             Ref. {watch.reference}
           </div>
-          <div style={{ fontFamily: brand.font.serif, fontSize: 24, color: brand.colors.gold, marginBottom: 12 }}>
+          <div style={{ fontFamily: brand.font.serif, fontSize: 28, color: brand.colors.gold }}>
             {fmtCurrency(watch.estimatedValue)}
           </div>
-          <a
-            href={marketHref(watch)}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '9px 14px',
-              borderRadius: brand.radius.btn,
-              background: brand.colors.ink,
-              color: brand.colors.bg,
-              fontFamily: brand.font.sans,
-              fontSize: 10,
-              fontWeight: 600,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              textDecoration: 'none',
-            }}
-          >
-            Find on Market ↗
-          </a>
         </div>
       </div>
     </section>
@@ -1606,23 +2031,11 @@ function PublicProfileHero({
   showEditProfile?: boolean
 }) {
   const isMobile = useIsMobile()
-  const statItems = [
-    snapshot.visibility.showCollection
-      ? { id: SECTION_IDS.box, label: 'The Box', value: String(snapshot.summaryStats.collectionCount) }
-      : null,
-    snapshot.visibility.showFollowedWatches
-      ? { id: SECTION_IDS.radar, label: 'On the Radar', value: String(snapshot.summaryStats.followedCount) }
-      : null,
-    snapshot.visibility.showPlayground
-      ? { id: SECTION_IDS.dreamBoxes, label: 'Dream Boxes', value: String(snapshot.summaryStats.playgroundBoxCount) }
-      : null,
-    snapshot.visibility.showCollection && snapshot.visibility.showCollectionStats
-      ? { id: SECTION_IDS.stats, label: 'Value', value: fmtCurrency(snapshot.collectionStats.totalEstimatedValue) }
-      : null,
-  ].filter(Boolean) as Array<{ id: string; label: string; value: string }>
+  const heroSummary = getProfileHeroSummary(snapshot.summaryStats, snapshot.visibility)
 
   const coverActionStyle: CSSProperties = {
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    gap: 6,
     padding: '8px 12px', borderRadius: brand.radius.btn,
     background: 'rgba(26,20,16,0.62)', backdropFilter: 'blur(8px)',
     border: '1px solid rgba(255,255,255,0.15)', color: brand.colors.white,
@@ -1635,13 +2048,18 @@ function PublicProfileHero({
 
   return (
     <section
-      style={{
-        background: brand.colors.white,
-        border: `1px solid ${brand.colors.border}`,
-        borderRadius: brand.radius.xl,
-        overflow: 'hidden',
-        boxShadow: brand.shadow.xs,
-      }}
+      style={isMobile
+        ? {
+            background: brand.colors.white,
+            overflow: 'visible',
+          }
+        : {
+            background: brand.colors.white,
+            border: `1px solid ${brand.colors.border}`,
+            borderRadius: brand.radius.xl,
+            overflow: 'hidden',
+            boxShadow: brand.shadow.xs,
+          }}
     >
       <ProfileCoverArt
         imageUrl={snapshot.profile.coverImageUrl}
@@ -1654,17 +2072,17 @@ function PublicProfileHero({
         </div>
       </ProfileCoverArt>
 
-      <div style={{ padding: isMobile ? '0 16px 18px' : '0 24px 24px', position: 'relative' }}>
+      <div style={{ padding: isMobile ? '0 20px 18px' : '0 24px 24px', position: 'relative' }}>
         <div className="grid gap-5 items-start" style={{ gridTemplateColumns: !isMobile && showGrail ? 'minmax(0,1fr) 360px' : '1fr' }}>
           <div>
             {isMobile ? (
               <>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginTop: -48 }}>
                   <div style={{ flexShrink: 0 }}>
-                    <ProfileAvatar displayName={snapshot.profile.displayName} imageUrl={snapshot.profile.profileImageUrl} size={96} />
+                    <ProfileAvatar displayName={snapshot.profile.displayName} imageUrl={snapshot.profile.profileImageUrl} imageCrop={snapshot.profile.profileImageCrop} size={96} />
                   </div>
                   {showGrail ? (
-                    <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ minWidth: 0, flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
                       <PublicGrailHeroPanel watch={snapshot.grailWatch} compact />
                     </div>
                   ) : null}
@@ -1677,7 +2095,7 @@ function PublicProfileHero({
                     {snapshot.profile.displayName}
                   </h1>
                   <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.gold, marginBottom: 10, lineHeight: 1.5, overflowWrap: 'break-word' }}>
-                    {getPublicHandle(snapshot.profile.displayName)} · {getProfileHeroSummary(snapshot.summaryStats)}
+                    {getPublicHandle(snapshot.profile.displayName)}{heroSummary ? ` · ${heroSummary}` : ''}
                   </div>
                   {snapshot.profile.bio ? (
                     <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.7 }}>
@@ -1688,7 +2106,7 @@ function PublicProfileHero({
               </>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 18, flexWrap: 'wrap', marginTop: -62 }}>
-                <ProfileAvatar displayName={snapshot.profile.displayName} imageUrl={snapshot.profile.profileImageUrl} size={124} />
+                <ProfileAvatar displayName={snapshot.profile.displayName} imageUrl={snapshot.profile.profileImageUrl} imageCrop={snapshot.profile.profileImageCrop} size={124} />
                 <div style={{ paddingTop: 70, minWidth: 0, flex: 1 }}>
                   <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
                     Collector Profile
@@ -1697,7 +2115,7 @@ function PublicProfileHero({
                     {snapshot.profile.displayName}
                   </h1>
                   <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.gold, marginBottom: 10, lineHeight: 1.5, overflowWrap: 'break-word' }}>
-                    {getPublicHandle(snapshot.profile.displayName)} · {getProfileHeroSummary(snapshot.summaryStats)}
+                    {getPublicHandle(snapshot.profile.displayName)}{heroSummary ? ` · ${heroSummary}` : ''}
                   </div>
                   {snapshot.profile.bio ? (
                     <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, lineHeight: 1.7, maxWidth: 760 }}>
@@ -1708,7 +2126,6 @@ function PublicProfileHero({
               </div>
             )}
 
-            <CompactStatNav items={statItems} />
           </div>
 
           {!isMobile && showGrail ? (
@@ -1725,7 +2142,6 @@ function PublicProfileHero({
 function OwnerProfileHero({
   profile,
   summaryStats,
-  collectionStats,
   grailWatch,
   visibility,
   onShareProfile,
@@ -1736,7 +2152,6 @@ function OwnerProfileHero({
 }: {
   profile: ProfileDemoState
   summaryStats: PublicProfileSummaryStats
-  collectionStats: PublicCollectionStats
   grailWatch: ResolvedWatch | null
   visibility: ProfileVisibilitySettings
   onShareProfile: () => void
@@ -1746,23 +2161,11 @@ function OwnerProfileHero({
   onOpenVisibility: () => void
 }) {
   const isMobile = useIsMobile()
-  const statItems = [
-    visibility.showCollection
-      ? { id: SECTION_IDS.box, label: 'The Box', value: String(summaryStats.collectionCount) }
-      : null,
-    visibility.showFollowedWatches
-      ? { id: SECTION_IDS.radar, label: 'On the Radar', value: String(summaryStats.followedCount) }
-      : null,
-    visibility.showPlayground
-      ? { id: SECTION_IDS.dreamBoxes, label: 'Dream Boxes', value: String(summaryStats.playgroundBoxCount) }
-      : null,
-    visibility.showCollection && visibility.showCollectionStats
-      ? { id: SECTION_IDS.stats, label: 'Value', value: fmtCurrency(collectionStats.totalEstimatedValue) }
-      : null,
-  ].filter(Boolean) as Array<{ id: string; label: string; value: string }>
+  const heroSummary = getProfileHeroSummary(summaryStats, visibility)
 
   const coverActionStyle: CSSProperties = {
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    gap: 6,
     padding: '8px 12px', borderRadius: brand.radius.btn,
     background: 'rgba(26,20,16,0.62)', backdropFilter: 'blur(8px)',
     border: '1px solid rgba(255,255,255,0.15)', color: brand.colors.white,
@@ -1775,32 +2178,38 @@ function OwnerProfileHero({
 
   return (
     <section
-      style={{
-        background: brand.colors.white,
-        border: `1px solid ${brand.colors.border}`,
-        borderRadius: brand.radius.xl,
-        overflow: 'hidden',
-        boxShadow: brand.shadow.xs,
-      }}
+      style={isMobile
+        ? {
+            background: brand.colors.white,
+            overflow: 'visible',
+          }
+        : {
+            background: brand.colors.white,
+            border: `1px solid ${brand.colors.border}`,
+            borderRadius: brand.radius.xl,
+            overflow: 'hidden',
+            boxShadow: brand.shadow.xs,
+          }}
     >
       <ProfileCoverArt imageUrl={profile.coverImageUrl} alt={`${profile.displayName} cover`} minHeight={isMobile ? 152 : 236}>
         <div style={{ position: 'absolute', top: 12, right: 12, zIndex: 2, display: 'flex', gap: 8, alignItems: 'center' }}>
-          <Link href={getProfileSharePath()} style={coverActionStyle}>Preview</Link>
-          <button onClick={onShareProfile} style={coverActionStyle}>Share Profile</button>
+          <Link href={getProfileSharePath()} style={coverActionStyle}>{isMobile ? 'Preview' : 'Preview Public Profile'}</Link>
+          <button onClick={onShareProfile} style={coverActionStyle}>{isMobile ? 'Share' : 'Share Profile'}</button>
+          <HeroVisibilityAction label="Visibility" onClick={onOpenVisibility} style={coverActionStyle} />
           <IconCircleButton label="Edit cover image" onClick={onEditCover} tone="dark">
             <PencilIcon />
           </IconCircleButton>
         </div>
       </ProfileCoverArt>
 
-      <div style={{ padding: isMobile ? '0 16px 18px' : '0 24px 24px', position: 'relative' }}>
+      <div style={{ padding: isMobile ? '0 20px 18px' : '0 24px 24px', position: 'relative' }}>
         <div className="grid gap-5 items-start" style={{ gridTemplateColumns: !isMobile && showGrail ? 'minmax(0,1fr) 360px' : '1fr' }}>
           <div>
             {isMobile ? (
               <>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginTop: -48 }}>
                   <div style={{ position: 'relative', flexShrink: 0 }}>
-                    <ProfileAvatar displayName={profile.displayName} imageUrl={profile.profileImageUrl} size={96} />
+                    <ProfileAvatar displayName={profile.displayName} imageUrl={profile.profileImageUrl} imageCrop={profile.profileImageCrop} size={96} />
                     <div style={{ position: 'absolute', right: 2, bottom: 2 }}>
                       <IconCircleButton label="Edit profile image" onClick={onEditAvatar}>
                         <PencilIcon />
@@ -1808,7 +2217,7 @@ function OwnerProfileHero({
                     </div>
                   </div>
                   {showGrail ? (
-                    <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ minWidth: 0, flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
                       <PublicGrailHeroPanel watch={grailWatch} compact />
                     </div>
                   ) : null}
@@ -1826,7 +2235,7 @@ function OwnerProfileHero({
                     {profile.displayName}
                   </h1>
                   <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.gold, marginBottom: 10, lineHeight: 1.5, overflowWrap: 'break-word' }}>
-                    {getPublicHandle(profile.displayName)} · {getProfileHeroSummary(summaryStats)}
+                    {getPublicHandle(profile.displayName)}{heroSummary ? ` · ${heroSummary}` : ''}
                   </div>
                   {profile.bio ? (
                     <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.7 }}>
@@ -1838,7 +2247,7 @@ function OwnerProfileHero({
             ) : (
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 18, flexWrap: 'wrap', marginTop: -62 }}>
                 <div style={{ position: 'relative' }}>
-                  <ProfileAvatar displayName={profile.displayName} imageUrl={profile.profileImageUrl} size={124} />
+                  <ProfileAvatar displayName={profile.displayName} imageUrl={profile.profileImageUrl} imageCrop={profile.profileImageCrop} size={124} />
                   <div style={{ position: 'absolute', right: 2, bottom: 2 }}>
                     <IconCircleButton label="Edit profile image" onClick={onEditAvatar}>
                       <PencilIcon />
@@ -1858,7 +2267,7 @@ function OwnerProfileHero({
                     {profile.displayName}
                   </h1>
                   <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.gold, marginBottom: 10, lineHeight: 1.5, overflowWrap: 'break-word' }}>
-                    {getPublicHandle(profile.displayName)} · {getProfileHeroSummary(summaryStats)}
+                    {getPublicHandle(profile.displayName)}{heroSummary ? ` · ${heroSummary}` : ''}
                   </div>
                   {profile.bio ? (
                     <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, lineHeight: 1.7, maxWidth: 760 }}>
@@ -1869,12 +2278,6 @@ function OwnerProfileHero({
               </div>
             )}
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-              <CompactStatNav items={statItems} />
-              <IconCircleButton label="Profile visibility" onClick={onOpenVisibility}>
-                <SettingsIcon />
-              </IconCircleButton>
-            </div>
           </div>
 
           {!isMobile && showGrail ? (
@@ -1903,13 +2306,14 @@ function PublicBoxFeatureCard({
   onShare: () => void
   stats?: PublicCollectionStats
 }) {
+  const isMobile = useIsMobile()
   const frame = FRAMES.find(item => item.id === box.frame) ?? FRAMES[0]
   const lining = LININGS.find(item => item.id === box.lining) ?? LININGS[0]
   const slotConfig = SLOT_COUNTS.find(item => item.n === box.slotCount) ?? SLOT_COUNTS[1]
   const overflowSummary = getOverflowSummary(slotConfig.n, getWatchboxOverflow(box.watches, slotConfig.n).overflowCount)
 
   return (
-    <section id={sectionId} style={getSectionShellStyle()}>
+    <section id={sectionId} style={isMobile ? getMobileFlowSectionStyle() : getSectionShellStyle()}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 14 }}>
         <div>
           <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
@@ -1950,7 +2354,7 @@ function PublicBoxFeatureCard({
         </div>
       </Link>
 
-      <div style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+      <div style={{ marginTop: 12, marginBottom: isMobile ? 6 : 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
         <span style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted }}>
           {frame.label} · {lining.label} · {slotConfig.n} slots{overflowSummary ? ` · ${overflowSummary}` : ''}
         </span>
@@ -1971,7 +2375,7 @@ function PublicDreamBoxesSection({
   const isMobile = useIsMobile()
 
   return (
-    <section id={SECTION_IDS.dreamBoxes} style={getSectionShellStyle()}>
+    <section id={SECTION_IDS.dreamBoxes} style={isMobile ? getMobileFlowSectionStyle() : getSectionShellStyle()}>
       <SectionHeader
         eyebrow="Playground"
         title="Dream Boxes"
@@ -2059,6 +2463,7 @@ function PublicRadarSection({
   watches: PublicFollowedWatchSnapshot[]
   actions?: ReactNode
 }) {
+  const isMobile = useIsMobile()
   const [selectedWatchId, setSelectedWatchId] = useState<string | null>(null)
   const visibleWatches = useMemo(
     () => watches.filter(watch => watch.profileState !== 'grail'),
@@ -2068,7 +2473,7 @@ function PublicRadarSection({
   const activeIndex = activeWatch ? visibleWatches.findIndex(watch => watch.id === activeWatch.id) : -1
 
   return (
-    <section id={SECTION_IDS.radar} style={getSectionShellStyle()}>
+    <section id={SECTION_IDS.radar} style={isMobile ? getMobileFlowSectionStyle() : getSectionShellStyle()}>
       <SectionHeader eyebrow="Followed Watches" title="On the Radar" actions={actions} />
 
       {visibleWatches.length === 0 ? (
@@ -2131,7 +2536,7 @@ function OwnerProfileCard({
     <section style={getSectionShellStyle()}>
       <div className="grid grid-cols-1 md:grid-cols-[140px,1fr] gap-6">
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-          <ProfileAvatar displayName={profile.displayName} imageUrl={profile.profileImageUrl} size={132} />
+          <ProfileAvatar displayName={profile.displayName} imageUrl={profile.profileImageUrl} imageCrop={profile.profileImageCrop} size={132} />
           <UploadButton label={profile.profileImageUrl ? 'Replace Photo' : 'Upload Photo'} onSelect={onUploadProfileImage} />
           {profile.profileImageUrl && (
             <button
@@ -2322,7 +2727,7 @@ function PublicProfileCard({
   return (
     <section style={getSectionShellStyle()}>
       <div className="grid grid-cols-1 md:grid-cols-[140px,1fr] gap-6 items-start">
-        <ProfileAvatar displayName={profile.displayName} imageUrl={profile.profileImageUrl} size={132} />
+        <ProfileAvatar displayName={profile.displayName} imageUrl={profile.profileImageUrl} imageCrop={profile.profileImageCrop} size={132} />
 
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap', marginBottom: 16 }}>
@@ -2454,6 +2859,8 @@ export function OwnerProfilePage() {
     () => playgroundBoxes.map(box => createPlaygroundBoxSnapshot(box, new Date().toISOString())),
     [playgroundBoxes],
   )
+  const showOwnerGrail = profile.visibility.showGrail && Boolean(ownerGrailWatch)
+  const ownerProfilePrivate = !hasAnyPublicProfileModules(profile.visibility, showOwnerGrail)
 
   useEffect(() => {
     if (!hydrated) return
@@ -2480,9 +2887,12 @@ export function OwnerProfilePage() {
     showToast(successMessage)
   }
 
-  async function handleProfileImageUpload(file: File) {
-    const imageUrl = await resizeImageFileToDataUrl(file, { maxWidth: 480, maxHeight: 480, quality: 0.82 })
-    setProfile(current => ({ ...current, profileImageUrl: imageUrl }))
+  async function handleProfileImageSave(nextValue: { imageUrl: string; imageCrop: ProfileImageCropState }) {
+    setProfile(current => ({
+      ...current,
+      profileImageUrl: nextValue.imageUrl,
+      profileImageCrop: nextValue.imageCrop,
+    }))
     showToast('Profile image updated.')
   }
 
@@ -2492,23 +2902,12 @@ export function OwnerProfilePage() {
     showToast('Cover image updated.')
   }
 
-  function updateProfile(updater: (current: ProfileDemoState) => ProfileDemoState) {
-    setProfile(current => {
-      const next = updater(current)
-      return {
-        ...next,
-        visibility: { ...next.visibility } as ProfileVisibilitySettings,
-      }
-    })
-  }
-
   return (
-    <div className="collection-section" style={{ padding: isMobile ? '24px 20px 96px' : '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}>
-      <div style={{ display: 'grid', gap: 20, gridTemplateColumns: 'minmax(0, 1fr)' }}>
+    <div className="profile-page-shell" style={{ padding: isMobile ? '0 0 96px' : '56px 56px 120px', borderTop: isMobile ? 'none' : `1px solid ${brand.colors.border}` }}>
+      <div style={{ display: 'grid', gap: isMobile ? 0 : 20, gridTemplateColumns: 'minmax(0, 1fr)' }}>
         <OwnerProfileHero
           profile={profile}
           summaryStats={summaryStats}
-          collectionStats={collectionStats}
           grailWatch={ownerGrailWatch}
           visibility={profile.visibility}
           onShareProfile={() => handleCopy(getProfileSharePath(), 'Profile link copied to clipboard.')}
@@ -2518,22 +2917,30 @@ export function OwnerProfilePage() {
           onOpenVisibility={() => setVisibilityOpen(true)}
         />
 
-        <PublicBoxFeatureCard
-          box={collectionBox}
-          title="The Box"
-          sectionId={SECTION_IDS.box}
-          shareLabel="Share The Box"
-          onShare={() => handleCopy(getBoxSharePath(collectionBox.slug), 'The Box link copied to clipboard.')}
-          stats={profile.visibility.showCollectionStats ? collectionStats : undefined}
-        />
+        {ownerProfilePrivate ? <PrivateProfileNotice /> : null}
 
-        <PublicDreamBoxesSection
-          boxes={publicBoxes}
-          onShareBox={box => handleCopy(getBoxSharePath(box.slug), `${box.title} link copied to clipboard.`)}
-          actions={<ActionButton href="/playground">Manage</ActionButton>}
-        />
+        {profile.visibility.showCollection && (
+          <PublicBoxFeatureCard
+            box={collectionBox}
+            title="The Box"
+            sectionId={SECTION_IDS.box}
+            shareLabel="Share The Box"
+            onShare={() => handleCopy(getBoxSharePath(collectionBox.slug), 'The Box link copied to clipboard.')}
+            stats={profile.visibility.showCollectionStats ? collectionStats : undefined}
+          />
+        )}
 
-        <PublicRadarSection watches={ownerRadarWatches} actions={<ActionButton href="/followed">Manage</ActionButton>} />
+        {profile.visibility.showPlayground && (
+          <PublicDreamBoxesSection
+            boxes={publicBoxes}
+            onShareBox={box => handleCopy(getBoxSharePath(box.slug), `${box.title} link copied to clipboard.`)}
+            actions={<ActionButton href="/playground">Manage</ActionButton>}
+          />
+        )}
+
+        {profile.visibility.showFollowedWatches && (
+          <PublicRadarSection watches={ownerRadarWatches} actions={<ActionButton href="/followed">Manage</ActionButton>} />
+        )}
       </div>
 
       <ProfileTextEditModal
@@ -2542,14 +2949,13 @@ export function OwnerProfilePage() {
         onClose={() => setTextEditOpen(false)}
         onSave={nextValues => setProfile(current => ({ ...current, ...nextValues }))}
       />
-      <ImageAssetModal
+      <ProfileImageCropModal
         open={avatarEditOpen}
-        title="Profile Photo"
-        uploadLabel={profile.profileImageUrl ? 'Replace Photo' : 'Upload Photo'}
-        showRemove={Boolean(profile.profileImageUrl)}
+        imageUrl={profile.profileImageUrl}
+        imageCrop={profile.profileImageCrop}
         onClose={() => setAvatarEditOpen(false)}
-        onUpload={handleProfileImageUpload}
-        onRemove={() => setProfile(current => ({ ...current, profileImageUrl: '' }))}
+        onSave={handleProfileImageSave}
+        onRemove={() => setProfile(current => ({ ...current, profileImageUrl: '', profileImageCrop: undefined }))}
       />
       <ImageAssetModal
         open={coverEditOpen}
@@ -2578,6 +2984,8 @@ function ProfilePreviewLayout({
 }) {
   const isMobile = useIsMobile()
   const { message, showToast } = useToast()
+  const showPublicGrail = snapshot.visibility.showGrail && Boolean(snapshot.grailWatch)
+  const profileIsPrivate = !hasAnyPublicProfileModules(snapshot.visibility, showPublicGrail)
 
   async function handleCopy(path: string, successMessage: string) {
     await copyProfileDemoUrl(path)
@@ -2585,13 +2993,15 @@ function ProfilePreviewLayout({
   }
 
   return (
-    <div className="collection-section" style={{ padding: isMobile ? '24px 20px 96px' : '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}>
-      <div style={{ display: 'grid', gap: 20, gridTemplateColumns: 'minmax(0, 1fr)' }}>
+    <div className="profile-page-shell" style={{ padding: isMobile ? '0 0 96px' : '56px 56px 120px', borderTop: isMobile ? 'none' : `1px solid ${brand.colors.border}` }}>
+      <div style={{ display: 'grid', gap: isMobile ? 0 : 20, gridTemplateColumns: 'minmax(0, 1fr)' }}>
         <PublicProfileHero
           snapshot={snapshot}
           onShareProfile={() => handleCopy(getProfileSharePath(), 'Profile link copied to clipboard.')}
           showEditProfile
         />
+
+        {profileIsPrivate ? <PrivateProfileNotice /> : null}
 
         {snapshot.visibility.showCollection && (
           <PublicBoxFeatureCard
@@ -2631,7 +3041,7 @@ export function PublicProfilePreviewPage() {
 
   if (!snapshot) {
     return (
-      <div className="collection-section" style={{ padding: isMobile ? '24px 20px 96px' : '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}>
+      <div className="profile-page-shell" style={{ padding: isMobile ? '24px 20px 96px' : '56px 56px 120px', borderTop: isMobile ? 'none' : `1px solid ${brand.colors.border}` }}>
         <section style={getSectionShellStyle()}>
           <h1 style={{ fontFamily: brand.font.serif, fontSize: 40, fontWeight: 400, color: brand.colors.ink, margin: '0 0 10px' }}>
             This collector profile is not available right now.

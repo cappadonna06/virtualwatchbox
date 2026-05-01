@@ -37,6 +37,7 @@ html {
 }
 
 body {
+  margin: 0;
   background-color: var(--color-bg);
   color: var(--color-ink);
   font-family: var(--font-dm-sans), system-ui, sans-serif;
@@ -82,13 +83,14 @@ body {
 
   /* Nav */
   .nav-root      { padding: 0 !important; }
-  .nav-shell     { padding: 18px 20px !important; }
+  .nav-shell     { padding: 18px 20px !important; max-width: none !important; width: 100% !important; margin: 0 !important; }
   .nav-wordmark  { font-size: 18px !important; }
   .nav-links     { display: none !important; }
   .nav-signin    { display: none !important; }
   .nav-hamburger { display: flex !important; align-items: center; justify-content: center; }
   .nav-drawer    { display: flex !important; }
   .nav-scrim.is-active { display: block !important; }
+  .site-main     { width: 100% !important; max-width: none !important; margin: 0 !important; }
 
   /* Hero — hide the dark carousel panel entirely on mobile */
   .hero-grid  { grid-template-columns: 1fr !important; min-height: unset !important; }
