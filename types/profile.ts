@@ -8,10 +8,23 @@ export type ProfileVisibilitySettings = {
   showGrail: boolean
 }
 
+export type ProfileImageCropState = {
+  x: number
+  y: number
+  zoom: number
+  area: {
+    x: number
+    y: number
+    width: number
+    height: number
+  }
+}
+
 export type ProfileDemoState = {
   displayName: string
   bio: string
   profileImageUrl: string
+  profileImageCrop?: ProfileImageCropState
   coverImageUrl: string
   collectionHeroImageUrl: string
   visibility: ProfileVisibilitySettings

@@ -34,6 +34,14 @@ function useModalEscape(open: boolean, onClose: () => void) {
   }, [open, onClose])
 }
 
+function CloseIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+      <path d="M2.25 2.25L9.75 9.75M9.75 2.25L2.25 9.75" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 export default function GrailSetModal({ open, watch, previousWatch, onClose }: Props) {
   const isMobile = useIsMobile()
   const prefersReducedMotion = usePrefersReducedMotion()
@@ -79,17 +87,19 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
   const shellStyle: CSSProperties = isMobile
     ? {
         position: 'fixed',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        maxHeight: '88vh',
+        top: '50%',
+        left: '50%',
+        width: 'min(360px, calc(100vw - 24px))',
+        maxHeight: 'min(92dvh, 760px)',
         overflowY: 'auto',
-        padding: '18px 16px 20px',
-        borderRadius: '22px 22px 0 0',
+        padding: '18px 16px calc(18px + env(safe-area-inset-bottom))',
+        borderRadius: brand.radius.xl,
         background: brand.colors.bg,
-        transform: isVisible ? 'translateY(0)' : 'translateY(22px)',
+        border: `1px solid ${brand.colors.border}`,
+        boxShadow: brand.shadow.xl,
+        transform: `translate(-50%, ${isVisible ? '-50%' : 'calc(-50% + 18px)'})`,
         opacity: isVisible ? 1 : 0,
-        transition: prefersReducedMotion ? 'none' : `transform ${brand.transition.sheet}, opacity ${brand.transition.smooth}`,
+        transition: prefersReducedMotion ? 'none' : `transform ${brand.transition.smooth}, opacity ${brand.transition.smooth}`,
       }
     : {
         position: 'fixed',
@@ -104,32 +114,53 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
   return createPortal(
     <>
       <div onClick={onClose} style={{ ...backdropStyle, zIndex: 360 }} />
-      <div style={{ ...shellStyle, zIndex: 361 }}>
+      <div role="dialog" aria-modal="true" style={{ ...shellStyle, zIndex: 361 }}>
         {isMobile && (
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
-            <div style={{ width: 36, height: 4, borderRadius: 2, background: brand.colors.borderLight }} />
-          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close grail modal"
+            style={{
+              position: 'absolute',
+              top: 12,
+              right: 12,
+              width: 34,
+              height: 34,
+              borderRadius: brand.radius.circle,
+              border: `1px solid ${brand.colors.border}`,
+              background: brand.colors.white,
+              color: brand.colors.ink,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: brand.shadow.sm,
+              zIndex: 3,
+            }}
+          >
+            <CloseIcon />
+          </button>
         )}
 
         <div
           style={{
             position: 'relative',
-            padding: isMobile ? '12px 0 0' : '16px 0 0',
+            padding: isMobile ? '10px 0 0' : '16px 0 0',
           }}
         >
           <div
             aria-hidden="true"
             style={{
               position: 'absolute',
-              top: isMobile ? 22 : 28,
+              top: isMobile ? 44 : 28,
               left: '50%',
-              width: isMobile ? 320 : 368,
-              height: isMobile ? 196 : 228,
-              transform: `translateX(-50%) scale(${isVisible ? 1 : 0.94})`,
+              width: isMobile ? 300 : 368,
+              height: isMobile ? 168 : 228,
+              transform: `translateX(-50%) scale(${isVisible ? 1 : 0.92})`,
               borderRadius: brand.radius.circle,
-              background: brand.colors.bg,
-              opacity: isVisible ? 0.48 : 0.18,
-              filter: 'blur(34px)',
+              background: isMobile ? brand.colors.goldWash : brand.colors.bg,
+              opacity: isVisible ? 0.9 : 0.22,
+              filter: isMobile ? 'blur(32px)' : 'blur(34px)',
               transition: prefersReducedMotion ? 'none' : `transform ${ceremonialTransition}, opacity ${ceremonialTransition}`,
               pointerEvents: 'none',
               zIndex: 0,
@@ -140,11 +171,11 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
             aria-hidden="true"
             style={{
               position: 'absolute',
-              top: isMobile ? 254 : 296,
+              top: isMobile ? 166 : 296,
               left: '50%',
-              width: isMobile ? 276 : 336,
-              height: isMobile ? 136 : 162,
-              transform: `translateX(-50%) scale(${isVisible ? 1 : 0.96})`,
+              width: isMobile ? 236 : 336,
+              height: isMobile ? 96 : 162,
+              transform: `translateX(-50%) scale(${isVisible ? 1 : 0.94})`,
               borderTopLeftRadius: 9999,
               borderTopRightRadius: 9999,
               borderBottomLeftRadius: 0,
@@ -153,18 +184,18 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
               border: `1px solid ${brand.colors.goldLine}`,
               borderBottom: 'none',
               boxShadow: isVisible ? brand.shadow.gold : 'none',
-              opacity: isVisible ? 0.24 : 0.1,
+              opacity: isVisible ? 0.34 : 0.1,
               transition: prefersReducedMotion ? 'none' : `transform ${ceremonialTransition}, opacity ${ceremonialTransition}, box-shadow ${ceremonialTransition}`,
               pointerEvents: 'none',
               zIndex: 0,
             }}
           />
 
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: isMobile ? 22 : 24, position: 'relative', zIndex: 2 }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: isMobile ? 14 : 24, position: 'relative', zIndex: 2 }}>
             <div
               style={{
-                width: 56,
-                height: 56,
+                width: isMobile ? 50 : 56,
+                height: isMobile ? 50 : 56,
                 borderRadius: brand.radius.circle,
                 border: `1px solid ${brand.colors.goldLine}`,
                 background: isMobile ? brand.colors.slot : brand.colors.white,
@@ -178,7 +209,7 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
                 transition: prefersReducedMotion ? 'none' : `transform ${ceremonialTransition}, opacity ${ceremonialTransition}`,
               }}
             >
-              <CrownIcon size={24} />
+              <CrownIcon size={isMobile ? 20 : 24} />
             </div>
           </div>
 
@@ -187,16 +218,16 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
               position: 'relative',
               zIndex: 1,
               textAlign: 'center',
-              marginBottom: isMobile ? 30 : 34,
+              marginBottom: isMobile ? 16 : 34,
               transform: isVisible ? 'translateY(0)' : 'translateY(10px)',
               opacity: isVisible ? 1 : 0,
               transition: prefersReducedMotion ? 'none' : `transform ${ceremonialTransition} 110ms, opacity ${ceremonialTransition} 110ms`,
             }}
           >
-            <div style={{ fontFamily: brand.font.serif, fontSize: 36, fontWeight: 400, color: isMobile ? brand.colors.ink : brand.colors.white, lineHeight: 1.02, marginBottom: 14 }}>
+            <div style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 28 : 36, fontWeight: 400, color: isMobile ? brand.colors.ink : brand.colors.white, lineHeight: 1.02, marginBottom: isMobile ? 10 : 14 }}>
               Your Grail
             </div>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 14, fontWeight: 500, color: isMobile ? brand.colors.ink : brand.colors.white, marginBottom: 10 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 13 : 14, fontWeight: 500, color: isMobile ? brand.colors.ink : brand.colors.white, marginBottom: isMobile ? 8 : 10 }}>
               {watch.brand} {watch.model}
             </div>
             <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: isMobile ? brand.colors.muted : brand.colors.bg }}>
@@ -208,14 +239,14 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
             style={{
               position: 'relative',
               zIndex: 1,
-              maxWidth: isMobile ? 304 : 320,
+              maxWidth: isMobile ? 258 : 320,
               margin: '0 auto',
               background: brand.colors.white,
               border: `1px solid ${brand.colors.goldLine}`,
               borderRadius: brand.radius.xl,
               boxShadow: brand.shadow.gold,
               overflow: 'hidden',
-              transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(18px) scale(0.98)',
+              transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(18px) scale(0.96)',
               opacity: isVisible ? 1 : 0,
               transition: prefersReducedMotion ? 'none' : `transform ${ceremonialTransition} 170ms, opacity ${ceremonialTransition} 170ms`,
             }}
@@ -225,7 +256,7 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
                 background: brand.colors.slot,
                 borderBottom: `1px solid ${brand.colors.border}`,
                 position: 'relative',
-                aspectRatio: '1 / 1',
+                aspectRatio: isMobile ? '1 / 0.78' : '1 / 1',
               }}
             >
               <Image
@@ -233,17 +264,17 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
                 alt={watch.model}
                 fill
                 sizes="320px"
-                style={{ objectFit: 'contain', padding: 28, filter: brand.shadow.drop }}
+                style={{ objectFit: 'contain', padding: isMobile ? 20 : 28, filter: brand.shadow.drop }}
               />
             </div>
-            <div style={{ padding: '16px 18px 18px' }}>
-              <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 5 }}>
+            <div style={{ padding: isMobile ? '12px 14px 14px' : '16px 18px 18px' }}>
+              <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 4 }}>
                 {watch.brand}
               </div>
-              <div style={{ fontFamily: brand.font.serif, fontSize: 28, fontWeight: 400, lineHeight: 1.08, color: brand.colors.ink, marginBottom: 6 }}>
+              <div style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 22 : 28, fontWeight: 400, lineHeight: 1.06, color: brand.colors.ink, marginBottom: 4 }}>
                 {watch.model}
               </div>
-              <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginBottom: 14 }}>
+              <div style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted, marginBottom: isMobile ? 10 : 14 }}>
                 Ref. {watch.reference}
               </div>
               <div
@@ -251,7 +282,7 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  padding: '10px 12px',
+                  padding: isMobile ? '8px 10px' : '10px 12px',
                   borderRadius: brand.radius.md,
                   background: brand.colors.bg,
                   border: `1px solid ${brand.colors.border}`,
@@ -260,7 +291,7 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
                 <span style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: brand.colors.muted }}>
                   Est. Market Value
                 </span>
-                <span style={{ fontFamily: brand.font.sans, fontSize: 18, fontWeight: 600, color: brand.colors.gold }}>
+                <span style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 16 : 18, fontWeight: 600, color: brand.colors.gold }}>
                   {fmt(watch.estimatedValue)}
                 </span>
               </div>
@@ -287,7 +318,7 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
             style={{
               display: 'flex',
               justifyContent: 'center',
-              marginTop: 16,
+              marginTop: isMobile ? 12 : 16,
               transform: isVisible ? 'translateY(0)' : 'translateY(8px)',
               opacity: isVisible ? 1 : 0,
               transition: prefersReducedMotion ? 'none' : `transform ${ceremonialTransition} 240ms, opacity ${ceremonialTransition} 240ms`,
@@ -298,7 +329,7 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
               onClick={onClose}
               style={{
                 minWidth: 132,
-                padding: '11px 18px',
+                padding: isMobile ? '10px 18px' : '11px 18px',
                 borderRadius: brand.radius.btn,
                 border: `1px solid ${brand.colors.goldLine}`,
                 background: brand.colors.white,

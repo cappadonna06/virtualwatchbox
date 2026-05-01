@@ -23,6 +23,7 @@ import type {
 } from '@/types/watch'
 import type {
   ProfileDemoState,
+  ProfileImageCropState,
   ProfileVisibilitySettings,
   PublicBoxSnapshot,
   PublicFollowedWatchSnapshot,
@@ -74,6 +75,7 @@ export function createDefaultProfileDemoState(): ProfileDemoState {
     displayName: 'Private Collector',
     bio: 'Building a collection with room for classics, travel watches, and one long-term grail.',
     profileImageUrl: '',
+    profileImageCrop: undefined,
     coverImageUrl: '',
     collectionHeroImageUrl: '',
     visibility: DEFAULT_PROFILE_VISIBILITY,
@@ -127,6 +129,55 @@ function normalizeVisibility(value: unknown): ProfileVisibilitySettings {
   }
 }
 
+function normalizeProfileImageCrop(value: unknown): ProfileImageCropState | undefined {
+  if (!value || typeof value !== 'object') {
+    return undefined
+  }
+
+  const crop = value as Partial<ProfileImageCropState> & {
+    area?: Partial<ProfileImageCropState['area']>
+  }
+
+  if (
+    typeof crop.x !== 'number'
+    || typeof crop.y !== 'number'
+    || typeof crop.zoom !== 'number'
+    || !crop.area
+    || typeof crop.area.x !== 'number'
+    || typeof crop.area.y !== 'number'
+    || typeof crop.area.width !== 'number'
+    || typeof crop.area.height !== 'number'
+  ) {
+    return undefined
+  }
+
+  // Ignore older bad crop payloads that were accidentally stored in pixels.
+  if (
+    crop.area.x < 0
+    || crop.area.y < 0
+    || crop.area.width <= 0
+    || crop.area.height <= 0
+    || crop.area.width > 100
+    || crop.area.height > 100
+    || crop.area.x > 100
+    || crop.area.y > 100
+  ) {
+    return undefined
+  }
+
+  return {
+    x: crop.x,
+    y: crop.y,
+    zoom: crop.zoom,
+    area: {
+      x: crop.area.x,
+      y: crop.area.y,
+      width: crop.area.width,
+      height: crop.area.height,
+    },
+  }
+}
+
 function normalizeProfileDemoState(value: unknown): ProfileDemoState {
   const fallback = createDefaultProfileDemoState()
 
@@ -142,6 +193,7 @@ function normalizeProfileDemoState(value: unknown): ProfileDemoState {
       : fallback.displayName,
     bio: typeof state.bio === 'string' ? state.bio : fallback.bio,
     profileImageUrl: typeof state.profileImageUrl === 'string' ? state.profileImageUrl : '',
+    profileImageCrop: normalizeProfileImageCrop(state.profileImageCrop),
     coverImageUrl: typeof state.coverImageUrl === 'string' && state.coverImageUrl.length > 0
       ? state.coverImageUrl
       : typeof state.collectionHeroImageUrl === 'string'

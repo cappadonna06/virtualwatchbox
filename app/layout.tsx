@@ -126,7 +126,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <CollectionSessionProvider>
           <NavBar />
 
-          <main style={{ maxWidth: 1280, margin: '0 auto' }}>{children}</main>
+          <main className="site-main" style={{ maxWidth: 1280, margin: '0 auto' }}>{children}</main>
         </CollectionSessionProvider>
       </body>
     </html>
