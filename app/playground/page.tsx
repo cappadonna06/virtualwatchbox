@@ -4,19 +4,27 @@ import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { PlaygroundBox, PlaygroundBoxEntry, ResolvedWatch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
+import {
+  copyProfileDemoUrl,
+  getBoxSharePath,
+  getPlaygroundBoxSlug,
+  syncPublicProfileSnapshot,
+} from '@/lib/profileDemo'
 import { watches as catalogWatches } from '@/lib/watches'
 import { createPlaygroundBox, normalizePlaygroundBoxes, resolvePlaygroundWatches, type ResolvedPlaygroundWatch } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
+import { PLAYGROUND_BOXES_STORAGE_KEY } from '@/lib/storageKeys'
 import { getEffectiveSlotCount, getOverflowSummary, getWatchboxOverflow } from '@/lib/watchboxOverflow'
 import WatchBox from '@/components/collection/WatchBox'
+import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarSheet'
 import WatchSidebar from '@/components/collection/WatchSidebar'
 import SortDropdown from '@/components/collection/SortDropdown'
 import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import CollectionStats from '@/components/collection/CollectionStats'
+import WatchboxHeader from '@/components/collection/WatchboxHeader'
 import { brand } from '@/lib/brand'
 
-const STORAGE_KEY = 'playgroundBoxes'
 const WB_W_PAD = 64
 const WB_H_PAD = 72
 const WB_GAP = 6
@@ -84,13 +92,15 @@ function PlaygroundPageInner() {
   const [shareToast, setShareToast] = useState(false)
   const [editingName, setEditingName] = useState(false)
   const [editingNameValue, setEditingNameValue] = useState('')
+  const [renameModalOpen, setRenameModalOpen] = useState(false)
+  const [mobileStatsOpen, setMobileStatsOpen] = useState(false)
   const [hydrated, setHydrated] = useState(false)
   const [screenW, setScreenW] = useState(0)
   const nameInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY)
+      const raw = localStorage.getItem(PLAYGROUND_BOXES_STORAGE_KEY)
       const normalized = normalizePlaygroundBoxes(raw ? JSON.parse(raw) : null, SEEDED_PLAYGROUND_BOXES)
       setBoxes(normalized)
 
@@ -107,7 +117,12 @@ function PlaygroundPageInner() {
 
   useEffect(() => {
     if (!hydrated) return
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(boxes))
+    localStorage.setItem(PLAYGROUND_BOXES_STORAGE_KEY, JSON.stringify(boxes))
+  }, [boxes, hydrated])
+
+  useEffect(() => {
+    if (!hydrated) return
+    syncPublicProfileSnapshot({ playgroundBoxes: boxes })
   }, [boxes, hydrated])
 
   useLayoutEffect(() => {
@@ -118,6 +133,10 @@ function PlaygroundPageInner() {
   }, [])
 
   const activeBox = boxes.find(box => box.id === activeBoxId) ?? boxes[0]
+  const boxOptions = useMemo(
+    () => boxes.map(box => ({ value: box.id, label: `${box.name} · ${box.entries.length}` })),
+    [boxes],
+  )
   const resolvedEntries = useMemo(
     () => resolvePlaygroundWatches(activeBox?.entries ?? [], catalogWatches),
     [activeBox],
@@ -171,9 +190,12 @@ function PlaygroundPageInner() {
     setBoxes(prev => prev.map(box => box.id === boxId ? { ...box, entries: newEntries } : box))
   }
 
-  function handleShareBox() {
-    const url = `${window.location.origin}/playground?boxId=${activeBoxId}`
-    navigator.clipboard.writeText(url)
+  async function handleShareBox() {
+    if (!activeBox) return
+
+    await copyProfileDemoUrl(
+      getBoxSharePath(getPlaygroundBoxSlug(activeBox)),
+    )
     setShareToast(true)
     setTimeout(() => setShareToast(false), 2500)
   }
@@ -181,6 +203,7 @@ function PlaygroundPageInner() {
   function handleRenameBox(newName: string) {
     updateActiveBox(box => ({ ...box, name: newName.trim() || box.name }))
     setEditingName(false)
+    setRenameModalOpen(false)
   }
 
   function handleCreateBox(name: string, tags: string[]) {
@@ -233,10 +256,16 @@ function PlaygroundPageInner() {
     setTimeout(() => nameInputRef.current?.focus(), 0)
   }
 
+  function openRenameModal() {
+    setEditingNameValue(activeBox?.name ?? '')
+    setRenameModalOpen(true)
+  }
+
   function switchBox(id: string) {
     setActiveBoxId(id)
     setSelectedEntryId(null)
     setEditingName(false)
+    setRenameModalOpen(false)
     setDeleteConfirmId(null)
     setDeleteEntryTarget(null)
     setSortBy('manual')
@@ -245,72 +274,109 @@ function PlaygroundPageInner() {
   return (
     <div
       className="collection-section"
-      style={{ padding: '0 0 120px', borderTop: '1px solid #EAE5DC' }}
+      style={{ padding: '0 0 120px', borderTop: `1px solid ${brand.colors.border}` }}
     >
-      <div
-        className={`sidebar-backdrop ${selectedItem ? 'is-active' : ''}`}
-        onClick={() => setSelectedEntryId(null)}
-      />
-
-      <div style={{ height: 2, background: '#C9A84C', width: '100%' }} />
-
-      <div style={{ padding: '32px 32px 0' }}>
-        <h1 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 36, fontWeight: 400, color: '#1A1410', margin: 0, lineHeight: 1.1 }}>
-          Playground
-        </h1>
-        <p style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 13, color: '#A89880', marginTop: 4, marginBottom: 0 }}>
-          Build your dream collection. No limits.
-        </p>
-      </div>
-
-      <div style={{ display: 'flex', gap: 6, padding: '20px 32px 0', overflowX: 'auto', borderBottom: '1px solid #EAE5DC' }}>
-        {boxes.map(box => {
-          const isActive = box.id === activeBoxId
-          return (
+      {isMobile ? (
+        <div style={{ padding: '28px 20px 0' }}>
+          <WatchboxHeader
+            title="Playground"
+            subtitle="Build your dream collection. No limits."
+            selector={{
+              value: activeBoxId,
+              options: boxOptions,
+              onChange: switchBox,
+            }}
+            summary={activeBox?.tags.length ? activeBox.tags.join(' · ') : undefined}
+            activeView={activeView}
+            onViewChange={setActiveView}
+            menuItems={[
+              {
+                label: 'New Box',
+                onSelect: () => setNewBoxModalOpen(true),
+              },
+              {
+                label: 'Rename Box',
+                onSelect: openRenameModal,
+              },
+              {
+                label: mobileStatsOpen ? 'Hide Box Stats' : 'Show Box Stats',
+                onSelect: () => setMobileStatsOpen(open => !open),
+              },
+              {
+                label: 'Share Box',
+                onSelect: () => {
+                  void handleShareBox()
+                },
+              },
+              ...(boxes.length > 1 ? [{
+                label: 'Delete Box',
+                onSelect: () => setDeleteConfirmId(activeBoxId),
+                destructive: true,
+              }] : []),
+            ]}
+          />
+        </div>
+      ) : (
+        <>
+          <div style={{ padding: '56px 56px 0' }}>
+            <h1 style={{ fontFamily: brand.font.serif, fontSize: 36, fontWeight: 400, color: brand.colors.ink, margin: 0, lineHeight: 1.1 }}>
+              Playground
+            </h1>
+            <p style={{ fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, marginTop: 4, marginBottom: 0 }}>
+              Build your dream collection. No limits.
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: 6, padding: '20px 56px 0', overflowX: 'auto', borderBottom: `1px solid ${brand.colors.border}` }}>
+            {boxes.map(box => {
+              const isActive = box.id === activeBoxId
+              return (
+                <button
+                  key={box.id}
+                  onClick={() => switchBox(box.id)}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px 8px 0 0',
+                    fontFamily: brand.font.sans,
+                    fontSize: 12,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    border: isActive ? `1px solid ${brand.colors.border}` : '1px solid transparent',
+                    borderBottom: isActive ? `1px solid ${brand.colors.bg}` : '1px solid transparent',
+                    background: isActive ? brand.colors.bg : 'transparent',
+                    color: isActive ? brand.colors.ink : brand.colors.muted,
+                    fontWeight: isActive ? 500 : 400,
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {box.name} · {box.entries.length}
+                </button>
+              )
+            })}
             <button
-              key={box.id}
-              onClick={() => switchBox(box.id)}
+              onClick={() => setNewBoxModalOpen(true)}
               style={{
                 padding: '8px 16px',
                 borderRadius: '8px 8px 0 0',
-                fontFamily: 'var(--font-dm-sans)',
-                fontSize: 12,
+                fontFamily: brand.font.sans,
+                fontSize: 14,
+                fontWeight: 600,
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
-                border: isActive ? '1px solid #EAE5DC' : '1px solid transparent',
-                borderBottom: isActive ? '1px solid #FAF8F4' : '1px solid transparent',
-                background: isActive ? '#FAF8F4' : 'transparent',
-                color: isActive ? '#1A1410' : '#A89880',
-                fontWeight: isActive ? 500 : 400,
+                border: '1px solid transparent',
+                background: 'transparent',
+                color: brand.colors.gold,
                 transition: 'all 0.15s',
               }}
             >
-              {box.name} · {box.entries.length}
+              +
             </button>
-          )
-        })}
-        <button
-          onClick={() => setNewBoxModalOpen(true)}
-          style={{
-            padding: '8px 16px',
-            borderRadius: '8px 8px 0 0',
-            fontFamily: 'var(--font-dm-sans)',
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-            whiteSpace: 'nowrap',
-            border: '1px solid transparent',
-            background: 'transparent',
-            color: '#C9A84C',
-            transition: 'all 0.15s',
-          }}
-        >
-          +
-        </button>
-      </div>
+          </div>
+        </>
+      )}
 
-      <div style={{ padding: '24px 32px 32px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18, gap: 20, flexWrap: 'wrap' }}>
+      <div style={{ padding: `${isMobile ? 24 : 24}px ${isMobile ? 20 : 32}px 32px` }}>
+        {!isMobile ? (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18, gap: 20, flexWrap: 'wrap' }}>
           <div>
             {editingName ? (
               <input
@@ -436,9 +502,11 @@ function PlaygroundPageInner() {
               </div>
             )}
           </div>
-        </div>
+          </div>
+        ) : null}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28 }}>
+        {!isMobile ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28 }}>
           <ViewSwitcher activeView={activeView} setActiveView={setActiveView} />
           <a
             href="#playground-stats"
@@ -452,7 +520,8 @@ function PlaygroundPageInner() {
           >
             Stats ↓
           </a>
-        </div>
+          </div>
+        ) : null}
 
         <div
           className="collection-grid"
@@ -490,73 +559,44 @@ function PlaygroundPageInner() {
             )}
           </div>
 
-          <div
-            className={`sidebar-sheet ${selectedItem ? 'is-active' : ''}`}
-            style={{
-              alignSelf: 'start',
-              position: 'sticky',
-              top: 84,
-            }}
-          >
-            <div className="sidebar-drag-pill" style={{ display: 'none', justifyContent: 'center', padding: '12px 0 4px' }}>
-              <div style={{ width: 36, height: 4, borderRadius: 2, background: '#E0DAD0' }} />
-            </div>
-            <button
-              className="sidebar-close-btn"
-              onClick={() => setSelectedEntryId(null)}
-              style={{
-                display: 'none',
-                position: 'absolute',
-                top: 14,
-                right: 16,
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: '#A89880',
-                fontSize: 18,
-                lineHeight: 1,
-                padding: 4,
+          <ResponsiveSidebarSheet active={Boolean(selectedItem)} onClose={() => setSelectedEntryId(null)}>
+            <WatchSidebar
+              watch={selectedItem?.displayWatch ?? null}
+              sticky={false}
+              catalogWatchId={selectedItem?.sourceWatch.id ?? null}
+              mode="playground"
+              onRequestDelete={() => setDeleteEntryTarget(selectedItem)}
+              onRequestEdit={() => {
+                if (!selectedItem) return
+                router.push(`/playground/edit/${activeBoxId}/${selectedItem.entry.id}`)
               }}
-            >
-              ✕
-            </button>
-            <div className="sidebar-content">
-              <WatchSidebar
-                watch={selectedItem?.displayWatch ?? null}
-                sticky={false}
-                catalogWatchId={selectedItem?.sourceWatch.id ?? null}
-                mode="playground"
-                onRequestDelete={() => setDeleteEntryTarget(selectedItem)}
-                onRequestEdit={() => {
-                  if (!selectedItem) return
-                  router.push(`/playground/edit/${activeBoxId}/${selectedItem.entry.id}`)
-                }}
-              />
-            </div>
-          </div>
+            />
+          </ResponsiveSidebarSheet>
         </div>
       </div>
 
-      <div id="playground-stats" style={{ marginTop: 72, padding: '48px 32px 0', borderTop: '1px solid #EAE5DC' }}>
+      {isMobile && !mobileStatsOpen ? null : (
+      <div id="playground-stats" style={{ marginTop: isMobile ? 56 : 72, padding: `${isMobile ? 28 : 48}px 32px 0`, borderTop: `1px solid ${brand.colors.border}` }}>
         <div style={{ marginBottom: 32 }}>
           <h2
             style={{
-              fontFamily: 'var(--font-cormorant)',
+              fontFamily: brand.font.serif,
               fontSize: 36,
               fontWeight: 400,
-              color: '#1A1410',
+              color: brand.colors.ink,
               margin: '0 0 6px',
               lineHeight: 1.1,
             }}
           >
             Box Stats
           </h2>
-          <p style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 13, color: '#A89880', margin: 0 }}>
+          <p style={{ fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, margin: 0 }}>
             A market-only breakdown of this playground box.
           </p>
         </div>
         <CollectionStats watches={displayWatches} mode="playground" />
       </div>
+      )}
 
       {newBoxModalOpen && (
         <NewBoxModal
@@ -564,6 +604,22 @@ function PlaygroundPageInner() {
           onCreate={handleCreateBox}
         />
       )}
+
+      {renameModalOpen ? (
+        <RenameBoxModal
+          value={editingNameValue}
+          onChange={setEditingNameValue}
+          onClose={() => setRenameModalOpen(false)}
+          onSubmit={() => handleRenameBox(editingNameValue)}
+        />
+      ) : null}
+
+      {isMobile && deleteConfirmId === activeBoxId ? (
+        <DeleteBoxConfirmModal
+          onClose={() => setDeleteConfirmId(null)}
+          onConfirm={handleDeleteBox}
+        />
+      ) : null}
 
       {shareToast && (
         <div
@@ -660,6 +716,205 @@ function PlaygroundPageInner() {
         </>
       )}
     </div>
+  )
+}
+
+function RenameBoxModal({
+  value,
+  onChange,
+  onClose,
+  onSubmit,
+}: {
+  value: string
+  onChange: (value: string) => void
+  onClose: () => void
+  onSubmit: () => void
+}) {
+  return (
+    <>
+      <div
+        onClick={onClose}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(26,20,16,0.4)',
+          backdropFilter: 'blur(2px)',
+          zIndex: 200,
+        }}
+      />
+      <div
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          background: brand.colors.bg,
+          borderRadius: brand.radius.xl,
+          padding: 28,
+          width: 380,
+          maxWidth: '90vw',
+          boxShadow: brand.shadow.xl,
+          zIndex: 201,
+        }}
+      >
+        <div style={{ fontFamily: brand.font.serif, fontSize: 22, color: brand.colors.ink, marginBottom: 20 }}>
+          Rename Box
+        </div>
+
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, fontFamily: brand.font.sans, marginBottom: 8 }}>
+            Box Name
+          </div>
+          <input
+            value={value}
+            onChange={event => onChange(event.target.value)}
+            onKeyDown={event => {
+              if (event.key === 'Enter' && value.trim()) onSubmit()
+            }}
+            autoFocus
+            style={{
+              width: '100%',
+              padding: '9px 12px',
+              border: `1px solid ${brand.colors.borderLight}`,
+              borderRadius: brand.radius.sm,
+              fontFamily: brand.font.sans,
+              fontSize: 13,
+              color: brand.colors.ink,
+              background: brand.colors.white,
+              outline: 'none',
+              boxSizing: 'border-box',
+            }}
+          />
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <button
+            onClick={onClose}
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+              padding: '10px 12px',
+              background: 'transparent',
+              color: brand.colors.ink,
+              border: `1px solid ${brand.colors.borderLight}`,
+              borderRadius: brand.radius.sm,
+              cursor: 'pointer',
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onSubmit}
+            disabled={!value.trim()}
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 11,
+              fontWeight: 600,
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+              padding: '10px 12px',
+              background: value.trim() ? brand.colors.ink : brand.colors.borderLight,
+              color: brand.colors.bg,
+              border: 'none',
+              borderRadius: brand.radius.sm,
+              cursor: value.trim() ? 'pointer' : 'not-allowed',
+            }}
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </>
+  )
+}
+
+function DeleteBoxConfirmModal({
+  onClose,
+  onConfirm,
+}: {
+  onClose: () => void
+  onConfirm: () => void
+}) {
+  return (
+    <>
+      <div
+        onClick={onClose}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(26,20,16,0.45)',
+          backdropFilter: 'blur(2px)',
+          zIndex: 210,
+        }}
+      />
+      <div
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '90vw',
+          maxWidth: 420,
+          background: brand.colors.white,
+          border: `1px solid ${brand.colors.border}`,
+          borderRadius: brand.radius.xl,
+          boxShadow: brand.shadow.lg,
+          zIndex: 211,
+          padding: 18,
+        }}
+      >
+        <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
+          Delete Box
+        </div>
+        <div style={{ fontFamily: brand.font.serif, fontSize: 28, color: brand.colors.ink, lineHeight: 1.1, marginBottom: 8 }}>
+          Remove this box?
+        </div>
+        <p style={{ margin: '0 0 16px', fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.5 }}>
+          This removes the current playground box and its watch list.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <button
+            onClick={onClose}
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+              padding: '9px 12px',
+              background: 'transparent',
+              color: brand.colors.ink,
+              border: `1px solid ${brand.colors.borderLight}`,
+              borderRadius: brand.radius.sm,
+              cursor: 'pointer',
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 11,
+              fontWeight: 600,
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+              padding: '9px 12px',
+              background: brand.colors.ink,
+              color: brand.colors.bg,
+              border: 'none',
+              borderRadius: brand.radius.sm,
+              cursor: 'pointer',
+            }}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </>
   )
 }
 

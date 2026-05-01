@@ -23,6 +23,10 @@ type PickerPosition = {
   left: number
 }
 
+const PICKER_WIDTH = 220
+const PICKER_GAP = 8
+const PICKER_HEIGHT_ESTIMATE = 248
+
 const STATE_LABELS: Record<WatchSavedState, string> = {
   followed: 'Follow',
   target: 'Target',
@@ -135,14 +139,23 @@ export default function WatchStateControl({
   }, [])
 
   useEffect(() => {
-    if (!open || isMobile || !buttonRef.current) return
+    if (!open || !buttonRef.current) return
 
     function updatePosition() {
       if (!buttonRef.current) return
       const rect = buttonRef.current.getBoundingClientRect()
+      const left = Math.min(
+        Math.max(12, rect.left + (rect.width / 2) - (PICKER_WIDTH / 2)),
+        window.innerWidth - PICKER_WIDTH - 12,
+      )
+      const spaceBelow = window.innerHeight - rect.bottom
+      const top = spaceBelow >= PICKER_HEIGHT_ESTIMATE
+        ? rect.bottom + PICKER_GAP
+        : Math.max(12, rect.top - PICKER_HEIGHT_ESTIMATE - PICKER_GAP)
+
       setPickerPosition({
-        top: rect.bottom + 8,
-        left: Math.min(rect.left, window.innerWidth - 236),
+        top,
+        left,
       })
     }
 
@@ -153,7 +166,7 @@ export default function WatchStateControl({
       window.removeEventListener('resize', updatePosition)
       window.removeEventListener('scroll', updatePosition, true)
     }
-  }, [isMobile, open])
+  }, [open])
 
   useEffect(() => {
     if (!open) return
@@ -253,7 +266,7 @@ export default function WatchStateControl({
       <div
         ref={popoverRef}
         style={{
-          width: 220,
+          width: PICKER_WIDTH,
           background: brand.colors.white,
           border: `1px solid ${brand.colors.border}`,
           borderRadius: brand.radius.lg,
@@ -328,6 +341,8 @@ export default function WatchStateControl({
     )
 
     if (isMobile) {
+      if (!pickerPosition) return null
+
       return createPortal(
         <>
           <div
@@ -343,18 +358,11 @@ export default function WatchStateControl({
           <div
             style={{
               position: 'fixed',
-              left: 0,
-              right: 0,
-              bottom: 0,
+              top: pickerPosition.top,
+              left: pickerPosition.left,
               zIndex: 341,
-              background: brand.colors.bg,
-              borderRadius: '20px 20px 0 0',
-              padding: '12px 16px 20px',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
-              <div style={{ width: 36, height: 4, borderRadius: 2, background: brand.colors.borderLight }} />
-            </div>
             {content}
           </div>
         </>,

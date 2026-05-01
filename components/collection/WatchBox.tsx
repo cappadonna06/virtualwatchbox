@@ -19,6 +19,7 @@ interface Props {
   slotCount: number
   slotWidth?: number
   mode?: 'collection' | 'playground'
+  readonly?: boolean
 }
 
 function OverflowListItem({
@@ -157,6 +158,7 @@ export default function WatchBox({
   slotCount,
   slotWidth,
   mode = 'collection',
+  readonly = false,
 }: Props) {
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null)
   const [overflowOpen, setOverflowOpen] = useState(false)
@@ -260,7 +262,7 @@ export default function WatchBox({
                 return (
                   <div key={i} style={{ aspectRatio: '3/4', borderRadius: 3, position: 'relative' }}>
                     <div
-                      onClick={onEmptySlotClick}
+                      onClick={readonly ? undefined : onEmptySlotClick}
                       style={{
                         width: '100%',
                         height: '100%',
@@ -270,13 +272,21 @@ export default function WatchBox({
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: 5,
-                        cursor: 'pointer',
+                        cursor: readonly ? 'default' : 'pointer',
                         opacity: useHighContrastSlotText ? 0.88 : 0.4,
                         background: ln.slotBg,
                       }}
                     >
-                      <span style={{ fontSize: 18, color: emptyPrimaryColor }}>+</span>
-                      <span style={{ fontFamily: brand.font.sans, fontSize: 8, letterSpacing: '0.1em', color: emptyPrimaryColor }}>ADD</span>
+                      {readonly ? (
+                        <span style={{ fontFamily: brand.font.sans, fontSize: 8, letterSpacing: '0.1em', color: emptyPrimaryColor }}>
+                          EMPTY
+                        </span>
+                      ) : (
+                        <>
+                          <span style={{ fontSize: 18, color: emptyPrimaryColor }}>+</span>
+                          <span style={{ fontFamily: brand.font.sans, fontSize: 8, letterSpacing: '0.1em', color: emptyPrimaryColor }}>ADD</span>
+                        </>
+                      )}
                     </div>
                   </div>
                 )

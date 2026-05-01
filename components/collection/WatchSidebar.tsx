@@ -104,7 +104,7 @@ const btnSecondary: React.CSSProperties = {
 
 interface Props {
   watch: ResolvedOwnedWatch | ResolvedWatch | null
-  mode?: 'collection' | 'playground' | 'followed'
+  mode?: 'collection' | 'playground' | 'followed' | 'public'
   sticky?: boolean
   catalogWatchId?: string | null
   onRequestDelete?: (watch: ResolvedOwnedWatch | ResolvedWatch) => void
@@ -149,9 +149,10 @@ export default function WatchSidebar({
   const canEdit = mode === 'collection' || Boolean(onRequestEdit)
   const canDelete = Boolean(onRequestDelete)
   const isOwnedWatch = mode === 'collection'
+  const isPublicMode = mode === 'public'
   const showConditionBadge = mode !== 'followed'
   const savedState = getWatchSavedState(resolvedCatalogWatchId)
-  const marketLabel = !isOwnedWatch && savedState === 'grail' ? 'Find on Market ↗' : 'Find For Sale ↗'
+  const marketLabel = !isOwnedWatch && savedState === 'grail' && !isPublicMode ? 'Find on Market ↗' : 'Find For Sale ↗'
 
   return (
     <div style={panelStyle}>
@@ -185,10 +186,12 @@ export default function WatchSidebar({
           sizes="160px"
           style={{ objectFit: 'contain', filter: brand.shadow.drop }}
         />
-        <WatchStateControl
-          catalogWatchId={resolvedCatalogWatchId}
-          source="sidebar"
-        />
+        {!isPublicMode && (
+          <WatchStateControl
+            catalogWatchId={resolvedCatalogWatchId}
+            source="sidebar"
+          />
+        )}
       </div>
 
       <div style={{ ...metaLabel, marginBottom: 4 }}>

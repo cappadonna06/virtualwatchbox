@@ -1,17 +1,19 @@
 'use client'
 
-import { useMemo, useState, type CSSProperties } from 'react'
-import Link from 'next/link'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import type { CatalogWatch, ResolvedOwnedWatch } from '@/types/watch'
+import type { ResolvedOwnedWatch } from '@/types/watch'
 import CollectionHeader from '@/components/collection/CollectionHeader'
 import CollectionStats from '@/components/collection/CollectionStats'
 import SortDropdown from '@/components/collection/SortDropdown'
 import CollectionWatchboxSurface from '@/components/collection/CollectionWatchboxSurface'
+import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarSheet'
 import UnsavedChangesBar, { type DraftChange } from '@/components/collection/UnsavedChangesBar'
 import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import WatchSidebar from '@/components/collection/WatchSidebar'
+import WatchboxHeader from '@/components/collection/WatchboxHeader'
+import { copyProfileDemoUrl } from '@/lib/profileDemo'
 import { useCollectionSession } from './CollectionSessionProvider'
 import { brand } from '@/lib/brand'
 
@@ -30,18 +32,18 @@ export default function CollectionPage() {
   const router = useRouter()
   const {
     collectionWatches,
-    followedWatches,
-    nextTargetWatches,
-    grailWatch,
     selectedWatchId,
     setSelectedWatchId,
     removeFromCollection,
     reorderCollectionWatches,
+    showToast,
   } = useCollectionSession()
 
   const [activeView, setActiveView] = useState<View>('watchbox')
   const [sortBy, setSortBy] = useState<SortMode>('manual')
   const [deleteTarget, setDeleteTarget] = useState<ResolvedOwnedWatch | null>(null)
+  const [screenWidth, setScreenWidth] = useState(0)
+  const [mobileStatsOpen, setMobileStatsOpen] = useState(true)
 
   const displayWatches = useMemo(() => {
     if (sortBy === 'manual') return collectionWatches
@@ -56,6 +58,14 @@ export default function CollectionPage() {
   const totalEstimatedValue = collectionWatches.reduce((sum, watch) => sum + watch.estimatedValue, 0)
   const activeSlot = selectedWatchId ? displayWatches.findIndex(watch => watch.id === selectedWatchId) : -1
   const activeWatch = activeSlot >= 0 ? displayWatches[activeSlot] : null
+  const isMobile = screenWidth > 0 && screenWidth < 768
+
+  useEffect(() => {
+    const updateWidth = () => setScreenWidth(window.innerWidth)
+    updateWidth()
+    window.addEventListener('resize', updateWidth)
+    return () => window.removeEventListener('resize', updateWidth)
+  }, [])
 
   function handleCardSelect(index: number) {
     const watch = displayWatches[index]
@@ -76,96 +86,151 @@ export default function CollectionPage() {
     setDeleteTarget(null)
   }
 
+  async function handleShareCollection() {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'My Collection',
+          text: 'Take a look inside my collection.',
+          url: new URL('/collection', window.location.origin).toString(),
+        })
+        return
+      }
+
+      await copyProfileDemoUrl('/collection')
+      showToast('Collection link copied to clipboard.')
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') return
+
+      await copyProfileDemoUrl('/collection')
+      showToast('Collection link copied to clipboard.')
+    }
+  }
+
   return (
     <div
       className="collection-section"
-      style={{ padding: '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}
+      style={{ padding: '0 0 120px', borderTop: `1px solid ${brand.colors.border}` }}
     >
-      <CollectionHeader
-        totalEstValue={totalEstimatedValue}
-        pendingChangesCount={0}
-        onAddWatch={() => router.push('/collection/add')}
-        onOpenPlayground={() => router.push('/playground')}
-      />
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28 }}>
-        <ViewSwitcher activeView={activeView} setActiveView={setActiveView} />
-        <a
-          href="#collection-stats"
-          style={{
-            fontFamily: brand.font.sans,
-            fontSize: 11,
-            color: brand.colors.muted,
-            textDecoration: 'none',
-            letterSpacing: '0.04em',
-          }}
-        >
-          Stats ↓
-        </a>
-      </div>
-
-      {activeView === 'watchbox' ? (
-        <CollectionWatchboxSurface
-          watches={displayWatches}
-          onEmptySlotClick={() => router.push('/collection/add')}
-          onReorder={sortBy === 'manual' ? handleReorder : undefined}
-          topToolbar={
-            <SortDropdown
-              value={sortBy}
-              options={SORT_OPTIONS}
-              onChange={value => setSortBy(value as SortMode)}
+      <div style={{ padding: isMobile ? '28px 20px 0' : '56px 56px 0' }}>
+        {isMobile ? (
+          <WatchboxHeader
+            title="My Collection"
+            subtitle="Your collection, wherever you go."
+            summary={`${collectionWatches.length} ${collectionWatches.length === 1 ? 'watch' : 'watches'} · ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(totalEstimatedValue)} est. value`}
+            primaryAction={{
+              label: 'Add Watch',
+              onClick: () => router.push('/collection/add'),
+              ariaLabel: 'Add Watch',
+              icon: (
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <path d="M6 2V10M2 6H10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                </svg>
+              ),
+            }}
+            activeView={activeView}
+            onViewChange={setActiveView}
+            menuItems={[
+              {
+                label: 'Share Collection',
+                onSelect: () => {
+                  void handleShareCollection()
+                },
+              },
+            ]}
+          />
+        ) : (
+          <>
+            <CollectionHeader
+              totalEstValue={totalEstimatedValue}
+              pendingChangesCount={0}
+              onAddWatch={() => router.push('/collection/add')}
+              onOpenPlayground={() => router.push('/playground')}
             />
-          }
-        />
-      ) : (
-        <CardsView
-          watches={displayWatches}
-          activeWatch={activeWatch}
-          activeSlot={activeSlot >= 0 ? activeSlot : null}
-          onCardSelect={handleCardSelect}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          onCloseSidebar={() => setSelectedWatchId(null)}
-          onRequestDelete={watch => setDeleteTarget(watch)}
-        />
-      )}
 
-      <div style={{ marginTop: 56 }}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <GrailModule grailWatch={grailWatch} />
-          <NextTargetsPanel nextTargetWatches={nextTargetWatches} followedCount={followedWatches.length} />
-        </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28 }}>
+              <ViewSwitcher activeView={activeView} setActiveView={setActiveView} />
+              <a
+                href="#collection-stats"
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 11,
+                  color: brand.colors.muted,
+                  textDecoration: 'none',
+                  letterSpacing: '0.04em',
+                }}
+              >
+                Stats ↓
+              </a>
+            </div>
+          </>
+        )}
       </div>
 
-      <div
-        id="collection-stats"
-        style={{ marginTop: 72, paddingTop: 48, borderTop: `1px solid ${brand.colors.border}` }}
-      >
-        <div style={{ marginBottom: 32 }}>
-          <h2
-            style={{
-              fontFamily: brand.font.serif,
-              fontSize: 36,
-              fontWeight: 400,
-              color: brand.colors.ink,
-              margin: '0 0 6px',
-              lineHeight: 1.1,
-            }}
+      <div style={{ padding: `0 ${isMobile ? 20 : 56}px` }}>
+        {activeView === 'watchbox' ? (
+          <CollectionWatchboxSurface
+            watches={displayWatches}
+            onEmptySlotClick={() => router.push('/collection/add')}
+            onReorder={sortBy === 'manual' ? handleReorder : undefined}
+            topToolbar={!isMobile ? (
+              <SortDropdown
+                value={sortBy}
+                options={SORT_OPTIONS}
+                onChange={value => setSortBy(value as SortMode)}
+              />
+            ) : undefined}
+          />
+        ) : (
+          <CardsView
+            watches={displayWatches}
+            activeWatch={activeWatch}
+            activeSlot={activeSlot >= 0 ? activeSlot : null}
+            onCardSelect={handleCardSelect}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            onCloseSidebar={() => setSelectedWatchId(null)}
+            onRequestDelete={watch => setDeleteTarget(watch)}
+          />
+        )}
+        {isMobile ? (
+          mobileStatsOpen ? (
+            <div id="collection-stats" style={{ marginTop: 56, paddingTop: 28, borderTop: `1px solid ${brand.colors.border}` }}>
+              <CollectionStats watches={collectionWatches} />
+            </div>
+          ) : null
+        ) : (
+          <div
+            id="collection-stats"
+            style={{ marginTop: 72, paddingTop: 48, borderTop: `1px solid ${brand.colors.border}` }}
           >
-            Collection Stats
-          </h2>
-          <p
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 13,
-              color: brand.colors.muted,
-              margin: 0,
-            }}
-          >
-            A factual breakdown of what you own.
-          </p>
-        </div>
-        <CollectionStats watches={collectionWatches} />
+            <div style={{ marginBottom: 32 }}>
+              <h2
+                style={{
+                  fontFamily: brand.font.serif,
+                  fontSize: 36,
+                  fontWeight: 400,
+                  color: brand.colors.ink,
+                  margin: '0 0 6px',
+                  lineHeight: 1.1,
+                }}
+              >
+                Collection Stats
+              </h2>
+              <p
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 13,
+                  color: brand.colors.muted,
+                  margin: 0,
+                }}
+              >
+                A factual breakdown of what you own.
+              </p>
+            </div>
+            <CollectionStats watches={collectionWatches} />
+          </div>
+        )}
       </div>
 
       <UnsavedChangesBar
@@ -277,11 +342,6 @@ function CardsView({
 }) {
   return (
     <>
-      <div
-        className={`sidebar-backdrop ${activeWatch ? 'is-active' : ''}`}
-        onClick={onCloseSidebar}
-      />
-
       <div className="collection-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}>
         <div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
@@ -307,224 +367,14 @@ function CardsView({
           </div>
         </div>
 
-        <div
-          className={`sidebar-sheet ${activeWatch ? 'is-active' : ''}`}
-          style={{
-            alignSelf: 'start',
-            position: 'sticky',
-            top: 84,
-          }}
-        >
-          <div className="sidebar-drag-pill" style={{ display: 'none', justifyContent: 'center', padding: '12px 0 4px' }}>
-            <div style={{ width: 36, height: 4, borderRadius: 2, background: brand.colors.borderLight }} />
-          </div>
-          <button
-            className="sidebar-close-btn"
-            onClick={onCloseSidebar}
-            style={{
-              display: 'none',
-              position: 'absolute',
-              top: 14,
-              right: 16,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: brand.colors.muted,
-              fontSize: 18,
-              lineHeight: 1,
-              padding: 4,
-            }}
-          >
-            ✕
-          </button>
-          <div className="sidebar-content">
-            <WatchSidebar
-              watch={activeWatch}
-              sticky={false}
-              onRequestDelete={watch => onRequestDelete(watch as ResolvedOwnedWatch)}
-            />
-          </div>
-        </div>
+        <ResponsiveSidebarSheet active={Boolean(activeWatch)} onClose={onCloseSidebar}>
+          <WatchSidebar
+            watch={activeWatch}
+            sticky={false}
+            onRequestDelete={watch => onRequestDelete(watch as ResolvedOwnedWatch)}
+          />
+        </ResponsiveSidebarSheet>
       </div>
     </>
-  )
-}
-
-function marketHref(watch: CatalogWatch) {
-  return `https://www.chrono24.com/search/index.htm?query=${encodeURIComponent(`${watch.brand} ${watch.model}`)}`
-}
-
-function moduleShellStyle(): CSSProperties {
-  return {
-    background: brand.colors.white,
-    border: `1px solid ${brand.colors.border}`,
-    borderRadius: brand.radius.xl,
-    padding: 24,
-    boxShadow: brand.shadow.xs,
-    height: '100%',
-  }
-}
-
-function emptyCopyStyle(): CSSProperties {
-  return {
-    fontFamily: brand.font.sans,
-    fontSize: 12,
-    color: brand.colors.muted,
-    lineHeight: 1.6,
-    margin: 0,
-  }
-}
-
-function GrailModule({ grailWatch }: { grailWatch: CatalogWatch | null }) {
-  return (
-    <section style={moduleShellStyle()}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-        <span style={{ color: brand.colors.gold, display: 'inline-flex' }}>
-          <svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-            <path d="M2 9.25h8l-.72-4.45-2.08 1.52L6 2.35 4.8 6.32 2.72 4.8 2 9.25z" fill="currentColor" stroke="currentColor" strokeLinejoin="round" strokeWidth="0.35" />
-          </svg>
-        </span>
-        <span style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold }}>
-          Grail
-        </span>
-      </div>
-
-      {grailWatch ? (
-        <>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
-            {grailWatch.brand}
-          </div>
-          <h3 style={{ fontFamily: brand.font.serif, fontSize: 32, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05, margin: '0 0 6px' }}>
-            {grailWatch.model}
-          </h3>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, marginBottom: 18 }}>
-            Ref. {grailWatch.reference}
-          </div>
-          <div style={{ fontFamily: brand.font.serif, fontSize: 28, color: brand.colors.gold, marginBottom: 16 }}>
-            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(grailWatch.estimatedValue)}
-          </div>
-          <a
-            href={marketHref(grailWatch)}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '10px 16px',
-              borderRadius: brand.radius.btn,
-              background: brand.colors.ink,
-              color: brand.colors.bg,
-              fontFamily: brand.font.sans,
-              fontSize: 10,
-              fontWeight: 600,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              textDecoration: 'none',
-            }}
-          >
-            Find on Market ↗
-          </a>
-        </>
-      ) : (
-        <>
-          <h3 style={{ fontFamily: brand.font.serif, fontSize: 28, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05, margin: '0 0 10px' }}>
-            Your north star is still open.
-          </h3>
-          <p style={emptyCopyStyle()}>
-            Follow a watch, then mark one as your Grail from the detail page or sidebar.
-          </p>
-        </>
-      )}
-    </section>
-  )
-}
-
-function NextTargetsPanel({
-  nextTargetWatches,
-  followedCount,
-}: {
-  nextTargetWatches: { target: { watchId: string }; watch: CatalogWatch }[]
-  followedCount: number
-}) {
-  return (
-    <section style={moduleShellStyle()}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, marginBottom: 14 }}>
-        <div>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
-            Next Targets
-          </div>
-          <h3 style={{ fontFamily: brand.font.serif, fontSize: 30, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05, margin: 0 }}>
-            The shortlist.
-          </h3>
-        </div>
-        <Link
-          href="/followed"
-          style={{
-            fontFamily: brand.font.sans,
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            color: brand.colors.gold,
-            textDecoration: 'none',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          View Followed →
-        </Link>
-      </div>
-
-      {nextTargetWatches.length > 0 ? (
-        <div style={{ display: 'grid', gap: 12 }}>
-          {nextTargetWatches.map(({ watch }) => (
-            <div
-              key={watch.id}
-              style={{
-                border: `1px solid ${brand.colors.borderMid}`,
-                borderRadius: brand.radius.lg,
-                padding: '14px 16px',
-                background: brand.colors.slot,
-              }}
-            >
-              <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 4 }}>
-                {watch.brand}
-              </div>
-              <div style={{ fontFamily: brand.font.serif, fontSize: 22, color: brand.colors.ink, lineHeight: 1.05, marginBottom: 4 }}>
-                {watch.model}
-              </div>
-              <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginBottom: 10 }}>
-                Ref. {watch.reference}
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                <span style={{ fontFamily: brand.font.serif, fontSize: 22, color: brand.colors.ink }}>
-                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(watch.estimatedValue)}
-                </span>
-                <a
-                  href={marketHref(watch)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    fontFamily: brand.font.sans,
-                    fontSize: 10,
-                    fontWeight: 600,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    color: brand.colors.gold,
-                    textDecoration: 'none',
-                  }}
-                >
-                  Track Listings ↗
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p style={emptyCopyStyle()}>
-          You have {followedCount} followed {followedCount === 1 ? 'watch' : 'watches'}, but no Next Targets yet. Promote up to three from Followed Watches when you want a tighter acquisition plan.
-        </p>
-      )}
-    </section>
   )
 }

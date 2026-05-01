@@ -2,9 +2,11 @@
 
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
+import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarSheet'
 import SortDropdown from '@/components/collection/SortDropdown'
 import WatchCard from '@/components/collection/WatchCard'
 import WatchSidebar from '@/components/collection/WatchSidebar'
+import { useIsMobile } from '@/components/collection/useResponsiveState'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { brand } from '@/lib/brand'
 import { createCatalogDisplayWatch } from '@/lib/watchData'
@@ -18,6 +20,7 @@ const SORT_OPTIONS: { value: SortMode; label: string }[] = [
 ]
 
 export default function FollowedPage() {
+  const isMobile = useIsMobile()
   const {
     followedWatches,
     selectedWatchId,
@@ -47,7 +50,7 @@ export default function FollowedPage() {
 
   if (displayWatches.length === 0) {
     return (
-      <div className="collection-section" style={{ padding: '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}>
+      <div className="collection-section" style={{ padding: isMobile ? '24px 20px 96px' : '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}>
         <div
           style={{
             maxWidth: 720,
@@ -110,7 +113,7 @@ export default function FollowedPage() {
   }
 
   return (
-    <div className="collection-section" style={{ padding: '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}>
+    <div className="collection-section" style={{ padding: isMobile ? '24px 20px 96px' : '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}>
       <div style={{ marginBottom: 28 }}>
         <Link
           href="/collection"
@@ -135,11 +138,6 @@ export default function FollowedPage() {
           Your canonical aspirational pool. Promote up to three Next Targets and keep one Grail in focus.
         </p>
       </div>
-
-      <div
-        className={`sidebar-backdrop ${activeWatch ? 'is-active' : ''}`}
-        onClick={() => setSelectedWatchId(null)}
-      />
 
       <div className="collection-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}>
         <div>
@@ -169,45 +167,16 @@ export default function FollowedPage() {
           </div>
         </div>
 
-        <div
-          className={`sidebar-sheet ${activeWatch ? 'is-active' : ''}`}
-          style={{
-            alignSelf: 'start',
-            position: 'sticky',
-            top: 84,
-          }}
-        >
-          <div className="sidebar-drag-pill" style={{ display: 'none', justifyContent: 'center', padding: '12px 0 4px' }}>
-            <div style={{ width: 36, height: 4, borderRadius: 2, background: brand.colors.borderLight }} />
-          </div>
-          <button
-            className="sidebar-close-btn"
-            onClick={() => setSelectedWatchId(null)}
-            style={{
-              display: 'none',
-              position: 'absolute',
-              top: 14,
-              right: 16,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: brand.colors.muted,
-              fontSize: 18,
-              lineHeight: 1,
-              padding: 4,
-            }}
-          >
-            ✕
-          </button>
-          <div className="sidebar-content">
+        {activeWatch ? (
+          <ResponsiveSidebarSheet active={Boolean(activeWatch)} onClose={() => setSelectedWatchId(null)}>
             <WatchSidebar
               watch={activeWatch}
               sticky={false}
               catalogWatchId={activeWatch?.watchId ?? null}
               mode="followed"
             />
-          </div>
-        </div>
+          </ResponsiveSidebarSheet>
+        ) : isMobile ? null : <div />}
       </div>
     </div>
   )

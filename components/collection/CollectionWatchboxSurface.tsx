@@ -6,6 +6,7 @@ import { getOverflowSummary, getWatchboxOverflow } from '@/lib/watchboxOverflow'
 import type { ResolvedOwnedWatch } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import ResponsiveSidebarSheet from './ResponsiveSidebarSheet'
 import WatchBox from './WatchBox'
 import WatchSidebar from './WatchSidebar'
 
@@ -373,11 +374,6 @@ export default function CollectionWatchboxSurface({
 
   return (
     <>
-      <div
-        className={`sidebar-backdrop ${activeWatch ? 'is-active' : ''}`}
-        onClick={() => setSelectedWatchId(null)}
-      />
-
       {configOpen && (
         <div
           onClick={() => setConfigOpen(false)}
@@ -592,36 +588,17 @@ export default function CollectionWatchboxSurface({
           </button>
         </div>
 
-        <div className={`sidebar-sheet ${activeWatch ? 'is-active' : ''}`}>
-          <div className="sidebar-drag-pill" style={{ display: 'none', justifyContent: 'center', padding: '12px 0 4px' }}>
-            <div style={{ width: 36, height: 4, borderRadius: 2, background: brand.colors.borderLight }} />
-          </div>
-          <button
-            className="sidebar-close-btn"
-            onClick={() => setSelectedWatchId(null)}
-            style={{
-              display: 'none',
-              position: 'absolute',
-              top: 14,
-              right: 16,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: brand.colors.muted,
-              fontSize: 18,
-              lineHeight: 1,
-              padding: 4,
-            }}
-          >
-            ✕
-          </button>
-          <div className="sidebar-content">
-            <WatchSidebar
-              watch={activeWatch}
-              onRequestDelete={watch => setDeleteTarget(watch as ResolvedOwnedWatch)}
-            />
-          </div>
-        </div>
+        <ResponsiveSidebarSheet
+          active={Boolean(activeWatch)}
+          onClose={() => setSelectedWatchId(null)}
+          top={88}
+        >
+          <WatchSidebar
+            watch={activeWatch}
+            sticky={false}
+            onRequestDelete={watch => setDeleteTarget(watch as ResolvedOwnedWatch)}
+          />
+        </ResponsiveSidebarSheet>
       </div>
 
       {deleteTarget && (
