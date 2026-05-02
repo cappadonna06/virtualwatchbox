@@ -1,21 +1,25 @@
 'use client'
 
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import { syncPublicProfileSnapshot } from '@/lib/profileDemo'
 import {
   COLLECTION_SESSION_STORAGE_KEY,
   LEGACY_COLLECTION_SESSION_STORAGE_KEY,
+  PLAYGROUND_BOXES_STORAGE_KEY,
   WATCHBOX_CONFIG_STORAGE_KEY,
 } from '@/lib/storageKeys'
 import { watches as catalogWatches } from '@/lib/watches'
 import { SEEDED_OWNED_WATCHES } from '@/lib/collectionData'
 import { createCatalogWatchMap, resolveCatalogWatchId, resolveOwnedWatches } from '@/lib/watchData'
 import { getEffectiveSlotCount } from '@/lib/watchboxOverflow'
+import { useAuth } from '@/lib/auth/AuthProvider'
+import { createClient } from '@/lib/supabase/client'
 import type {
   CatalogWatch,
   OwnedWatch,
   OwnershipStatus,
+  PlaygroundBox,
   ResolvedOwnedWatch,
   WatchCondition,
   WatchSavedState,
@@ -23,6 +27,8 @@ import type {
   WatchTarget,
 } from '@/types/watch'
 import { brand } from '@/lib/brand'
+
+const MIGRATION_DONE_KEY = 'vwb-migration-done'
 
 const WATCH_CONDITIONS: WatchCondition[] = ['Unworn', 'Like New', 'Excellent', 'Good', 'Fair']
 const OWNERSHIP_STATUSES: OwnershipStatus[] = ['Owned', 'For Sale', 'Recently Added', 'Needs Service']
@@ -94,6 +100,8 @@ interface CollectionSessionContextValue {
   collectionJewelWatch: CatalogWatch | null
   selectedWatchId: string | null
   watchboxConfig: WatchboxConfig
+  dataLoading: boolean
+  migrationPending: boolean
   setSelectedWatchId: (watchId: string | null) => void
   addToCollection: (watch: CatalogWatch, condition: WatchCondition, purchaseDetails?: PurchaseDetails) => void
   followWatch: (watchId: string) => void
@@ -130,6 +138,8 @@ interface CollectionSessionContextValue {
   toastMessage: string | null
   toastVisible: boolean
   showToast: (message: string) => void
+  acceptMigration: () => Promise<void>
+  dismissMigration: () => void
 }
 
 const CollectionSessionContext = createContext<CollectionSessionContextValue | null>(null)
@@ -255,7 +265,255 @@ function normalizeSessionSnapshot(rawValue: unknown, catalogIds: string[], catal
   }
 }
 
+// ── Supabase row shapes ────────────────────────────────────────────────────
+
+type DbWatch = {
+  id: string
+  catalog_id: string
+  condition: string | null
+  ownership_status: string | null
+  purchase_price: number | null
+  purchase_date: string | null
+  notes: string | null
+  sort_order: number
+}
+
+type DbWatchState = {
+  catalog_watch_id: string
+  state: string
+  metadata: Record<string, unknown>
+}
+
+type DbWatchboxConfig = {
+  frame: string
+  lining: string
+  slot_count: number
+}
+
+// ── Supabase sync helpers (fire-and-forget) ────────────────────────────────
+
+async function syncWatchAdd(watch: OwnedWatch, catalogWatch: CatalogWatch, userId: string, sortOrder: number) {
+  try {
+    const supabase = createClient()
+    await supabase.from('watches').upsert({
+      id: watch.id.startsWith('owned-') ? undefined : watch.id,
+      user_id: userId,
+      catalog_id: watch.watchId,
+      brand: catalogWatch.brand,
+      model: catalogWatch.model,
+      reference: catalogWatch.reference,
+      case_size_mm: catalogWatch.caseSizeMm,
+      case_material: catalogWatch.caseMaterial,
+      dial_color: catalogWatch.dialColor,
+      movement: catalogWatch.movement,
+      complications: catalogWatch.complications,
+      watch_type: catalogWatch.watchType,
+      estimated_value: catalogWatch.estimatedValue,
+      condition: watch.condition,
+      ownership_status: watch.ownershipStatus,
+      purchase_price: watch.purchasePrice,
+      purchase_date: watch.purchaseDate || null,
+      notes: watch.notes,
+      sort_order: sortOrder,
+    })
+  } catch (err) {
+    console.error('[vwb] syncWatchAdd failed', err)
+  }
+}
+
+async function syncWatchRemove(watchId: string, userId: string) {
+  try {
+    const supabase = createClient()
+    await supabase.from('watches').delete().eq('user_id', userId).eq('id', watchId)
+  } catch (err) {
+    console.error('[vwb] syncWatchRemove failed', err)
+  }
+}
+
+async function syncWatchReorder(watches: OwnedWatch[], userId: string) {
+  try {
+    const supabase = createClient()
+    await Promise.all(
+      watches.map((w, i) =>
+        supabase.from('watches').update({ sort_order: i }).eq('user_id', userId).eq('id', w.id)
+      )
+    )
+  } catch (err) {
+    console.error('[vwb] syncWatchReorder failed', err)
+  }
+}
+
+async function syncWatchboxConfig(config: WatchboxConfig, userId: string) {
+  try {
+    const supabase = createClient()
+    await supabase.from('watchbox_config').upsert({
+      user_id: userId,
+      frame: config.frame,
+      lining: config.lining,
+      slot_count: config.slotCount,
+    })
+  } catch (err) {
+    console.error('[vwb] syncWatchboxConfig failed', err)
+  }
+}
+
+async function syncWatchState(
+  catalogWatchId: string,
+  state: 'follow' | 'target' | 'grail' | 'jewel',
+  active: boolean,
+  metadata: Record<string, unknown> = {},
+  userId?: string,
+) {
+  if (!userId) return
+  try {
+    const supabase = createClient()
+    if (active) {
+      await supabase.from('watch_states').upsert({
+        user_id: userId,
+        catalog_watch_id: catalogWatchId,
+        state,
+        metadata,
+      }, { onConflict: 'user_id,catalog_watch_id,state' })
+    } else {
+      await supabase.from('watch_states')
+        .delete()
+        .eq('user_id', userId)
+        .eq('catalog_watch_id', catalogWatchId)
+        .eq('state', state)
+    }
+  } catch (err) {
+    console.error('[vwb] syncWatchState failed', err)
+  }
+}
+
+async function syncPlaygroundBoxes(boxes: PlaygroundBox[], userId: string) {
+  try {
+    const supabase = createClient()
+    const { data: existing } = await supabase
+      .from('playground_boxes')
+      .select('id')
+      .eq('user_id', userId)
+
+    const existingIds = new Set((existing ?? []).map((r: { id: string }) => r.id))
+    const incomingIds = new Set(boxes.map(b => b.id))
+
+    const toDelete = [...existingIds].filter(id => !incomingIds.has(id))
+    if (toDelete.length > 0) {
+      await supabase.from('playground_boxes').delete().in('id', toDelete)
+    }
+
+    await Promise.all(
+      boxes.map((box, i) =>
+        supabase.from('playground_boxes').upsert({
+          id: box.id,
+          user_id: userId,
+          name: box.name,
+          frame: box.frame,
+          lining: box.lining,
+          slot_count: box.slotCount,
+          tags: box.tags,
+          entries: box.entries,
+          sort_order: i,
+        })
+      )
+    )
+  } catch (err) {
+    console.error('[vwb] syncPlaygroundBoxes failed', err)
+  }
+}
+
+// ── Load from Supabase ─────────────────────────────────────────────────────
+
+async function loadFromSupabase(
+  userId: string,
+  catalogIds: string[],
+  catalogIdSet: Set<string>,
+): Promise<SessionSnapshot | null> {
+  try {
+    const supabase = createClient()
+
+    const [watchesRes, statesRes, configRes] = await Promise.all([
+      supabase.from('watches').select('*').eq('user_id', userId).order('sort_order'),
+      supabase.from('watch_states').select('*').eq('user_id', userId),
+      supabase.from('watchbox_config').select('*').eq('user_id', userId).maybeSingle(),
+    ])
+
+    const dbWatches: DbWatch[] = watchesRes.data ?? []
+    const dbStates: DbWatchState[] = statesRes.data ?? []
+    const dbConfig: DbWatchboxConfig | null = configRes.data ?? null
+
+    const fallbackDate = new Date().toISOString().split('T')[0]
+
+    const collectionWatches: OwnedWatch[] = dbWatches
+      .filter(w => catalogIdSet.has(w.catalog_id))
+      .map(w => ({
+        id: w.id,
+        watchId: w.catalog_id,
+        condition: isWatchCondition(w.condition) ? w.condition : 'Excellent',
+        ownershipStatus: isOwnershipStatus(w.ownership_status) ? w.ownership_status : 'Owned',
+        purchasePrice: w.purchase_price ?? 0,
+        purchaseDate: w.purchase_date ?? fallbackDate,
+        notes: w.notes ?? '',
+      }))
+
+    const followedWatchIds: string[] = []
+    const nextTargets: WatchTarget[] = []
+    let grailWatchId: string | null = null
+    let collectionJewelWatchId: string | null = null
+
+    const collectionWatchIdSet = new Set(collectionWatches.map(w => w.watchId))
+
+    for (const s of dbStates) {
+      if (!catalogIdSet.has(s.catalog_watch_id)) continue
+
+      if (s.state === 'follow') {
+        followedWatchIds.push(s.catalog_watch_id)
+      } else if (s.state === 'target' && !collectionWatchIdSet.has(s.catalog_watch_id) && nextTargets.length < 3) {
+        const meta = s.metadata as Record<string, unknown>
+        nextTargets.push({
+          watchId: s.catalog_watch_id,
+          desiredCondition: isWatchCondition(meta.desiredCondition) ? meta.desiredCondition : 'Excellent',
+          intent: meta.intent === 'Replacement' ? 'Replacement' : 'Addition',
+          targetPrice: typeof meta.targetPrice === 'number' ? meta.targetPrice : undefined,
+          notes: typeof meta.notes === 'string' ? meta.notes : undefined,
+          targetDate: typeof meta.targetDate === 'string' ? meta.targetDate : undefined,
+        })
+        if (!followedWatchIds.includes(s.catalog_watch_id)) followedWatchIds.push(s.catalog_watch_id)
+      } else if (s.state === 'grail' && !collectionWatchIdSet.has(s.catalog_watch_id)) {
+        grailWatchId = s.catalog_watch_id
+        if (!followedWatchIds.includes(s.catalog_watch_id)) followedWatchIds.push(s.catalog_watch_id)
+      } else if (s.state === 'jewel' && collectionWatchIdSet.has(s.catalog_watch_id)) {
+        collectionJewelWatchId = s.catalog_watch_id
+      }
+    }
+
+    const watchboxConfig: WatchboxConfig = dbConfig && isValidWatchboxConfig({
+      frame: dbConfig.frame,
+      lining: dbConfig.lining,
+      slotCount: dbConfig.slot_count,
+    })
+      ? { frame: dbConfig.frame, lining: dbConfig.lining, slotCount: dbConfig.slot_count }
+      : DEFAULT_WATCHBOX_CONFIG
+
+    return {
+      collectionWatches,
+      followedWatchIds: [...new Set(followedWatchIds)],
+      nextTargets,
+      grailWatchId,
+      collectionJewelWatchId,
+      watchboxConfig,
+    }
+  } catch (err) {
+    console.error('[vwb] loadFromSupabase failed', err)
+    return null
+  }
+}
+
+// ── Provider ───────────────────────────────────────────────────────────────
+
 export function CollectionSessionProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth()
+
   const catalogWatchMap = useMemo(() => createCatalogWatchMap(catalogWatches), [])
   const catalogIds = useMemo(() => catalogWatches.map(watch => watch.id), [])
   const catalogIdSet = useMemo(() => new Set(catalogIds), [catalogIds])
@@ -270,7 +528,10 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   const [toastMessage, setToastMessage] = useState<string | null>(null)
   const [toastVisible, setToastVisible] = useState(false)
   const [hydrated, setHydrated] = useState(false)
+  const [dataLoading, setDataLoading] = useState(false)
+  const [migrationPending, setMigrationPending] = useState(false)
 
+  const prevUserIdRef = useRef<string | null>(null)
   const showTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -302,7 +563,11 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     [catalogWatchMap, collectionJewelWatchId],
   )
 
+  // ── Guest hydration from sessionStorage / localStorage ──────────────────
+
   useEffect(() => {
+    if (user) return  // authenticated mode handled separately
+
     try {
       const raw = sessionStorage.getItem(COLLECTION_SESSION_STORAGE_KEY)
       const legacyRaw = sessionStorage.getItem(LEGACY_COLLECTION_SESSION_STORAGE_KEY)
@@ -335,10 +600,81 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     } finally {
       setHydrated(true)
     }
-  }, [catalogIdSet, catalogIds])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])  // run once on mount; user not a dep here — auth effect handles sign-in
+
+  // ── Auth state change → load from Supabase or offer migration ───────────
 
   useEffect(() => {
-    if (!hydrated) return
+    const prevId = prevUserIdRef.current
+    const currentId = user?.id ?? null
+    prevUserIdRef.current = currentId
+
+    if (!currentId) return  // signed out or still loading → do nothing
+
+    if (prevId === currentId) return  // same user, already loaded
+
+    const migrationAlreadyDone = (() => {
+      try { return localStorage.getItem(MIGRATION_DONE_KEY) === 'true' } catch { return false }
+    })()
+
+    if (migrationAlreadyDone) {
+      // Load fresh from Supabase
+      setDataLoading(true)
+      loadFromSupabase(currentId, catalogIds, catalogIdSet).then(snapshot => {
+        if (snapshot) {
+          setCollectionEntries(snapshot.collectionWatches)
+          setFollowedWatchIds(snapshot.followedWatchIds)
+          setNextTargets(snapshot.nextTargets)
+          setGrailWatchId(snapshot.grailWatchId)
+          setCollectionJewelWatchId(snapshot.collectionJewelWatchId)
+          setWatchboxConfig(snapshot.watchboxConfig)
+        }
+        setDataLoading(false)
+        setHydrated(true)
+      })
+      return
+    }
+
+    // Check if there is meaningful local guest state to migrate
+    const hasLocalState = (() => {
+      try {
+        const raw = sessionStorage.getItem(COLLECTION_SESSION_STORAGE_KEY)
+        if (!raw) return false
+        const parsed = JSON.parse(raw) as LegacySessionSnapshot
+        const watches = parsed.collectionWatches
+        return Array.isArray(watches) && watches.length > 0
+      } catch { return false }
+    })()
+
+    if (hasLocalState) {
+      // Offer migration — don't load from Supabase yet
+      setMigrationPending(true)
+      setHydrated(true)
+    } else {
+      // No local state — load from Supabase directly
+      setDataLoading(true)
+      loadFromSupabase(currentId, catalogIds, catalogIdSet).then(snapshot => {
+        if (snapshot) {
+          setCollectionEntries(snapshot.collectionWatches)
+          setFollowedWatchIds(snapshot.followedWatchIds)
+          setNextTargets(snapshot.nextTargets)
+          setGrailWatchId(snapshot.grailWatchId)
+          setCollectionJewelWatchId(snapshot.collectionJewelWatchId)
+          setWatchboxConfig(snapshot.watchboxConfig)
+        }
+        setDataLoading(false)
+        setHydrated(true)
+        markMigrationDone()
+      })
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id])
+
+  // ── Guest state persistence to sessionStorage / localStorage ────────────
+
+  useEffect(() => {
+    if (!hydrated || user) return
 
     const snapshot: SessionSnapshot = {
       collectionWatches: collectionEntries,
@@ -350,12 +686,12 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     }
 
     sessionStorage.setItem(COLLECTION_SESSION_STORAGE_KEY, JSON.stringify(snapshot))
-  }, [hydrated, collectionEntries, followedWatchIds, nextTargets, grailWatchId, collectionJewelWatchId, watchboxConfig])
+  }, [hydrated, user, collectionEntries, followedWatchIds, nextTargets, grailWatchId, collectionJewelWatchId, watchboxConfig])
 
   useEffect(() => {
-    if (!hydrated) return
+    if (!hydrated || user) return
     localStorage.setItem(WATCHBOX_CONFIG_STORAGE_KEY, JSON.stringify(watchboxConfig))
-  }, [hydrated, watchboxConfig])
+  }, [hydrated, user, watchboxConfig])
 
   useEffect(() => {
     if (!hydrated) return
@@ -386,6 +722,102 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     }
   }, [])
 
+  // ── Migration helpers ────────────────────────────────────────────────────
+
+  function markMigrationDone() {
+    try { localStorage.setItem(MIGRATION_DONE_KEY, 'true') } catch {}
+  }
+
+  function clearLocalState() {
+    try {
+      sessionStorage.removeItem(COLLECTION_SESSION_STORAGE_KEY)
+      sessionStorage.removeItem(LEGACY_COLLECTION_SESSION_STORAGE_KEY)
+      localStorage.removeItem(WATCHBOX_CONFIG_STORAGE_KEY)
+    } catch {}
+  }
+
+  const acceptMigration = useCallback(async () => {
+    if (!user) return
+
+    const userId = user.id
+    const catalogWatchMapLocal = catalogWatchMap
+
+    // Upsert all current watches
+    await Promise.all(
+      collectionEntries.map((w, i) => {
+        const catalogWatch = catalogWatchMapLocal.get(w.watchId)
+        if (!catalogWatch) return Promise.resolve()
+        return syncWatchAdd(w, catalogWatch, userId, i)
+      })
+    )
+
+    // Upsert watch states
+    const statePromises: Promise<void>[] = []
+    for (const id of followedWatchIds) {
+      statePromises.push(syncWatchState(id, 'follow', true, {}, userId))
+    }
+    for (const t of nextTargets) {
+      statePromises.push(syncWatchState(t.watchId, 'target', true, {
+        desiredCondition: t.desiredCondition,
+        intent: t.intent,
+        targetPrice: t.targetPrice,
+        notes: t.notes,
+        targetDate: t.targetDate,
+      }, userId))
+    }
+    if (grailWatchId) statePromises.push(syncWatchState(grailWatchId, 'grail', true, {}, userId))
+    if (collectionJewelWatchId) statePromises.push(syncWatchState(collectionJewelWatchId, 'jewel', true, {}, userId))
+    await Promise.all(statePromises)
+
+    // Sync watchbox config
+    await syncWatchboxConfig(watchboxConfig, userId)
+
+    // Sync playground boxes
+    try {
+      const raw = localStorage.getItem(PLAYGROUND_BOXES_STORAGE_KEY)
+      if (raw) {
+        const boxes = JSON.parse(raw) as PlaygroundBox[]
+        if (Array.isArray(boxes)) await syncPlaygroundBoxes(boxes, userId)
+      }
+    } catch {}
+
+    clearLocalState()
+    markMigrationDone()
+    setMigrationPending(false)
+  }, [user, collectionEntries, followedWatchIds, nextTargets, grailWatchId, collectionJewelWatchId, watchboxConfig, catalogWatchMap])
+
+  const dismissMigration = useCallback(() => {
+    if (!user) return
+    const userId = user.id
+
+    clearLocalState()
+    markMigrationDone()
+    setMigrationPending(false)
+
+    // Reset to empty then load from Supabase
+    setCollectionEntries([])
+    setFollowedWatchIds([])
+    setNextTargets([])
+    setGrailWatchId(null)
+    setCollectionJewelWatchId(null)
+    setWatchboxConfig(DEFAULT_WATCHBOX_CONFIG)
+
+    setDataLoading(true)
+    loadFromSupabase(userId, catalogIds, catalogIdSet).then(snapshot => {
+      if (snapshot) {
+        setCollectionEntries(snapshot.collectionWatches)
+        setFollowedWatchIds(snapshot.followedWatchIds)
+        setNextTargets(snapshot.nextTargets)
+        setGrailWatchId(snapshot.grailWatchId)
+        setCollectionJewelWatchId(snapshot.collectionJewelWatchId)
+        setWatchboxConfig(snapshot.watchboxConfig)
+      }
+      setDataLoading(false)
+    })
+  }, [user, catalogIds, catalogIdSet])
+
+  // ── Toast ────────────────────────────────────────────────────────────────
+
   function showToast(message: string) {
     if (showTimer.current) clearTimeout(showTimer.current)
     if (hideTimer.current) clearTimeout(hideTimer.current)
@@ -398,6 +830,8 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       hideTimer.current = setTimeout(() => setToastMessage(null), 300)
     }, 2500)
   }
+
+  // ── Collection helpers ───────────────────────────────────────────────────
 
   function isOwnedWatch(watchId: string) {
     return collectionEntries.some(watch => watch.watchId === watchId)
@@ -423,6 +857,11 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     setFollowedWatchIds(prev => prev.filter(id => id !== watchId))
     setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
     setGrailWatchId(prev => (prev === watchId ? null : prev))
+    if (user) {
+      void syncWatchState(watchId, 'follow', false, {}, user.id)
+      void syncWatchState(watchId, 'target', false, {}, user.id)
+      void syncWatchState(watchId, 'grail', false, {}, user.id)
+    }
   }
 
   function removeCurrentWatchState(watchId: string) {
@@ -435,16 +874,19 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
 
     if (currentState === 'target') {
       setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
+      if (user) void syncWatchState(watchId, 'target', false, {}, user.id)
       return
     }
 
     if (currentState === 'grail') {
       setGrailWatchId(prev => (prev === watchId ? null : prev))
+      if (user) void syncWatchState(watchId, 'grail', false, {}, user.id)
       return
     }
 
     if (currentState === 'jewel') {
       setCollectionJewelWatchId(prev => (prev === watchId ? null : prev))
+      if (user) void syncWatchState(watchId, 'jewel', false, {}, user.id)
     }
   }
 
@@ -486,9 +928,21 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       notes: purchaseDetails?.notes ?? '',
     }
 
-    setCollectionEntries(prev => [...prev, newWatch])
-    setNextTargets(prev => prev.filter(target => target.watchId !== watch.id))
-    setGrailWatchId(prev => (prev === watch.id ? null : prev))
+    setCollectionEntries(prev => {
+      const next = [...prev, newWatch]
+      if (user) void syncWatchAdd(newWatch, watch, user.id, next.length - 1)
+      return next
+    })
+    setNextTargets(prev => {
+      const next = prev.filter(target => target.watchId !== watch.id)
+      if (user && wasTarget) void syncWatchState(watch.id, 'target', false, {}, user.id)
+      return next
+    })
+    setGrailWatchId(prev => {
+      const next = prev === watch.id ? null : prev
+      if (user && wasGrail) void syncWatchState(watch.id, 'grail', false, {}, user.id)
+      return next
+    })
     setSelectedWatchId(newWatch.id)
     showToast(
       wasTarget || wasGrail
@@ -500,12 +954,12 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   function followWatch(watchId: string) {
     if (!catalogIdSet.has(watchId) || followedWatchIds.includes(watchId)) return
     setFollowedWatchIds(prev => [...prev, watchId])
+    if (user) void syncWatchState(watchId, 'follow', true, {}, user.id)
     showToast('Saved to your followed watches.')
   }
 
   function unfollowWatch(watchId: string) {
     if (!followedWatchIds.includes(watchId)) return
-
     removeFollowedState(watchId)
   }
 
@@ -514,7 +968,6 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       unfollowWatch(watchId)
       return
     }
-
     followWatch(watchId)
   }
 
@@ -533,20 +986,21 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
 
     setFollowedWatchIds(prev => (prev.includes(watchId) ? prev : [...prev, watchId]))
     setGrailWatchId(prev => (prev === watchId ? null : prev))
-    setNextTargets(prev => [
-      ...prev,
-      {
-        watchId,
-        desiredCondition: 'Excellent',
-        intent: 'Addition',
-      },
-    ])
+    setNextTargets(prev => {
+      const target: WatchTarget = { watchId, desiredCondition: 'Excellent', intent: 'Addition' }
+      if (user) void syncWatchState(watchId, 'target', true, {
+        desiredCondition: 'Excellent', intent: 'Addition',
+      }, user.id)
+      return [...prev, target]
+    })
+    if (user) void syncWatchState(watchId, 'follow', true, {}, user.id)
     showToast('Added to your next targets.')
   }
 
   function removeFromNextTargets(watchId: string) {
     if (!nextTargets.some(target => target.watchId === watchId)) return
     setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
+    if (user) void syncWatchState(watchId, 'target', false, {}, user.id)
   }
 
   function setGrailWatch(watchId: string) {
@@ -557,13 +1011,21 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       return
     }
 
+    if (grailWatchId) {
+      if (user) void syncWatchState(grailWatchId, 'grail', false, {}, user.id)
+    }
     setFollowedWatchIds(prev => (prev.includes(watchId) ? prev : [...prev, watchId]))
     setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
     setGrailWatchId(watchId)
+    if (user) {
+      void syncWatchState(watchId, 'follow', true, {}, user.id)
+      void syncWatchState(watchId, 'grail', true, {}, user.id)
+    }
   }
 
   function clearGrailWatch() {
     if (!grailWatchId) return
+    if (user) void syncWatchState(grailWatchId, 'grail', false, {}, user.id)
     setGrailWatchId(null)
   }
 
@@ -575,11 +1037,16 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       return
     }
 
+    if (collectionJewelWatchId) {
+      if (user) void syncWatchState(collectionJewelWatchId, 'jewel', false, {}, user.id)
+    }
     setCollectionJewelWatchId(watchId)
+    if (user) void syncWatchState(watchId, 'jewel', true, {}, user.id)
   }
 
   function clearCollectionJewelWatch() {
     if (!collectionJewelWatchId) return
+    if (user) void syncWatchState(collectionJewelWatchId, 'jewel', false, {}, user.id)
     setCollectionJewelWatchId(null)
   }
 
@@ -597,6 +1064,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
       setGrailWatchId(prev => (prev === watchId ? null : prev))
       setCollectionJewelWatchId(prev => (prev === watchId ? null : prev))
+      if (user) void syncWatchState(watchId, 'follow', true, {}, user.id)
       showToast('Saved to your followed watches.')
       return { ok: true as const }
     }
@@ -618,13 +1086,13 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
           ? prev
           : [
               ...prev,
-              {
-                watchId,
-                desiredCondition: 'Excellent',
-                intent: 'Addition',
-              },
+              { watchId, desiredCondition: 'Excellent', intent: 'Addition' },
             ]
       ))
+      if (user) {
+        void syncWatchState(watchId, 'follow', true, {}, user.id)
+        void syncWatchState(watchId, 'target', true, { desiredCondition: 'Excellent', intent: 'Addition' }, user.id)
+      }
       showToast('Added to your next targets.')
       return { ok: true as const }
     }
@@ -635,9 +1103,14 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
         return { ok: false as const, reason: 'owned_watch' as const }
       }
 
+      if (grailWatchId && user) void syncWatchState(grailWatchId, 'grail', false, {}, user.id)
       setFollowedWatchIds(prev => (prev.includes(watchId) ? prev : [...prev, watchId]))
       setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
       setGrailWatchId(watchId)
+      if (user) {
+        void syncWatchState(watchId, 'follow', true, {}, user.id)
+        void syncWatchState(watchId, 'grail', true, {}, user.id)
+      }
       return { ok: true as const }
     }
 
@@ -646,7 +1119,9 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       return { ok: false as const, reason: 'not_in_collection' as const }
     }
 
+    if (collectionJewelWatchId && user) void syncWatchState(collectionJewelWatchId, 'jewel', false, {}, user.id)
     setCollectionJewelWatchId(watchId)
+    if (user) void syncWatchState(watchId, 'jewel', true, {}, user.id)
     return { ok: true as const }
   }
 
@@ -663,9 +1138,13 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       const hasAnotherOwnedCopy = collectionEntries.some(watch => watch.id !== watchId && watch.watchId === removedWatch.watchId)
       if (!hasAnotherOwnedCopy) {
         setCollectionJewelWatchId(prev => (prev === removedWatch.watchId ? null : prev))
+        if (user && collectionJewelWatchId === removedWatch.watchId) {
+          void syncWatchState(removedWatch.watchId, 'jewel', false, {}, user.id)
+        }
       }
     }
     setCollectionEntries(prev => prev.filter(watch => watch.id !== watchId))
+    if (user) void syncWatchRemove(watchId, user.id)
     setSelectedWatchId(prev => (prev === watchId ? null : prev))
   }
 
@@ -676,24 +1155,48 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
         .map(watch => byId.get(watch.id))
         .filter((watch): watch is OwnedWatch => watch !== undefined)
 
-      return next.length === prev.length ? next : prev
+      if (next.length !== prev.length) return prev
+      if (user) void syncWatchReorder(next, user.id)
+      return next
     })
   }
 
   function setWatchboxFrame(frameId: string) {
     if (!FRAMES.some(frame => frame.id === frameId)) return
-    setWatchboxConfig(prev => ({ ...prev, frame: frameId }))
+    setWatchboxConfig(prev => {
+      const next = { ...prev, frame: frameId }
+      if (user) void syncWatchboxConfig(next, user.id)
+      return next
+    })
   }
 
   function setWatchboxLining(liningId: string) {
     if (!LININGS.some(lining => lining.id === liningId)) return
-    setWatchboxConfig(prev => ({ ...prev, lining: liningId }))
+    setWatchboxConfig(prev => {
+      const next = { ...prev, lining: liningId }
+      if (user) void syncWatchboxConfig(next, user.id)
+      return next
+    })
   }
 
   function setWatchboxSlotCount(slotCount: number) {
     if (!SLOT_COUNTS.some(slot => slot.n === slotCount)) return
-    setWatchboxConfig(prev => ({ ...prev, slotCount }))
+    setWatchboxConfig(prev => {
+      const next = { ...prev, slotCount }
+      if (user) void syncWatchboxConfig(next, user.id)
+      return next
+    })
   }
+
+  const localWatchCount = (() => {
+    if (!migrationPending) return 0
+    try {
+      const raw = sessionStorage.getItem(COLLECTION_SESSION_STORAGE_KEY)
+      if (!raw) return 0
+      const parsed = JSON.parse(raw) as LegacySessionSnapshot
+      return Array.isArray(parsed.collectionWatches) ? parsed.collectionWatches.length : 0
+    } catch { return 0 }
+  })()
 
   const value: CollectionSessionContextValue = {
     collectionWatches,
@@ -707,6 +1210,8 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     collectionJewelWatch,
     selectedWatchId,
     watchboxConfig,
+    dataLoading,
+    migrationPending,
     setSelectedWatchId,
     addToCollection,
     followWatch,
@@ -739,6 +1244,8 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     toastMessage,
     toastVisible,
     showToast,
+    acceptMigration,
+    dismissMigration,
   }
 
   return (
@@ -769,6 +1276,72 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
           aria-live="polite"
         >
           {toastMessage}
+        </div>
+      )}
+      {migrationPending && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 330,
+            background: brand.colors.ink,
+            color: brand.colors.bg,
+            padding: '18px 24px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 16,
+            boxShadow: brand.shadow.xl,
+          }}
+        >
+          <p
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 13,
+              margin: 0,
+              letterSpacing: '0.02em',
+            }}
+          >
+            You have {localWatchCount} {localWatchCount === 1 ? 'watch' : 'watches'} saved locally. Import them to your account?
+          </p>
+          <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
+            <button
+              onClick={() => void acceptMigration()}
+              style={{
+                padding: '9px 18px',
+                background: brand.colors.gold,
+                color: brand.colors.ink,
+                border: 'none',
+                borderRadius: brand.radius.btn,
+                fontFamily: brand.font.sans,
+                fontSize: 12,
+                fontWeight: 500,
+                letterSpacing: '0.04em',
+                cursor: 'pointer',
+              }}
+            >
+              Import →
+            </button>
+            <button
+              onClick={dismissMigration}
+              style={{
+                padding: '9px 18px',
+                background: 'transparent',
+                color: brand.colors.bg,
+                border: `1px solid rgba(255,255,255,0.2)`,
+                borderRadius: brand.radius.btn,
+                fontFamily: brand.font.sans,
+                fontSize: 12,
+                fontWeight: 500,
+                letterSpacing: '0.04em',
+                cursor: 'pointer',
+              }}
+            >
+              Start fresh
+            </button>
+          </div>
         </div>
       )}
     </CollectionSessionContext.Provider>

@@ -6,6 +6,7 @@ import 'react-easy-crop/react-easy-crop.css'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import { useAuth } from '@/lib/auth/AuthProvider'
 import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarSheet'
 import WatchBox from '@/components/collection/WatchBox'
 import WatchCard from '@/components/collection/WatchCard'
@@ -3087,6 +3088,7 @@ function buildProfileSnapshotFromOwnerState({
 
 export function OwnerProfilePage() {
   const isMobile = useIsMobile()
+  const { user } = useAuth()
   const {
     collectionWatches,
     followedWatches,
@@ -3216,8 +3218,54 @@ export function OwnerProfilePage() {
     showToast('Cover image updated.')
   }
 
+  const authPrompt = !user ? (
+    <div
+      style={{
+        margin: isMobile ? '24px 24px 0' : '0 0 32px',
+        padding: '24px 28px',
+        border: `1px solid ${brand.colors.borderMid}`,
+        borderRadius: brand.radius.xl,
+        background: brand.colors.white,
+        boxShadow: brand.shadow.sm,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 16,
+        flexWrap: 'wrap',
+      }}
+    >
+      <div>
+        <p style={{ fontFamily: brand.font.serif, fontSize: 18, fontWeight: 500, color: brand.colors.ink, margin: '0 0 4px' }}>
+          Save your profile and share your collection.
+        </p>
+        <p style={{ fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, margin: 0 }}>
+          Sign in to persist your data and get a shareable profile link.
+        </p>
+      </div>
+      <Link
+        href="/auth"
+        style={{
+          display: 'inline-block',
+          padding: '10px 20px',
+          background: brand.colors.ink,
+          color: brand.colors.bg,
+          fontFamily: brand.font.sans,
+          fontSize: 12,
+          fontWeight: 500,
+          letterSpacing: '0.04em',
+          textDecoration: 'none',
+          borderRadius: brand.radius.btn,
+          flexShrink: 0,
+        }}
+      >
+        Create account / Sign in →
+      </Link>
+    </div>
+  ) : null
+
   return (
     <div className="profile-page-shell" style={{ padding: isMobile ? '0 0 96px' : '56px 56px 120px', borderTop: isMobile ? 'none' : `1px solid ${brand.colors.border}` }}>
+      {authPrompt}
       <div style={{ display: 'grid', gap: isMobile ? 0 : 20, gridTemplateColumns: 'minmax(0, 1fr)' }}>
         <OwnerProfileHero
           profile={profile}
