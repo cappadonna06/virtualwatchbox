@@ -3129,7 +3129,6 @@ export function OwnerProfilePage() {
   const [avatarEditOpen, setAvatarEditOpen] = useState(false)
   const [coverEditOpen, setCoverEditOpen] = useState(false)
   const [visibilityOpen, setVisibilityOpen] = useState(false)
-  const [profileCloudReady, setProfileCloudReady] = useState(false)
   const profileHydratedFromCloudRef = useRef(false)
 
   useEffect(() => {
@@ -3137,11 +3136,6 @@ export function OwnerProfilePage() {
     setPlaygroundBoxes(getStoredPlaygroundBoxes())
     setHydrated(true)
   }, [])
-
-  useEffect(() => {
-    profileHydratedFromCloudRef.current = false
-    setProfileCloudReady(!user)
-  }, [user?.id])
 
   useEffect(() => {
     if (!user || !hydrated || profileHydratedFromCloudRef.current) return
@@ -3157,7 +3151,6 @@ export function OwnerProfilePage() {
 
         if (!data) {
           profileHydratedFromCloudRef.current = true
-          setProfileCloudReady(true)
           return
         }
 
@@ -3201,7 +3194,6 @@ export function OwnerProfilePage() {
         console.error('[vwb] user profile hydrate failed', error)
       } finally {
         profileHydratedFromCloudRef.current = true
-        setProfileCloudReady(true)
       }
     })()
   }, [user, hydrated])
@@ -3301,7 +3293,7 @@ export function OwnerProfilePage() {
         visibility: profile.visibility,
       })
     }
-  }, [profile, hydrated, user, profileCloudReady, collectionWatches, followedWatches, nextTargets, grailWatch, collectionJewelWatch, watchboxConfig, playgroundBoxes])
+  }, [profile, hydrated, user, collectionWatches, followedWatches, nextTargets, grailWatch, collectionJewelWatch, watchboxConfig, playgroundBoxes])
 
   const collectionBox = useMemo(
     () => createCollectionBoxSnapshot(collectionWatches, watchboxConfig, new Date().toISOString()),
