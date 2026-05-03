@@ -5,6 +5,7 @@ import NavBar from '@/components/NavBar'
 import { AuthProvider } from '@/lib/auth/AuthProvider'
 import { CollectionSessionProvider } from './collection/CollectionSessionProvider'
 import { WatchImagesProvider } from '@/lib/watchImages/WatchImagesProvider'
+import { CatalogProvider } from '@/lib/catalog/CatalogProvider'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -127,11 +128,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <AuthProvider>
           <CollectionSessionProvider>
-            <WatchImagesProvider>
-              <NavBar />
+            <CatalogProvider>
+              <WatchImagesProvider>
+                <NavBar />
 
-              <main className="site-main" style={{ maxWidth: 1280, margin: '0 auto' }}>{children}</main>
-            </WatchImagesProvider>
+                <main className="site-main" style={{ maxWidth: 1280, margin: '0 auto' }}>{children}</main>
+              </WatchImagesProvider>
+            </CatalogProvider>
           </CollectionSessionProvider>
         </AuthProvider>
       </body>

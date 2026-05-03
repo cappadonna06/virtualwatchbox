@@ -2,8 +2,8 @@
 
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { renderableWatches as catalogWatches } from '@/lib/renderableWatches'
 import type { CatalogWatch, PlaygroundBox } from '@/types/watch'
+import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { normalizePlaygroundBoxes } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
@@ -61,6 +61,7 @@ function AddWatchSearchInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { isInCollection } = useCollectionSession()
+  const { allWatches: catalogWatches } = useCatalog()
 
   const dest = searchParams.get('dest')
   const boxId = searchParams.get('boxId')

@@ -3,8 +3,8 @@
 import type { CSSProperties } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { watches as catalogWatches } from '@/lib/watches'
 import type { PlaygroundBox, WatchCondition } from '@/types/watch'
+import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { addWatchToPlaygroundBox, createPlaygroundBox, createPlaygroundEntry, normalizePlaygroundBoxes } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import { useCollectionSession } from '../../CollectionSessionProvider'
@@ -35,7 +35,8 @@ export default function AddWatchConfirmPage() {
   const searchParams = useSearchParams()
   const { addToCollection, followWatch, isInCollection } = useCollectionSession()
 
-  const watch = useMemo(() => catalogWatches.find(w => w.id === params.watchId), [params.watchId])
+  const { allWatches } = useCatalog()
+  const watch = useMemo(() => allWatches.find(w => w.id === params.watchId), [allWatches, params.watchId])
 
   const dest = searchParams.get('dest')
   const source = searchParams.get('source')
