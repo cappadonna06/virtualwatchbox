@@ -37,12 +37,15 @@ export interface CatalogWatch {
   model: string
   reference: string
   caseSizeMm: number
+  lugWidthMm?: number
   caseMaterial: string
   dialColor: string
   movement: string
   complications: string[]
   estimatedValue: number
-  imageUrl: string
+  imageUrl?: string
+  imageTransparentUrl?: string
+  imageSourceUrl?: string
   dialConfig: DialConfig
   watchType: WatchType
 }
@@ -75,12 +78,15 @@ export interface ResolvedWatch {
   model: string
   reference: string
   caseSizeMm: number
+  lugWidthMm?: number
   caseMaterial: string
   dialColor: string
   movement: string
   complications: string[]
   estimatedValue: number
-  imageUrl: string
+  imageUrl?: string
+  imageTransparentUrl?: string
+  imageSourceUrl?: string
   dialConfig: DialConfig
   watchType: WatchType
   condition: WatchCondition
@@ -97,6 +103,7 @@ export type PlaygroundWatchOverrides = Partial<Pick<
   CatalogWatch,
   | 'reference'
   | 'caseSizeMm'
+  | 'lugWidthMm'
   | 'caseMaterial'
   | 'dialColor'
   | 'movement'

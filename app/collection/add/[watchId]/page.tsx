@@ -1,16 +1,16 @@
 'use client'
 
-import Image from 'next/image'
 import type { CSSProperties } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { watches as catalogWatches } from '@/lib/watches'
 import type { PlaygroundBox, WatchCondition } from '@/types/watch'
+import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { addWatchToPlaygroundBox, createPlaygroundBox, createPlaygroundEntry, normalizePlaygroundBoxes } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import { useCollectionSession } from '../../CollectionSessionProvider'
 import { brand } from '@/lib/brand'
 import WatchStateControl from '@/components/collection/WatchStateControl'
+import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 
 const STORAGE_KEY = 'playgroundBoxes'
 const CONDITIONS: WatchCondition[] = ['Unworn', 'Like New', 'Excellent', 'Good', 'Fair']
@@ -35,7 +35,8 @@ export default function AddWatchConfirmPage() {
   const searchParams = useSearchParams()
   const { addToCollection, followWatch, isInCollection } = useCollectionSession()
 
-  const watch = useMemo(() => catalogWatches.find(w => w.id === params.watchId), [params.watchId])
+  const { allWatches } = useCatalog()
+  const watch = useMemo(() => allWatches.find(w => w.id === params.watchId), [allWatches, params.watchId])
 
   const dest = searchParams.get('dest')
   const source = searchParams.get('source')
@@ -169,12 +170,12 @@ export default function AddWatchConfirmPage() {
                 overflow: 'hidden',
               }}
             >
-              <Image
-                src={resolvedWatch.imageUrl}
-                alt={resolvedWatch.model}
+              <WatchImageOrDial
+                watch={resolvedWatch}
                 fill
                 sizes={isCompact ? '100vw' : '(max-width: 1024px) 100vw, 45vw'}
-                style={{ objectFit: 'contain', padding: 32, filter: 'drop-shadow(0 16px 32px rgba(26,20,16,0.18))' }}
+                imageStyle={{ objectFit: 'contain', padding: 32, filter: 'drop-shadow(0 16px 32px rgba(26,20,16,0.18))' }}
+                dialSize={isCompact ? 160 : 220}
               />
               <WatchStateControl
                 catalogWatchId={resolvedWatch.id}
@@ -277,6 +278,7 @@ export default function AddWatchConfirmPage() {
                 ['Case Material', resolvedWatch.caseMaterial],
                 ['Dial Color', resolvedWatch.dialColor],
                 ['Case Size', `${resolvedWatch.caseSizeMm}mm`],
+                ...(resolvedWatch.lugWidthMm ? [['Lug Width', `${resolvedWatch.lugWidthMm}mm`] as [string, string]] : []),
               ].map(([label, value]) => (
                 <div
                   key={label}

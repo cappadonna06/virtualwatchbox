@@ -1,9 +1,9 @@
 'use client'
 
-import Image from 'next/image'
 import type { OwnershipStatus, ResolvedOwnedWatch, ResolvedWatch, WatchCondition } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import WatchStateControl from './WatchStateControl'
 import type { WatchStateSource } from '@/types/watch'
 import { IntentBadge } from './WatchStateIcons'
@@ -71,12 +71,12 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
           borderBottom: `1px solid ${brand.colors.borderMid}`,
         }}
       >
-        <Image
-          src={watch.imageUrl}
-          alt={watch.model}
+        <WatchImageOrDial
+          watch={watch}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
-          style={{ objectFit: 'contain', objectPosition: 'center', padding: 12 }}
+          imageStyle={{ objectFit: 'contain', objectPosition: 'center', padding: 12 }}
+          dialSize={108}
         />
         {showJewelBadge && (
           <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 3 }}>

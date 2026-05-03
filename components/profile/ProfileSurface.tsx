@@ -6,6 +6,7 @@ import 'react-easy-crop/react-easy-crop.css'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import { useAuth } from '@/lib/auth/AuthProvider'
 import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarSheet'
 import WatchBox from '@/components/collection/WatchBox'
 import WatchCard from '@/components/collection/WatchCard'
@@ -19,6 +20,7 @@ import {
 } from '@/components/collection/WatchStateIcons'
 import { useIsMobile } from '@/components/collection/useResponsiveState'
 import DialSVG from '@/components/watchbox/DialSVG'
+import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import { brand } from '@/lib/brand'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import {
@@ -1502,12 +1504,12 @@ function GrailFeature({
               border: `1px solid ${brand.colors.border}`,
             }}
           >
-            <Image
-              src={grailWatch.imageUrl}
-              alt={grailWatch.model}
+            <WatchImageOrDial
+              watch={grailWatch}
               fill
               sizes="140px"
-              style={{ objectFit: 'contain', padding: 12 }}
+              imageStyle={{ objectFit: 'contain', padding: 12 }}
+              dialSize={82}
             />
           </div>
 
@@ -1664,12 +1666,12 @@ function BoxPreviewVisual({
                     />
                   </div>
                 ) : (
-                  <Image
-                    src={watch.imageUrl}
-                    alt={watch.model}
+                  <WatchImageOrDial
+                    watch={watch}
                     fill
                     sizes={isFeature ? '140px' : '90px'}
-                    style={{ objectFit: 'contain', objectPosition: 'center center' }}
+                    imageStyle={{ objectFit: 'contain', objectPosition: 'center center' }}
+                    dialSize={isFeature ? 42 : 28}
                   />
                 )}
               </div>
@@ -2118,22 +2120,33 @@ function FeaturedHeroPanel({
 
         {watch ? (
           <>
-            <img
-              src={watch.imageUrl}
-              alt={watch.model}
-              draggable={false}
-              style={{
-                position: 'absolute',
-                left: 48,
-                top: '50%',
-                transform: 'translate(-50%, -50%)',
-                height: 'calc(100% + 8px)',
-                width: 'auto',
-                filter: brand.shadow.drop,
-                userSelect: 'none',
-                pointerEvents: 'none',
-              }}
-            />
+            {watch.imageUrl ? (
+              <img
+                src={watch.imageUrl}
+                alt={watch.model}
+                draggable={false}
+                style={{
+                  position: 'absolute',
+                  left: 48,
+                  top: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  height: 'calc(100% + 8px)',
+                  width: 'auto',
+                  filter: brand.shadow.drop,
+                  userSelect: 'none',
+                  pointerEvents: 'none',
+                }}
+              />
+            ) : (
+              <div style={{ position: 'absolute', left: 48, top: '50%', transform: 'translate(-50%, -50%)', pointerEvents: 'none' }}>
+                <DialSVG
+                  dialColor={watch.dialConfig.dialColor}
+                  markerColor={watch.dialConfig.markerColor}
+                  handColor={watch.dialConfig.handColor}
+                  size={58}
+                />
+              </div>
+            )}
             <div style={{ display: 'grid', gridTemplateColumns: '68px minmax(0, 1fr)', gap: 10 }}>
               <div style={{ width: 68 }} />
               <div style={{ minWidth: 0, maxWidth: 120, paddingRight: 2, paddingTop: 2 }}>
@@ -2218,22 +2231,33 @@ function FeaturedHeroPanel({
 
       {watch ? (
         <>
-          <img
-            src={watch.imageUrl}
-            alt={watch.model}
-            draggable={false}
-            style={{
-              position: 'absolute',
-              left: 85,
-              top: '50%',
-              transform: 'translate(-50%, -50%)',
-              height: 'calc(100% + 16px)',
-              width: 'auto',
-              filter: brand.shadow.drop,
-              userSelect: 'none',
-              pointerEvents: 'none',
-            }}
-          />
+          {watch.imageUrl ? (
+            <img
+              src={watch.imageUrl}
+              alt={watch.model}
+              draggable={false}
+              style={{
+                position: 'absolute',
+                left: 85,
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                height: 'calc(100% + 16px)',
+                width: 'auto',
+                filter: brand.shadow.drop,
+                userSelect: 'none',
+                pointerEvents: 'none',
+              }}
+            />
+          ) : (
+            <div style={{ position: 'absolute', left: 85, top: '50%', transform: 'translate(-50%, -50%)', pointerEvents: 'none' }}>
+              <DialSVG
+                dialColor={watch.dialConfig.dialColor}
+                markerColor={watch.dialConfig.markerColor}
+                handColor={watch.dialConfig.handColor}
+                size={92}
+              />
+            </div>
+          )}
           <div className="grid" style={{ gridTemplateColumns: '130px minmax(0,1fr)', gap: 12 }}>
             <div style={{ width: 130 }} />
 
@@ -3087,6 +3111,7 @@ function buildProfileSnapshotFromOwnerState({
 
 export function OwnerProfilePage() {
   const isMobile = useIsMobile()
+  const { user } = useAuth()
   const {
     collectionWatches,
     followedWatches,
@@ -3216,8 +3241,54 @@ export function OwnerProfilePage() {
     showToast('Cover image updated.')
   }
 
+  const authPrompt = !user ? (
+    <div
+      style={{
+        margin: isMobile ? '24px 24px 0' : '0 0 32px',
+        padding: '24px 28px',
+        border: `1px solid ${brand.colors.borderMid}`,
+        borderRadius: brand.radius.xl,
+        background: brand.colors.white,
+        boxShadow: brand.shadow.sm,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 16,
+        flexWrap: 'wrap',
+      }}
+    >
+      <div>
+        <p style={{ fontFamily: brand.font.serif, fontSize: 18, fontWeight: 500, color: brand.colors.ink, margin: '0 0 4px' }}>
+          Save your profile and share your collection.
+        </p>
+        <p style={{ fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, margin: 0 }}>
+          Sign in to persist your data and get a shareable profile link.
+        </p>
+      </div>
+      <Link
+        href="/auth"
+        style={{
+          display: 'inline-block',
+          padding: '10px 20px',
+          background: brand.colors.ink,
+          color: brand.colors.bg,
+          fontFamily: brand.font.sans,
+          fontSize: 12,
+          fontWeight: 500,
+          letterSpacing: '0.04em',
+          textDecoration: 'none',
+          borderRadius: brand.radius.btn,
+          flexShrink: 0,
+        }}
+      >
+        Create account / Sign in →
+      </Link>
+    </div>
+  ) : null
+
   return (
     <div className="profile-page-shell" style={{ padding: isMobile ? '0 0 96px' : '56px 56px 120px', borderTop: isMobile ? 'none' : `1px solid ${brand.colors.border}` }}>
+      {authPrompt}
       <div style={{ display: 'grid', gap: isMobile ? 0 : 20, gridTemplateColumns: 'minmax(0, 1fr)' }}>
         <OwnerProfileHero
           profile={profile}

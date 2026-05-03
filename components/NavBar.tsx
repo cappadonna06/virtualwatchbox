@@ -4,6 +4,7 @@ import { type CSSProperties, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { brand } from '@/lib/brand'
+import { useAuth } from '@/lib/auth/AuthProvider'
 
 type NavIconName = 'collection' | 'playground' | 'discover' | 'news' | 'profile'
 type NavLink = { label: string; href: string; coming?: boolean; icon: NavIconName }
@@ -72,6 +73,7 @@ export default function NavBar() {
   const [toastVisible, setToastVisible] = useState(false)
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pathname = usePathname()
+  const { user, signOut } = useAuth()
 
   useEffect(() => {
     setOpen(false)
@@ -193,26 +195,57 @@ export default function NavBar() {
           })}
         </div>
 
-        <Link
-          href="/profile"
-          className={`nav-signin ${profileActive ? 'is-active' : ''}`}
-          style={{
-            width: 38,
-            height: 38,
-            borderRadius: brand.radius.circle,
-            background: brand.colors.ink,
-            color: brand.colors.bg,
-            textDecoration: 'none',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: profileActive ? brand.shadow.gold : brand.shadow.sm,
-          }}
-          aria-label="Profile"
-          aria-current={profileActive ? 'page' : undefined}
-        >
-          <NavIcon name="profile" />
-        </Link>
+        {user ? (
+          <div className="nav-links" style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+            <Link
+              href="/profile"
+              className={`nav-signin ${profileActive ? 'is-active' : ''}`}
+              style={{
+                width: 38,
+                height: 38,
+                borderRadius: brand.radius.circle,
+                background: profileActive ? brand.colors.ink : brand.colors.goldWash,
+                border: `1px solid ${profileActive ? brand.colors.ink : brand.colors.goldLine}`,
+                color: profileActive ? brand.colors.bg : brand.colors.gold,
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontFamily: brand.font.serif,
+                fontSize: 16,
+                fontWeight: 500,
+                letterSpacing: '0.04em',
+                boxShadow: profileActive ? brand.shadow.gold : brand.shadow.sm,
+                transition: `background ${brand.transition.fast}, border-color ${brand.transition.fast}`,
+              }}
+              aria-label={`Signed in as ${user.email ?? 'you'}`}
+              title={user.email ?? undefined}
+              aria-current={profileActive ? 'page' : undefined}
+            >
+              {user.email?.charAt(0).toUpperCase() ?? <NavIcon name="profile" />}
+            </Link>
+            <button
+              onClick={() => void signOut()}
+              className="nav-link-button"
+              style={desktopLinkStyle(false)}
+            >
+              Sign out
+            </button>
+          </div>
+        ) : (
+          <Link
+            href="/auth"
+            className="nav-link-button"
+            style={{
+              ...desktopLinkStyle(false),
+              padding: '7px 14px',
+              border: `1px solid ${brand.colors.borderLight}`,
+              borderRadius: brand.radius.btn,
+            }}
+          >
+            Sign in
+          </Link>
+        )}
 
         <button
           className="nav-hamburger"
@@ -308,23 +341,54 @@ export default function NavBar() {
             </Link>
           )
         })}
-        <Link
-          href="/profile"
-          onClick={() => setOpen(false)}
-          className="nav-mobile-row"
-          style={{
-            ...mobileRowStyle(profileActive, false),
-            marginTop: 8,
-          }}
-          aria-current={profileActive ? 'page' : undefined}
-        >
-          <span className="nav-mobile-row-main">
-            <span className={`nav-mobile-row-icon ${profileActive ? 'is-profile-active' : ''}`}>
-              <NavIcon name="profile" />
+        {user ? (
+          <>
+            <Link
+              href="/profile"
+              onClick={() => setOpen(false)}
+              className="nav-mobile-row"
+              style={{
+                ...mobileRowStyle(profileActive, true),
+                marginTop: 8,
+              }}
+              aria-current={profileActive ? 'page' : undefined}
+            >
+              <span className="nav-mobile-row-main">
+                <span className={`nav-mobile-row-icon ${profileActive ? 'is-profile-active' : ''}`}>
+                  <NavIcon name="profile" />
+                </span>
+                <span>Profile</span>
+              </span>
+            </Link>
+            <button
+              onClick={() => { void signOut(); setOpen(false) }}
+              className="nav-mobile-row"
+              style={{ ...mobileRowStyle(false, false), marginTop: 4 }}
+            >
+              <span className="nav-mobile-row-main">
+                <span className="nav-mobile-row-icon" />
+                <span>Sign out</span>
+              </span>
+            </button>
+          </>
+        ) : (
+          <Link
+            href="/auth"
+            onClick={() => setOpen(false)}
+            className="nav-mobile-row"
+            style={{
+              ...mobileRowStyle(false, false),
+              marginTop: 8,
+            }}
+          >
+            <span className="nav-mobile-row-main">
+              <span className="nav-mobile-row-icon">
+                <NavIcon name="profile" />
+              </span>
+              <span>Sign in</span>
             </span>
-            <span>Profile</span>
-          </span>
-        </Link>
+          </Link>
+        )}
       </div>
 
       <div

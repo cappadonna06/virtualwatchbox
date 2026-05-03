@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useState, type CSSProperties } from 'react'
-import Image from 'next/image'
 import { createPortal } from 'react-dom'
 import { brand } from '@/lib/brand'
 import type { CatalogWatch } from '@/types/watch'
+import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import { CrownIcon } from './WatchStateIcons'
 import { useIsMobile, usePrefersReducedMotion } from './useResponsiveState'
 
@@ -259,12 +259,12 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
                 aspectRatio: isMobile ? '1 / 0.78' : '1 / 1',
               }}
             >
-              <Image
-                src={watch.imageUrl}
-                alt={watch.model}
+              <WatchImageOrDial
+                watch={watch}
                 fill
                 sizes="320px"
-                style={{ objectFit: 'contain', padding: isMobile ? 20 : 28, filter: brand.shadow.drop }}
+                imageStyle={{ objectFit: 'contain', padding: isMobile ? 20 : 28, filter: brand.shadow.drop }}
+                dialSize={isMobile ? 126 : 152}
               />
             </div>
             <div style={{ padding: isMobile ? '12px 14px 14px' : '16px 18px 18px' }}>
