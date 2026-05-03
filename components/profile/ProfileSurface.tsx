@@ -19,6 +19,7 @@ import {
 } from '@/components/collection/WatchStateIcons'
 import { useIsMobile } from '@/components/collection/useResponsiveState'
 import DialSVG from '@/components/watchbox/DialSVG'
+import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import { brand } from '@/lib/brand'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import {
@@ -1502,12 +1503,12 @@ function GrailFeature({
               border: `1px solid ${brand.colors.border}`,
             }}
           >
-            <Image
-              src={grailWatch.imageUrl}
-              alt={grailWatch.model}
+            <WatchImageOrDial
+              watch={grailWatch}
               fill
               sizes="140px"
-              style={{ objectFit: 'contain', padding: 12 }}
+              imageStyle={{ objectFit: 'contain', padding: 12 }}
+              dialSize={82}
             />
           </div>
 
@@ -1664,12 +1665,12 @@ function BoxPreviewVisual({
                     />
                   </div>
                 ) : (
-                  <Image
-                    src={watch.imageUrl}
-                    alt={watch.model}
+                  <WatchImageOrDial
+                    watch={watch}
                     fill
                     sizes={isFeature ? '140px' : '90px'}
-                    style={{ objectFit: 'contain', objectPosition: 'center center' }}
+                    imageStyle={{ objectFit: 'contain', objectPosition: 'center center' }}
+                    dialSize={isFeature ? 42 : 28}
                   />
                 )}
               </div>
@@ -2118,22 +2119,33 @@ function FeaturedHeroPanel({
 
         {watch ? (
           <>
-            <img
-              src={watch.imageUrl}
-              alt={watch.model}
-              draggable={false}
-              style={{
-                position: 'absolute',
-                left: 48,
-                top: '50%',
-                transform: 'translate(-50%, -50%)',
-                height: 'calc(100% + 8px)',
-                width: 'auto',
-                filter: brand.shadow.drop,
-                userSelect: 'none',
-                pointerEvents: 'none',
-              }}
-            />
+            {watch.imageUrl ? (
+              <img
+                src={watch.imageUrl}
+                alt={watch.model}
+                draggable={false}
+                style={{
+                  position: 'absolute',
+                  left: 48,
+                  top: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  height: 'calc(100% + 8px)',
+                  width: 'auto',
+                  filter: brand.shadow.drop,
+                  userSelect: 'none',
+                  pointerEvents: 'none',
+                }}
+              />
+            ) : (
+              <div style={{ position: 'absolute', left: 48, top: '50%', transform: 'translate(-50%, -50%)', pointerEvents: 'none' }}>
+                <DialSVG
+                  dialColor={watch.dialConfig.dialColor}
+                  markerColor={watch.dialConfig.markerColor}
+                  handColor={watch.dialConfig.handColor}
+                  size={58}
+                />
+              </div>
+            )}
             <div style={{ display: 'grid', gridTemplateColumns: '68px minmax(0, 1fr)', gap: 10 }}>
               <div style={{ width: 68 }} />
               <div style={{ minWidth: 0, maxWidth: 120, paddingRight: 2, paddingTop: 2 }}>
@@ -2218,22 +2230,33 @@ function FeaturedHeroPanel({
 
       {watch ? (
         <>
-          <img
-            src={watch.imageUrl}
-            alt={watch.model}
-            draggable={false}
-            style={{
-              position: 'absolute',
-              left: 85,
-              top: '50%',
-              transform: 'translate(-50%, -50%)',
-              height: 'calc(100% + 16px)',
-              width: 'auto',
-              filter: brand.shadow.drop,
-              userSelect: 'none',
-              pointerEvents: 'none',
-            }}
-          />
+          {watch.imageUrl ? (
+            <img
+              src={watch.imageUrl}
+              alt={watch.model}
+              draggable={false}
+              style={{
+                position: 'absolute',
+                left: 85,
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                height: 'calc(100% + 16px)',
+                width: 'auto',
+                filter: brand.shadow.drop,
+                userSelect: 'none',
+                pointerEvents: 'none',
+              }}
+            />
+          ) : (
+            <div style={{ position: 'absolute', left: 85, top: '50%', transform: 'translate(-50%, -50%)', pointerEvents: 'none' }}>
+              <DialSVG
+                dialColor={watch.dialConfig.dialColor}
+                markerColor={watch.dialConfig.markerColor}
+                handColor={watch.dialConfig.handColor}
+                size={92}
+              />
+            </div>
+          )}
           <div className="grid" style={{ gridTemplateColumns: '130px minmax(0,1fr)', gap: 12 }}>
             <div style={{ width: 130 }} />
 

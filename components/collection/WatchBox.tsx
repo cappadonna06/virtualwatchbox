@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import Image from 'next/image'
 import type { ResolvedWatch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import { getWatchboxOverflow } from '@/lib/watchboxOverflow'
 import DialSVG from '@/components/watchbox/DialSVG'
+import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import { brand } from '@/lib/brand'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { IntentBadge } from './WatchStateIcons'
@@ -74,12 +74,12 @@ function OverflowListItem({
             size={32}
           />
         ) : (
-          <Image
-            src={watch.imageUrl}
-            alt={watch.model}
+          <WatchImageOrDial
+            watch={watch}
             fill
             sizes="48px"
-            style={{ objectFit: 'contain', objectPosition: 'center center' }}
+            imageStyle={{ objectFit: 'contain', objectPosition: 'center center' }}
+            dialSize={32}
           />
         )}
       </div>
@@ -613,12 +613,12 @@ export default function WatchBox({
                         />
                       </div>
                     ) : (
-                      <Image
-                        src={w.imageUrl}
-                        alt={w.model}
+                      <WatchImageOrDial
+                        watch={w}
                         fill
                         sizes="(max-width: 768px) 20vw, 10vw"
-                        style={{ objectFit: 'contain', objectPosition: 'center center' }}
+                        imageStyle={{ objectFit: 'contain', objectPosition: 'center center' }}
+                        dialSize={Math.round((slotWidth ?? 90) * 0.58)}
                       />
                     )}
                     {shouldShowJewel(w.watchId) && (

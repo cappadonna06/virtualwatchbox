@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import WatchStateControl from '@/components/collection/WatchStateControl'
+import DialSVG from '@/components/watchbox/DialSVG'
 import { brand } from '@/lib/brand'
+import { renderableWatches } from '@/lib/renderableWatches'
 import { usePrefersReducedMotion } from '@/components/collection/useResponsiveState'
 
 export interface CarouselWatch {
@@ -15,15 +17,38 @@ export interface CarouselWatch {
   ref: string
   dial: string
   value: number
+  dialConfig: {
+    dialColor: string
+    markerColor: string
+    handColor: string
+  }
 }
 
-const CAROUSEL_WATCHES: CarouselWatch[] = [
-  { id: 'longines-ld-white', img: '/watches/longines-05.avif', brand: 'Longines', model: 'Legend Diver', ref: 'L3.764.4.16.6', dial: 'White Lacquer', value: 1350 },
-  { id: 'longines-ld-navy', img: '/watches/longines-02.avif', brand: 'Longines', model: 'Legend Diver', ref: 'L3.764.4.96.6', dial: 'Navy Blue', value: 1380 },
-  { id: 'longines-ld-green', img: '/watches/longines-03.avif', brand: 'Longines', model: 'Legend Diver', ref: 'L3.764.4.06.6', dial: 'Forest Green', value: 1450 },
-  { id: 'longines-ld-black', img: '/watches/longines-04.avif', brand: 'Longines', model: 'Legend Diver', ref: 'L3.764.4.50.0', dial: 'Black', value: 1250 },
-  { id: 'longines-ld-grey', img: '/watches/longines-01.avif', brand: 'Longines', model: 'Legend Diver', ref: 'L3.764.4.99.6', dial: 'Grey Anthracite', value: 1340 },
-]
+const CAROUSEL_WATCHES: CarouselWatch[] = renderableWatches.slice(0, 5).map(watch => ({
+  id: watch.id,
+  img: watch.imageUrl ?? '',
+  brand: watch.brand,
+  model: watch.model,
+  ref: watch.reference,
+  dial: watch.dialColor,
+  value: watch.estimatedValue,
+  dialConfig: watch.dialConfig,
+}))
+
+const FALLBACK_WATCH: CarouselWatch = {
+  id: 'hero-fallback',
+  img: '',
+  brand: 'Virtual Watchbox',
+  model: 'Build Your Box',
+  ref: 'Add watches to begin',
+  dial: 'Curated collection',
+  value: 0,
+  dialConfig: {
+    dialColor: '#111111',
+    markerColor: '#FAF8F4',
+    handColor: '#C9A84C',
+  },
+}
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -37,10 +62,11 @@ export default function HeroCarousel() {
   const [manualPaused, setManualPaused] = useState(false)
   const prefersReducedMotion = usePrefersReducedMotion()
 
-  const watch = CAROUSEL_WATCHES[idx]
+  const watch = CAROUSEL_WATCHES[idx] ?? FALLBACK_WATCH
   const total = CAROUSEL_WATCHES.length
 
   function navigate(newIdx: number, options?: { manual?: boolean }) {
+    if (total === 0) return
     if (animating) return
     if (options?.manual) setManualPaused(true)
     setDir(newIdx > idx ? 1 : -1)
@@ -52,7 +78,7 @@ export default function HeroCarousel() {
   }
 
   useEffect(() => {
-    if (prefersReducedMotion || hovered || manualPaused || animating) return
+    if (total === 0 || prefersReducedMotion || hovered || manualPaused || animating) return
 
     const timer = window.setTimeout(() => {
       navigate(idx + 1)
@@ -169,35 +195,37 @@ export default function HeroCarousel() {
             background: 'radial-gradient(ellipse 70% 55% at 50% 60%, rgba(201,168,76,0.08) 0%, transparent 70%)',
           }} />
 
-          {/* Prev arrow */}
-          <button
-            onClick={() => navigate(idx - 1, { manual: true })}
-            style={{
-              position: 'absolute', top: '50%', left: 12, zIndex: 10,
-              transform: 'translateY(-50%)',
-              width: 32, height: 32, borderRadius: '50%',
-              background: 'rgba(255,255,255,0.07)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: 'rgba(255,255,255,0.6)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', fontSize: 13,
-            }}
-          >‹</button>
+          {total > 0 && (
+            <>
+              <button
+                onClick={() => navigate(idx - 1, { manual: true })}
+                style={{
+                  position: 'absolute', top: '50%', left: 12, zIndex: 10,
+                  transform: 'translateY(-50%)',
+                  width: 32, height: 32, borderRadius: '50%',
+                  background: 'rgba(255,255,255,0.07)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: 'rgba(255,255,255,0.6)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', fontSize: 13,
+                }}
+              >‹</button>
 
-          {/* Next arrow */}
-          <button
-            onClick={() => navigate(idx + 1, { manual: true })}
-            style={{
-              position: 'absolute', top: '50%', right: 12, zIndex: 10,
-              transform: 'translateY(-50%)',
-              width: 32, height: 32, borderRadius: '50%',
-              background: 'rgba(255,255,255,0.07)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: 'rgba(255,255,255,0.6)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', fontSize: 13,
-            }}
-          >›</button>
+              <button
+                onClick={() => navigate(idx + 1, { manual: true })}
+                style={{
+                  position: 'absolute', top: '50%', right: 12, zIndex: 10,
+                  transform: 'translateY(-50%)',
+                  width: 32, height: 32, borderRadius: '50%',
+                  background: 'rgba(255,255,255,0.07)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: 'rgba(255,255,255,0.6)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', fontSize: 13,
+                }}
+              >›</button>
+            </>
+          )}
 
           <div
             style={{
@@ -226,27 +254,40 @@ export default function HeroCarousel() {
                 pointerEvents: 'none',
               }}
             >
-              <Image
-                key={idx}
-                src={watch.img}
-                alt={watch.model}
-                fill
-                sizes="392px"
-                style={{
-                  display: 'block',
-                  filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.55))',
-                  objectFit: 'contain',
-                  objectPosition: 'center center',
-                }}
-              />
+              {watch.img ? (
+                <Image
+                  key={idx}
+                  src={watch.img}
+                  alt={watch.model}
+                  fill
+                  sizes="392px"
+                  style={{
+                    display: 'block',
+                    filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.55))',
+                    objectFit: 'contain',
+                    objectPosition: 'center center',
+                  }}
+                />
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                  <DialSVG
+                    dialColor={watch.dialConfig.dialColor}
+                    markerColor={watch.dialConfig.markerColor}
+                    handColor={watch.dialConfig.handColor}
+                    size={220}
+                  />
+                </div>
+              )}
             </div>
           </div>
 
-          <WatchStateControl
-            catalogWatchId={watch.id}
-            source="hero"
-            tone="dark"
-          />
+          {total > 0 && (
+            <WatchStateControl
+              catalogWatchId={watch.id}
+              source="hero"
+              tone="dark"
+            />
+          )}
 
           {/* Top-left: brand + model */}
           <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 3, maxWidth: 150 }}>
@@ -262,7 +303,8 @@ export default function HeroCarousel() {
           </div>
 
           {/* Top-right: value pill */}
-          <div style={{
+          {total > 0 && (
+            <div style={{
             position: 'absolute', top: 14, right: 14, zIndex: 3,
             background: 'rgba(20,16,12,0.72)',
             border: '1px solid rgba(255,255,255,0.1)',
@@ -277,13 +319,15 @@ export default function HeroCarousel() {
             <div style={{ fontFamily: brand.font.serif, fontSize: 18, fontWeight: 500, color: '#C9A84C', lineHeight: 1 }}>{fmt(watch.value)}</div>
             <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginTop: 6 }}>{watch.dial}</div>
             <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.22)', marginTop: 2 }}>{watch.ref}</div>
-          </div>
+            </div>
+          )}
 
           {/* Dots */}
-          <div style={{
+          {total > 0 && (
+            <div style={{
             display: 'flex', gap: 5, justifyContent: 'center',
             position: 'absolute', bottom: 10, left: 0, right: 0, zIndex: 10,
-          }}>
+            }}>
             {CAROUSEL_WATCHES.map((_, i) => (
               <div
                 key={i}
@@ -297,7 +341,8 @@ export default function HeroCarousel() {
                 }}
               />
             ))}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

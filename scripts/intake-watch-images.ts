@@ -5,7 +5,7 @@ import path from 'node:path'
 import { promisify } from 'node:util'
 import sharp from 'sharp'
 import { watches } from '../lib/watches'
-import type { CatalogWatch } from '../types/watch'
+import type { CatalogWatch, WatchType } from '../types/watch'
 import {
   type Confidence,
   type IntakeRow,
@@ -37,7 +37,6 @@ type VisionIdentification = {
   lugWidthMm?: number
   movement?: string
   estimatedValue?: number
-  existingWatchId?: string
   confidence?: Confidence
   notes?: string
 }
@@ -49,6 +48,11 @@ type IntakeSuggestion = Match & {
 
 let warnedMissingVisionKey = false
 const execFileAsync = promisify(execFile)
+const allowedWatchTypes: WatchType[] = ['Diver', 'Dress', 'Sport', 'Chronograph', 'GMT', 'Pilot', 'Field', 'Integrated Bracelet', 'Vintage']
+
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
 
 function tokenSet(value: string) {
   return new Set(
@@ -127,43 +131,48 @@ function confidenceFromScore(score: number): Confidence {
   return 'unmatched'
 }
 
-function scoreCatalogText(value: string, watch: CatalogWatch): Match {
-  const tokens = tokenSet(value)
-  const haystack = slugify(value)
-  const referenceText = compactReference(value)
-  const notes: string[] = []
-  let score = 0
-
-  const reference = compactReference(watch.reference)
-  if (reference && referenceText.includes(reference)) {
-    score += 90
-    notes.push('vision reference')
-  }
-
-  const brandHits = [...tokenSet(watch.brand)].filter(token => tokens.has(token))
-  if (brandHits.length > 0) {
-    score += 24
-    notes.push('vision brand')
-  }
-
-  const modelHits = [...tokenSet(watch.model)].filter(token => tokens.has(token))
-  if (modelHits.length > 0) {
-    score += modelHits.length * 14
-    notes.push('vision model')
-  }
-
-  if (haystack.includes(watch.id)) {
-    score += 72
-    notes.push('vision watch id')
-  }
-
-  return { watch, confidence: confidenceFromScore(score), score, notes }
+function compactValue(value?: string | null) {
+  const trimmed = value?.trim()
+  return trimmed || undefined
 }
 
-function bestCatalogTextMatch(value: string) {
-  return watches
-    .map(watch => scoreCatalogText(value, watch))
-    .sort((a, b) => b.score - a.score)[0]
+function normalizeNumber(value?: number | null) {
+  return typeof value === 'number' && Number.isFinite(value) ? value : undefined
+}
+
+function normalizeWatchType(value?: string): WatchType | '' {
+  const normalized = slugify(value ?? '')
+  const direct = allowedWatchTypes.find(type => slugify(type) === normalized)
+  if (direct) return direct
+
+  if (normalized.includes('diver')) return 'Diver'
+  if (normalized.includes('dress')) return 'Dress'
+  if (normalized.includes('chrono')) return 'Chronograph'
+  if (normalized.includes('gmt') || normalized.includes('world-time')) return 'GMT'
+  if (normalized.includes('pilot') || normalized.includes('aviation')) return 'Pilot'
+  if (normalized.includes('field')) return 'Field'
+  if (normalized.includes('integrated')) return 'Integrated Bracelet'
+  if (normalized.includes('vintage') || normalized.includes('heritage')) return 'Vintage'
+  if (normalized.includes('sport') || normalized.includes('luxury-sports') || normalized.includes('automatic')) return 'Sport'
+
+  return ''
+}
+
+function normalizeVisionIdentification(vision: VisionIdentification): VisionIdentification {
+  return {
+    brand: compactValue(vision.brand),
+    model: compactValue(vision.model),
+    reference: compactValue(vision.reference),
+    watchType: normalizeWatchType(vision.watchType),
+    dialColor: compactValue(vision.dialColor),
+    caseMaterial: compactValue(vision.caseMaterial),
+    caseSizeMm: normalizeNumber(vision.caseSizeMm),
+    lugWidthMm: normalizeNumber(vision.lugWidthMm),
+    movement: compactValue(vision.movement),
+    estimatedValue: normalizeNumber(vision.estimatedValue),
+    confidence: vision.confidence ?? 'medium',
+    notes: compactValue(vision.notes),
+  }
 }
 
 async function getImageMetadataNote(filePath: string) {
@@ -247,46 +256,58 @@ async function identifyImageWithVision(filename: string, filePath: string): Prom
     return null
   }
 
-  const catalog = watches
-    .map(watch => `${watch.id} | ${watch.brand} | ${watch.model} | ${watch.reference} | ${watch.watchType} | ${watch.dialColor} | ${watch.caseMaterial}`)
-    .join('\n')
-
   const prompt = [
-    'Identify the wristwatch in this image for a local catalog intake workflow.',
-    'Use visible dial text, case shape, bezel, date layout, hands, strap/bracelet, and filename clues.',
-    'If it matches an existing catalog row exactly, set existingWatchId to that id.',
-    'If it is not in the catalog, leave existingWatchId empty and return the best catalog-ready fields you can infer.',
-    'Use confidence high, medium, low, or unmatched. Be conservative when the reference is not visible.',
+    'Identify the wristwatch in this image for a local catalog intake workflow. Do not match against an existing app catalog.',
+    'Use visible dial text, case shape, bezel, date layout, hands, strap/bracelet, and filename clues to infer catalog-ready data.',
+    'Return the real watch identity visible in the image, even if the exact reference is uncertain.',
+    'Use confidence high, medium, low, or unmatched. Be conservative when the reference or dimensions are inferred from filename/model knowledge rather than directly visible.',
+    `watchType must be one of: ${allowedWatchTypes.join(', ')}.`,
+    'Use an empty string for unknown string fields and null for unknown number fields.',
     `Filename: ${filename}`,
-    'Existing catalog:',
-    catalog,
-    'Return only JSON with keys: brand, model, reference, watchType, dialColor, caseMaterial, caseSizeMm, lugWidthMm, movement, estimatedValue, existingWatchId, confidence, notes.',
+    'Return only JSON with keys: brand, model, reference, watchType, dialColor, caseMaterial, caseSizeMm, lugWidthMm, movement, estimatedValue, confidence, notes.',
   ].join('\n')
 
-  let response: Response
-  try {
-    response = await fetch('https://api.openai.com/v1/responses', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: process.env.OPENAI_VISION_MODEL ?? 'gpt-4.1-mini',
-        input: [
-          {
-            role: 'user',
-            content: [
-              { type: 'input_text', text: prompt },
-              { type: 'input_image', image_url: await imageDataUrl(filePath), detail: 'high' },
-            ],
-          },
-        ],
-        temperature: 0,
-      }),
-    })
-  } catch (error) {
-    console.warn(`Vision identification failed for ${filename}: ${error instanceof Error ? error.message : String(error)}`)
+  const inputImage = await imageDataUrl(filePath)
+  let response: Response | null = null
+  let lastError: unknown = null
+
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      response = await fetch('https://api.openai.com/v1/responses', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: process.env.OPENAI_VISION_MODEL ?? 'gpt-4.1-mini',
+          input: [
+            {
+              role: 'user',
+              content: [
+                { type: 'input_text', text: prompt },
+                { type: 'input_image', image_url: inputImage, detail: 'high' },
+              ],
+            },
+          ],
+          temperature: 0,
+        }),
+      })
+
+      if (response.ok || ![408, 429, 500, 502, 503, 504].includes(response.status)) {
+        break
+      }
+    } catch (error) {
+      lastError = error
+    }
+
+    if (attempt < 3) {
+      await sleep(attempt * 800)
+    }
+  }
+
+  if (!response) {
+    console.warn(`Vision identification failed for ${filename}: ${lastError instanceof Error ? lastError.message : String(lastError)}`)
     return null
   }
 
@@ -297,39 +318,13 @@ async function identifyImageWithVision(filename: string, filePath: string): Prom
   }
 
   const data = await response.json()
-  return parseVisionJson(extractResponseText(data))
+  const vision = parseVisionJson(extractResponseText(data))
+  return vision ? normalizeVisionIdentification(vision) : null
 }
 
 async function suggestMatch(filename: string, filePath: string): Promise<IntakeSuggestion> {
-  const ranked = watches
-    .map(watch => scoreWatch(filename, watch))
-    .sort((a, b) => b.score - a.score)
-  const best = ranked[0]
   const metadataNote = await getImageMetadataNote(filePath)
   const vision = await identifyImageWithVision(filename, filePath)
-  const visionText = vision
-    ? [vision.brand, vision.model, vision.reference, vision.dialColor, vision.caseMaterial].filter(Boolean).join(' ')
-    : ''
-  const visionMatch = vision?.existingWatchId
-    ? watches.find(watch => watch.id === vision.existingWatchId)
-    : visionText
-    ? bestCatalogTextMatch(visionText)?.watch
-    : undefined
-
-  if (vision && visionMatch) {
-    return {
-      watch: visionMatch,
-      vision,
-      confidence: vision.confidence ?? 'medium',
-      score: 100,
-      notes: [
-        'vision',
-        ...(vision.notes ? [vision.notes] : []),
-        ...(metadataNote ? [metadataNote] : []),
-      ],
-      catalogAction: 'existing',
-    }
-  }
 
   if (vision && vision.confidence !== 'unmatched' && (vision.brand || vision.model || vision.reference)) {
     return {
@@ -344,6 +339,11 @@ async function suggestMatch(filename: string, filePath: string): Promise<IntakeS
       catalogAction: 'new-catalog-candidate',
     }
   }
+
+  const ranked = watches
+    .map(watch => scoreWatch(filename, watch))
+    .sort((a, b) => b.score - a.score)
+  const best = ranked[0]
 
   if (!best || best.confidence === 'unmatched') {
     return {
@@ -379,8 +379,20 @@ async function main() {
     const watch = match.watch
     const vision = match.vision
     const extension = path.extname(filename).toLowerCase()
-    const visionSlug = slugify([vision?.brand, vision?.model, vision?.reference].filter(Boolean).join(' '))
+    const visionSlug = slugify([
+      vision?.brand,
+      vision?.model,
+      vision?.reference || vision?.dialColor,
+    ]
+      .filter(Boolean)
+      .filter((value, index, values) => values.findIndex(other => slugify(other ?? '') === slugify(value ?? '')) === index)
+      .join(' '))
     const suggestedId = watch?.id ?? (visionSlug || slugify(withoutExtension(filename)))
+    const suggestedRawFilename = match.catalogAction === 'new-catalog-candidate'
+      ? `${suggestedId}${extension}`
+      : watch
+      ? `${watch.id}${extension}`
+      : `${suggestedId}${extension}`
 
     rows.push({
       originalFilename: filename,
@@ -389,7 +401,7 @@ async function main() {
       model: watch?.model ?? vision?.model ?? '',
       reference: watch?.reference ?? vision?.reference ?? '',
       confidence: match.confidence,
-      suggestedRawFilename: `${suggestedId || slugify(withoutExtension(filename))}${extension}`,
+      suggestedRawFilename,
       status: 'needs-review',
       notes: match.notes.join('; '),
       watchType: watch?.watchType ?? vision?.watchType ?? '',

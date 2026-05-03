@@ -2,11 +2,11 @@
 
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { watches as catalogWatches } from '@/lib/watches'
+import { renderableWatches as catalogWatches } from '@/lib/renderableWatches'
 import type { CatalogWatch, PlaygroundBox } from '@/types/watch'
 import { normalizePlaygroundBoxes } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
-import DialSVG from '@/components/watchbox/DialSVG'
+import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import WatchStateControl from '@/components/collection/WatchStateControl'
 import { useCollectionSession } from '../CollectionSessionProvider'
 
@@ -264,11 +264,12 @@ function AddWatchSearchInner() {
                   />
                   <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                     <div style={{ width: 46, height: 46, flexShrink: 0, position: 'relative' }}>
-                      <DialSVG
-                        dialColor={watch.dialConfig.dialColor}
-                        markerColor={watch.dialConfig.markerColor}
-                        handColor={watch.dialConfig.handColor}
-                        size={46}
+                      <WatchImageOrDial
+                        watch={watch}
+                        fill
+                        sizes="46px"
+                        dialSize={46}
+                        imageStyle={{ objectFit: 'contain' }}
                       />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
