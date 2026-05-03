@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
 
@@ -45,11 +45,13 @@ export function WatchImagesProvider({ children }: { children: React.ReactNode })
     })()
   }, [])
 
+  const contextValue = useMemo(() => ({
+    getImageUrl: (watchId: string) => imageMap.get(watchId)?.imageUrl,
+    getTransparentUrl: (watchId: string) => imageMap.get(watchId)?.imageTransparentUrl,
+  }), [imageMap])
+
   return (
-    <WatchImagesContext.Provider value={{
-      getImageUrl: (watchId) => imageMap.get(watchId)?.imageUrl,
-      getTransparentUrl: (watchId) => imageMap.get(watchId)?.imageTransparentUrl,
-    }}>
+    <WatchImagesContext.Provider value={contextValue}>
       {children}
     </WatchImagesContext.Provider>
   )

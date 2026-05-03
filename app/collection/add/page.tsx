@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { CatalogWatch, PlaygroundBox } from '@/types/watch'
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
+import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import { normalizePlaygroundBoxes } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
@@ -62,6 +63,7 @@ function AddWatchSearchInner() {
   const searchParams = useSearchParams()
   const { isInCollection } = useCollectionSession()
   const { allWatches: catalogWatches } = useCatalog()
+  const { getImageUrl } = useWatchImages()
 
   const dest = searchParams.get('dest')
   const boxId = searchParams.get('boxId')
@@ -73,6 +75,11 @@ function AddWatchSearchInner() {
   const [colorFilter, setColorFilter] = useState<string | null>(null)
   const [sizeFilter, setSizeFilter] = useState<SizeFilter>(null)
   const [playgroundBoxName, setPlaygroundBoxName] = useState<string | null>(null)
+  const [showAll, setShowAll] = useState(false)
+
+  function watchHasImage(w: CatalogWatch) {
+    return !!(getImageUrl(w.id) || w.imageUrl)
+  }
 
   useEffect(() => {
     if (!isPlaygroundContext || !boxId) return
@@ -81,11 +88,19 @@ function AddWatchSearchInner() {
     if (box) setPlaygroundBoxName(box.name)
   }, [isPlaygroundContext, boxId])
 
-  const baseResults = useMemo(() => {
+  // All term matches regardless of photo status — used for toggle count + "All" mode
+  const allTermResults = useMemo(() => {
     const term = searchTerm.trim().toLowerCase()
     if (!term) return []
     return catalogWatches.filter(w => [w.brand, w.model, w.reference].some(v => v.toLowerCase().includes(term)))
-  }, [searchTerm])
+  }, [searchTerm, catalogWatches])
+
+  // Filtered by photo availability based on toggle
+  const baseResults = useMemo(() => {
+    if (showAll) return allTermResults
+    return allTermResults.filter(w => watchHasImage(w))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allTermResults, showAll, getImageUrl])
 
   const filteredResults = useMemo(() => {
     return baseResults.filter(watch => {
@@ -208,6 +223,34 @@ function AddWatchSearchInner() {
 
       {searchTerm.length > 0 && (
         <>
+          {/* Photo filter toggle */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
+            {[
+              { label: 'With Photos', value: false },
+              { label: `All Watches${allTermResults.length > 0 ? ` (${allTermResults.length})` : ''}`, value: true },
+            ].map(({ label, value }) => {
+              const active = showAll === value
+              return (
+                <button
+                  key={label}
+                  onClick={() => setShowAll(value)}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center',
+                    padding: '5px 13px', borderRadius: 20,
+                    fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500,
+                    letterSpacing: '0.04em', cursor: 'pointer',
+                    border: active ? '1px solid #1A1410' : '1px solid #E0DAD0',
+                    background: active ? '#1A1410' : 'transparent',
+                    color: active ? '#FAF8F4' : '#A89880',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {label}
+                </button>
+              )
+            })}
+          </div>
+
           <div style={{ marginBottom: 10, fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A89880' }}>Case Material</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
             {MATERIAL_OPTIONS.map(option =>
@@ -285,15 +328,22 @@ function AddWatchSearchInner() {
                     {watch.caseMaterial} · {watch.dialColor} · {watch.caseSizeMm}mm
                   </div>
                   <div style={{ fontSize: 14, fontFamily: 'var(--font-cormorant)', color: '#1A1410', marginTop: 4 }}>{fmt(watch.estimatedValue)}</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, alignItems: 'center' }}>
-                    <span style={{ fontSize: 9, padding: '2px 7px', borderRadius: 20, background: '#1A1410', color: '#FAF8F4', fontFamily: 'var(--font-dm-sans)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 9, padding: '2px 7px', borderRadius: 20, background: '#1A1410', color: '#FAF8F4', fontFamily: 'var(--font-dm-sans)', flexShrink: 0 }}>
                       {watch.watchType}
                     </span>
-                    {inCollection && (
-                      <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 20, background: '#E8F0E8', color: '#3A6A2D', fontFamily: 'var(--font-dm-sans)' }}>
-                        In Collection
-                      </span>
-                    )}
+                    <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                      {!watchHasImage(watch) && (
+                        <span style={{ fontSize: 9, padding: '2px 7px', borderRadius: 20, border: '1px solid #E0DAD0', color: '#B0A49A', fontFamily: 'var(--font-dm-sans)', fontStyle: 'italic' }}>
+                          no photo
+                        </span>
+                      )}
+                      {inCollection && (
+                        <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 20, background: '#E8F0E8', color: '#3A6A2D', fontFamily: 'var(--font-dm-sans)' }}>
+                          In Collection
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               )
