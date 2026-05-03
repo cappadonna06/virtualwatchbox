@@ -1,0 +1,201 @@
+id,brand,model,reference,dialColor,watchType,sourceUrl,communitySignal,verificationStatus
+rolex-submariner-date-126610ln,Rolex,Submariner Date,126610LN,Black,Diver,https://www.rolex.com/en-us/watches/submariner/m126610ln-0001,core_icon,identity_seeded_specs_partial
+rolex-submariner-no-date-124060,Rolex,Submariner,124060,Black,Diver,https://www.rolex.com/en-us/watches/submariner,core_icon,identity_seeded_specs_pending
+rolex-gmt-master-ii-pepsi-126710blro,Rolex,GMT-Master II,126710BLRO,Black,GMT,https://www.rolex.com/en-us/watches/gmt-master-ii,core_icon,identity_seeded_specs_pending
+rolex-gmt-master-ii-batman-126710blnr,Rolex,GMT-Master II,126710BLNR,Black,GMT,https://www.rolex.com/en-us/watches/gmt-master-ii,core_icon,identity_seeded_specs_pending
+rolex-daytona-white-126500ln,Rolex,Cosmograph Daytona,126500LN,White,Chronograph,https://www.rolex.com/en-us/watches/cosmograph-daytona,core_icon,identity_seeded_specs_pending
+rolex-daytona-black-126500ln,Rolex,Cosmograph Daytona,126500LN,Black,Chronograph,https://www.rolex.com/en-us/watches/cosmograph-daytona,core_icon,identity_seeded_specs_pending
+rolex-explorer-124270,Rolex,Explorer,124270,Black,Field,https://www.rolex.com/en-us/watches/explorer,core_icon,identity_seeded_specs_pending
+rolex-explorer-ii-polar-226570,Rolex,Explorer II,226570,White,GMT,https://www.rolex.com/en-us/watches/explorer,reddit_sotc_signal,identity_seeded_specs_pending
+rolex-datejust-blue-126334,Rolex,Datejust 41,126334,Blue,Dress,https://www.rolex.com/en-us/watches/datejust,core_icon,identity_seeded_specs_pending
+rolex-datejust-silver-126300,Rolex,Datejust 41,126300,Silver,Dress,https://www.rolex.com/en-us/watches/datejust,core_icon,identity_seeded_specs_pending
+rolex-oyster-perpetual-green-124300,Rolex,Oyster Perpetual 41,124300,Green,Sport,https://www.rolex.com/en-us/watches/oyster-perpetual,core_icon,identity_seeded_specs_pending
+rolex-yacht-master-126622,Rolex,Yacht-Master 40,126622,Slate,Sport,https://www.rolex.com/en-us/watches/yacht-master,core_icon,identity_seeded_specs_pending
+rolex-sea-dweller-126600,Rolex,Sea-Dweller,126600,Black,Diver,https://www.rolex.com/en-us/watches/sea-dweller,core_icon,identity_seeded_specs_pending
+rolex-milgauss-z-blue-116400gv,Rolex,Milgauss,116400GV,Blue,Sport,https://www.rolex.com/en-us/watches,enthusiast_icon,identity_seeded_specs_pending
+rolex-day-date-olive-228235,Rolex,Day-Date 40,228235,Olive,Dress,https://www.rolex.com/en-us/watches/day-date,core_icon,identity_seeded_specs_pending
+omega-speedmaster-moonwatch-31030425001001,Omega,Speedmaster Professional Moonwatch,310.30.42.50.01.001,Black,Chronograph,https://www.omegawatches.com/watches/speedmaster/moonwatch-professional,core_icon,identity_seeded_specs_partial
+omega-speedmaster-sapphire-31030425001002,Omega,Speedmaster Professional Moonwatch,310.30.42.50.01.002,Black,Chronograph,https://www.omegawatches.com/watches/speedmaster/moonwatch-professional,core_icon,identity_seeded_specs_pending
+omega-seamaster-diver-blue-21030422003001,Omega,Seamaster Diver 300M,210.30.42.20.03.001,Blue,Diver,https://www.omegawatches.com/watches/seamaster/diver-300-m,core_icon,identity_seeded_specs_pending
+omega-seamaster-diver-black-21030422001001,Omega,Seamaster Diver 300M,210.30.42.20.01.001,Black,Diver,https://www.omegawatches.com/watches/seamaster/diver-300-m,core_icon,identity_seeded_specs_pending
+omega-aqua-terra-blue-22010412103004,Omega,Seamaster Aqua Terra,220.10.41.21.03.004,Blue,Sport,https://www.omegawatches.com/watches/seamaster/aqua-terra-150m,folder_image_candidate,identity_seeded_specs_pending
+omega-aqua-terra-green-22010412110001,Omega,Seamaster Aqua Terra,220.10.41.21.10.001,Green,Sport,https://www.omegawatches.com/watches/seamaster/aqua-terra-150m,current_catalog,identity_seeded_specs_pending
+omega-planet-ocean-21530442101001,Omega,Seamaster Planet Ocean 600M,215.30.44.21.01.001,Black,Diver,https://www.omegawatches.com/watches/seamaster/planet-ocean-600m,core_icon,identity_seeded_specs_pending
+omega-railmaster-22010402001001,Omega,Railmaster,220.10.40.20.01.001,Black,Field,https://www.omegawatches.com/watches/seamaster/railmaster,enthusiast_value,identity_seeded_specs_pending
+omega-constellation-globemaster-13030392102001,Omega,Constellation Globemaster,130.30.39.21.02.001,Silver,Dress,https://www.omegawatches.com/watches/constellation/globemaster,current_catalog,identity_seeded_specs_pending
+omega-de-ville-tresor-43513402103001,Omega,De Ville Tresor,435.13.40.21.03.001,Blue,Dress,https://www.omegawatches.com/watches/de-ville/tresor,brand_variety,identity_seeded_specs_pending
+omega-speedmaster-racing-32930445101002,Omega,Speedmaster Racing,329.30.44.51.01.002,Black,Chronograph,https://www.omegawatches.com/watches/speedmaster,brand_variety,identity_seeded_specs_pending
+omega-seamaster-heritage-23430412101001,Omega,Seamaster 300,234.30.41.21.01.001,Black,Diver,https://www.omegawatches.com/watches/seamaster/seamaster-300,core_icon,identity_seeded_specs_pending
+omega-speedmaster-57-blue-33210415103001,Omega,Speedmaster 57,332.10.41.51.03.001,Blue,Chronograph,https://www.omegawatches.com/watches/speedmaster,brand_variety,identity_seeded_specs_pending
+omega-ploprof-22790552104001,Omega,Seamaster Ploprof,227.90.55.21.04.001,White,Diver,https://www.omegawatches.com/watches/seamaster,enthusiast_icon,identity_seeded_specs_pending
+tudor-black-bay-58-m79030n,Tudor,Black Bay 58,M79030N-0001,Black,Diver,https://www.tudorwatch.com/en/watches/black-bay-58,core_icon,identity_seeded_specs_pending
+tudor-black-bay-54-m79000n,Tudor,Black Bay 54,M79000N-0001,Black,Diver,https://www.tudorwatch.com/en/watches/black-bay-54,enthusiast_favorite,identity_seeded_specs_pending
+tudor-pelagos-39-m25407n,Tudor,Pelagos 39,M25407N-0001,Black,Diver,https://www.tudorwatch.com/en/watches/pelagos-39,reddit_under_5k_signal,identity_seeded_specs_pending
+tudor-pelagos-fxd-m25707b,Tudor,Pelagos FXD,M25707B/23-0001,Blue,Diver,https://www.tudorwatch.com/en/watches/pelagos-fxd,enthusiast_favorite,identity_seeded_specs_pending
+tudor-black-bay-gmt-m79830rb,Tudor,Black Bay GMT,M79830RB-0001,Black,GMT,https://www.tudorwatch.com/en/watches/black-bay-gmt/m79830rb-0001,folder_image_candidate,identity_seeded_specs_partial
+tudor-black-bay-pro-m79470,Tudor,Black Bay Pro,M79470-0001,Black,GMT,https://www.tudorwatch.com/en/watches/black-bay-pro,enthusiast_favorite,identity_seeded_specs_pending
+tudor-ranger-m79950,Tudor,Ranger,M79950-0001,Black,Field,https://www.tudorwatch.com/en/watches/ranger,reddit_under_5k_signal,identity_seeded_specs_pending
+tudor-royal-blue-m28600,Tudor,Royal,M28600-0005,Blue,Integrated Bracelet,https://www.tudorwatch.com/en/watches/tudor-royal,current_catalog,identity_seeded_specs_pending
+tudor-prince-chrono-79280,Tudor,Prince Date Chronograph,79280,Silver,Chronograph,https://www.tudorwatch.com/en/tudor-mag/tudor-history,heritage_pick,identity_seeded_specs_pending
+tudor-north-flag-91210n,Tudor,North Flag,91210N,Black,Sport,https://www.tudorwatch.com/en/tudor-mag/tudor-history,enthusiast_icon,identity_seeded_specs_pending
+cartier-tank-must-large-wsta0041,Cartier,Tank Must Large,WSTA0041,Silver,Dress,https://www.cartier.com/en-us/watches/collections/tank,core_icon,identity_seeded_specs_pending
+cartier-tank-louis-wgta0011,Cartier,Tank Louis Cartier,WGTA0011,Silver,Dress,https://www.cartier.com/en-us/watches/collections/tank,core_icon,identity_seeded_specs_pending
+cartier-santos-medium-wssa0029,Cartier,Santos de Cartier Medium,WSSA0029,Silver,Dress,https://www.cartier.com/en-us/watches/collections/santos-de-cartier,core_icon,identity_seeded_specs_pending
+cartier-santos-large-wssa0018,Cartier,Santos de Cartier Large,WSSA0018,Silver,Dress,https://www.cartier.com/en-us/watches/collections/santos-de-cartier,core_icon,identity_seeded_specs_pending
+cartier-santos-dumont-wssa0022,Cartier,Santos-Dumont,WSSA0022,Silver,Dress,https://www.cartier.com/en-us/watches/collections/santos-dumont,core_icon,identity_seeded_specs_pending
+cartier-ballon-bleu-w69012z4,Cartier,Ballon Bleu de Cartier,W69012Z4,Silver,Dress,https://www.cartier.com/en-us/watches/collections/ballon-bleu-de-cartier,core_icon,identity_seeded_specs_pending
+cartier-panthere-wspn0006,Cartier,Panthere de Cartier,WSPN0006,Silver,Dress,https://www.cartier.com/en-us/watches/collections/panthere-de-cartier,style_icon,identity_seeded_specs_pending
+cartier-pasha-wspa0010,Cartier,Pasha de Cartier,WSPA0010,Silver,Dress,https://www.cartier.com/en-us/watches/collections/pasha-de-cartier,brand_variety,identity_seeded_specs_pending
+cartier-tank-francaise-wsta0065,Cartier,Tank Francaise,WSTA0065,Silver,Dress,https://www.cartier.com/en-us/watches/collections/tank,style_icon,identity_seeded_specs_pending
+cartier-drive-de-cartier-wsnm0004,Cartier,Drive de Cartier,WSNM0004,Silver,Dress,https://www.cartier.com/en-us/watches,enthusiast_pick,identity_seeded_specs_pending
+grand-seiko-snowflake-sbga211,Grand Seiko,Heritage Snowflake,SBGA211,White,Dress,https://www.grand-seiko.com/us-en/collections/sbga211g,core_icon,identity_seeded_specs_pending
+grand-seiko-shunbun-sbga413,Grand Seiko,Heritage Shunbun,SBGA413,Pink,Sport,https://www.grand-seiko.com/us-en/collections/sbga413g,reddit_sotc_signal,identity_seeded_specs_pending
+grand-seiko-white-birch-slgh005,Grand Seiko,Evolution 9 White Birch,SLGH005,Silver,Sport,https://www.grand-seiko.com/us-en/collections/slgh005g,current_catalog,identity_seeded_specs_pending
+grand-seiko-lake-suwa-slga021,Grand Seiko,Evolution 9 Lake Suwa,SLGA021,Blue,Sport,https://www.grand-seiko.com/us-en/collections/slga021g,reddit_sinn_thread_signal,identity_seeded_specs_pending
+grand-seiko-tentagraph-slgc001,Grand Seiko,Tentagraph,SLGC001,Blue,Chronograph,https://www.grand-seiko.com/us-en/collections/slgc001g,brand_variety,identity_seeded_specs_pending
+grand-seiko-sbgm221,Grand Seiko,Elegance GMT,SBGM221,Ivory,GMT,https://www.grand-seiko.com/us-en/collections/sbgm221g,current_catalog,identity_seeded_specs_pending
+grand-seiko-sbgx261,Grand Seiko,Heritage 9F Quartz,SBGX261,Black,Dress,https://www.grand-seiko.com/us-en/collections/sbgx261g,reddit_sotc_signal,identity_seeded_specs_pending
+grand-seiko-sbgr261,Grand Seiko,Heritage Automatic,SBGR261,Cream,Dress,https://www.grand-seiko.com/us-en/collections/sbgr261g,reddit_nomos_gs_signal,identity_seeded_specs_pending
+grand-seiko-sbga375,Grand Seiko,Heritage Spring Drive,SBGA375,Blue,Dress,https://www.grand-seiko.com/us-en/collections/sbga375g,reddit_nomos_gs_signal,identity_seeded_specs_pending
+grand-seiko-sbga469,Grand Seiko,Heritage Katsuiro,SBGA469,Blue,Dress,https://www.grand-seiko.com/us-en/collections,reddit_sotc_signal,identity_seeded_specs_pending
+grand-seiko-sbgp005,Grand Seiko,Heritage Quartz,SBGP005,Blue,Dress,https://www.grand-seiko.com/us-en/collections,reddit_grandseiko_signal,identity_seeded_specs_pending
+grand-seiko-sbgj237,Grand Seiko,Sport GMT,SBGJ237,Blue,GMT,https://www.grand-seiko.com/us-en/collections/sbgj237g,enthusiast_pick,identity_seeded_specs_pending
+grand-seiko-sbgw231,Grand Seiko,Elegance Manual Wind,SBGW231,Cream,Dress,https://www.grand-seiko.com/us-en/collections/sbgw231g,enthusiast_pick,identity_seeded_specs_pending
+grand-seiko-sbgw301,Grand Seiko,Elegance Manual Wind,SBGW301,Silver,Dress,https://www.grand-seiko.com/us-en/collections,reddit_under_5k_signal,identity_seeded_specs_pending
+grand-seiko-sbgn017,Grand Seiko,Sport Quartz GMT,SBGN017,Blue,GMT,https://www.grand-seiko.com/us-en/collections/sbgn017g,current_catalog,identity_seeded_specs_pending
+seiko-skx007,Seiko,SKX007,SKX007,Black,Diver,https://www.seikowatches.com/us-en,reddit_icon,identity_seeded_specs_pending
+seiko-skx009,Seiko,SKX009,SKX009,Blue,Diver,https://www.seikowatches.com/us-en,reddit_sotc_signal,identity_seeded_specs_pending
+seiko-spb143,Seiko,Prospex 1965 Diver Re-interpretation,SPB143,Grey,Diver,https://www.seikowatches.com/us-en/products/prospex,enthusiast_favorite,identity_seeded_specs_pending
+seiko-spb151-captain-willard,Seiko,Prospex Captain Willard,SPB151,Black,Diver,https://www.seikowatches.com/us-en/products/prospex,reddit_sotc_signal,identity_seeded_specs_pending
+seiko-spb153-captain-willard,Seiko,Prospex Captain Willard,SPB153,Green,Diver,https://www.seikowatches.com/us-en/products/prospex,enthusiast_favorite,identity_seeded_specs_pending
+seiko-spb155-baby-alpinist,Seiko,Prospex Baby Alpinist,SPB155,Green,Field,https://www.seikowatches.com/us-en/products/prospex,reddit_sotc_signal,identity_seeded_specs_pending
+seiko-sarb033,Seiko,SARB033,SARB033,Black,Dress,https://www.seikowatches.com/us-en,enthusiast_icon,identity_seeded_specs_pending
+seiko-sarb035,Seiko,SARB035,SARB035,Cream,Dress,https://www.seikowatches.com/us-en,enthusiast_icon,identity_seeded_specs_pending
+seiko-srpe93-turtle,Seiko,Prospex Turtle,SRPE93,Black,Diver,https://www.seikowatches.com/us-en/products/prospex,enthusiast_favorite,identity_seeded_specs_pending
+seiko-srpb41-cocktail-time,Seiko,Presage Cocktail Time,SRPB41,Blue,Dress,https://www.seikowatches.com/us-en/products/presage,enthusiast_favorite,identity_seeded_specs_pending
+seiko-srpe41-cocktail-time,Seiko,Presage Cocktail Time,SRPE41,Red,Dress,https://www.seikowatches.com/us-en/products/presage,enthusiast_favorite,identity_seeded_specs_pending
+seiko-srpg35,Seiko,Seiko 5 Sports Field,SRPG35,Black,Field,https://www.seikowatches.com/us-en/products/5sports,entry_icon,identity_seeded_specs_pending
+seiko-srpd55,Seiko,Seiko 5 Sports,SRPD55,Black,Diver,https://www.seikowatches.com/us-en/products/5sports,entry_icon,identity_seeded_specs_pending
+seiko-ssc813-speedtimer,Seiko,Prospex Speedtimer,SSC813,White,Chronograph,https://www.seikowatches.com/us-en/products/prospex,enthusiast_favorite,identity_seeded_specs_pending
+seiko-sla043,Seiko,Prospex 62MAS Re-creation,SLA043,Blue,Diver,https://www.seikowatches.com/us-en/products/prospex,enthusiast_pick,identity_seeded_specs_pending
+sinn-556i,Sinn,556 I,556.010,Black,Field,https://www.sinn.de/en/watches/series/556.html,folder_image_candidate,identity_seeded_specs_partial
+sinn-556a,Sinn,556 A,556.014,Black,Field,https://www.sinn.de/en/watches/series/556.html,enthusiast_favorite,identity_seeded_specs_pending
+sinn-104-white,Sinn,104 St Sa I,104.012,White,Pilot,https://www.sinn.de/en/watches/series/104.html,reddit_sotc_signal,identity_seeded_specs_pending
+sinn-104-black,Sinn,104 St Sa I,104.010,Black,Pilot,https://www.sinn.de/en/watches/series/104.html,reddit_collection_strategy_signal,identity_seeded_specs_pending
+sinn-356-sa,Sinn,356 Sa,356.072,Black,Chronograph,https://www.sinn.de/en/watches/series/356.html,reddit_sotc_signal,identity_seeded_specs_pending
+sinn-903-st,Sinn,903 St,903.041,Black,Chronograph,https://www.sinn.de/en/watches/series/903.html,enthusiast_icon,identity_seeded_specs_pending
+sinn-u50,Sinn,U50,U50.010,Black,Diver,https://www.sinn.de/en/watches/series/u50.html,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-u1,Sinn,U1,U1.101,Black,Diver,https://www.sinn.de/en/watches/series/u1.html,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-857-utc,Sinn,857 UTC,857.011,Black,GMT,https://www.sinn.de/en/watches/series/857.html,enthusiast_pick,identity_seeded_specs_pending
+sinn-103-st,Sinn,103 St,103.031,Black,Chronograph,https://www.sinn.de/en/watches/series/103.html,enthusiast_icon,identity_seeded_specs_pending
+nomos-tangente-38,NOMOS,Tangente 38,164,White,Dress,https://nomos-glashuette.com/en/tangente,core_design_icon,identity_seeded_specs_pending
+nomos-tangente-neomatik-41-update,NOMOS,Tangente Neomatik 41 Update,180,White,Dress,https://nomos-glashuette.com/en/tangente,reddit_sotc_signal,identity_seeded_specs_pending
+nomos-club-campus-38,NOMOS,Club Campus 38,737,White,Field,https://nomos-glashuette.com/en/club,reddit_collection_strategy_signal,identity_seeded_specs_pending
+nomos-club-753,NOMOS,Club,753,White,Field,https://nomos-glashuette.com/en/club,reddit_sotc_signal,identity_seeded_specs_pending
+nomos-orion-38,NOMOS,Orion 38,384,White,Dress,https://nomos-glashuette.com/en/orion,enthusiast_pick,identity_seeded_specs_pending
+nomos-orion-duo-33,NOMOS,Orion Duo,319,White,Dress,https://nomos-glashuette.com/en/orion,reddit_sotc_signal,identity_seeded_specs_pending
+nomos-metro-neomatik,NOMOS,Metro Neomatik,1113,White,Dress,https://nomos-glashuette.com/en/metro,reddit_sotc_signal,identity_seeded_specs_pending
+nomos-ahoi-atlantic,NOMOS,Ahoi Neomatik Atlantic,561,Blue,Sport,https://nomos-glashuette.com/en/ahoi,reddit_nomos_gs_signal,identity_seeded_specs_pending
+nomos-zurich-world-time,NOMOS,Zurich World Time,805,White,GMT,https://nomos-glashuette.com/en/zurich,reddit_sinn_thread_signal,identity_seeded_specs_pending
+nomos-ludwig-38,NOMOS,Ludwig 38,234,White,Dress,https://nomos-glashuette.com/en/ludwig,brand_variety,identity_seeded_specs_pending
+hamilton-khaki-field-mechanical-h69439931,Hamilton,Khaki Field Mechanical,H69439931,Black,Field,https://www.hamiltonwatch.com/en-us/collection/khaki-field.html,entry_icon,identity_seeded_specs_pending
+hamilton-khaki-field-auto-h70455533,Hamilton,Khaki Field Auto,H70455533,Black,Field,https://www.hamiltonwatch.com/en-us/collection/khaki-field.html,entry_icon,identity_seeded_specs_pending
+hamilton-khaki-aviation-pilot-pioneer-h76419931,Hamilton,Khaki Aviation Pilot Pioneer,H76419931,Black,Pilot,https://www.hamiltonwatch.com/en-us/collection/khaki-aviation.html,enthusiast_pick,identity_seeded_specs_pending
+hamilton-intra-matic-auto-chrono-h38416711,Hamilton,Intra-Matic Auto Chrono,H38416711,White,Chronograph,https://www.hamiltonwatch.com/en-us/collection/american-classic.html,enthusiast_favorite,identity_seeded_specs_pending
+hamilton-khaki-navy-pioneer-h78719553,Hamilton,Khaki Navy Pioneer,H78719553,White,Dress,https://www.hamiltonwatch.com/en-us/collection/khaki-navy.html,folder_image_candidate,identity_seeded_specs_partial
+hamilton-ventura-h24411732,Hamilton,Ventura,H24411732,Black,Vintage,https://www.hamiltonwatch.com/en-us/collection/ventura.html,style_icon,identity_seeded_specs_pending
+hamilton-murph-38-h70405730,Hamilton,Khaki Field Murph 38,H70405730,Black,Field,https://www.hamiltonwatch.com/en-us/collection/khaki-field.html,enthusiast_favorite,identity_seeded_specs_pending
+hamilton-psr-h52414130,Hamilton,PSR Digital Quartz,H52414130,Black,Vintage,https://www.hamiltonwatch.com/en-us/collection/american-classic.html,brand_variety,identity_seeded_specs_pending
+longines-legend-diver-white-l37644166,Longines,Legend Diver,L3.764.4.16.6,White,Diver,https://www.longines.com/en-us/p/watch-longines-legend-diver-l3-764-4-16-6,folder_image_candidate,identity_seeded_specs_partial
+longines-legend-diver-blue-l37644966,Longines,Legend Diver,L3.764.4.96.6,Blue,Diver,https://www.longines.com/en-us/collection/longines-legend-diver,folder_image_candidate,identity_seeded_specs_partial
+longines-legend-diver-green-l37644066,Longines,Legend Diver,L3.764.4.06.6,Green,Diver,https://www.longines.com/en-us/collection/longines-legend-diver,folder_image_candidate,identity_seeded_specs_partial
+longines-legend-diver-black-l37644500,Longines,Legend Diver,L3.764.4.50.0,Black,Diver,https://www.longines.com/en-us/collection/longines-legend-diver,folder_image_candidate,identity_seeded_specs_partial
+longines-spirit-zulu-time-l38124632,Longines,Spirit Zulu Time,L3.812.4.63.2,Black,GMT,https://www.longines.com/en-us/collection/longines-spirit,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-spirit-37-blue-l38024936,Longines,Spirit 37,L3.802.4.93.6,Blue,Pilot,https://www.longines.com/en-us/collection/longines-spirit,enthusiast_favorite,identity_seeded_specs_pending
+longines-hydroconquest-blue-l37814966,Longines,HydroConquest,L3.781.4.96.6,Blue,Diver,https://www.longines.com/en-us/collection/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-conquest-green-l38304026,Longines,Conquest,L3.830.4.02.6,Green,Sport,https://www.longines.com/en-us/collection/conquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-master-moonphase-l29094783,Longines,Master Collection Moonphase,L2.909.4.78.3,Silver,Dress,https://www.longines.com/en-us/collection/the-longines-master-collection,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-ultra-chron-l28364526,Longines,Ultra-Chron,L2.836.4.52.6,Black,Diver,https://www.longines.com/en-us/collection/ultra-chron,reddit_under_5k_signal,identity_seeded_specs_pending
+oris-big-crown-d26-286-hb-rag,Oris,Big Crown D.26 286 HB-RAG,D.26 286 HB-RAG,Green,Pilot,https://www.oris.ch/en-US,folder_image_candidate,identity_seeded_specs_partial
+oris-big-crown-pointer-date-green,Oris,Big Crown Pointer Date,,Green,Pilot,https://www.oris.ch/en-US/collection/big-crown,enthusiast_favorite,identity_seeded_specs_pending
+oris-divers-sixty-five-blue,Oris,Divers Sixty-Five,,Blue,Diver,https://www.oris.ch/en-US/collection/divers,enthusiast_favorite,identity_seeded_specs_pending
+oris-aquis-date-green,Oris,Aquis Date,,Green,Diver,https://www.oris.ch/en-US/collection/aquis,enthusiast_favorite,identity_seeded_specs_pending
+oris-propilot-x-calibre-400,Oris,ProPilot X Calibre 400,,Grey,Pilot,https://www.oris.ch/en-US/collection/propilot,brand_variety,identity_seeded_specs_pending
+oris-cotton-candy-bronze,Oris,Divers Sixty-Five Cotton Candy,,Blue,Diver,https://www.oris.ch/en-US/collection/divers,enthusiast_pick,identity_seeded_specs_pending
+oris-big-crown-bronze-pointer-date,Oris,Big Crown Bronze Pointer Date,,Green,Pilot,https://www.oris.ch/en-US/collection/big-crown,enthusiast_pick,identity_seeded_specs_pending
+oris-calibre-473,Oris,Big Crown Calibre 473,,Blue,Pilot,https://www.oris.ch/en-US/collection/big-crown,brand_variety,identity_seeded_specs_pending
+tag-carrera-chrono-cbn2011,Tag Heuer,Carrera Chronograph,CBN2011.BA0642,Blue,Chronograph,https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-carrera/,current_catalog,identity_seeded_specs_pending
+tag-carrera-date-wbn2111,Tag Heuer,Carrera Date,WBN2111.BA0639,Silver,Sport,https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-carrera/,current_catalog,identity_seeded_specs_pending
+tag-monaco-caw211p,Tag Heuer,Monaco,CAW211P.FC6356,Blue,Vintage,https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-monaco/,current_catalog,identity_seeded_specs_pending
+tag-aquaracer-green-wbp201f,Tag Heuer,Aquaracer Professional 300,WBP201F.BA0632,Green,Diver,https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-aquaracer/,current_catalog,identity_seeded_specs_pending
+tag-aquaracer-night-diver,Tag Heuer,Aquaracer Professional 300 Night Diver,,Black,Diver,https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-aquaracer/,brand_variety,identity_seeded_specs_pending
+tag-autavia-gmt-wbe511a,Tag Heuer,Autavia GMT,WBE511A.BA0650,Blue,GMT,https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-autavia/,current_catalog,identity_seeded_specs_pending
+tag-formula-1-waz1110,Tag Heuer,Formula 1,WAZ1110.BA0875,Black,Sport,https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-formula-1/,brand_variety,identity_seeded_specs_pending
+tag-skipper-cbs2213,Tag Heuer,Carrera Skipper,CBS2213.FN6002,Blue,Chronograph,https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-carrera/,enthusiast_pick,identity_seeded_specs_pending
+breitling-navitimer-b01-ab0138,Breitling,Navitimer B01 Chronograph 43,AB0138211B1A1,Black,Chronograph,https://www.breitling.com/us-en/watches/navitimer/,current_catalog,identity_seeded_specs_pending
+breitling-superocean-blue-a17375,Breitling,Superocean Automatic 42,A17375E71C1A1,Blue,Diver,https://www.breitling.com/us-en/watches/superocean/,current_catalog,identity_seeded_specs_pending
+breitling-chronomat-b01-ab0134,Breitling,Chronomat B01 42,AB0134101B1A1,Black,Chronograph,https://www.breitling.com/us-en/watches/chronomat/,core_icon,identity_seeded_specs_pending
+breitling-avenger-b01-ab0147,Breitling,Avenger B01 Chronograph 44,AB0147101B1A1,Black,Chronograph,https://www.breitling.com/us-en/watches/avenger/,brand_variety,identity_seeded_specs_pending
+breitling-premier-b01-ab0145,Breitling,Premier B01 Chronograph 42,AB0145221B1P1,Black,Chronograph,https://www.breitling.com/us-en/watches/premier/,brand_variety,identity_seeded_specs_pending
+breitling-top-time-deus-a233101a1a1x1,Breitling,Top Time Deus,A233101A1A1X1,Silver,Chronograph,https://www.breitling.com/us-en/watches/top-time/,enthusiast_pick,identity_seeded_specs_pending
+breitling-endurance-pro-x82310,Breitling,Endurance Pro,X82310A71B1S1,Black,Sport,https://www.breitling.com/us-en/watches/professional/endurance-pro/,brand_variety,identity_seeded_specs_pending
+breitling-aerospace-e79363,Breitling,Aerospace Evo,E79363101B1E1,Black,Pilot,https://www.breitling.com/us-en/watches/professional/aerospace/,enthusiast_icon,identity_seeded_specs_pending
+iwc-mark-xx-blue-iw328203,IWC,Pilot's Watch Mark XX,IW328203,Blue,Pilot,https://www.iwc.com/us/en/watch-collections/pilot-watches.html,current_catalog,identity_seeded_specs_pending
+iwc-big-pilot-43-iw329301,IWC,Big Pilot's Watch 43,IW329301,Black,Pilot,https://www.iwc.com/us/en/watch-collections/pilot-watches.html,current_catalog,identity_seeded_specs_pending
+iwc-portugieser-chrono-iw371606,IWC,Portugieser Chronograph,IW371606,Silver,Chronograph,https://www.iwc.com/us/en/watch-collections/portugieser.html,current_catalog,identity_seeded_specs_pending
+iwc-portugieser-chrono-iw371446,IWC,Portugieser Chronograph,IW371446,White,Chronograph,https://www.iwc.com/us/en/watch-collections/portugieser.html,folder_image_candidate,identity_seeded_specs_partial
+iwc-ingenieur-aqua-iw328901,IWC,Ingenieur Automatic 40,IW328901,Aqua Blue,Integrated Bracelet,https://www.iwc.com/us/en/watch-collections/ingenieur.html,current_catalog,identity_seeded_specs_pending
+iwc-pilot-spitfire-bronze-iw326805,IWC,Pilot's Watch Automatic Spitfire,IW326805,Brown,Pilot,https://www.iwc.com/us/en/watch-collections/pilot-watches.html,current_catalog,identity_seeded_specs_pending
+iwc-aquatimer-iw328801,IWC,Aquatimer Automatic,IW328801,Black,Diver,https://www.iwc.com/us/en/watch-collections/aquatimer.html,brand_variety,identity_seeded_specs_pending
+iwc-pilot-chronograph-41-iw388101,IWC,Pilot's Watch Chronograph 41,IW388101,Blue,Chronograph,https://www.iwc.com/us/en/watch-collections/pilot-watches.html,enthusiast_pick,identity_seeded_specs_pending
+patek-nautilus-5711-blue,Patek Philippe,Nautilus,5711/1A-010,Blue,Integrated Bracelet,https://www.patek.com/en/collection/nautilus,core_icon,identity_seeded_specs_pending
+patek-nautilus-5811-blue,Patek Philippe,Nautilus,5811/1G-001,Blue,Integrated Bracelet,https://www.patek.com/en/collection/nautilus,core_icon,identity_seeded_specs_pending
+patek-aquanaut-5167a,Patek Philippe,Aquanaut,5167A-001,Black,Sport,https://www.patek.com/en/collection/aquanaut,current_catalog,identity_seeded_specs_pending
+patek-calatrava-6119r,Patek Philippe,Calatrava,6119R-001,Silver,Dress,https://www.patek.com/en/collection/calatrava,current_catalog,identity_seeded_specs_pending
+patek-world-time-5230p,Patek Philippe,World Time,5230P-001,Blue,GMT,https://www.patek.com/en/collection/complications,current_catalog,identity_seeded_specs_pending
+patek-golden-ellipse-5738r,Patek Philippe,Golden Ellipse,5738R-001,Blue,Vintage,https://www.patek.com/en/collection/golden-ellipse,current_catalog,identity_seeded_specs_pending
+patek-annual-calendar-5396g,Patek Philippe,Annual Calendar,5396G-017,Blue,Dress,https://www.patek.com/en/collection/complications,brand_variety,identity_seeded_specs_pending
+patek-chronograph-5172g,Patek Philippe,Chronograph,5172G-001,Blue,Chronograph,https://www.patek.com/en/collection/complications,brand_variety,identity_seeded_specs_pending
+ap-royal-oak-15500st,Audemars Piguet,Royal Oak Selfwinding,15500ST.OO.1220ST.01,Blue,Integrated Bracelet,https://www.audemarspiguet.com/com/en/watch-collection/royal-oak.html,core_icon,identity_seeded_specs_pending
+ap-royal-oak-15510st,Audemars Piguet,Royal Oak Selfwinding,15510ST.OO.1320ST.06,Blue,Integrated Bracelet,https://www.audemarspiguet.com/com/en/watch-collection/royal-oak.html,core_icon,identity_seeded_specs_pending
+ap-royal-oak-chrono-26240st,Audemars Piguet,Royal Oak Chronograph,26240ST.OO.1320ST.05,Blue,Chronograph,https://www.audemarspiguet.com/com/en/watch-collection/royal-oak.html,core_icon,identity_seeded_specs_pending
+ap-royal-oak-offshore-diver-15720st,Audemars Piguet,Royal Oak Offshore Diver,15720ST.OO.A027CA.01,Blue,Diver,https://www.audemarspiguet.com/com/en/watch-collection/royal-oak-offshore.html,brand_variety,identity_seeded_specs_pending
+ap-code-1159-15210st,Audemars Piguet,Code 11.59 Selfwinding,15210ST.OO.A348KB.01,Blue,Dress,https://www.audemarspiguet.com/com/en/watch-collection/code-1159.html,brand_variety,identity_seeded_specs_pending
+ap-jumbo-16202st,Audemars Piguet,Royal Oak Jumbo Extra-Thin,16202ST.OO.1240ST.02,Blue,Integrated Bracelet,https://www.audemarspiguet.com/com/en/watch-collection/royal-oak.html,core_icon,identity_seeded_specs_pending
+vacheron-overseas-blue-4500v,Vacheron Constantin,Overseas,4500V/110A-B128,Blue,Integrated Bracelet,https://www.vacheron-constantin.com/us/en/collections/overseas.html,core_icon,identity_seeded_specs_pending
+vacheron-overseas-dual-time-7900v,Vacheron Constantin,Overseas Dual Time,7900V/110A-B333,Blue,GMT,https://www.vacheron-constantin.com/us/en/collections/overseas.html,core_icon,identity_seeded_specs_pending
+vacheron-fiftysix-4600e,Vacheron Constantin,Fiftysix Self-Winding,4600E/000A-B442,Silver,Dress,https://www.vacheron-constantin.com/us/en/collections/fiftysix.html,brand_variety,identity_seeded_specs_pending
+vacheron-historiques-american-1921,Vacheron Constantin,Historiques American 1921,82035/000R-9359,Silver,Vintage,https://www.vacheron-constantin.com/us/en/collections/historiques.html,style_icon,identity_seeded_specs_pending
+vacheron-patrimony-85180,Vacheron Constantin,Patrimony Self-Winding,85180/000R-9166,Silver,Dress,https://www.vacheron-constantin.com/us/en/collections/patrimony.html,brand_variety,identity_seeded_specs_pending
+vacheron-traditionnelle-82172,Vacheron Constantin,Traditionnelle Manual-Winding,82172/000R-9382,Silver,Dress,https://www.vacheron-constantin.com/us/en/collections/traditionnelle.html,brand_variety,identity_seeded_specs_pending
+lange-zeitwerk-142031,A. Lange & Sohne,Zeitwerk,142.031,Black,Dress,https://www.alange-soehne.com/us-en/timepieces/zeitwerk,current_catalog,identity_seeded_specs_pending
+lange-lange-1-191032,A. Lange & Sohne,Lange 1,191.032,Silver,Dress,https://www.alange-soehne.com/us-en/timepieces/lange-1,current_catalog,identity_seeded_specs_pending
+lange-saxonia-thin-205086,A. Lange & Sohne,Saxonia Thin,205.086,Blue,Dress,https://www.alange-soehne.com/us-en/timepieces/saxonia,current_catalog,identity_seeded_specs_pending
+lange-odysseus-363179,A. Lange & Sohne,Odysseus,363.179,Grey,Integrated Bracelet,https://www.alange-soehne.com/us-en/timepieces/odysseus,current_catalog,identity_seeded_specs_pending
+lange-1815-chrono-414028,A. Lange & Sohne,1815 Chronograph,414.028,Black,Chronograph,https://www.alange-soehne.com/us-en/timepieces/1815,current_catalog,identity_seeded_specs_pending
+lange-1815-up-down,A. Lange & Sohne,1815 Up/Down,,White,Dress,https://www.alange-soehne.com/us-en/timepieces/1815,folder_image_candidate,identity_seeded_specs_partial
+jlc-reverso-tribute-q3978480,Jaeger-LeCoultre,Reverso Tribute Small Seconds,Q3978480,Blue,Dress,https://www.jaeger-lecoultre.com/us-en/watches/reverso,core_icon,identity_seeded_specs_pending
+jlc-reverso-classic-q3848422,Jaeger-LeCoultre,Reverso Classic Medium Thin,Q3848422,Silver,Dress,https://www.jaeger-lecoultre.com/us-en/watches/reverso,core_icon,identity_seeded_specs_pending
+jlc-master-control-date-q4018420,Jaeger-LeCoultre,Master Control Date,Q4018420,Silver,Dress,https://www.jaeger-lecoultre.com/us-en/watches/master-control,brand_variety,identity_seeded_specs_pending
+jlc-master-ultra-thin-moon-q1368420,Jaeger-LeCoultre,Master Ultra Thin Moon,Q1368420,Silver,Dress,https://www.jaeger-lecoultre.com/us-en/watches/master-ultra-thin,enthusiast_favorite,identity_seeded_specs_pending
+jlc-polaris-date-q9068670,Jaeger-LeCoultre,Polaris Date,Q9068670,Blue,Sport,https://www.jaeger-lecoultre.com/us-en/watches/polaris,brand_variety,identity_seeded_specs_pending
+jlc-geophysic-true-second-q8018420,Jaeger-LeCoultre,Geophysic True Second,Q8018420,Silver,Dress,https://www.jaeger-lecoultre.com/us-en/watches,enthusiast_pick,identity_seeded_specs_pending
+zenith-chronomaster-sport-033100360021m3100,Zenith,Chronomaster Sport,03.3100.3600/21.M3100,White,Chronograph,https://www.zenith-watches.com/en_us/collection/chronomaster,enthusiast_favorite,identity_seeded_specs_pending
+zenith-el-primero-original-033200360021c903,Zenith,Chronomaster Original,03.3200.3600/21.C903,Black,Chronograph,https://www.zenith-watches.com/en_us/collection/chronomaster,core_icon,identity_seeded_specs_pending
+zenith-defy-skyline-036300362001m,Zenith,Defy Skyline,03.6300.3620/01.M,Silver,Integrated Bracelet,https://www.zenith-watches.com/en_us/collection/defy,brand_variety,identity_seeded_specs_pending
+zenith-pilot-big-date-flyback-034000365221i001,Zenith,Pilot Big Date Flyback,03.4000.3652/21.I001,Black,Pilot,https://www.zenith-watches.com/en_us/collection/pilot,brand_variety,identity_seeded_specs_pending
+zenith-defy-classic-95867067021m,Zenith,Defy Classic,95.9000.670/21.M9000,Black,Integrated Bracelet,https://www.zenith-watches.com/en_us/collection/defy,enthusiast_pick,identity_seeded_specs_pending
+panerai-luminor-pam01312,Panerai,Luminor Marina,PAM01312,Black,Diver,https://www.panerai.com/us/en/collections/watch-collection/luminor.html,core_icon,identity_seeded_specs_pending
+panerai-radiomir-pam01334,Panerai,Radiomir Quaranta,PAM01334,Black,Vintage,https://www.panerai.com/us/en/collections/watch-collection/radiomir.html,brand_variety,identity_seeded_specs_pending
+panerai-submersible-pam01229,Panerai,Submersible QuarantaQuattro,PAM01229,Black,Diver,https://www.panerai.com/us/en/collections/watch-collection/submersible.html,brand_variety,identity_seeded_specs_pending
+doxa-sub-300-professional,Doxa,Sub 300 Professional,,Orange,Diver,https://doxawatches.com/collections/sub-300,enthusiast_icon,identity_seeded_specs_pending
+doxa-sub-300t-caribbean,Doxa,Sub 300T Caribbean,,Blue,Diver,https://doxawatches.com/collections/sub-300t,enthusiast_pick,identity_seeded_specs_pending
+doxa-sub-200,Doxa,Sub 200,,Yellow,Diver,https://doxawatches.com/collections/sub-200,enthusiast_value,identity_seeded_specs_pending
+tissot-prx-powermatic-blue,Tissot,PRX Powermatic 80,T137.407.11.041.00,Blue,Integrated Bracelet,https://www.tissotwatches.com/en-us/collection/all-our-watches/t-classic/tissot-prx.html,entry_icon,identity_seeded_specs_pending
+tissot-seastar-1000,Tissot,Seastar 1000 Powermatic 80,T120.407.11.041.03,Blue,Diver,https://www.tissotwatches.com/en-us/collection/all-our-watches/t-sport/seastar-1000.html,entry_value,identity_seeded_specs_pending
+tissot-gentleman-powermatic-blue,Tissot,Gentleman Powermatic 80,T127.407.11.041.00,Blue,Sport,https://www.tissotwatches.com/en-us/collection/all-our-watches/t-classic/tissot-gentleman.html,entry_value,identity_seeded_specs_pending
+casio-g-shock-gmw-b5000,Casio,G-Shock Full Metal,GMW-B5000D-1,Black,Sport,https://www.casio.com/us/watches/gshock/,reddit_sotc_signal,identity_seeded_specs_pending
+casio-g-shock-gw-m5610,Casio,G-Shock Square,GW-M5610U-1,Black,Sport,https://www.casio.com/us/watches/gshock/,reddit_sotc_signal,identity_seeded_specs_pending
+citizen-tsuyosa-nj0150,Citizen,Tsuyosa,NJ0150-56L,Blue,Integrated Bracelet,https://www.citizenwatch.com/us/en/collection/mens-tsuyosa-automatics/,enthusiast_value,identity_seeded_specs_pending
+citizen-promaster-ny0040,Citizen,Promaster Diver,NY0040-09E,Black,Diver,https://www.citizenwatch.com/us/en/collection/promaster/,enthusiast_value,identity_seeded_specs_pending
+junghans-max-bill-automatic,Junghans,Max Bill Automatic,,Silver,Dress,https://www.junghans.de/en/collection/watches/junghans-max-bill/,reddit_under_5k_signal,identity_seeded_specs_pending

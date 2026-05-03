@@ -1,11 +1,11 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import type { ResolvedOwnedWatch, ResolvedWatch, WatchCondition } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import WatchStateControl from './WatchStateControl'
 import { IntentBadge } from './WatchStateIcons'
 
@@ -191,12 +191,12 @@ export default function WatchSidebar({
       </div>
 
       <div style={{ position: 'relative', width: 160, maxWidth: '100%', margin: '0 auto 16px', aspectRatio: '1/1' }}>
-        <Image
-          src={watch.imageUrl}
-          alt={watch.model}
+        <WatchImageOrDial
+          watch={watch}
           fill
           sizes="160px"
-          style={{ objectFit: 'contain', filter: brand.shadow.drop }}
+          imageStyle={{ objectFit: 'contain', filter: brand.shadow.drop }}
+          dialSize={118}
         />
         {!isPublicMode && (
           <WatchStateControl
@@ -266,6 +266,7 @@ export default function WatchSidebar({
         {(
           [
             ['Case Size', `${watch.caseSizeMm}mm`],
+            ...(watch.lugWidthMm ? [['Lug Width', `${watch.lugWidthMm}mm`] as [string, string]] : []),
             ['Case Material', watch.caseMaterial],
             ['Dial Color', watch.dialColor],
             ['Movement', watch.movement],

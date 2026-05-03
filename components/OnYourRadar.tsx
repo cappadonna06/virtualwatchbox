@@ -1,10 +1,10 @@
 'use client'
 
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
-import { watches as catalogWatches } from '@/lib/watches'
+import { renderableWatches as catalogWatches } from '@/lib/renderableWatches'
 import WatchStateControl from '@/components/collection/WatchStateControl'
+import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -82,12 +82,12 @@ export default function OnYourRadar({ followedWatchIds }: Props) {
             }}
           >
             <div style={{ position: 'relative' }}>
-              <Image
-                src={watch.imageUrl}
-                alt={watch.model}
+              <WatchImageOrDial
+                watch={watch}
                 width={160}
                 height={160}
-                style={{ width: '100%', aspectRatio: '1/1', objectFit: 'contain', background: '#F8F4EE', display: 'block', padding: 8 }}
+                imageStyle={{ width: '100%', aspectRatio: '1/1', objectFit: 'contain', background: '#F8F4EE', display: 'block', padding: 8 }}
+                dialSize={92}
               />
               <WatchStateControl
                 catalogWatchId={watch.id}

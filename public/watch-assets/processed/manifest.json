@@ -1,0 +1,145 @@
+[
+  {
+    "watchId": "a-lange-and-sohne-1815-up-down-white",
+    "rawFilename": "a-lange-and-sohne-1815-up-down-white.jpg",
+    "pngPath": "/watch-assets/processed/a-lange-and-sohne-1815-up-down-white.png",
+    "webpPath": "/watch-assets/processed/webp/a-lange-and-sohne-1815-up-down-white.webp",
+    "sourceWidth": 1024,
+    "sourceHeight": 1024,
+    "processedWidth": 511,
+    "processedHeight": 900,
+    "backgroundRemovalApplied": true
+  },
+  {
+    "watchId": "grand-seiko-hi-beat-36000-blue",
+    "rawFilename": "grand-seiko-hi-beat-36000-blue.avif",
+    "pngPath": "/watch-assets/processed/grand-seiko-hi-beat-36000-blue.png",
+    "webpPath": "/watch-assets/processed/webp/grand-seiko-hi-beat-36000-blue.webp",
+    "sourceWidth": 800,
+    "sourceHeight": 800,
+    "processedWidth": 513,
+    "processedHeight": 900,
+    "backgroundRemovalApplied": false
+  },
+  {
+    "watchId": "hamilton-khaki-navy-pioneer-h78719553",
+    "rawFilename": "hamilton-khaki-navy-pioneer-h78719553.avif",
+    "pngPath": "/watch-assets/processed/hamilton-khaki-navy-pioneer-h78719553.png",
+    "webpPath": "/watch-assets/processed/webp/hamilton-khaki-navy-pioneer-h78719553.webp",
+    "sourceWidth": 1200,
+    "sourceHeight": 1200,
+    "processedWidth": 550,
+    "processedHeight": 900,
+    "backgroundRemovalApplied": false
+  },
+  {
+    "watchId": "iwc-portugieser-chronograph-iw371446",
+    "rawFilename": "iwc-portugieser-chronograph-iw371446.webp",
+    "pngPath": "/watch-assets/processed/iwc-portugieser-chronograph-iw371446.png",
+    "webpPath": "/watch-assets/processed/webp/iwc-portugieser-chronograph-iw371446.webp",
+    "sourceWidth": 608,
+    "sourceHeight": 778,
+    "processedWidth": 549,
+    "processedHeight": 900,
+    "backgroundRemovalApplied": false
+  },
+  {
+    "watchId": "longines-legend-diver-black",
+    "rawFilename": "longines-legend-diver-black.avif",
+    "pngPath": "/watch-assets/processed/longines-legend-diver-black.png",
+    "webpPath": "/watch-assets/processed/webp/longines-legend-diver-black.webp",
+    "sourceWidth": 944,
+    "sourceHeight": 1805,
+    "processedWidth": 452,
+    "processedHeight": 900,
+    "backgroundRemovalApplied": false
+  },
+  {
+    "watchId": "longines-legend-diver-blue",
+    "rawFilename": "longines-legend-diver-blue.avif",
+    "pngPath": "/watch-assets/processed/longines-legend-diver-blue.png",
+    "webpPath": "/watch-assets/processed/webp/longines-legend-diver-blue.webp",
+    "sourceWidth": 944,
+    "sourceHeight": 1805,
+    "processedWidth": 452,
+    "processedHeight": 900,
+    "backgroundRemovalApplied": false
+  },
+  {
+    "watchId": "longines-legend-diver-green",
+    "rawFilename": "longines-legend-diver-green.avif",
+    "pngPath": "/watch-assets/processed/longines-legend-diver-green.png",
+    "webpPath": "/watch-assets/processed/webp/longines-legend-diver-green.webp",
+    "sourceWidth": 944,
+    "sourceHeight": 1805,
+    "processedWidth": 452,
+    "processedHeight": 900,
+    "backgroundRemovalApplied": false
+  },
+  {
+    "watchId": "longines-legend-diver-white",
+    "rawFilename": "longines-legend-diver-white.avif",
+    "pngPath": "/watch-assets/processed/longines-legend-diver-white.png",
+    "webpPath": "/watch-assets/processed/webp/longines-legend-diver-white.webp",
+    "sourceWidth": 944,
+    "sourceHeight": 1805,
+    "processedWidth": 452,
+    "processedHeight": 900,
+    "backgroundRemovalApplied": false
+  },
+  {
+    "watchId": "omega-seamaster-aqua-terra-blue",
+    "rawFilename": "omega-seamaster-aqua-terra-blue.webp",
+    "pngPath": "/watch-assets/processed/omega-seamaster-aqua-terra-blue.png",
+    "webpPath": "/watch-assets/processed/webp/omega-seamaster-aqua-terra-blue.webp",
+    "sourceWidth": 1220,
+    "sourceHeight": 1220,
+    "processedWidth": 533,
+    "processedHeight": 900,
+    "backgroundRemovalApplied": true
+  },
+  {
+    "watchId": "oris-big-crown-d-26-286-hb-rag-green",
+    "rawFilename": "oris-big-crown-d-26-286-hb-rag-green.avif",
+    "pngPath": "/watch-assets/processed/oris-big-crown-d-26-286-hb-rag-green.png",
+    "webpPath": "/watch-assets/processed/webp/oris-big-crown-d-26-286-hb-rag-green.webp",
+    "sourceWidth": 773,
+    "sourceHeight": 1080,
+    "processedWidth": 514,
+    "processedHeight": 900,
+    "backgroundRemovalApplied": true
+  },
+  {
+    "watchId": "sinn-556-010",
+    "rawFilename": "sinn-556-010.avif",
+    "pngPath": "/watch-assets/processed/sinn-556-010.png",
+    "webpPath": "/watch-assets/processed/webp/sinn-556-010.webp",
+    "sourceWidth": 1524,
+    "sourceHeight": 2360,
+    "processedWidth": 531,
+    "processedHeight": 900,
+    "backgroundRemovalApplied": true
+  },
+  {
+    "watchId": "tudor-black-bay-gmt-black",
+    "rawFilename": "tudor-black-bay-gmt-black.webp",
+    "pngPath": "/watch-assets/processed/tudor-black-bay-gmt-black.png",
+    "webpPath": "/watch-assets/processed/webp/tudor-black-bay-gmt-black.webp",
+    "sourceWidth": 750,
+    "sourceHeight": 750,
+    "processedWidth": 524,
+    "processedHeight": 900,
+    "backgroundRemovalApplied": true
+  },
+  {
+    "watchId": "tudor-black-bay-gmt-m79830rb-0001",
+    "rawFilename": "tudor-black-bay-gmt-m79830rb-0001.avif",
+    "pngPath": "/watch-assets/processed/tudor-black-bay-gmt-m79830rb-0001.png",
+    "webpPath": "/watch-assets/processed/webp/tudor-black-bay-gmt-m79830rb-0001.webp",
+    "sourceWidth": 900,
+    "sourceHeight": 1200,
+    "processedWidth": 570,
+    "processedHeight": 900,
+    "backgroundRemovalApplied": false
+  }
+]

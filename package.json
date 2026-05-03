@@ -6,7 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "images:intake": "tsx scripts/intake-watch-images.ts",
+    "images:apply-intake": "tsx scripts/apply-watch-image-intake.ts",
+    "images:process": "tsx scripts/process-watch-images.ts",
+    "images:catalog-candidates": "tsx scripts/export-watch-catalog-candidates.ts",
+    "catalog:seed-report": "tsx scripts/catalog-seed-report.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.2",
@@ -14,7 +19,8 @@
     "next": "14.2.35",
     "react": "^18",
     "react-dom": "^18",
-    "react-easy-crop": "^5.5.7"
+    "react-easy-crop": "^5.5.7",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -23,6 +29,7 @@
     "autoprefixer": "^10.0.1",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

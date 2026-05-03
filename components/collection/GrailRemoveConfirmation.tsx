@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, type CSSProperties } from 'react'
-import Image from 'next/image'
 import { createPortal } from 'react-dom'
 import { brand } from '@/lib/brand'
 import type { CatalogWatch } from '@/types/watch'
+import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import { useIsMobile } from './useResponsiveState'
 
 type Props = {
@@ -88,12 +88,12 @@ export default function GrailRemoveConfirmation({ open, watch, onCancel, onConfi
           }}
         >
           <div style={{ position: 'relative', width: 76, aspectRatio: '1 / 1' }}>
-            <Image
-              src={watch.imageUrl}
-              alt={watch.model}
+            <WatchImageOrDial
+              watch={watch}
               fill
               sizes="76px"
-              style={{ objectFit: 'contain', padding: 8, filter: brand.shadow.drop }}
+              imageStyle={{ objectFit: 'contain', padding: 8, filter: brand.shadow.drop }}
+              dialSize={48}
             />
           </div>
           <div>
