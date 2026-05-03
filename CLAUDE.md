@@ -80,6 +80,7 @@ Use CSS vars for global/class-based CSS; use `brand.*` for inline styles. Both r
 - `docs/design-system/claude-v1/design_handoff_add_watch/` — add-watch component specs
 - `docs/design-system/claude-v1/preview/` — HTML swatches for colors, type scale, spacing, all components
 - `docs/DESIGN_SYSTEM.md` — token usage rules and quick reference
+- `docs/GOOGLE_OAUTH_BRANDING.md` — Google/Supabase auth branding setup checklist
 
 ---
 

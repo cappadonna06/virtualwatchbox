@@ -3171,11 +3171,22 @@ export function OwnerProfilePage() {
             : current.featuredProfileWatch,
           visibility: typeof data.visibility === 'object' && data.visibility
             ? {
-              showCollection: Boolean((data.visibility as Record<string, unknown>).showCollection),
-              showCollectionStats: Boolean((data.visibility as Record<string, unknown>).showCollectionStats),
-              showPlayground: Boolean((data.visibility as Record<string, unknown>).showPlayground),
-              showFollowedWatches: Boolean((data.visibility as Record<string, unknown>).showFollowedWatches),
-              showGrail: Boolean((data.visibility as Record<string, unknown>).showGrail),
+              ...current.visibility,
+              ...(typeof (data.visibility as Record<string, unknown>).showCollection === 'boolean'
+                ? { showCollection: (data.visibility as Record<string, unknown>).showCollection as boolean }
+                : {}),
+              ...(typeof (data.visibility as Record<string, unknown>).showCollectionStats === 'boolean'
+                ? { showCollectionStats: (data.visibility as Record<string, unknown>).showCollectionStats as boolean }
+                : {}),
+              ...(typeof (data.visibility as Record<string, unknown>).showPlayground === 'boolean'
+                ? { showPlayground: (data.visibility as Record<string, unknown>).showPlayground as boolean }
+                : {}),
+              ...(typeof (data.visibility as Record<string, unknown>).showFollowedWatches === 'boolean'
+                ? { showFollowedWatches: (data.visibility as Record<string, unknown>).showFollowedWatches as boolean }
+                : {}),
+              ...(typeof (data.visibility as Record<string, unknown>).showGrail === 'boolean'
+                ? { showGrail: (data.visibility as Record<string, unknown>).showGrail as boolean }
+                : {}),
             }
             : current.visibility,
         }))
