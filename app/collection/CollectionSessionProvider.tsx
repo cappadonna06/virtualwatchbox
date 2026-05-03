@@ -10,7 +10,6 @@ import {
   WATCHBOX_CONFIG_STORAGE_KEY,
 } from '@/lib/storageKeys'
 import { watches as catalogWatches } from '@/lib/watches'
-import { SEEDED_OWNED_WATCHES } from '@/lib/collectionData'
 import { createCatalogWatchMap, resolveCatalogWatchId, resolveOwnedWatches } from '@/lib/watchData'
 import { getEffectiveSlotCount } from '@/lib/watchboxOverflow'
 import { useAuth } from '@/lib/auth/AuthProvider'
@@ -203,7 +202,7 @@ function normalizeOwnedWatch(
 }
 
 function normalizeCollectionWatches(rawValue: unknown, catalogIds: string[]) {
-  if (!Array.isArray(rawValue)) return SEEDED_OWNED_WATCHES
+  if (!Array.isArray(rawValue)) return []
 
   const fallbackDate = new Date().toISOString().split('T')[0]
   return rawValue
@@ -518,7 +517,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   const catalogIds = useMemo(() => catalogWatches.map(watch => watch.id), [])
   const catalogIdSet = useMemo(() => new Set(catalogIds), [catalogIds])
 
-  const [collectionEntries, setCollectionEntries] = useState<OwnedWatch[]>(SEEDED_OWNED_WATCHES)
+  const [collectionEntries, setCollectionEntries] = useState<OwnedWatch[]>([])
   const [followedWatchIds, setFollowedWatchIds] = useState<string[]>([])
   const [nextTargets, setNextTargets] = useState<WatchTarget[]>([])
   const [grailWatchId, setGrailWatchId] = useState<string | null>(null)
