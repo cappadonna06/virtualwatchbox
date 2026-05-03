@@ -4,8 +4,9 @@ import Image from 'next/image'
 import type { CSSProperties } from 'react'
 import type { CatalogWatch, ResolvedWatch } from '@/types/watch'
 import DialSVG from './DialSVG'
+import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 
-type WatchVisual = Pick<CatalogWatch | ResolvedWatch, 'model' | 'imageUrl' | 'dialConfig'>
+type WatchVisual = Pick<CatalogWatch | ResolvedWatch, 'id' | 'model' | 'imageUrl' | 'dialConfig'>
 
 type Props = {
   watch: WatchVisual
@@ -26,10 +27,13 @@ export default function WatchImageOrDial({
   imageStyle,
   dialSize = 88,
 }: Props) {
-  if (watch.imageUrl) {
+  const { getImageUrl } = useWatchImages()
+  const effectiveImageUrl = getImageUrl(watch.id) ?? watch.imageUrl
+
+  if (effectiveImageUrl) {
     return fill ? (
       <Image
-        src={watch.imageUrl}
+        src={effectiveImageUrl}
         alt={watch.model}
         fill
         sizes={sizes}
@@ -37,7 +41,7 @@ export default function WatchImageOrDial({
       />
     ) : (
       <Image
-        src={watch.imageUrl}
+        src={effectiveImageUrl}
         alt={watch.model}
         width={width ?? dialSize}
         height={height ?? dialSize}

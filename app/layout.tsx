@@ -4,6 +4,7 @@ import './globals.css'
 import NavBar from '@/components/NavBar'
 import { AuthProvider } from '@/lib/auth/AuthProvider'
 import { CollectionSessionProvider } from './collection/CollectionSessionProvider'
+import { WatchImagesProvider } from '@/lib/watchImages/WatchImagesProvider'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -126,9 +127,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <AuthProvider>
           <CollectionSessionProvider>
-            <NavBar />
+            <WatchImagesProvider>
+              <NavBar />
 
-            <main className="site-main" style={{ maxWidth: 1280, margin: '0 auto' }}>{children}</main>
+              <main className="site-main" style={{ maxWidth: 1280, margin: '0 auto' }}>{children}</main>
+            </WatchImagesProvider>
           </CollectionSessionProvider>
         </AuthProvider>
       </body>
