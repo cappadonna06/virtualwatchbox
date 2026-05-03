@@ -22,6 +22,7 @@ import { useIsMobile } from '@/components/collection/useResponsiveState'
 import DialSVG from '@/components/watchbox/DialSVG'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import { brand } from '@/lib/brand'
+import { createClient } from '@/lib/supabase/client'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import {
   copyProfileDemoUrl,
@@ -3128,12 +3129,74 @@ export function OwnerProfilePage() {
   const [avatarEditOpen, setAvatarEditOpen] = useState(false)
   const [coverEditOpen, setCoverEditOpen] = useState(false)
   const [visibilityOpen, setVisibilityOpen] = useState(false)
+  const profileHydratedFromCloudRef = useRef(false)
 
   useEffect(() => {
     setProfile(getProfileDemoState())
     setPlaygroundBoxes(getStoredPlaygroundBoxes())
     setHydrated(true)
   }, [])
+
+  useEffect(() => {
+    if (!user || !hydrated || profileHydratedFromCloudRef.current) return
+
+    ;(async () => {
+      try {
+        const supabase = createClient()
+        const { data } = await supabase
+          .from('user_profiles')
+          .select('display_name,bio,profile_image_url,profile_image_crop,cover_image_url,collection_hero_image_url,featured_profile_watch,visibility')
+          .eq('id', user.id)
+          .maybeSingle()
+
+        if (!data) {
+          profileHydratedFromCloudRef.current = true
+          return
+        }
+
+        setProfile(current => ({
+          ...current,
+          displayName: typeof data.display_name === 'string' ? data.display_name : current.displayName,
+          bio: typeof data.bio === 'string' ? data.bio : current.bio,
+          profileImageUrl: typeof data.profile_image_url === 'string' ? data.profile_image_url : current.profileImageUrl,
+          profileImageCrop: typeof data.profile_image_crop === 'object' && data.profile_image_crop
+            ? (data.profile_image_crop as ProfileImageCropState)
+            : current.profileImageCrop,
+          coverImageUrl: typeof data.cover_image_url === 'string' ? data.cover_image_url : current.coverImageUrl,
+          collectionHeroImageUrl: typeof data.collection_hero_image_url === 'string'
+            ? data.collection_hero_image_url
+            : current.collectionHeroImageUrl,
+          featuredProfileWatch: data.featured_profile_watch === 'grail' || data.featured_profile_watch === 'jewel' || data.featured_profile_watch === 'none'
+            ? data.featured_profile_watch
+            : current.featuredProfileWatch,
+          visibility: typeof data.visibility === 'object' && data.visibility
+            ? {
+              ...current.visibility,
+              ...(typeof (data.visibility as Record<string, unknown>).showCollection === 'boolean'
+                ? { showCollection: (data.visibility as Record<string, unknown>).showCollection as boolean }
+                : {}),
+              ...(typeof (data.visibility as Record<string, unknown>).showCollectionStats === 'boolean'
+                ? { showCollectionStats: (data.visibility as Record<string, unknown>).showCollectionStats as boolean }
+                : {}),
+              ...(typeof (data.visibility as Record<string, unknown>).showPlayground === 'boolean'
+                ? { showPlayground: (data.visibility as Record<string, unknown>).showPlayground as boolean }
+                : {}),
+              ...(typeof (data.visibility as Record<string, unknown>).showFollowedWatches === 'boolean'
+                ? { showFollowedWatches: (data.visibility as Record<string, unknown>).showFollowedWatches as boolean }
+                : {}),
+              ...(typeof (data.visibility as Record<string, unknown>).showGrail === 'boolean'
+                ? { showGrail: (data.visibility as Record<string, unknown>).showGrail as boolean }
+                : {}),
+            }
+            : current.visibility,
+        }))
+      } catch (error) {
+        console.error('[vwb] user profile hydrate failed', error)
+      } finally {
+        profileHydratedFromCloudRef.current = true
+      }
+    })()
+  }, [user, hydrated])
 
   const ownerGrailWatch = useMemo<ResolvedWatch | null>(
     () => grailWatch ? { ...grailWatch, watchId: grailWatch.id, condition: 'Excellent', notes: '' } : null,
@@ -3214,7 +3277,22 @@ export function OwnerProfilePage() {
       watchboxConfig,
       playgroundBoxes,
     })
-  }, [profile, hydrated, collectionWatches, followedWatches, nextTargets, grailWatch, collectionJewelWatch, watchboxConfig, playgroundBoxes])
+
+    if (user) {
+      const supabase = createClient()
+      void supabase.from('user_profiles').upsert({
+        id: user.id,
+        display_name: profile.displayName,
+        bio: profile.bio,
+        profile_image_url: profile.profileImageUrl || null,
+        profile_image_crop: profile.profileImageCrop ?? null,
+        cover_image_url: profile.coverImageUrl || null,
+        collection_hero_image_url: profile.collectionHeroImageUrl || null,
+        featured_profile_watch: profile.featuredProfileWatch,
+        visibility: profile.visibility,
+      })
+    }
+  }, [profile, hydrated, user, collectionWatches, followedWatches, nextTargets, grailWatch, collectionJewelWatch, watchboxConfig, playgroundBoxes])
 
   const collectionBox = useMemo(
     () => createCollectionBoxSnapshot(collectionWatches, watchboxConfig, new Date().toISOString()),
