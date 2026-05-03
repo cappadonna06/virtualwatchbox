@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
 import './globals.css'
 import NavBar from '@/components/NavBar'
+import Footer from '@/components/Footer'
 import { AuthProvider } from '@/lib/auth/AuthProvider'
 import { CollectionSessionProvider } from './collection/CollectionSessionProvider'
 import { WatchImagesProvider } from '@/lib/watchImages/WatchImagesProvider'
@@ -133,6 +134,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <NavBar />
 
                 <main className="site-main" style={{ maxWidth: 1280, margin: '0 auto' }}>{children}</main>
+                <Footer />
               </WatchImagesProvider>
             </CatalogProvider>
           </CollectionSessionProvider>

@@ -5,7 +5,6 @@ import Ticker from '@/components/Ticker'
 import CollectionSection from '@/components/collection/CollectionSection'
 import FeaturesSection from '@/components/FeaturesSection'
 import OnYourRadar from '@/components/OnYourRadar'
-import Footer from '@/components/Footer'
 import { useCollectionSession } from './collection/CollectionSessionProvider'
 
 export default function HomePage() {
@@ -19,7 +18,6 @@ export default function HomePage() {
       <Ticker />
       <FeaturesSection />
       <OnYourRadar followedWatchIds={followedWatchIdSet} />
-      <Footer />
     </>
   )
 }
