@@ -15,6 +15,28 @@ Read the PRD before implementing any feature. It defines the product vision, wat
 
 ---
 
+
+## Supabase Persistence Coverage (Required)
+
+When changing data models or user-facing state, keep Supabase backup/sync in parity with local state.
+
+Current user-backed persistence includes:
+- `public.user_profiles`
+  - `display_name`, `bio`
+  - `profile_image_url`, `profile_image_crop`
+  - `cover_image_url`, `collection_hero_image_url`
+  - `featured_profile_watch`, `visibility`
+- `public.watches`
+- `public.watch_states`
+- `public.watchbox_config`
+- `public.playground_boxes`
+
+If a new user-based field is added in UI state (`ProfileDemoState`, collection session state, playground state, etc.), you must update all of:
+1. Supabase migration(s)
+2. Supabase load/hydration path
+3. Supabase save/sync path
+4. Any local snapshot/export logic that mirrors profile data
+
 ## Tech Stack
 
 - **Framework:** Next.js 14, App Router, TypeScript
@@ -58,6 +80,7 @@ Use CSS vars for global/class-based CSS; use `brand.*` for inline styles. Both r
 - `docs/design-system/claude-v1/design_handoff_add_watch/` — add-watch component specs
 - `docs/design-system/claude-v1/preview/` — HTML swatches for colors, type scale, spacing, all components
 - `docs/DESIGN_SYSTEM.md` — token usage rules and quick reference
+- `docs/GOOGLE_OAUTH_BRANDING.md` — Google/Supabase auth branding setup checklist
 
 ---
 

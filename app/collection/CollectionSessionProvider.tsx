@@ -511,7 +511,7 @@ async function loadFromSupabase(
 // ── Provider ───────────────────────────────────────────────────────────────
 
 export function CollectionSessionProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
 
   const catalogWatchMap = useMemo(() => createCatalogWatchMap(catalogWatches), [])
   const catalogIds = useMemo(() => catalogWatches.map(watch => watch.id), [])
@@ -565,6 +565,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   // ── Guest hydration from sessionStorage / localStorage ──────────────────
 
   useEffect(() => {
+    if (authLoading) return
     if (user) return  // authenticated mode handled separately
 
     try {
@@ -599,8 +600,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     } finally {
       setHydrated(true)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])  // run once on mount; user not a dep here — auth effect handles sign-in
+  }, [authLoading, user, catalogIds, catalogIdSet])
 
   // ── Auth state change → load from Supabase or offer migration ───────────
 
