@@ -204,18 +204,25 @@ export default function NavBar() {
                 width: 38,
                 height: 38,
                 borderRadius: brand.radius.circle,
-                background: brand.colors.ink,
-                color: brand.colors.bg,
+                background: profileActive ? brand.colors.ink : brand.colors.goldWash,
+                border: `1px solid ${profileActive ? brand.colors.ink : brand.colors.goldLine}`,
+                color: profileActive ? brand.colors.bg : brand.colors.gold,
                 textDecoration: 'none',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                fontFamily: brand.font.serif,
+                fontSize: 16,
+                fontWeight: 500,
+                letterSpacing: '0.04em',
                 boxShadow: profileActive ? brand.shadow.gold : brand.shadow.sm,
+                transition: `background ${brand.transition.fast}, border-color ${brand.transition.fast}`,
               }}
-              aria-label="Profile"
+              aria-label={`Signed in as ${user.email ?? 'you'}`}
+              title={user.email ?? undefined}
               aria-current={profileActive ? 'page' : undefined}
             >
-              <NavIcon name="profile" />
+              {user.email?.charAt(0).toUpperCase() ?? <NavIcon name="profile" />}
             </Link>
             <button
               onClick={() => void signOut()}
