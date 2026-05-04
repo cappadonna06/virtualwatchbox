@@ -69,15 +69,36 @@ function NavIcon({ name, size = 16 }: { name: NavIconName; size?: number }) {
 
 export default function NavBar() {
   const [open, setOpen] = useState(false)
+  const [accountOpen, setAccountOpen] = useState(false)
   const [toastMsg, setToastMsg] = useState<string | null>(null)
   const [toastVisible, setToastVisible] = useState(false)
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const accountWrapRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
   const { user, signOut } = useAuth()
 
   useEffect(() => {
     setOpen(false)
+    setAccountOpen(false)
   }, [pathname])
+
+  useEffect(() => {
+    if (!accountOpen) return
+    const handleMouseDown = (event: MouseEvent) => {
+      if (accountWrapRef.current && !accountWrapRef.current.contains(event.target as Node)) {
+        setAccountOpen(false)
+      }
+    }
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setAccountOpen(false)
+    }
+    document.addEventListener('mousedown', handleMouseDown)
+    document.addEventListener('keydown', handleKey)
+    return () => {
+      document.removeEventListener('mousedown', handleMouseDown)
+      document.removeEventListener('keydown', handleKey)
+    }
+  }, [accountOpen])
 
   useEffect(() => {
     if (!open) return
@@ -123,6 +144,16 @@ export default function NavBar() {
     letterSpacing: '0.04em',
     textDecoration: 'none',
   }) as CSSProperties
+
+  const accountItemStyle = (color: string): CSSProperties => ({
+    fontFamily: brand.font.sans,
+    fontSize: 13,
+    color,
+    padding: '10px 16px',
+    textDecoration: 'none',
+    display: 'block',
+    lineHeight: 1.3,
+  })
 
   const mobileRowStyle = (active: boolean, hasBorder: boolean) => ({
     '--nav-mobile-color': active ? brand.colors.ink : brand.colors.muted,
@@ -196,41 +227,89 @@ export default function NavBar() {
         </div>
 
         {user ? (
-          <div className="nav-links" style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-            <Link
-              href="/profile"
-              className={`nav-signin ${profileActive ? 'is-active' : ''}`}
+          <div ref={accountWrapRef} className="nav-account-wrap" style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={() => setAccountOpen(o => !o)}
+              aria-haspopup="menu"
+              aria-expanded={accountOpen}
+              aria-label={`Account menu for ${user.email ?? 'you'}`}
+              title={user.email ?? undefined}
               style={{
-                width: 38,
-                height: 38,
+                width: 34,
+                height: 34,
                 borderRadius: brand.radius.circle,
-                background: profileActive ? brand.colors.ink : brand.colors.goldWash,
-                border: `1px solid ${profileActive ? brand.colors.ink : brand.colors.goldLine}`,
-                color: profileActive ? brand.colors.bg : brand.colors.gold,
-                textDecoration: 'none',
+                background: brand.colors.ink,
+                color: brand.colors.bg,
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+                fontFamily: brand.font.sans,
+                fontSize: 12,
+                fontWeight: 500,
+                letterSpacing: '0.04em',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontFamily: brand.font.serif,
-                fontSize: 16,
-                fontWeight: 500,
-                letterSpacing: '0.04em',
-                boxShadow: profileActive ? brand.shadow.gold : brand.shadow.sm,
-                transition: `background ${brand.transition.fast}, border-color ${brand.transition.fast}`,
               }}
-              aria-label={`Signed in as ${user.email ?? 'you'}`}
-              title={user.email ?? undefined}
-              aria-current={profileActive ? 'page' : undefined}
             >
-              {user.email?.charAt(0).toUpperCase() ?? <NavIcon name="profile" />}
-            </Link>
-            <button
-              onClick={() => void signOut()}
-              className="nav-link-button"
-              style={desktopLinkStyle(false)}
-            >
-              Sign out
+              {(user.email?.charAt(0) ?? '?').toUpperCase()}
             </button>
+            {accountOpen && (
+              <div
+                role="menu"
+                style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 8px)',
+                  right: 0,
+                  minWidth: 160,
+                  background: brand.colors.white,
+                  border: `1px solid ${brand.colors.border}`,
+                  borderRadius: brand.radius.md,
+                  boxShadow: '0 8px 24px rgba(26,20,16,0.10)',
+                  padding: '6px 0',
+                  zIndex: brand.zIndex.nav + 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <Link
+                  href="/profile"
+                  role="menuitem"
+                  onClick={() => setAccountOpen(false)}
+                  className="nav-account-item"
+                  style={accountItemStyle(brand.colors.ink)}
+                >
+                  Profile
+                </Link>
+                <Link
+                  href="/settings"
+                  role="menuitem"
+                  onClick={() => setAccountOpen(false)}
+                  className="nav-account-item"
+                  style={accountItemStyle(brand.colors.ink)}
+                >
+                  Settings
+                </Link>
+                <div style={{ height: 1, background: brand.colors.border, margin: '6px 0' }} />
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => { setAccountOpen(false); void signOut() }}
+                  className="nav-account-item"
+                  style={{
+                    ...accountItemStyle(brand.colors.muted),
+                    background: 'none',
+                    border: 'none',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    width: '100%',
+                  }}
+                >
+                  Sign out
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <Link
@@ -358,6 +437,18 @@ export default function NavBar() {
                   <NavIcon name="profile" />
                 </span>
                 <span>Profile</span>
+              </span>
+            </Link>
+            <Link
+              href="/settings"
+              onClick={() => setOpen(false)}
+              className="nav-mobile-row"
+              style={mobileRowStyle(pathname.startsWith('/settings'), true)}
+              aria-current={pathname.startsWith('/settings') ? 'page' : undefined}
+            >
+              <span className="nav-mobile-row-main">
+                <span className="nav-mobile-row-icon" />
+                <span>Settings</span>
               </span>
             </Link>
             <button
