@@ -691,6 +691,39 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, authLoading])
 
+  // ── Tab-focus refetch ──────────────────────────────────────────────────
+  // When the tab becomes visible again, re-pull collection/states/config from
+  // Supabase so cross-browser edits show up without a hard reload. Skipped while
+  // a sync is in flight (dataLoading) or if a migration prompt is pending.
+  useEffect(() => {
+    const currentId = user?.id ?? null
+    if (!currentId || authLoading || migrationPending) return
+
+    let cancelled = false
+
+    function refetch() {
+      if (document.visibilityState !== 'visible') return
+      if (cancelled || !currentId) return
+      loadFromSupabase(currentId, catalogIds, catalogIdSet).then(snapshot => {
+        if (cancelled || !snapshot) return
+        setCollectionEntries(snapshot.collectionWatches)
+        setFollowedWatchIds(snapshot.followedWatchIds)
+        setNextTargets(snapshot.nextTargets)
+        setGrailWatchId(snapshot.grailWatchId)
+        setCollectionJewelWatchId(snapshot.collectionJewelWatchId)
+        setWatchboxConfig(snapshot.watchboxConfig)
+      })
+    }
+
+    document.addEventListener('visibilitychange', refetch)
+    window.addEventListener('focus', refetch)
+    return () => {
+      cancelled = true
+      document.removeEventListener('visibilitychange', refetch)
+      window.removeEventListener('focus', refetch)
+    }
+  }, [user?.id, authLoading, migrationPending, catalogIds, catalogIdSet])
+
   // ── Guest state persistence to sessionStorage / localStorage ────────────
 
   useEffect(() => {
