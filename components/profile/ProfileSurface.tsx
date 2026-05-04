@@ -3143,11 +3143,13 @@ export function OwnerProfilePage() {
     ;(async () => {
       try {
         const supabase = createClient()
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('user_profiles')
           .select('display_name,bio,profile_image_url,profile_image_crop,cover_image_url,collection_hero_image_url,featured_profile_watch,visibility')
           .eq('id', user.id)
           .maybeSingle()
+
+        if (error) console.error('[vwb] user profile read error', error)
 
         if (!data) {
           profileHydratedFromCloudRef.current = true
@@ -3279,18 +3281,25 @@ export function OwnerProfilePage() {
     })
 
     if (user) {
-      const supabase = createClient()
-      void supabase.from('user_profiles').upsert({
-        id: user.id,
-        display_name: profile.displayName,
-        bio: profile.bio,
-        profile_image_url: profile.profileImageUrl || null,
-        profile_image_crop: profile.profileImageCrop ?? null,
-        cover_image_url: profile.coverImageUrl || null,
-        collection_hero_image_url: profile.collectionHeroImageUrl || null,
-        featured_profile_watch: profile.featuredProfileWatch,
-        visibility: profile.visibility,
-      })
+      ;(async () => {
+        try {
+          const supabase = createClient()
+          const { error } = await supabase.from('user_profiles').upsert({
+            id: user.id,
+            display_name: profile.displayName,
+            bio: profile.bio,
+            profile_image_url: profile.profileImageUrl || null,
+            profile_image_crop: profile.profileImageCrop ?? null,
+            cover_image_url: profile.coverImageUrl || null,
+            collection_hero_image_url: profile.collectionHeroImageUrl || null,
+            featured_profile_watch: profile.featuredProfileWatch,
+            visibility: profile.visibility,
+          }, { onConflict: 'id' })
+          if (error) console.error('[vwb] profile upsert error', error)
+        } catch (err) {
+          console.error('[vwb] profile upsert failed', err)
+        }
+      })()
     }
   }, [profile, hydrated, user, collectionWatches, followedWatches, nextTargets, grailWatch, collectionJewelWatch, watchboxConfig, playgroundBoxes])
 
