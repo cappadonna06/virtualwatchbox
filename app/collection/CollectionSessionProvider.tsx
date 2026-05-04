@@ -294,7 +294,7 @@ type DbWatchboxConfig = {
 async function syncWatchAdd(watch: OwnedWatch, catalogWatch: CatalogWatch, userId: string, sortOrder: number) {
   try {
     const supabase = createClient()
-    await supabase.from('watches').upsert({
+    const { error } = await supabase.from('watches').upsert({
       id: watch.id.startsWith('owned-') ? undefined : watch.id,
       user_id: userId,
       catalog_id: watch.watchId,
@@ -315,6 +315,7 @@ async function syncWatchAdd(watch: OwnedWatch, catalogWatch: CatalogWatch, userI
       notes: watch.notes,
       sort_order: sortOrder,
     })
+    if (error) console.error('[vwb] syncWatchAdd error', error)
   } catch (err) {
     console.error('[vwb] syncWatchAdd failed', err)
   }
@@ -323,7 +324,8 @@ async function syncWatchAdd(watch: OwnedWatch, catalogWatch: CatalogWatch, userI
 async function syncWatchRemove(watchId: string, userId: string) {
   try {
     const supabase = createClient()
-    await supabase.from('watches').delete().eq('user_id', userId).eq('id', watchId)
+    const { error } = await supabase.from('watches').delete().eq('user_id', userId).eq('id', watchId)
+    if (error) console.error('[vwb] syncWatchRemove error', error)
   } catch (err) {
     console.error('[vwb] syncWatchRemove failed', err)
   }
@@ -332,11 +334,14 @@ async function syncWatchRemove(watchId: string, userId: string) {
 async function syncWatchReorder(watches: OwnedWatch[], userId: string) {
   try {
     const supabase = createClient()
-    await Promise.all(
+    const results = await Promise.all(
       watches.map((w, i) =>
         supabase.from('watches').update({ sort_order: i }).eq('user_id', userId).eq('id', w.id)
       )
     )
+    for (const r of results) {
+      if (r.error) console.error('[vwb] syncWatchReorder error', r.error)
+    }
   } catch (err) {
     console.error('[vwb] syncWatchReorder failed', err)
   }
@@ -345,12 +350,13 @@ async function syncWatchReorder(watches: OwnedWatch[], userId: string) {
 async function syncWatchboxConfig(config: WatchboxConfig, userId: string) {
   try {
     const supabase = createClient()
-    await supabase.from('watchbox_config').upsert({
+    const { error } = await supabase.from('watchbox_config').upsert({
       user_id: userId,
       frame: config.frame,
       lining: config.lining,
       slot_count: config.slotCount,
-    })
+    }, { onConflict: 'user_id' })
+    if (error) console.error('[vwb] syncWatchboxConfig error', error)
   } catch (err) {
     console.error('[vwb] syncWatchboxConfig failed', err)
   }
@@ -367,18 +373,20 @@ async function syncWatchState(
   try {
     const supabase = createClient()
     if (active) {
-      await supabase.from('watch_states').upsert({
+      const { error } = await supabase.from('watch_states').upsert({
         user_id: userId,
         catalog_watch_id: catalogWatchId,
         state,
         metadata,
       }, { onConflict: 'user_id,catalog_watch_id,state' })
+      if (error) console.error('[vwb] syncWatchState upsert error', error)
     } else {
-      await supabase.from('watch_states')
+      const { error } = await supabase.from('watch_states')
         .delete()
         .eq('user_id', userId)
         .eq('catalog_watch_id', catalogWatchId)
         .eq('state', state)
+      if (error) console.error('[vwb] syncWatchState delete error', error)
     }
   } catch (err) {
     console.error('[vwb] syncWatchState failed', err)
@@ -388,20 +396,22 @@ async function syncWatchState(
 async function syncPlaygroundBoxes(boxes: PlaygroundBox[], userId: string) {
   try {
     const supabase = createClient()
-    const { data: existing } = await supabase
+    const { data: existing, error: selectError } = await supabase
       .from('playground_boxes')
       .select('id')
       .eq('user_id', userId)
+    if (selectError) console.error('[vwb] syncPlaygroundBoxes select error', selectError)
 
     const existingIds = new Set((existing ?? []).map((r: { id: string }) => r.id))
     const incomingIds = new Set(boxes.map(b => b.id))
 
     const toDelete = [...existingIds].filter(id => !incomingIds.has(id))
     if (toDelete.length > 0) {
-      await supabase.from('playground_boxes').delete().in('id', toDelete)
+      const { error: deleteError } = await supabase.from('playground_boxes').delete().in('id', toDelete)
+      if (deleteError) console.error('[vwb] syncPlaygroundBoxes delete error', deleteError)
     }
 
-    await Promise.all(
+    const upsertResults = await Promise.all(
       boxes.map((box, i) =>
         supabase.from('playground_boxes').upsert({
           id: box.id,
@@ -416,6 +426,9 @@ async function syncPlaygroundBoxes(boxes: PlaygroundBox[], userId: string) {
         })
       )
     )
+    for (const r of upsertResults) {
+      if (r.error) console.error('[vwb] syncPlaygroundBoxes upsert error', r.error)
+    }
   } catch (err) {
     console.error('[vwb] syncPlaygroundBoxes failed', err)
   }
@@ -436,6 +449,10 @@ async function loadFromSupabase(
       supabase.from('watch_states').select('*').eq('user_id', userId),
       supabase.from('watchbox_config').select('*').eq('user_id', userId).maybeSingle(),
     ])
+
+    if (watchesRes.error) console.error('[vwb] loadFromSupabase watches error', watchesRes.error)
+    if (statesRes.error) console.error('[vwb] loadFromSupabase watch_states error', statesRes.error)
+    if (configRes.error) console.error('[vwb] loadFromSupabase watchbox_config error', configRes.error)
 
     const dbWatches: DbWatch[] = watchesRes.data ?? []
     const dbStates: DbWatchState[] = statesRes.data ?? []
@@ -511,7 +528,7 @@ async function loadFromSupabase(
 // ── Provider ───────────────────────────────────────────────────────────────
 
 export function CollectionSessionProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
 
   const catalogWatchMap = useMemo(() => createCatalogWatchMap(catalogWatches), [])
   const catalogIds = useMemo(() => catalogWatches.map(watch => watch.id), [])
@@ -565,7 +582,9 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   // ── Guest hydration from sessionStorage / localStorage ──────────────────
 
   useEffect(() => {
+    if (authLoading) return  // wait for auth init so we don't hydrate guest state for an authenticated user
     if (user) return  // authenticated mode handled separately
+    if (hydrated) return  // already hydrated once
 
     try {
       const raw = sessionStorage.getItem(COLLECTION_SESSION_STORAGE_KEY)
@@ -600,16 +619,18 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       setHydrated(true)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])  // run once on mount; user not a dep here — auth effect handles sign-in
+  }, [authLoading, user])
 
   // ── Auth state change → load from Supabase or offer migration ───────────
 
   useEffect(() => {
+    if (authLoading) return  // wait for auth init before deciding signed-in vs signed-out
+
     const prevId = prevUserIdRef.current
     const currentId = user?.id ?? null
     prevUserIdRef.current = currentId
 
-    if (!currentId) return  // signed out or still loading → do nothing
+    if (!currentId) return  // signed out → guest hydration effect handles state
 
     if (prevId === currentId) return  // same user, already loaded
 
@@ -668,7 +689,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       })
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id])
+  }, [user?.id, authLoading])
 
   // ── Guest state persistence to sessionStorage / localStorage ────────────
 

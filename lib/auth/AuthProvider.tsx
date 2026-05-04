@@ -1,9 +1,9 @@
 'use client'
 
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
-import type { Session, User } from '@supabase/supabase-js'
+import { useRouter } from 'next/navigation'
+import type { Session, User, SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
-import type { SupabaseClient } from '@supabase/supabase-js'
 
 interface AuthContextValue {
   user: User | null
@@ -24,6 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const supabaseRef = useRef<SupabaseClient | null>(null)
+  const router = useRouter()
 
   function getSupabase() {
     if (!supabaseRef.current) supabaseRef.current = createClient()
@@ -31,20 +32,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
+    let isMounted = true
     const supabase = getSupabase()
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession()
+      .then(({ data: { session }, error }) => {
+        if (error) console.error('[vwb] getSession failed', error)
+        if (!isMounted) return
+        setSession(session)
+        setUser(session?.user ?? null)
+      })
+      .catch(err => {
+        console.error('[vwb] getSession threw', err)
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false)
+      })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!isMounted) return
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+        router.refresh()
+      }
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-    })
-
-    return () => subscription.unsubscribe()
+    return () => {
+      isMounted = false
+      subscription.unsubscribe()
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
