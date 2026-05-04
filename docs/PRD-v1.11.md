@@ -1,8 +1,8 @@
-# Virtual Watchbox PRD — v1.8
+# Virtual Watchbox PRD — v1.11
 
 **Site:** virtualwatchbox.com  
 **Tagline:** *Showcase Your Timepieces. Discover What's Next.*  
-**Updated:** April 2026 — v1.8
+**Updated:** May 2026 — v1.11
 
 | Version | Change |
 |---|---|
@@ -15,6 +15,9 @@
 | v1.6 | Expanded Feature 4 — Playground Mode to current shipped scope, including cards view, stats, box customization, and entry editing. |
 | v1.7 | Synced the PRD to the current codebase for Feature 3, Feature 4, session/data model, and roadmap. |
 | v1.8 | Added profile-first sharing, public profile/box surfaces, and the Followed → Next Targets → Grail hierarchy. |
+| v1.9 | Added current implementation status snapshot and Feature 2A third view: Real Watchbox Photo for My Collection. |
+| v1.10 | Added Collection Jewel, tightened ownership rules for Target/Grail/Jewel intent states, and added profile hero selection between Grail and Jewel. |
+| v1.11 | Added Feature 6 — Settings & Account Controls, including account deletion/data controls, privacy/sharing controls, and legal transparency surfaces. |
 
 ---
 
@@ -121,7 +124,7 @@ Triggered by clicking any watch slot. This is the shared detail surface across o
 
 ### Feature 2A — My Collection Page (`/collection`)
 
-Dedicated working surface for owned watches. Two primary views plus a persistent stats section, all sharing data with the homepage watchbox.
+Dedicated working surface for owned watches. Three primary views plus a persistent stats section, all sharing data with the homepage watchbox.
 
 #### Views
 - **Watchbox** — reuses homepage component + box customizer toolbar
@@ -157,11 +160,56 @@ Unsaved changes bar:
 - Card filters
 - Shop This Box CTA
 
+#### View C — Real Watchbox Photo (camera icon)
+
+A third Collection view that represents the collector’s **actual physical watchbox** as a photo surface, separate from the virtual slot UI and card list.
+
+**Entry in view switcher**
+- Third icon in the My Collection view switcher uses a camera metaphor
+- Ordering: Watchbox / Cards / Photo
+
+**States**
+- **Photo exists:** show saved watchbox photo in a framed surface
+- **No photo yet:** centered helper state with camera-style graphic, short helper copy, and two actions:
+  - `Upload Photo`
+  - `Take Photo`
+
+**Take Photo workflow**
+- Open guided capture helper area with:
+  - Framing guide overlay optimized for top-down watchbox photos
+  - Brief helper copy for lighting, distance, and angle
+  - `Retake` and `Use Photo` controls
+
+**Upload workflow**
+- Standard file picker for image upload (`jpg`, `png`, `heic` where supported)
+- Client-side compression/resizing before save for performance
+
+**Post-save actions**
+- Replace photo
+- Remove photo (returns to helper state)
+
+**Persistence**
+- Demo/local mode: local/session storage
+- Account mode (future): cloud object storage
+
+**MVP guardrails**
+- Informational visual surface only in v1
+- No slot-level click targets or per-watch image mapping in this phase
+
 ---
 
 ### Feature 2B — Watch Categories
 
 These categories define the main user-facing states and surfaces in the product. In practice, the same catalog watch can appear in multiple places: as an owned watch, a followed watch, or one or more Playground entries.
+
+The intent model is intentionally split between owned and unowned states:
+
+- **Followed** can apply to any catalog watch, owned or unowned.
+- **Next Target** can apply only to unowned watches and must be followed.
+- **Grail** can apply only to an unowned followed watch.
+- **Collection Jewel** can apply only to an owned collection watch.
+
+This preserves a clean collector mental model: Grail is what the user is chasing; Jewel is the pride of what they already own.
 
 #### Category 1 — In My Collection
 
@@ -205,7 +253,8 @@ The canonical aspirational save layer. A followed watch is something the user wa
 - No ownership metadata required
 - Dedicated Followed Watches surface is future work
 - Followed Watches are the base pool for both Next Targets and Grail
-- Can be promoted to Next Target or designated as Grail
+- Can be promoted to Next Target or designated as Grail only when the watch is not owned
+- Owned watches may remain followed, but cannot be Target or Grail
 
 **Data:** `followedWatchIds: string[]`
 
@@ -217,6 +266,7 @@ Up to 3 followed watches the user plans to acquire next. This is a curated short
 
 **Rules**
 - Must be a subset of Followed Watches
+- Must not be in My Collection
 - Max 3 enforced
 - Intended to force prioritization and curation
 
@@ -245,6 +295,7 @@ Exactly one followed watch designated as the user’s emotional north star.
 
 **Rules**
 - Must be a followed watch
+- Must not be in My Collection
 - Exactly one at a time
 - Special crown-icon treatment and dedicated visual emphasis
 
@@ -258,6 +309,31 @@ Exactly one followed watch designated as the user’s emotional north star.
 
 ---
 
+#### Category 6 — Collection Jewel
+
+Exactly one owned watch designated as the centerpiece or pride of the user’s actual collection. This is the owned counterpart to Grail.
+
+**Rules**
+- Must be in My Collection
+- Exactly one at a time
+- Cannot be a Next Target or Grail while owned
+- If a watch is removed from Collection, clear Jewel status if matched
+- If a Grail is added to Collection, clear Grail status and optionally prompt the user to make it the Collection Jewel
+- Followed state may remain unchanged when a watch becomes Jewel
+
+**UI**
+- Diamond/gem icon treatment
+- Badge label: `Jewel`
+- Badge appears on owned watch cards and owned watchbox slots
+- Hover card line: `Collection Jewel`
+- Sidebar action: `Set as Jewel` / `Remove Jewel`
+- Profile hero can feature either the Grail or the Collection Jewel using the same card shell
+
+**Data:** `collectionJewelWatchId: string | null`
+
+
+---
+
 #### Category Summary Table
 
 | Category | Max | Page | Metadata | Stats | Actions |
@@ -266,7 +342,8 @@ Exactly one followed watch designated as the user’s emotional north star.
 | Playground Watches | Unlimited | `/playground` | Per-box config + optional per-entry overrides | Box-level only | Find For Sale, Add to Collection, Edit, Delete |
 | Followed Watches | Unlimited | Dedicated surface pending; profile section later | None | No | Add to Collection, Promote to Target, Set as Grail |
 | Next Targets | 3 | `/collection` panel | Target metadata on followed watches | No | Track Listings |
-| Grail | 1 | Profile card + future collection section | Special designation on followed watch | No | Find on Market |
+| Grail | 1 | Profile card + future collection section | Special designation on unowned followed watch | No | Find on Market |
+| Collection Jewel | 1 | Collection watchbox/cards + profile hero | Special designation on owned watch | No | View in Collection, Swap Strap, Service, Insure |
 
 ---
 
@@ -523,9 +600,12 @@ Sharing should feel personal and identity-driven, not like a utility link to a t
   - profile image/avatar
   - profile name / handle
   - configurable public stats and summary fields
-- **Grail card**
+- **Featured watch card**
   - surfaced inside or directly beneath the profile card
-  - special crown-icon treatment
+  - user can choose Grail or Collection Jewel
+  - Grail uses crown-icon treatment
+  - Jewel uses diamond/gem-icon treatment
+  - same card shell and layout for both states
 - **My Collection**
   - static section
 - **Playground**
@@ -587,37 +667,103 @@ Examples:
 
 ---
 
-### Feature 6 — Strap Customization & Matchmaking
+### Feature 6 — Settings & Account Controls
+
+A dedicated settings surface where collectors manage account, privacy, data, and legal preferences without mixing those controls into profile-editing flows.
+
+#### Route and Scope
+
+- Primary route: `/settings`
+- This route is an account/control center, not a public profile surface
+- `/profile` remains the identity/showcase editor and public preview workspace
+
+#### 6.1 Account
+
+- Email display (read-only when identity is managed by Google OAuth)
+- Auth method status (Google and/or magic link)
+- Sign out all sessions (future)
+- Danger zone with `Delete account + purge data` as the primary destructive CTA
+
+#### 6.2 Privacy & Sharing
+
+- Public profile visibility master toggle
+- Existing module visibility controls in one place:
+  - Collection
+  - Playground
+  - Followed Watches
+  - Featured Grail/Jewel
+- `Preview public profile` link
+
+#### 6.3 Data & Storage
+
+- `Download my data`
+- `Request data deletion`
+  - MVP: support-email backed request flow is acceptable
+  - Later: authenticated self-serve deletion workflow
+- Local cache/device reset for local/session data
+- Last sync status when signed in
+
+#### 6.4 Legal & Transparency
+
+- Privacy Policy link
+- Terms of Use link
+- Affiliate disclosure reminder
+- Support contact email
+
+#### 6.5 Preferences (MVP-lite)
+
+- Default Collection view selection (Watchbox / Cards / Photo)
+- Currency display preference (when multi-currency support is introduced)
+- Notification preferences (placeholder until notification system ships)
+
+#### Settings MVP Priorities
+
+| Feature | Priority |
+|---|---|
+| `/settings` route and sectioned settings layout | P0 |
+| Account summary (email + auth method) | P0 |
+| Privacy/sharing controls consolidated in settings | P0 |
+| Legal links + support contact | P0 |
+| Request data deletion (email-backed) | P0 |
+| Download my data | P1 |
+| Local cache/device reset | P1 |
+| Self-serve account deletion + data purge | P2 |
+| Sign out all sessions | P2 |
+| Notification preferences | P2 |
+
+---
+
+### Feature 7 — Strap Customization & Matchmaking
 
 Virtually swap straps with compatibility filtering by lug width. Affiliate-linked purchase CTAs.
 
 ---
 
-### Feature 7 — Smart Suggestions Engine
+### Feature 8 — Smart Suggestions Engine
 
 Personalized watch and strap recommendations based on collection, followed watches, search history, and future behavior signals.
 
 ---
 
-### Feature 8 — Upload from Photo & Image Recognition
+### Feature 9 — Upload from Photo & Image Recognition
 
 Upload a watch photo, identify it, and add it to the app.
 
 ---
 
-### Feature 9 — Virtual Try-On Room
+### Feature 10 — Virtual Try-On Room
 
 Upload a wrist photo and preview a selected watch at approximate scale.
 
 ---
 
-### Feature 10 — Watch Newsfeed
+### Feature 11 — Watch Newsfeed
 
 RSS-aggregated content from leading watch publications.
 
 ---
 
-### Feature 11 — Integrated Buying, Selling & Listing
+### Feature 12 — Integrated Buying, Selling & Listing
 
 Find For Sale deep-links, pricing suggestions, and listing helpers for key resale surfaces.
 
@@ -738,14 +884,18 @@ export type PlaygroundBox = {
 export type ProfileVisibilitySettings = {
   showCollectionStats: boolean
   showGrail: boolean
+  showCollectionJewel: boolean
   showFollowedWatches: boolean
   showPlayground: boolean
 }
+
+export type FeaturedProfileWatch = 'grail' | 'jewel' | 'none'
 
 export type PublicProfileState = {
   displayName: string
   handle?: string
   profileImageUrl?: string
+  featuredProfileWatch: FeaturedProfileWatch
   visibility: ProfileVisibilitySettings
 }
 
@@ -754,11 +904,32 @@ export type UserCollectionState = {
   followedWatchIds: string[]
   nextTargets: WatchTarget[]
   grailWatchId: string | null
+  collectionJewelWatchId: string | null
   playgroundBoxes: PlaygroundBox[]
   selectedWatchId: string | null
   publicProfile: PublicProfileState
 }
 ```
+
+#### Watch intent rules
+
+```typescript
+const isOwned = collectionWatches.some(watch => watch.id === watchId)
+const isFollowed = followedWatchIds.includes(watchId)
+
+const canFollow = true
+const canSetTarget = !isOwned && isFollowed
+const canSetGrail = !isOwned && isFollowed
+const canSetJewel = isOwned
+```
+
+Behavior requirements:
+- Setting a Target auto-follows the watch if needed, but only when unowned.
+- Setting a Grail auto-follows the watch if needed, but only when unowned.
+- Setting a Jewel is allowed only for owned watches.
+- Adding a Target or Grail watch to Collection removes it from `nextTargets` and clears `grailWatchId` if matched.
+- Removing a Jewel watch from Collection clears `collectionJewelWatchId`.
+- Removing a watch from Followed removes dependent Target/Grail state but does not affect Collection/Jewel state.
 
 ### Backend (later phase)
 
@@ -795,7 +966,7 @@ export type UserCollectionState = {
 
 - `/profile` demo page backed by localStorage
 - Public readonly box pages
-- Followed → Next Targets → Grail integration
+- Followed → Next Targets → Grail/Jewel integration
 - Static My Collection section on profile
 - Playground carousel on profile
 - Followed Watches section on profile
@@ -823,6 +994,37 @@ export type UserCollectionState = {
 - AI weekly digest
 
 ---
+
+## 6.1 Current Implementation Status (Not Yet Implemented)
+
+The items below are intentionally tracked as pending even if placeholders or toasts exist in the UI.
+
+### Navigation & Surfaces
+- Dedicated `Discover` destination route/surface (beyond search handoff)
+- Dedicated `News` route and RSS-fed reading surface
+
+### Collection
+- Full edit workflow for owned-watch detail metadata from sidebar
+- Save as Playground from Collection drafts
+- Drag-to-reorder parity across all Collection surface modes
+- **Feature 2A View C:** Real Watchbox Photo (camera icon mode)
+- Collection Jewel state, badges, sidebar actions, and profile hero selector
+
+### Profile & Public
+- Account-backed public profile routes (`/u/[handle]`)
+- Account-backed public box routes
+- OG image generation for profile/box share surfaces
+
+### Persistence & Identity
+- User accounts and cloud persistence (beyond local/session demo state)
+
+### Intelligence & Commerce
+- Newsfeed production integration
+- Physical box affiliate matching
+- Strap customization
+- Photo recognition
+- Virtual try-on
+- WatchCharts live pricing
 
 ## 7. Success Metrics
 
@@ -852,7 +1054,7 @@ export type UserCollectionState = {
 | Differentiator | Why It Matters |
 |---|---|
 | Realistic watchbox UI | No competitor has this as the core metaphor |
-| Category system | Collection / Playground / Followed / Targets / Grail is a full collector mental model |
+| Category system | Collection / Playground / Followed / Targets / Grail / Jewel is a full collector mental model |
 | Profile-first sharing | Makes the product feel personal and identity-driven rather than utility-only |
 | Grail treatment | Emotionally resonant, visually distinct, and highly shareable |
 | Strap compatibility | Wearable suggestions, not just static affiliate links |
@@ -864,4 +1066,4 @@ export type UserCollectionState = {
 
 ---
 
-*Virtual Watchbox · virtualwatchbox.com · PRD v1.8 · April 2026*
+*Virtual Watchbox · virtualwatchbox.com · PRD v1.10 · May 2026*

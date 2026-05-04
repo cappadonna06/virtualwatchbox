@@ -9,7 +9,7 @@ Read this file before writing any code for this project.
 Virtual Watchbox is a luxury-tech web app for watch collectors to showcase, manage, and explore their collections through a realistic virtual watch box experience.
 
 **Tagline:** *Showcase Your Timepieces. Discover What's Next.*
-**Current PRD:** `docs/PRD-v1.8.md`
+**Current PRD:** `docs/PRD-v1.11.md`
 
 Read the PRD before implementing any feature. It defines the product vision, watch data model, feature scope, roadmap, and what is/isn't built yet. Do not implement roadmap features that aren't explicitly assigned.
 
@@ -130,7 +130,7 @@ types/
   watch.ts                      — Watch, WatchType, WatchCondition, OwnershipStatus types
 
 docs/
-  PRD-v1.8.md                   — Current product requirements (read before building features)
+  PRD-v1.10.md                  — Current product requirements (read before building features)
   DESIGN_SYSTEM.md              — Design token rules
   design-system/claude-v1/      — Visual reference files
 ```

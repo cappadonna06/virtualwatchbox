@@ -1,23 +1,41 @@
+import Link from 'next/link'
+import { brand } from '@/lib/brand'
+
 export default function Footer() {
   return (
     <footer
       className="site-footer"
       style={{
-        padding: '32px 56px',
-        borderTop: '1px solid #EAE5DC',
+        padding: '24px 56px',
+        borderTop: `1px solid ${brand.colors.border}`,
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        gap: 16,
+        flexWrap: 'wrap',
       }}
     >
-      <span style={{ fontFamily: 'var(--font-cormorant)', fontSize: 16, fontWeight: 400, color: '#1A1410' }}>
+      <span style={{ fontFamily: brand.font.serif, fontSize: 16, fontWeight: 500, color: brand.colors.ink }}>
         Virtual Watchbox
       </span>
-      <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: '#A89880' }}>
+
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 14 }}>
+        <Link
+          href="/privacy"
+          style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: brand.colors.gold, textDecoration: 'none' }}
+        >
+          Privacy
+        </Link>
+        <Link
+          href="/terms"
+          style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: brand.colors.gold, textDecoration: 'none' }}
+        >
+          Terms
+        </Link>
+      </div>
+
+      <span style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
         © 2026 · virtualwatchbox.com
-      </span>
-      <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: '#C9A84C' }}>
-        Free for Collectors. Always.
       </span>
     </footer>
   )
