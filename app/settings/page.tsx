@@ -298,9 +298,6 @@ export default function SettingsPage() {
     router.push('/')
   }
 
-  const provider = (user?.app_metadata as { provider?: string } | undefined)?.provider
-  const authMethodLabel = provider === 'google' ? 'Google' : 'Magic Link'
-
   const deletionBody = `Hi, I'd like to request deletion of my Virtual Watchbox data. My account email is: ${user?.email ?? ''}.`
   const deletionHref = `mailto:support@virtualwatchbox.com?subject=${encodeURIComponent('Data Deletion Request')}&body=${encodeURIComponent(deletionBody)}`
 
@@ -339,10 +336,6 @@ export default function SettingsPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <span style={metaLabelStyle}>Email</span>
                 <span style={metaValueStyle}>{user.email ?? '—'}</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <span style={metaLabelStyle}>Sign-in method</span>
-                <span style={metaValueStyle}>{authMethodLabel}</span>
               </div>
               <div>
                 <button
