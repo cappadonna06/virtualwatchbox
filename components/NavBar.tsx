@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
 
-type NavIconName = 'collection' | 'playground' | 'discover' | 'news' | 'profile'
+type NavIconName = 'collection' | 'playground' | 'discover' | 'news' | 'profile' | 'settings'
 type NavLink = { label: string; href: string; coming?: boolean; icon: NavIconName }
 
 const LINKS: NavLink[] = [
@@ -60,6 +60,16 @@ function NavIcon({ name, size = 16 }: { name: NavIconName; size?: number }) {
         <svg {...props}>
           <circle cx="10" cy="6.6" r="2.5" stroke="currentColor" strokeWidth="1.3" />
           <path d="M4.5 15.2c.75-2.35 2.8-3.65 5.5-3.65 2.7 0 4.75 1.3 5.5 3.65" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+        </svg>
+      )
+    case 'settings':
+      return (
+        <svg {...props}>
+          <path
+            d="M11.6 3.1 11.05 4.7a5.7 5.7 0 0 0-2.1 0L8.4 3.1l-2.3 1 .55 1.6a5.7 5.7 0 0 0-1.5 1.5l-1.6-.55-1 2.3 1.6.55a5.7 5.7 0 0 0 0 2.1l-1.6.55 1 2.3 1.6-.55a5.7 5.7 0 0 0 1.5 1.5l-.55 1.6 2.3 1 .55-1.6a5.7 5.7 0 0 0 2.1 0l.55 1.6 2.3-1-.55-1.6a5.7 5.7 0 0 0 1.5-1.5l1.6.55 1-2.3-1.6-.55a5.7 5.7 0 0 0 0-2.1l1.6-.55-1-2.3-1.6.55a5.7 5.7 0 0 0-1.5-1.5l.55-1.6-2.3-1z"
+            stroke="currentColor" strokeWidth="1.35" strokeLinejoin="round"
+          />
+          <circle cx="10" cy="10" r="2.4" stroke="currentColor" strokeWidth="1.35" />
         </svg>
       )
     default:
@@ -505,14 +515,21 @@ export default function NavBar() {
               aria-current={pathname.startsWith('/settings') ? 'page' : undefined}
             >
               <span className="nav-mobile-row-main">
-                <span className="nav-mobile-row-icon" />
+                <span className="nav-mobile-row-icon">
+                  <NavIcon name="settings" />
+                </span>
                 <span>Settings</span>
               </span>
             </Link>
+            <div style={{ height: 1, background: brand.colors.border, margin: '6px 0' }} />
             <button
               onClick={() => { void signOut(); setOpen(false) }}
               className="nav-mobile-row"
-              style={{ ...mobileRowStyle(false, false), marginTop: 4 }}
+              style={{
+                ...mobileRowStyle(false, false),
+                marginTop: 4,
+                '--nav-mobile-color': brand.colors.ink,
+              } as CSSProperties}
             >
               <span className="nav-mobile-row-main">
                 <span className="nav-mobile-row-icon" />
