@@ -3129,7 +3129,11 @@ export function OwnerProfilePage() {
   const [avatarEditOpen, setAvatarEditOpen] = useState(false)
   const [coverEditOpen, setCoverEditOpen] = useState(false)
   const [visibilityOpen, setVisibilityOpen] = useState(false)
-  const profileHydratedFromCloudRef = useRef(false)
+  // Cloud-hydration must be state (not ref) so the save effect re-runs once it flips
+  // to true. Without this, save races cloud read and can clobber Browser-1 data with
+  // local defaults on a fresh Browser-2 sign-in.
+  const [profileCloudHydrated, setProfileCloudHydrated] = useState(false)
+  const lastUserIdRef = useRef<string | null>(null)
 
   useEffect(() => {
     setProfile(getProfileDemoState())
@@ -3137,9 +3141,22 @@ export function OwnerProfilePage() {
     setHydrated(true)
   }, [])
 
+  // Reset cloud-hydration when the signed-in user changes (sign-out, account switch).
   useEffect(() => {
-    if (!user || !hydrated || profileHydratedFromCloudRef.current) return
+    const nextId = user?.id ?? null
+    if (lastUserIdRef.current !== nextId) {
+      lastUserIdRef.current = nextId
+      setProfileCloudHydrated(false)
+    }
+  }, [user?.id])
 
+  // Cloud read of the profile row. Runs whenever profileCloudHydrated is false and
+  // there's an authenticated user — including after tab-focus refetch (which flips
+  // the flag back to false).
+  useEffect(() => {
+    if (!user || !hydrated || profileCloudHydrated) return
+
+    let cancelled = false
     ;(async () => {
       try {
         const supabase = createClient()
@@ -3149,10 +3166,11 @@ export function OwnerProfilePage() {
           .eq('id', user.id)
           .maybeSingle()
 
+        if (cancelled) return
         if (error) console.error('[vwb] user profile read error', error)
 
         if (!data) {
-          profileHydratedFromCloudRef.current = true
+          setProfileCloudHydrated(true)
           return
         }
 
@@ -3192,13 +3210,36 @@ export function OwnerProfilePage() {
             }
             : current.visibility,
         }))
+        setProfileCloudHydrated(true)
       } catch (error) {
+        if (cancelled) return
         console.error('[vwb] user profile hydrate failed', error)
-      } finally {
-        profileHydratedFromCloudRef.current = true
+        setProfileCloudHydrated(true)
       }
     })()
-  }, [user, hydrated])
+
+    return () => { cancelled = true }
+  }, [user, hydrated, profileCloudHydrated])
+
+  // Tab-focus refetch: when the user comes back to the tab, re-read profile from
+  // Supabase so cross-browser edits show up without a hard reload. Skip if no edit
+  // modal is open to avoid clobbering an in-progress edit.
+  useEffect(() => {
+    if (!user) return
+
+    function handleVisibility() {
+      if (document.visibilityState !== 'visible') return
+      if (textEditOpen || avatarEditOpen || coverEditOpen || visibilityOpen) return
+      setProfileCloudHydrated(false)
+    }
+
+    document.addEventListener('visibilitychange', handleVisibility)
+    window.addEventListener('focus', handleVisibility)
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility)
+      window.removeEventListener('focus', handleVisibility)
+    }
+  }, [user, textEditOpen, avatarEditOpen, coverEditOpen, visibilityOpen])
 
   const ownerGrailWatch = useMemo<ResolvedWatch | null>(
     () => grailWatch ? { ...grailWatch, watchId: grailWatch.id, condition: 'Excellent', notes: '' } : null,
@@ -3265,6 +3306,8 @@ export function OwnerProfilePage() {
   const showOwnerFeaturedWatch = profile.visibility.showGrail && profile.featuredProfileWatch !== 'none'
   const ownerProfilePrivate = !hasAnyPublicProfileModules(profile.visibility, showOwnerFeaturedWatch)
 
+  // Local persistence (sessionStorage / localStorage snapshots) — runs immediately
+  // regardless of cloud-hydration so guest mode keeps working.
   useEffect(() => {
     if (!hydrated) return
 
@@ -3279,8 +3322,15 @@ export function OwnerProfilePage() {
       watchboxConfig,
       playgroundBoxes,
     })
+  }, [profile, hydrated, collectionWatches, followedWatches, nextTargets, grailWatch, collectionJewelWatch, watchboxConfig, playgroundBoxes])
 
-    if (user) {
+  // Cloud upsert — gated on profileCloudHydrated so we never write local defaults
+  // before reading the existing cloud row. Debounced 500 ms so rapid edits (typing
+  // bio, etc.) collapse into a single network call.
+  useEffect(() => {
+    if (!hydrated || !user || !profileCloudHydrated) return
+
+    const handle = setTimeout(() => {
       ;(async () => {
         try {
           const supabase = createClient()
@@ -3300,8 +3350,10 @@ export function OwnerProfilePage() {
           console.error('[vwb] profile upsert failed', err)
         }
       })()
-    }
-  }, [profile, hydrated, user, collectionWatches, followedWatches, nextTargets, grailWatch, collectionJewelWatch, watchboxConfig, playgroundBoxes])
+    }, 500)
+
+    return () => clearTimeout(handle)
+  }, [profile, hydrated, user, profileCloudHydrated])
 
   const collectionBox = useMemo(
     () => createCollectionBoxSnapshot(collectionWatches, watchboxConfig, new Date().toISOString()),
