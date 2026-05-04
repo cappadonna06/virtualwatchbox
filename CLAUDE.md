@@ -130,7 +130,7 @@ types/
   watch.ts                      — Watch, WatchType, WatchCondition, OwnershipStatus types
 
 docs/
-  PRD-v1.10.md                  — Current product requirements (read before building features)
+  PRD-v1.11.md                  — Current product requirements (read before building features)
   DESIGN_SYSTEM.md              — Design token rules
   design-system/claude-v1/      — Visual reference files
 ```
