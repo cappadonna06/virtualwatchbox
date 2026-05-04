@@ -1,0 +1,68 @@
+<!--
+  Supabase Auth → Confirm signup
+  Subject: Confirm your Virtual Watchbox account
+  Variables used: {{ .ConfirmationURL }}, {{ .Email }}
+  Paste into Supabase Auth → Email Templates → Confirm signup.
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <meta name="color-scheme" content="light" />
+    <meta name="supported-color-schemes" content="light" />
+    <title>Confirm your Virtual Watchbox account</title>
+  </head>
+  <body style="margin:0; padding:0; background-color:#FAF8F4; -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%;">
+    <div style="display:none; max-height:0; overflow:hidden; opacity:0; visibility:hidden; mso-hide:all; font-size:1px; line-height:1px; color:#FAF8F4;">
+      Confirm your email address to finish creating your Virtual Watchbox account.
+    </div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#FAF8F4;">
+      <tr>
+        <td align="center" style="padding:40px 16px;">
+          <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px; width:100%; background-color:#FFFFFF; border:1px solid #EAE5DC; border-radius:12px;">
+            <tr>
+              <td align="center" style="padding:40px 40px 0 40px;">
+                <p style="margin:0; font-family: 'Cormorant Garamond', 'Garamond', Georgia, 'Times New Roman', serif; font-size:26px; font-weight:500; letter-spacing:0.04em; color:#1A1410;">Virtual Watchbox</p>
+                <div style="width:36px; height:1px; line-height:1px; background-color:#C9A84C; margin:14px auto 0;">&nbsp;</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:36px 40px 8px 40px;">
+                <p style="margin:0 0 14px 0; font-family: 'Cormorant Garamond', 'Garamond', Georgia, 'Times New Roman', serif; font-size:22px; font-weight:500; color:#1A1410; letter-spacing:0.01em; line-height:1.35;">Confirm your account</p>
+                <p style="margin:0 0 28px 0; font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif; font-size:14px; line-height:1.7; color:#1A1410;">Welcome to Virtual Watchbox. Confirm this email address to finish setting up your account and begin curating your collection.</p>
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 28px 0;">
+                  <tr>
+                    <td align="center" style="border-radius:8px; background-color:#1A1410;">
+                      <a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block; padding:14px 28px; font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif; font-size:13px; font-weight:500; letter-spacing:0.04em; color:#FAF8F4; text-decoration:none; border-radius:8px;">Confirm email address</a>
+                    </td>
+                  </tr>
+                </table>
+                <p style="margin:0 0 8px 0; font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:#A89880;">Or paste this URL into your browser</p>
+                <p style="margin:0 0 24px 0; font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif; font-size:13px; line-height:1.6; color:#1A1410; word-break:break-all;">
+                  <a href="{{ .ConfirmationURL }}" style="color:#1A1410; text-decoration:underline;">{{ .ConfirmationURL }}</a>
+                </p>
+                <p style="margin:0; font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif; font-size:13px; line-height:1.7; color:#A89880;">If you did not create a Virtual Watchbox account, no action is required and this address will not be used.</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:28px 40px 32px 40px; border-top:1px solid #EAE5DC;">
+                <p style="margin:0 0 6px 0; font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif; font-size:12px; line-height:1.7; color:#A89880;">
+                  <a href="https://virtualwatchbox.com" style="color:#A89880; text-decoration:none;">virtualwatchbox.com</a>
+                  &nbsp;&middot;&nbsp;
+                  <a href="mailto:support@virtualwatchbox.com?subject=Unsubscribe" style="color:#A89880; text-decoration:none;">Unsubscribe</a>
+                  &nbsp;&middot;&nbsp;
+                  <a href="https://virtualwatchbox.com/privacy" style="color:#A89880; text-decoration:none;">Privacy Policy</a>
+                  &nbsp;&middot;&nbsp;
+                  <a href="https://virtualwatchbox.com/terms" style="color:#A89880; text-decoration:none;">Terms</a>
+                </p>
+                <p style="margin:0; font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif; font-size:11px; line-height:1.7; color:#A89880;">Sent to {{ .Email }} for account verification. This is a transactional message.</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

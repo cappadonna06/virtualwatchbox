@@ -52,7 +52,7 @@ export default function TermsPage() {
 
         <div>
           <p style={sectionTitleStyle}>Questions</p>
-          <p style={bodyStyle}>For terms questions, contact <a href="mailto:msells.caltech@gmail.com" style={{ color: brand.colors.gold }}>msells.caltech@gmail.com</a>.</p>
+          <p style={bodyStyle}>For terms questions, contact <a href="mailto:support@virtualwatchbox.com" style={{ color: brand.colors.gold }}>support@virtualwatchbox.com</a>.</p>
         </div>
       </div>
     </section>
