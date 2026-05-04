@@ -103,6 +103,20 @@ body {
   box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.28), 0 6px 18px rgba(26, 20, 16, 0.12);
 }
 
+.nav-account-item {
+  transition: background 0.15s ease;
+}
+
+.nav-account-item:hover {
+  background: var(--color-bg);
+}
+
+@media (max-width: 768px) {
+  .settings-shell {
+    padding: 24px !important;
+  }
+}
+
 .nav-mobile-row {
   width: 100%;
   display: flex;
@@ -177,9 +191,10 @@ body {
   .nav-root      { padding: 0 !important; }
   .nav-shell     { padding: 18px 20px !important; max-width: none !important; width: 100% !important; margin: 0 !important; }
   .nav-wordmark  { font-size: 18px !important; }
-  .nav-links     { display: none !important; }
-  .nav-signin    { display: none !important; }
-  .nav-hamburger { display: flex !important; align-items: center; justify-content: center; }
+  .nav-links        { display: none !important; }
+  .nav-signin       { display: none !important; }
+  .nav-account-wrap { display: none !important; }
+  .nav-hamburger    { display: flex !important; align-items: center; justify-content: center; }
   .nav-drawer    {
     display: flex !important;
     top: 80px !important;

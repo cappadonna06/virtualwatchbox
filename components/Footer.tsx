@@ -32,6 +32,12 @@ export default function Footer() {
         >
           Terms
         </Link>
+        <Link
+          href="/settings"
+          style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: brand.colors.gold, textDecoration: 'none' }}
+        >
+          Settings
+        </Link>
       </div>
 
       <span style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>

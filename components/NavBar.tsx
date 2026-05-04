@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
 
-type NavIconName = 'collection' | 'playground' | 'discover' | 'news' | 'profile'
+type NavIconName = 'collection' | 'playground' | 'discover' | 'news' | 'profile' | 'settings'
 type NavLink = { label: string; href: string; coming?: boolean; icon: NavIconName }
 
 const LINKS: NavLink[] = [
@@ -62,6 +62,16 @@ function NavIcon({ name, size = 16 }: { name: NavIconName; size?: number }) {
           <path d="M4.5 15.2c.75-2.35 2.8-3.65 5.5-3.65 2.7 0 4.75 1.3 5.5 3.65" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
         </svg>
       )
+    case 'settings':
+      return (
+        <svg {...props}>
+          <path
+            d="M11.6 3.1 11.05 4.7a5.7 5.7 0 0 0-2.1 0L8.4 3.1l-2.3 1 .55 1.6a5.7 5.7 0 0 0-1.5 1.5l-1.6-.55-1 2.3 1.6.55a5.7 5.7 0 0 0 0 2.1l-1.6.55 1 2.3 1.6-.55a5.7 5.7 0 0 0 1.5 1.5l-.55 1.6 2.3 1 .55-1.6a5.7 5.7 0 0 0 2.1 0l.55 1.6 2.3-1-.55-1.6a5.7 5.7 0 0 0 1.5-1.5l1.6.55 1-2.3-1.6-.55a5.7 5.7 0 0 0 0-2.1l1.6-.55-1-2.3-1.6.55a5.7 5.7 0 0 0-1.5-1.5l.55-1.6-2.3-1z"
+            stroke="currentColor" strokeWidth="1.35" strokeLinejoin="round"
+          />
+          <circle cx="10" cy="10" r="2.4" stroke="currentColor" strokeWidth="1.35" />
+        </svg>
+      )
     default:
       return null
   }
@@ -69,15 +79,36 @@ function NavIcon({ name, size = 16 }: { name: NavIconName; size?: number }) {
 
 export default function NavBar() {
   const [open, setOpen] = useState(false)
+  const [accountOpen, setAccountOpen] = useState(false)
   const [toastMsg, setToastMsg] = useState<string | null>(null)
   const [toastVisible, setToastVisible] = useState(false)
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const accountWrapRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
   const { user, signOut } = useAuth()
 
   useEffect(() => {
     setOpen(false)
+    setAccountOpen(false)
   }, [pathname])
+
+  useEffect(() => {
+    if (!accountOpen) return
+    const handleMouseDown = (event: MouseEvent) => {
+      if (accountWrapRef.current && !accountWrapRef.current.contains(event.target as Node)) {
+        setAccountOpen(false)
+      }
+    }
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setAccountOpen(false)
+    }
+    document.addEventListener('mousedown', handleMouseDown)
+    document.addEventListener('keydown', handleKey)
+    return () => {
+      document.removeEventListener('mousedown', handleMouseDown)
+      document.removeEventListener('keydown', handleKey)
+    }
+  }, [accountOpen])
 
   useEffect(() => {
     if (!open) return
@@ -123,6 +154,16 @@ export default function NavBar() {
     letterSpacing: '0.04em',
     textDecoration: 'none',
   }) as CSSProperties
+
+  const accountItemStyle = (color: string): CSSProperties => ({
+    fontFamily: brand.font.sans,
+    fontSize: 13,
+    color,
+    padding: '10px 16px',
+    textDecoration: 'none',
+    display: 'block',
+    lineHeight: 1.3,
+  })
 
   const mobileRowStyle = (active: boolean, hasBorder: boolean) => ({
     '--nav-mobile-color': active ? brand.colors.ink : brand.colors.muted,
@@ -196,41 +237,89 @@ export default function NavBar() {
         </div>
 
         {user ? (
-          <div className="nav-links" style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-            <Link
-              href="/profile"
-              className={`nav-signin ${profileActive ? 'is-active' : ''}`}
+          <div ref={accountWrapRef} className="nav-account-wrap" style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={() => setAccountOpen(o => !o)}
+              aria-haspopup="menu"
+              aria-expanded={accountOpen}
+              aria-label={`Account menu for ${user.email ?? 'you'}`}
+              title={user.email ?? undefined}
               style={{
-                width: 38,
-                height: 38,
+                width: 34,
+                height: 34,
                 borderRadius: brand.radius.circle,
-                background: profileActive ? brand.colors.ink : brand.colors.goldWash,
-                border: `1px solid ${profileActive ? brand.colors.ink : brand.colors.goldLine}`,
-                color: profileActive ? brand.colors.bg : brand.colors.gold,
-                textDecoration: 'none',
+                background: brand.colors.ink,
+                color: brand.colors.bg,
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+                fontFamily: brand.font.sans,
+                fontSize: 12,
+                fontWeight: 500,
+                letterSpacing: '0.04em',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontFamily: brand.font.serif,
-                fontSize: 16,
-                fontWeight: 500,
-                letterSpacing: '0.04em',
-                boxShadow: profileActive ? brand.shadow.gold : brand.shadow.sm,
-                transition: `background ${brand.transition.fast}, border-color ${brand.transition.fast}`,
               }}
-              aria-label={`Signed in as ${user.email ?? 'you'}`}
-              title={user.email ?? undefined}
-              aria-current={profileActive ? 'page' : undefined}
             >
-              {user.email?.charAt(0).toUpperCase() ?? <NavIcon name="profile" />}
-            </Link>
-            <button
-              onClick={() => void signOut()}
-              className="nav-link-button"
-              style={desktopLinkStyle(false)}
-            >
-              Sign out
+              {(user.email?.charAt(0) ?? '?').toUpperCase()}
             </button>
+            {accountOpen && (
+              <div
+                role="menu"
+                style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 8px)',
+                  right: 0,
+                  minWidth: 160,
+                  background: brand.colors.white,
+                  border: `1px solid ${brand.colors.border}`,
+                  borderRadius: brand.radius.md,
+                  boxShadow: '0 8px 24px rgba(26,20,16,0.10)',
+                  padding: '6px 0',
+                  zIndex: brand.zIndex.nav + 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <Link
+                  href="/profile"
+                  role="menuitem"
+                  onClick={() => setAccountOpen(false)}
+                  className="nav-account-item"
+                  style={accountItemStyle(brand.colors.ink)}
+                >
+                  Profile
+                </Link>
+                <Link
+                  href="/settings"
+                  role="menuitem"
+                  onClick={() => setAccountOpen(false)}
+                  className="nav-account-item"
+                  style={accountItemStyle(brand.colors.ink)}
+                >
+                  Settings
+                </Link>
+                <div style={{ height: 1, background: brand.colors.border, margin: '6px 0' }} />
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => { setAccountOpen(false); void signOut() }}
+                  className="nav-account-item"
+                  style={{
+                    ...accountItemStyle(brand.colors.muted),
+                    background: 'none',
+                    border: 'none',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    width: '100%',
+                  }}
+                >
+                  Sign out
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <Link
@@ -305,6 +394,64 @@ export default function NavBar() {
           transition: `transform ${brand.transition.smooth}, opacity ${brand.transition.smooth}`,
         }}
       >
+        {user && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '16px 0 20px 0',
+              borderBottom: `1px solid ${brand.colors.border}`,
+              marginBottom: 8,
+            }}
+          >
+            <div
+              aria-hidden="true"
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                background: brand.colors.ink,
+                color: brand.colors.bg,
+                fontFamily: brand.font.sans,
+                fontSize: 11,
+                fontWeight: 500,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              {(user.email?.charAt(0) ?? '?').toUpperCase()}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+              <span
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 12,
+                  fontWeight: 400,
+                  color: brand.colors.ink,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  maxWidth: 220,
+                }}
+              >
+                {user.email ?? ''}
+              </span>
+              <span
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 11,
+                  fontWeight: 400,
+                  color: brand.colors.muted,
+                }}
+              >
+                Signed in
+              </span>
+            </div>
+          </div>
+        )}
         {LINKS.map(link => {
           const active = isLinkActive(link.href)
           const hasBorder = true
@@ -360,10 +507,29 @@ export default function NavBar() {
                 <span>Profile</span>
               </span>
             </Link>
+            <Link
+              href="/settings"
+              onClick={() => setOpen(false)}
+              className="nav-mobile-row"
+              style={mobileRowStyle(pathname.startsWith('/settings'), true)}
+              aria-current={pathname.startsWith('/settings') ? 'page' : undefined}
+            >
+              <span className="nav-mobile-row-main">
+                <span className="nav-mobile-row-icon">
+                  <NavIcon name="settings" />
+                </span>
+                <span>Settings</span>
+              </span>
+            </Link>
+            <div style={{ height: 1, background: brand.colors.border, margin: '6px 0' }} />
             <button
               onClick={() => { void signOut(); setOpen(false) }}
               className="nav-mobile-row"
-              style={{ ...mobileRowStyle(false, false), marginTop: 4 }}
+              style={{
+                ...mobileRowStyle(false, false),
+                marginTop: 4,
+                '--nav-mobile-color': brand.colors.ink,
+              } as CSSProperties}
             >
               <span className="nav-mobile-row-main">
                 <span className="nav-mobile-row-icon" />

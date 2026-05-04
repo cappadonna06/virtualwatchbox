@@ -66,6 +66,7 @@ const DEFAULT_WATCHBOX_CONFIG: WatchboxConfig = {
 }
 
 export const DEFAULT_PROFILE_VISIBILITY: ProfileVisibilitySettings = {
+  isPublic: true,
   showCollection: true,
   showCollectionStats: true,
   showPlayground: true,
@@ -125,6 +126,7 @@ function normalizeVisibility(value: unknown): ProfileVisibilitySettings {
   const partial = value as Partial<ProfileVisibilitySettings>
 
   return {
+    isPublic: typeof partial.isPublic === 'boolean' ? partial.isPublic : fallback.isPublic,
     showCollection: typeof partial.showCollection === 'boolean' ? partial.showCollection : fallback.showCollection,
     showCollectionStats: typeof partial.showCollectionStats === 'boolean' ? partial.showCollectionStats : fallback.showCollectionStats,
     showPlayground: typeof partial.showPlayground === 'boolean' ? partial.showPlayground : fallback.showPlayground,
