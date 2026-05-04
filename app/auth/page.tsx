@@ -192,6 +192,22 @@ export default function AuthPage() {
               </p>
 
               {/* Google button */}
+              <p
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 12,
+                  color: brand.colors.muted,
+                  margin: '0 0 10px',
+                  textAlign: 'center',
+                  lineHeight: 1.6,
+                }}
+              >
+                By continuing, you agree to our{' '}
+                <Link href="/terms" style={{ color: brand.colors.gold, textDecoration: 'none' }}>Terms</Link>{' '}
+                and{' '}
+                <Link href="/privacy" style={{ color: brand.colors.gold, textDecoration: 'none' }}>Privacy Policy</Link>.
+              </p>
+
               <button
                 onClick={handleGoogle}
                 disabled={busy}

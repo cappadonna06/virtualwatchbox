@@ -12,7 +12,7 @@
 | Source | Path / Link |
 |---|---|
 | Next.js codebase | `virtualwatchbox/` (mounted via File System Access API) |
-| Product Requirements | `virtualwatchbox/docs/PRD-v1.8.md` |
+| Product Requirements | `virtualwatchbox/docs/PRD-v1.10.md` |
 | Watch images | `assets/watches/` |
 | OG image | `assets/og-image.png` |
 
