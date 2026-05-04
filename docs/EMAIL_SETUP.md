@@ -73,22 +73,36 @@ Send a test from the dashboard ("Send test email") to verify the SMTP path. Then
 
 ---
 
-## 4. Inbound forwarding for `noreply@` and `support@`
+## 4. Inbound forwarding — Cloudflare Email Routing (deployed)
 
-Resend is a sending-only provider. To receive the bounces, deletion requests, and replies, set up forwarding at your DNS host.
+Resend is sending-only. Inbound mail (replies, bounces, deletion requests, support inquiries) is forwarded via **Cloudflare Email Routing**.
 
-**Recommended: Cloudflare Email Routing** (free, no extra account, works if Cloudflare is your DNS host).
+DNS for `virtualwatchbox.com` was migrated from GoDaddy nameservers (`ns45/46.domaincontrol.com`) to Cloudflare (`betty.ns.cloudflare.com`, `mitchell.ns.cloudflare.com`). Domain registration remains at GoDaddy. All records are set to **DNS only** (gray cloud) — Cloudflare is used purely for DNS resolution and Email Routing, not HTTP proxy. Vercel continues to serve the site directly.
 
-1. Cloudflare dashboard → `virtualwatchbox.com` → **Email → Email Routing → Get started**. Cloudflare adds the required MX + SPF records automatically.
-2. **Destination addresses** → add and verify your personal inbox (one-time confirmation click).
-3. **Routing rules → Create address**:
-   - `noreply@virtualwatchbox.com` → forward to your personal inbox
-   - `support@virtualwatchbox.com` → forward to your personal inbox
-4. (Optional) **Catch-all** → forward to your personal inbox so typos and probes are not lost.
+### Configured aliases
 
-**Important — coexistence with Resend's `send.` MX:** Resend's MX is on the *subdomain* `send.virtualwatchbox.com` (for SES feedback). Cloudflare Email Routing's MX is on the *apex* `virtualwatchbox.com`. They do not conflict.
+All forward to a single personal destination inbox (verified in Cloudflare → Email Routing → Destination addresses):
 
-**Alternative: ImprovMX** (free) if Cloudflare is not your DNS host. Add their MX records to the apex domain and configure the same two aliases. SPF on the apex must include both: `v=spf1 include:amazonses.com include:spf.improvmx.com ~all` (only set this if you also send mail from the apex address — Supabase only sends from `send.` so the apex SPF only needs the forwarder include).
+| Alias | Purpose |
+|---|---|
+| `noreply@virtualwatchbox.com` | Captures replies/bounces to the Supabase Auth sender |
+| `support@virtualwatchbox.com` | User-facing support, deletion requests, legal contact (referenced in `/privacy` and `/terms`) |
+| `hello@virtualwatchbox.com` | General/marketing inbound |
+| `help@virtualwatchbox.com` | Alias for support |
+| `legal@virtualwatchbox.com` | Legal/DMCA inbound |
+| `press@virtualwatchbox.com` | Press inquiries |
+| `marc@virtualwatchbox.com` | Founder personal alias on the domain |
+| `privacy@virtualwatchbox.com` | Privacy/data-rights inbound (GDPR/CCPA channel) |
+
+### Adding or changing aliases
+
+Cloudflare → `virtualwatchbox.com` → **Email → Email Routing → Routing rules**. Click **Create address**, set custom address, action **Send to an email**, pick the verified destination, save.
+
+To route a new alias to a different destination, first add and verify that destination under **Destination addresses** (Cloudflare emails a one-time verification link).
+
+### Coexistence with Resend
+
+Resend's MX lives on the subdomain `send.virtualwatchbox.com` (Amazon SES feedback). Cloudflare Email Routing's MX lives on the apex `virtualwatchbox.com`. Different mail "homes" — they do not conflict. Outbound Supabase Auth mail continues to flow through Resend SMTP regardless of the inbound forwarder.
 
 ---
 
