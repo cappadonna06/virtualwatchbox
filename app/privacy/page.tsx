@@ -57,7 +57,7 @@ export default function PrivacyPage() {
 
         <div>
           <p style={sectionTitleStyle}>Data retention and deletion requests</p>
-          <p style={bodyStyle}>To request account deletion and purging of your collection data, contact <a href="mailto:msells.caltech@gmail.com" style={{ color: brand.colors.gold }}>msells.caltech@gmail.com</a> from your account email.</p>
+          <p style={bodyStyle}>To request account deletion and purging of your collection data, contact <a href="mailto:support@virtualwatchbox.com" style={{ color: brand.colors.gold }}>support@virtualwatchbox.com</a> from your account email.</p>
         </div>
       </div>
     </section>
