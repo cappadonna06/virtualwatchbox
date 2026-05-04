@@ -102,6 +102,7 @@ function getProfileHeroSummary(
 }
 
 function hasAnyPublicProfileModules(visibility: ProfileVisibilitySettings, showGrail: boolean) {
+  if (!visibility.isPublic) return false
   return visibility.showCollection || visibility.showPlayground || visibility.showFollowedWatches || showGrail
 }
 
@@ -3192,6 +3193,9 @@ export function OwnerProfilePage() {
           visibility: typeof data.visibility === 'object' && data.visibility
             ? {
               ...current.visibility,
+              ...(typeof (data.visibility as Record<string, unknown>).isPublic === 'boolean'
+                ? { isPublic: (data.visibility as Record<string, unknown>).isPublic as boolean }
+                : {}),
               ...(typeof (data.visibility as Record<string, unknown>).showCollection === 'boolean'
                 ? { showCollection: (data.visibility as Record<string, unknown>).showCollection as boolean }
                 : {}),

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
+import { createClient } from '@/lib/supabase/client'
 import {
   getProfileDemoState,
   saveProfileDemoState,
@@ -95,14 +96,16 @@ function Section({ title, subhead, children }: { title: string; subhead?: string
   )
 }
 
-function Toggle({ on, onChange, label }: { on: boolean; onChange: () => void; label: string }) {
+function Toggle({ on, onChange, label, disabled }: { on: boolean; onChange: () => void; label: string; disabled?: boolean }) {
   return (
     <button
       type="button"
       role="switch"
       aria-checked={on}
       aria-label={label}
-      onClick={onChange}
+      aria-disabled={disabled || undefined}
+      disabled={disabled}
+      onClick={() => { if (!disabled) onChange() }}
       style={{
         position: 'relative',
         width: 40,
@@ -110,10 +113,11 @@ function Toggle({ on, onChange, label }: { on: boolean; onChange: () => void; la
         borderRadius: 9999,
         border: 'none',
         padding: 0,
-        cursor: 'pointer',
+        cursor: disabled ? 'not-allowed' : 'pointer',
         background: on ? brand.colors.gold : brand.colors.border,
-        transition: `background ${brand.transition.base}`,
+        transition: `background ${brand.transition.base}, opacity ${brand.transition.base}`,
         flexShrink: 0,
+        opacity: disabled ? 0.4 : 1,
       }}
     >
       <span
@@ -138,20 +142,96 @@ export default function SettingsPage() {
   const { user, signOut } = useAuth()
 
   const [profile, setProfile] = useState<ProfileDemoState | null>(null)
+  const [profileCloudHydrated, setProfileCloudHydrated] = useState(false)
   const [confirmingReset, setConfirmingReset] = useState(false)
   const [toastMsg, setToastMsg] = useState<string | null>(null)
   const [toastVisible, setToastVisible] = useState(false)
   const showTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const lastUserIdRef = useRef<string | null>(null)
+  const upsertTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     setProfile(getProfileDemoState())
   }, [])
 
   useEffect(() => {
+    const nextId = user?.id ?? null
+    if (lastUserIdRef.current !== nextId) {
+      lastUserIdRef.current = nextId
+      setProfileCloudHydrated(false)
+    }
+  }, [user?.id])
+
+  // Cloud read: hydrate visibility from user_profiles when signed in. Mirrors the
+  // pattern in components/profile/ProfileSurface.tsx so /profile and /settings stay
+  // in sync across devices.
+  useEffect(() => {
+    if (!user || !profile || profileCloudHydrated) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('visibility')
+          .eq('id', user.id)
+          .maybeSingle()
+
+        if (cancelled) return
+        if (error) console.error('[vwb] settings visibility read error', error)
+
+        if (data && typeof data.visibility === 'object' && data.visibility) {
+          const v = data.visibility as Record<string, unknown>
+          setProfile(current => {
+            if (!current) return current
+            const merged: ProfileDemoState = {
+              ...current,
+              visibility: {
+                ...current.visibility,
+                ...(typeof v.isPublic === 'boolean' ? { isPublic: v.isPublic } : {}),
+                ...(typeof v.showCollection === 'boolean' ? { showCollection: v.showCollection } : {}),
+                ...(typeof v.showCollectionStats === 'boolean' ? { showCollectionStats: v.showCollectionStats } : {}),
+                ...(typeof v.showPlayground === 'boolean' ? { showPlayground: v.showPlayground } : {}),
+                ...(typeof v.showFollowedWatches === 'boolean' ? { showFollowedWatches: v.showFollowedWatches } : {}),
+                ...(typeof v.showGrail === 'boolean' ? { showGrail: v.showGrail } : {}),
+              },
+            }
+            const saved = saveProfileDemoState(merged)
+            syncPublicProfileSnapshot({ profile: saved })
+            return saved
+          })
+        }
+        setProfileCloudHydrated(true)
+      } catch (err) {
+        if (cancelled) return
+        console.error('[vwb] settings visibility hydrate failed', err)
+        setProfileCloudHydrated(true)
+      }
+    })()
+    return () => { cancelled = true }
+  }, [user, profile, profileCloudHydrated])
+
+  // Tab-focus refetch: re-hydrate when the user comes back so cross-device edits show up.
+  useEffect(() => {
+    if (!user) return
+    function handleVisibility() {
+      if (document.visibilityState !== 'visible') return
+      setProfileCloudHydrated(false)
+    }
+    document.addEventListener('visibilitychange', handleVisibility)
+    window.addEventListener('focus', handleVisibility)
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility)
+      window.removeEventListener('focus', handleVisibility)
+    }
+  }, [user])
+
+  useEffect(() => {
     return () => {
       if (showTimer.current) clearTimeout(showTimer.current)
       if (hideTimer.current) clearTimeout(hideTimer.current)
+      if (upsertTimer.current) clearTimeout(upsertTimer.current)
     }
   }, [])
 
@@ -166,6 +246,25 @@ export default function SettingsPage() {
     }, 2500)
   }
 
+  function scheduleVisibilityUpsert(visibility: ProfileVisibilitySettings) {
+    if (!user) return
+    if (upsertTimer.current) clearTimeout(upsertTimer.current)
+    upsertTimer.current = setTimeout(() => {
+      ;(async () => {
+        try {
+          const supabase = createClient()
+          const { error } = await supabase.from('user_profiles').upsert(
+            { id: user.id, visibility },
+            { onConflict: 'id' },
+          )
+          if (error) console.error('[vwb] settings visibility upsert error', error)
+        } catch (err) {
+          console.error('[vwb] settings visibility upsert failed', err)
+        }
+      })()
+    }, 500)
+  }
+
   function handleToggle(key: VisibilityKey) {
     if (!profile) return
     const next: ProfileDemoState = {
@@ -175,6 +274,7 @@ export default function SettingsPage() {
     const saved = saveProfileDemoState(next)
     setProfile(saved)
     syncPublicProfileSnapshot({ profile: saved })
+    scheduleVisibilityUpsert(saved.visibility)
   }
 
   function handleSignOut() {
@@ -304,7 +404,49 @@ export default function SettingsPage() {
         <Section title="Privacy & Sharing" subhead="Public profile visibility">
           {profile && (
             <div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  justifyContent: 'space-between',
+                  gap: 16,
+                  padding: '4px 0 16px 0',
+                  borderBottom: `1px solid ${brand.colors.border}`,
+                  marginBottom: 4,
+                }}
+              >
+                <div style={{ minWidth: 0 }}>
+                  <div
+                    style={{
+                      fontFamily: brand.font.sans,
+                      fontSize: 13,
+                      fontWeight: 500,
+                      color: brand.colors.ink,
+                    }}
+                  >
+                    Public profile
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: brand.font.sans,
+                      fontSize: 12,
+                      color: brand.colors.muted,
+                      marginTop: 4,
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {profile.visibility.isPublic
+                      ? 'Your profile is viewable. Use the modules below to fine-tune what shows.'
+                      : 'Your profile is private. No one else can view it.'}
+                  </div>
+                </div>
+                <Toggle
+                  on={profile.visibility.isPublic}
+                  onChange={() => handleToggle('isPublic')}
+                  label="Public profile"
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', opacity: profile.visibility.isPublic ? 1 : 0.55, transition: `opacity ${brand.transition.base}` }}>
                 {TOGGLES.map((t, i) => {
                   const isLast = i === TOGGLES.length - 1
                   const on = profile.visibility[t.key]
@@ -328,7 +470,12 @@ export default function SettingsPage() {
                       >
                         {t.label}
                       </span>
-                      <Toggle on={on} onChange={() => handleToggle(t.key)} label={t.label} />
+                      <Toggle
+                        on={on}
+                        onChange={() => handleToggle(t.key)}
+                        label={t.label}
+                        disabled={!profile.visibility.isPublic}
+                      />
                     </div>
                   )
                 })}

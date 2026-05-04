@@ -191,9 +191,10 @@ body {
   .nav-root      { padding: 0 !important; }
   .nav-shell     { padding: 18px 20px !important; max-width: none !important; width: 100% !important; margin: 0 !important; }
   .nav-wordmark  { font-size: 18px !important; }
-  .nav-links     { display: none !important; }
-  .nav-signin    { display: none !important; }
-  .nav-hamburger { display: flex !important; align-items: center; justify-content: center; }
+  .nav-links        { display: none !important; }
+  .nav-signin       { display: none !important; }
+  .nav-account-wrap { display: none !important; }
+  .nav-hamburger    { display: flex !important; align-items: center; justify-content: center; }
   .nav-drawer    {
     display: flex !important;
     top: 80px !important;

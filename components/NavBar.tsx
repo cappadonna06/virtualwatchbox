@@ -384,6 +384,64 @@ export default function NavBar() {
           transition: `transform ${brand.transition.smooth}, opacity ${brand.transition.smooth}`,
         }}
       >
+        {user && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '16px 0 20px 0',
+              borderBottom: `1px solid ${brand.colors.border}`,
+              marginBottom: 8,
+            }}
+          >
+            <div
+              aria-hidden="true"
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                background: brand.colors.ink,
+                color: brand.colors.bg,
+                fontFamily: brand.font.sans,
+                fontSize: 11,
+                fontWeight: 500,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              {(user.email?.charAt(0) ?? '?').toUpperCase()}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+              <span
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 12,
+                  fontWeight: 400,
+                  color: brand.colors.ink,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  maxWidth: 220,
+                }}
+              >
+                {user.email ?? ''}
+              </span>
+              <span
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 11,
+                  fontWeight: 400,
+                  color: brand.colors.muted,
+                }}
+              >
+                Signed in
+              </span>
+            </div>
+          </div>
+        )}
         {LINKS.map(link => {
           const active = isLinkActive(link.href)
           const hasBorder = true

@@ -3,6 +3,7 @@ import type { ResolvedWatch, WatchSavedState } from '@/types/watch'
 export type FeaturedProfileWatch = 'grail' | 'jewel' | 'none'
 
 export type ProfileVisibilitySettings = {
+  isPublic: boolean
   showCollection: boolean
   showCollectionStats: boolean
   showPlayground: boolean
