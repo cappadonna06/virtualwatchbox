@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { brand } from '@/lib/brand'
 
-type View = 'watchbox' | 'cards'
+type View = 'watchbox' | 'cards' | 'photo'
 
 interface HeaderOption {
   value: string
@@ -37,8 +37,11 @@ interface Props {
   primaryAction?: HeaderPrimaryAction
   activeView: View
   onViewChange: (view: View) => void
+  availableViews?: View[]
   menuItems: HeaderMenuItem[]
 }
+
+const DEFAULT_VIEWS: View[] = ['watchbox', 'cards', 'photo']
 
 export default function WatchboxHeader({
   title,
@@ -50,6 +53,7 @@ export default function WatchboxHeader({
   primaryAction,
   activeView,
   onViewChange,
+  availableViews = DEFAULT_VIEWS,
   menuItems,
 }: Props) {
   const hasPrimaryCluster = Boolean(primaryAction) && !selector
@@ -125,14 +129,14 @@ export default function WatchboxHeader({
         ) : primaryAction ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
             <PrimaryActionControl action={primaryAction} />
-            <CompactViewToggle activeView={activeView} onChange={onViewChange} />
+            <CompactViewToggle activeView={activeView} onChange={onViewChange} availableViews={availableViews} />
           </div>
         ) : (
           <div style={{ flex: 1 }} />
         )}
 
         {primaryAction && !selector ? null : (
-          <CompactViewToggle activeView={activeView} onChange={onViewChange} />
+          <CompactViewToggle activeView={activeView} onChange={onViewChange} availableViews={availableViews} />
         )}
         <HeaderOverflowMenu items={menuItems} />
       </div>
@@ -395,10 +399,49 @@ function SelectorControl({
 function CompactViewToggle({
   activeView,
   onChange,
+  availableViews,
 }: {
   activeView: View
   onChange: (view: View) => void
+  availableViews: View[]
 }) {
+  const allTabs = [
+    {
+      id: 'watchbox' as const,
+      label: 'Watchbox',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2" />
+          <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2" />
+          <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2" />
+          <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2" />
+        </svg>
+      ),
+    },
+    {
+      id: 'cards' as const,
+      label: 'Cards',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <rect x="2" y="3" width="12" height="2" rx="1" fill="currentColor" />
+          <rect x="2" y="7" width="12" height="2" rx="1" fill="currentColor" />
+          <rect x="2" y="11" width="12" height="2" rx="1" fill="currentColor" />
+        </svg>
+      ),
+    },
+    {
+      id: 'photo' as const,
+      label: 'Photo',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M2.25 5h2.4l1.1-1.5h4.5l1.1 1.5h2.4a1 1 0 0 1 1 1v6.5a1 1 0 0 1-1 1H2.25a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
+          <circle cx="8" cy="9.25" r="2.5" stroke="currentColor" strokeWidth="1.2" />
+        </svg>
+      ),
+    },
+  ]
+  const tabs = allTabs.filter(tab => availableViews.includes(tab.id))
+
   return (
     <div
       style={{
@@ -410,31 +453,7 @@ function CompactViewToggle({
         flexShrink: 0,
       }}
     >
-      {[
-        {
-          id: 'watchbox' as const,
-          label: 'Watchbox',
-          icon: (
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2" />
-              <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2" />
-              <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2" />
-              <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2" />
-            </svg>
-          ),
-        },
-        {
-          id: 'cards' as const,
-          label: 'Cards',
-          icon: (
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <rect x="2" y="3" width="12" height="2" rx="1" fill="currentColor" />
-              <rect x="2" y="7" width="12" height="2" rx="1" fill="currentColor" />
-              <rect x="2" y="11" width="12" height="2" rx="1" fill="currentColor" />
-            </svg>
-          ),
-        },
-      ].map((tab, index) => {
+      {tabs.map((tab, index) => {
         const isActive = activeView === tab.id
         return (
           <button
