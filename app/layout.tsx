@@ -32,12 +32,18 @@ export const viewport: Viewport = {
   ],
 }
 
+const SITE_DESCRIPTION =
+  'Virtual Watchbox is the digital home for watch collectors. Showcase what you own, follow what you love, and discover what’s next — beautifully organized.'
+
+const SOCIAL_DESCRIPTION =
+  'Showcase what you own, follow what you love, and discover what’s next. The digital home for watch collectors.'
+
 export const metadata: Metadata = {
   title: {
     default: 'Virtual Watchbox — Showcase Your Timepieces. Discover What\'s Next.',
     template: '%s | Virtual Watchbox',
   },
-  description: 'The definitive digital home for watch collectors.',
+  description: SITE_DESCRIPTION,
   keywords: [
     'online watchbox',
     'online watch collection',
@@ -81,13 +87,13 @@ export const metadata: Metadata = {
     url: BASE_URL,
     siteName: 'Virtual Watchbox',
     title: 'Showcase Your Timepieces. Discover What\'s Next.',
-    description: 'The definitive digital home for watch collectors.',
+    description: SOCIAL_DESCRIPTION,
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Virtual Watchbox — The digital home for watch collectors',
+        alt: 'Virtual Watchbox — Showcase your timepieces. Discover what’s next.',
         type: 'image/png',
       },
     ],
@@ -97,14 +103,15 @@ export const metadata: Metadata = {
     site: '@virtualwatchbox',
     creator: '@virtualwatchbox',
     title: 'Showcase Your Timepieces. Discover What\'s Next.',
-    description: 'The definitive digital home for watch collectors.',
+    description: SOCIAL_DESCRIPTION,
     images: ['/og-image.png'],
   },
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
       { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
+      { url: '/favicon.ico', sizes: 'any' },
     ],
     apple: [
       { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
@@ -123,10 +130,42 @@ export const metadata: Metadata = {
   },
 }
 
+const STRUCTURED_DATA = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Virtual Watchbox',
+    alternateName: 'Watchbox',
+    url: BASE_URL,
+    description: SITE_DESCRIPTION,
+    inLanguage: 'en-US',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${BASE_URL}/collection/add?from=home&q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Virtual Watchbox',
+    url: BASE_URL,
+    logo: `${BASE_URL}/icon.svg`,
+    sameAs: ['https://twitter.com/virtualwatchbox'],
+  },
+]
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`}>
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCTURED_DATA) }}
+        />
         <AuthProvider>
           <CollectionSessionProvider>
             <CatalogProvider>
