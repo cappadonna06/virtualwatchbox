@@ -1,14 +1,15 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import Link from 'next/link'
 import { brand } from '@/lib/brand'
 
-const features = [
-  ['01', 'Playground Mode',    'Build dream boxes with any reference. Save and share your fantasy collection.'],
-  ['02', 'Strap Matchmaker',   'Virtually swap straps with compatibility filtering by lug width. Affiliate-linked.'],
-  ['03', 'Virtual Try-On',     'Upload a wrist photo. See the watch on you before committing to a purchase.'],
-  ['04', 'Smart Suggestions',  'Personalized picks based on your collection, search history, and taste.'],
-  ['05', 'Buy & Sell',         'AI-assisted pricing, listing generator, one-click post to Chrono24 & eBay.'],
+const features: [string, string, string, string][] = [
+  ['01', 'My Collection',   '/collection',  'Three ways to view your box — watchbox, cards, and photo grid. Track value, condition, and status in one place.'],
+  ['02', 'Playground Mode', '/playground',  'Build dream boxes with any reference. No ownership required. Save and share your fantasy lineup.'],
+  ['03', 'Discover',        '/discover',    'Personalized upgrade paths, box gap analysis, and editorial reads — all shaped around what you own.'],
+  ['04', 'Public Profile',  '/profile',     'Share a curated link to your watchbox. A living portfolio that moves with your collection.'],
+  ['05', 'Settings',        '/settings',    'Configure your box frame, lining, and slot count. Control visibility, profile details, and account preferences.'],
 ]
 
 const articles = [
@@ -45,49 +46,50 @@ export default function FeaturesSection() {
   }
 
   return (
-    <section className="features-section" style={{ padding: '56px 56px 60px', borderTop: '1px solid #EAE5DC', position: 'relative' }}>
+    <section className="features-section" style={{ padding: '56px 56px 60px', borderTop: `1px solid ${brand.colors.border}`, position: 'relative' }}>
       <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 56 }}>
 
         {/* Left: numbered feature list */}
         <div>
-          <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 12 }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 12 }}>
             Also in the Box
           </div>
-          <h2 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 38, fontWeight: 400, lineHeight: 1.15, color: '#1A1410', marginBottom: 40 }}>
+          <h2 style={{ fontFamily: brand.font.serif, fontSize: 38, fontWeight: 400, lineHeight: 1.15, color: brand.colors.ink, marginBottom: 40 }}>
             Everything a<br /><em>Collector Needs.</em>
           </h2>
-          {features.map(([num, name, desc]) => (
-            <div
+          {features.map(([num, name, href, desc]) => (
+            <Link
               key={name}
+              href={href}
               style={{
                 display: 'flex', alignItems: 'baseline', gap: 16,
                 padding: '14px 0',
-                borderBottom: '1px solid #EAE5DC',
-                cursor: 'pointer',
+                borderBottom: `1px solid ${brand.colors.border}`,
+                textDecoration: 'none',
               }}
               className="feature-row"
             >
-              <span style={{ fontFamily: 'var(--font-cormorant)', fontSize: 13, color: '#C9A84C', fontWeight: 500, minWidth: 24 }}>
+              <span style={{ fontFamily: brand.font.serif, fontSize: 13, color: brand.colors.gold, fontWeight: 500, minWidth: 24 }}>
                 {num}
               </span>
               <div style={{ flex: 1 }}>
-                <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', color: '#1A1410', marginBottom: 3 }}>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.ink, marginBottom: 3 }}>
                   {name}
                 </div>
-                <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#A89880', lineHeight: 1.6 }}>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.6 }}>
                   {desc}
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
         {/* Right: news feed */}
         <div>
-          <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 12 }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 12 }}>
             From the Community
           </div>
-          <h2 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 38, fontWeight: 400, lineHeight: 1.15, color: '#1A1410', marginBottom: 40 }}>
+          <h2 style={{ fontFamily: brand.font.serif, fontSize: 38, fontWeight: 400, lineHeight: 1.15, color: brand.colors.ink, marginBottom: 40 }}>
             What Collectors<br /><em>Are Reading.</em>
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -97,30 +99,30 @@ export default function FeaturesSection() {
                 style={{
                   display: 'flex', gap: 14,
                   paddingBottom: 20,
-                  borderBottom: '1px solid #EAE5DC',
+                  borderBottom: `1px solid ${brand.colors.border}`,
                 }}
               >
                 <div style={{
                   width: 64, height: 64, flexShrink: 0,
-                  background: '#F5F0E8', borderRadius: 6,
+                  background: brand.colors.slot, borderRadius: brand.radius.sm,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <span style={{ fontSize: 9, color: '#B0A898', fontFamily: 'var(--font-dm-sans)', letterSpacing: '0.04em' }}>photo</span>
+                  <span style={{ fontSize: 9, color: brand.colors.muted, fontFamily: brand.font.sans, letterSpacing: '0.04em' }}>photo</span>
                 </div>
                 <div>
-                  <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 5 }}>
+                  <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 5 }}>
                     {a.source} · {a.date}
                   </div>
-                  <h4 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 15, fontWeight: 400, lineHeight: 1.35, color: '#1A1410', marginBottom: 5 }}>
+                  <h4 style={{ fontFamily: brand.font.serif, fontSize: 15, fontWeight: 400, lineHeight: 1.35, color: brand.colors.ink, marginBottom: 5 }}>
                     {a.headline}
                   </h4>
-                  <p style={{ fontSize: 12, lineHeight: 1.7, color: '#A89880' }}>{a.excerpt}</p>
+                  <p style={{ fontFamily: brand.font.sans, fontSize: 12, lineHeight: 1.7, color: brand.colors.muted }}>{a.excerpt}</p>
                 </div>
               </div>
             ))}
             <button
               onClick={showComingSoon}
-              style={{ fontSize: 12, color: '#A89880', letterSpacing: '0.06em', cursor: 'pointer', paddingTop: 4, background: 'none', border: 'none', padding: 0, fontFamily: 'var(--font-dm-sans)', textAlign: 'left' }}
+              style={{ fontSize: 12, color: brand.colors.muted, letterSpacing: '0.06em', cursor: 'pointer', background: 'none', border: 'none', padding: 0, fontFamily: brand.font.sans, textAlign: 'left' }}
             >
               {/* TODO(coming-soon): News / editorial articles page */}
               View all articles →
