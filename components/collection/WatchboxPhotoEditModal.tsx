@@ -19,9 +19,26 @@ interface Props {
   onRemove?: () => void
 }
 
-const PHOTO_ASPECT = 16 / 10
 const MAX_DIM = 1600
 const JPEG_QUALITY = 0.82
+
+type AspectPreset = { id: string; label: string; value: number | 'auto' }
+const ASPECT_PRESETS: AspectPreset[] = [
+  { id: 'auto', label: 'Auto', value: 'auto' },
+  { id: '16-10', label: '16:10', value: 16 / 10 },
+  { id: '4-3', label: '4:3', value: 4 / 3 },
+  { id: '1-1', label: '1:1', value: 1 },
+  { id: '3-4', label: '3:4', value: 3 / 4 },
+  { id: '9-16', label: '9:16', value: 9 / 16 },
+]
+const DEFAULT_ASPECT_FALLBACK = 16 / 10
+const ASPECT_MATCH_EPSILON = 0.01
+
+function pickInitialPreset(savedAspect: number | undefined): string {
+  if (savedAspect === undefined) return 'auto'
+  const numericMatch = ASPECT_PRESETS.find(p => typeof p.value === 'number' && Math.abs(p.value - savedAspect) < ASPECT_MATCH_EPSILON)
+  return numericMatch ? numericMatch.id : 'auto'
+}
 
 export default function WatchboxPhotoEditModal({
   open,
@@ -39,6 +56,8 @@ export default function WatchboxPhotoEditModal({
   const [croppedArea, setCroppedArea] = useState<Area | null>(sourceCrop?.area ?? null)
   const [busy, setBusy] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [presetId, setPresetId] = useState<string>(pickInitialPreset(sourceCrop?.aspect))
+  const [naturalAspect, setNaturalAspect] = useState<number | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
@@ -48,8 +67,30 @@ export default function WatchboxPhotoEditModal({
     setZoom(sourceCrop?.zoom ?? 1)
     setCroppedArea(sourceCrop?.area ?? null)
     setErrorMessage(null)
+    setPresetId(pickInitialPreset(sourceCrop?.aspect))
+    setNaturalAspect(null)
     setMode(sourceUrl ? 'crop' : initialMode)
   }, [open, sourceUrl, sourceCrop, initialMode])
+
+  // Detect the source image's natural aspect so the "Auto" preset can use it.
+  useEffect(() => {
+    if (!workingUrl) { setNaturalAspect(null); return }
+    let cancelled = false
+    const img = new window.Image()
+    img.onload = () => {
+      if (cancelled) return
+      if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+        setNaturalAspect(img.naturalWidth / img.naturalHeight)
+      }
+    }
+    img.src = workingUrl
+    return () => { cancelled = true }
+  }, [workingUrl])
+
+  const presetValue = ASPECT_PRESETS.find(p => p.id === presetId)?.value ?? 'auto'
+  const activeAspect = presetValue === 'auto'
+    ? (naturalAspect ?? DEFAULT_ASPECT_FALLBACK)
+    : presetValue
 
   // Lock background scroll while open
   useEffect(() => {
@@ -103,9 +144,18 @@ export default function WatchboxPhotoEditModal({
           width: croppedArea.width,
           height: croppedArea.height,
         },
+        aspect: activeAspect,
       },
     })
-  }, [workingUrl, croppedArea, busy, crop.x, crop.y, zoom, onSave])
+  }, [workingUrl, croppedArea, busy, crop.x, crop.y, zoom, activeAspect, onSave])
+
+  // Re-fitting the crop to a new aspect requires the cropper to re-emit
+  // onCropComplete; clear the saved area so Save stays disabled until then.
+  function handlePresetChange(nextId: string) {
+    if (nextId === presetId) return
+    setPresetId(nextId)
+    setCroppedArea(null)
+  }
 
   if (!open) return null
 
@@ -181,6 +231,9 @@ export default function WatchboxPhotoEditModal({
             sourceUrl={workingUrl}
             crop={crop}
             zoom={zoom}
+            aspect={activeAspect}
+            presetId={presetId}
+            onPresetChange={handlePresetChange}
             onCropChange={setCrop}
             onZoomChange={value => setZoom(Math.max(1, Math.min(4, value)))}
             onCropComplete={(_, areaPercentages) => setCroppedArea(areaPercentages)}
@@ -271,6 +324,9 @@ function CropStage({
   sourceUrl,
   crop,
   zoom,
+  aspect,
+  presetId,
+  onPresetChange,
   onCropChange,
   onZoomChange,
   onCropComplete,
@@ -278,43 +334,54 @@ function CropStage({
   sourceUrl: string
   crop: Point
   zoom: number
+  aspect: number
+  presetId: string
+  onPresetChange: (id: string) => void
   onCropChange: (point: Point) => void
   onZoomChange: (zoom: number) => void
   onCropComplete: (pixels: Area, percentages: Area) => void
 }) {
+  // Stage container's aspect mirrors the chosen crop aspect so the crop area
+  // fills the stage edge-to-edge — gives a true preview of the saved display.
+  const stageAspect = aspect
   return (
     <div style={{ display: 'grid', gap: 12 }}>
       <p style={{ margin: 0, fontSize: 12, color: brand.colors.muted, lineHeight: 1.5 }}>
-        Drag to position. Pinch or scroll to zoom.
+        Pick a shape that matches your watchbox, then drag and zoom to frame.
       </p>
-      <div
-        style={{
-          position: 'relative',
-          width: '100%',
-          aspectRatio: '16 / 10',
-          background: brand.colors.slot,
-          borderRadius: brand.radius.lg,
-          overflow: 'hidden',
-          border: `1px solid ${brand.colors.border}`,
-          touchAction: 'none',
-        }}
-      >
-        <Cropper
-          image={sourceUrl}
-          crop={crop}
-          zoom={zoom}
-          aspect={PHOTO_ASPECT}
-          cropShape="rect"
-          showGrid={false}
-          zoomWithScroll
-          objectFit="cover"
-          minZoom={1}
-          maxZoom={4}
-          restrictPosition
-          onCropChange={onCropChange}
-          onZoomChange={onZoomChange}
-          onCropComplete={onCropComplete}
-        />
+      <AspectChips presetId={presetId} onChange={onPresetChange} />
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            maxWidth: '100%',
+            aspectRatio: stageAspect,
+            maxHeight: 360,
+            background: brand.colors.slot,
+            borderRadius: brand.radius.lg,
+            overflow: 'hidden',
+            border: `1px solid ${brand.colors.border}`,
+            touchAction: 'none',
+          }}
+        >
+          <Cropper
+            image={sourceUrl}
+            crop={crop}
+            zoom={zoom}
+            aspect={aspect}
+            cropShape="rect"
+            showGrid={false}
+            zoomWithScroll
+            objectFit="cover"
+            minZoom={1}
+            maxZoom={4}
+            restrictPosition
+            onCropChange={onCropChange}
+            onZoomChange={onZoomChange}
+            onCropComplete={onCropComplete}
+          />
+        </div>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ fontSize: 11, color: brand.colors.muted, letterSpacing: '0.06em' }}>ZOOM</span>
@@ -329,6 +396,48 @@ function CropStage({
           aria-label="Zoom"
         />
       </div>
+    </div>
+  )
+}
+
+function AspectChips({ presetId, onChange }: { presetId: string; onChange: (id: string) => void }) {
+  return (
+    <div
+      role="radiogroup"
+      aria-label="Photo aspect ratio"
+      style={{
+        display: 'flex',
+        gap: 6,
+        flexWrap: 'wrap',
+      }}
+    >
+      {ASPECT_PRESETS.map(preset => {
+        const active = preset.id === presetId
+        return (
+          <button
+            key={preset.id}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            onClick={() => onChange(preset.id)}
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: '0.06em',
+              padding: '6px 12px',
+              background: active ? brand.colors.ink : 'transparent',
+              color: active ? brand.colors.bg : brand.colors.ink,
+              border: `1px solid ${active ? brand.colors.ink : brand.colors.borderMid}`,
+              borderRadius: brand.radius.pill,
+              cursor: 'pointer',
+              transition: `background ${brand.transition.fast}, color ${brand.transition.fast}, border-color ${brand.transition.fast}`,
+            }}
+          >
+            {preset.label}
+          </button>
+        )
+      })}
     </div>
   )
 }

@@ -29,23 +29,25 @@ import type {
 import type { ProfileImageCropState } from '@/types/profile'
 import { brand } from '@/lib/brand'
 
-export type WatchboxPhotoCrop = ProfileImageCropState
+export type WatchboxPhotoCrop = ProfileImageCropState & { aspect?: number }
 
 const WATCHBOX_PHOTO_CROP_SESSION_KEY = 'vwb-watchbox-photo-crop'
 
 function isValidPhotoCrop(value: unknown): value is WatchboxPhotoCrop {
   if (!value || typeof value !== 'object') return false
   const v = value as Partial<WatchboxPhotoCrop> & { area?: Partial<WatchboxPhotoCrop['area']> }
-  return (
-    typeof v.x === 'number'
-    && typeof v.y === 'number'
-    && typeof v.zoom === 'number'
-    && !!v.area
-    && typeof v.area.x === 'number'
-    && typeof v.area.y === 'number'
-    && typeof v.area.width === 'number'
-    && typeof v.area.height === 'number'
-  )
+  if (
+    typeof v.x !== 'number'
+    || typeof v.y !== 'number'
+    || typeof v.zoom !== 'number'
+    || !v.area
+    || typeof v.area.x !== 'number'
+    || typeof v.area.y !== 'number'
+    || typeof v.area.width !== 'number'
+    || typeof v.area.height !== 'number'
+  ) return false
+  if (v.aspect !== undefined && (typeof v.aspect !== 'number' || !Number.isFinite(v.aspect) || v.aspect <= 0)) return false
+  return true
 }
 
 const MIGRATION_DONE_KEY = 'vwb-migration-done'

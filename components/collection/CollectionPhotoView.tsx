@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { brand } from '@/lib/brand'
+import { resizeImageFileToDataUrl } from '@/lib/profileDemo'
 import WatchboxPhotoEditModal from './WatchboxPhotoEditModal'
 import type { WatchboxPhotoCrop } from '@/app/collection/CollectionSessionProvider'
 
@@ -11,30 +12,45 @@ interface Props {
   photoCrop: WatchboxPhotoCrop | null
   onPhotoChange: (value: { url: string | null; crop: WatchboxPhotoCrop | null }) => void
   isSignedIn: boolean
-}
-
-const CONTAINER_STYLE: React.CSSProperties = {
-  position: 'relative',
-  width: '100%',
-  aspectRatio: '16 / 10',
-  minHeight: 320,
-  borderRadius: brand.radius.lg,
-  overflow: 'hidden',
-  background: brand.colors.slot,
+  screenWidth: number
 }
 
 type EditTrigger = 'crop' | 'camera'
+
+const FALLBACK_ASPECT = 16 / 10
+// Mirrors components/collection/CollectionWatchboxSurface.tsx:331 so the photo
+// view feels like the same "box" as the watchbox view.
+const WATCHBOX_MAX_HEIGHT_DESKTOP = 480
+const WATCHBOX_MAX_HEIGHT_MOBILE = 300
+// Mirrors the watchboxContainerWidth calc in CollectionWatchboxSurface.tsx:330.
+const WATCHBOX_DESKTOP_INSET = 444
+const WATCHBOX_MOBILE_INSET = 40
+const MIN_COLUMN_WIDTH = 200
+
+function deriveBounds(screenWidth: number) {
+  const isMobile = screenWidth > 0 && screenWidth < 768
+  const maxHeight = isMobile ? WATCHBOX_MAX_HEIGHT_MOBILE : WATCHBOX_MAX_HEIGHT_DESKTOP
+  const maxWidth = screenWidth > 0
+    ? Math.max(MIN_COLUMN_WIDTH, screenWidth - (isMobile ? WATCHBOX_MOBILE_INSET : WATCHBOX_DESKTOP_INSET))
+    : undefined
+  return { isMobile, maxHeight, maxWidth }
+}
 
 export default function CollectionPhotoView({
   photoUrl,
   photoCrop,
   onPhotoChange,
   isSignedIn,
+  screenWidth,
 }: Props) {
   const [isHovered, setIsHovered] = useState(false)
   const [isTouchDevice, setIsTouchDevice] = useState(false)
   const [editorOpen, setEditorOpen] = useState(false)
   const [editorMode, setEditorMode] = useState<EditTrigger>('crop')
+  const [pendingSourceUrl, setPendingSourceUrl] = useState<string | null>(null)
+  const [dragging, setDragging] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -45,9 +61,67 @@ export default function CollectionPhotoView({
     return () => mq.removeEventListener('change', update)
   }, [])
 
-  function openEditor(trigger: EditTrigger) {
+  const { maxHeight, maxWidth } = deriveBounds(screenWidth)
+
+  function openEditor(trigger: EditTrigger, prefill: string | null = null) {
+    setPendingSourceUrl(prefill)
     setEditorMode(trigger)
     setEditorOpen(true)
+  }
+
+  function closeEditor() {
+    setEditorOpen(false)
+    setPendingSourceUrl(null)
+  }
+
+  async function ingestDroppedFile(file: File) {
+    if (!file || !file.type.startsWith('image/')) return
+    setBusy(true)
+    setErrorMessage(null)
+    try {
+      const dataUrl = await resizeImageFileToDataUrl(file, { maxWidth: 1600, maxHeight: 1600, quality: 0.82 })
+      openEditor('crop', dataUrl)
+    } catch {
+      setErrorMessage('Could not read that file. Try another.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  function handleDragOver(e: React.DragEvent) {
+    if (!isSignedIn) return
+    e.preventDefault()
+    setDragging(true)
+  }
+
+  function handleDragLeave() {
+    setDragging(false)
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    if (!isSignedIn) return
+    e.preventDefault()
+    setDragging(false)
+    const file = e.dataTransfer.files?.[0]
+    if (file) void ingestDroppedFile(file)
+  }
+
+  const displayAspect = photoCrop?.aspect && Number.isFinite(photoCrop.aspect) && photoCrop.aspect > 0
+    ? photoCrop.aspect
+    : FALLBACK_ASPECT
+
+  // Cap width to maxHeight * aspect so the height bound is honored without
+  // CSS dropping the aspect-ratio (max-height overrides aspect-ratio in the
+  // common width-100% case). max-width still applies as the column cap.
+  const heightDerivedWidthCap = `${Math.round(maxHeight * displayAspect)}px`
+  const sharedFrame: React.CSSProperties = {
+    position: 'relative',
+    width: `min(100%, ${heightDerivedWidthCap})`,
+    maxWidth,
+    aspectRatio: displayAspect,
+    margin: '0 auto',
+    borderRadius: brand.radius.lg,
+    overflow: 'hidden',
   }
 
   if (photoUrl) {
@@ -55,11 +129,16 @@ export default function CollectionPhotoView({
     return (
       <>
         <div
-          style={CONTAINER_STYLE}
+          style={{ ...sharedFrame, background: brand.colors.slot }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
         >
           <CroppedPhoto photoUrl={photoUrl} photoCrop={photoCrop} />
+          {dragging ? <DropOverlay /> : null}
+          {busy ? <BusyOverlay /> : null}
           {isSignedIn ? (
             <button
               type="button"
@@ -78,7 +157,7 @@ export default function CollectionPhotoView({
                 borderRadius: 20,
                 border: 'none',
                 cursor: 'pointer',
-                opacity: showPill ? 1 : 0,
+                opacity: showPill && !dragging ? 1 : 0,
                 transition: `opacity ${brand.transition.base}`,
               }}
             >
@@ -86,35 +165,43 @@ export default function CollectionPhotoView({
             </button>
           ) : null}
         </div>
+        {errorMessage ? <ErrorRow message={errorMessage} /> : null}
         <WatchboxPhotoEditModal
           open={editorOpen}
-          sourceUrl={photoUrl}
-          sourceCrop={photoCrop}
+          sourceUrl={pendingSourceUrl ?? photoUrl}
+          sourceCrop={pendingSourceUrl ? null : photoCrop}
           initialMode={editorMode}
-          onClose={() => setEditorOpen(false)}
-          onSave={next => { onPhotoChange(next); setEditorOpen(false) }}
+          onClose={closeEditor}
+          onSave={next => { onPhotoChange(next); closeEditor() }}
           onRemove={() => onPhotoChange({ url: null, crop: null })}
         />
       </>
     )
   }
 
+  const emptyFrame: React.CSSProperties = {
+    ...sharedFrame,
+    aspectRatio: FALLBACK_ASPECT,
+    background: dragging ? brand.colors.goldWash : brand.colors.white,
+    border: `${dragging ? 2 : 1.5}px dashed ${dragging ? brand.colors.gold : brand.colors.border}`,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    padding: '40px 24px',
+    transition: `border-color ${brand.transition.fast}, background ${brand.transition.fast}`,
+  }
+
   return (
     <>
       <div
-        style={{
-          ...CONTAINER_STYLE,
-          background: brand.colors.white,
-          border: `1.5px dashed ${brand.colors.border}`,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-          padding: '40px 24px',
-        }}
+        style={emptyFrame}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
       >
-        <CameraIcon size={32} color={brand.colors.muted} />
+        <CameraIcon size={32} color={dragging ? brand.colors.gold : brand.colors.muted} />
         <h2
           style={{
             fontFamily: brand.font.serif,
@@ -138,7 +225,9 @@ export default function CollectionPhotoView({
             maxWidth: 360,
           }}
         >
-          Take or upload a photo of your physical watch box.
+          {isSignedIn
+            ? 'Drag a photo here, take one with your camera, or upload from your device.'
+            : 'Take or upload a photo of your physical watch box.'}
         </p>
 
         {isSignedIn ? (
@@ -160,16 +249,17 @@ export default function CollectionPhotoView({
             </Link>
           </div>
         )}
-
+        {busy ? <BusyOverlay /> : null}
       </div>
+      {errorMessage ? <ErrorRow message={errorMessage} /> : null}
       {isSignedIn ? (
         <WatchboxPhotoEditModal
           open={editorOpen}
-          sourceUrl={null}
+          sourceUrl={pendingSourceUrl}
           sourceCrop={null}
           initialMode={editorMode}
-          onClose={() => setEditorOpen(false)}
-          onSave={next => { onPhotoChange(next); setEditorOpen(false) }}
+          onClose={closeEditor}
+          onSave={next => { onPhotoChange(next); closeEditor() }}
         />
       ) : null}
     </>
@@ -210,6 +300,69 @@ function CroppedPhoto({ photoUrl, photoCrop }: { photoUrl: string; photoCrop: Wa
         pointerEvents: 'none',
       }}
     />
+  )
+}
+
+function DropOverlay() {
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'rgba(184,150,77,0.18)',
+        border: `2px dashed ${brand.colors.gold}`,
+        borderRadius: brand.radius.lg,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: brand.font.sans,
+        fontSize: 13,
+        color: brand.colors.ink,
+        letterSpacing: '0.04em',
+        pointerEvents: 'none',
+      }}
+    >
+      Drop to replace photo
+    </div>
+  )
+}
+
+function BusyOverlay() {
+  return (
+    <div
+      aria-live="polite"
+      style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'rgba(255,255,255,0.78)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: brand.font.sans,
+        fontSize: 13,
+        color: brand.colors.muted,
+        letterSpacing: '0.04em',
+      }}
+    >
+      Reading…
+    </div>
+  )
+}
+
+function ErrorRow({ message }: { message: string }) {
+  return (
+    <p
+      style={{
+        margin: '12px auto 0',
+        textAlign: 'center',
+        fontFamily: brand.font.sans,
+        fontSize: 12,
+        color: '#D04040',
+      }}
+    >
+      {message}
+    </p>
   )
 }
 

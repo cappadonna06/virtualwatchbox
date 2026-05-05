@@ -193,6 +193,7 @@ export default function CollectionPage() {
             photoCrop={watchboxPhotoCrop}
             onPhotoChange={setWatchboxPhoto}
             isSignedIn={Boolean(user)}
+            screenWidth={screenWidth}
           />
         ) : (
           <CardsView
