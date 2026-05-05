@@ -45,7 +45,10 @@ const TAG_OPTIONS = [
   'Lottery Box',
 ]
 
-type View = 'watchbox' | 'cards'
+// View is widened to share the My Collection type, but the playground only
+// surfaces the watchbox/cards tabs via availableViews — 'photo' is never
+// reached at runtime here.
+type View = 'watchbox' | 'cards' | 'photo'
 type SortMode = 'manual' | 'brand' | 'value' | 'type'
 const SORT_OPTIONS: { value: SortMode; label: string }[] = [
   { value: 'manual', label: 'Watchbox' },
@@ -289,6 +292,7 @@ function PlaygroundPageInner() {
             summary={activeBox?.tags.length ? activeBox.tags.join(' · ') : undefined}
             activeView={activeView}
             onViewChange={setActiveView}
+            availableViews={['watchbox', 'cards']}
             menuItems={[
               {
                 label: 'New Box',
@@ -507,7 +511,7 @@ function PlaygroundPageInner() {
 
         {!isMobile ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28 }}>
-          <ViewSwitcher activeView={activeView} setActiveView={setActiveView} />
+          <ViewSwitcher activeView={activeView} setActiveView={setActiveView} availableViews={['watchbox', 'cards']} />
           <a
             href="#playground-stats"
             style={{

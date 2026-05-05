@@ -6,6 +6,7 @@ import type { ResolvedOwnedWatch } from '@/types/watch'
 import CollectionHeader from '@/components/collection/CollectionHeader'
 import CollectionStats from '@/components/collection/CollectionStats'
 import SortDropdown from '@/components/collection/SortDropdown'
+import CollectionPhotoView from '@/components/collection/CollectionPhotoView'
 import CollectionWatchboxSurface from '@/components/collection/CollectionWatchboxSurface'
 import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarSheet'
 import UnsavedChangesBar, { type DraftChange } from '@/components/collection/UnsavedChangesBar'
@@ -13,11 +14,12 @@ import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import WatchSidebar from '@/components/collection/WatchSidebar'
 import WatchboxHeader from '@/components/collection/WatchboxHeader'
+import { useAuth } from '@/lib/auth/AuthProvider'
 import { copyProfileDemoUrl } from '@/lib/profileDemo'
 import { useCollectionSession } from './CollectionSessionProvider'
 import { brand } from '@/lib/brand'
 
-type View = 'watchbox' | 'cards'
+type View = 'watchbox' | 'cards' | 'photo'
 type SortMode = 'manual' | 'brand' | 'value' | 'type'
 
 const EMPTY_PENDING_CHANGES: DraftChange[] = []
@@ -30,6 +32,7 @@ const SORT_OPTIONS: { value: SortMode; label: string }[] = [
 
 export default function CollectionPage() {
   const router = useRouter()
+  const { user } = useAuth()
   const {
     collectionWatches,
     selectedWatchId,
@@ -37,6 +40,8 @@ export default function CollectionPage() {
     removeFromCollection,
     reorderCollectionWatches,
     showToast,
+    watchboxPhotoUrl,
+    setWatchboxPhotoUrl,
   } = useCollectionSession()
 
   const [activeView, setActiveView] = useState<View>('watchbox')
@@ -44,6 +49,8 @@ export default function CollectionPage() {
   const [deleteTarget, setDeleteTarget] = useState<ResolvedOwnedWatch | null>(null)
   const [screenWidth, setScreenWidth] = useState(0)
   const [mobileStatsOpen, setMobileStatsOpen] = useState(true)
+  const [photoUploading, setPhotoUploading] = useState(false)
+  const [photoErrorMessage, setPhotoErrorMessage] = useState<string | null>(null)
 
   const displayWatches = useMemo(() => {
     if (sortBy === 'manual') return collectionWatches
@@ -180,6 +187,16 @@ export default function CollectionPage() {
                 onChange={value => setSortBy(value as SortMode)}
               />
             ) : undefined}
+          />
+        ) : activeView === 'photo' ? (
+          <CollectionPhotoView
+            photoUrl={watchboxPhotoUrl}
+            onPhotoChange={setWatchboxPhotoUrl}
+            isSignedIn={Boolean(user)}
+            uploading={photoUploading}
+            setUploading={setPhotoUploading}
+            errorMessage={photoErrorMessage}
+            setErrorMessage={setPhotoErrorMessage}
           />
         ) : (
           <CardsView

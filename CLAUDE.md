@@ -25,6 +25,7 @@ Current user-backed persistence includes:
   - `display_name`, `bio`
   - `profile_image_url`, `profile_image_crop`
   - `cover_image_url`, `collection_hero_image_url`
+  - `watchbox_photo_url`
   - `featured_profile_watch`, `visibility`
 - `public.watches`
 - `public.watch_states`

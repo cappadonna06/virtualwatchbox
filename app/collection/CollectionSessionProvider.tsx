@@ -8,6 +8,7 @@ import {
   LEGACY_COLLECTION_SESSION_STORAGE_KEY,
   PLAYGROUND_BOXES_STORAGE_KEY,
   WATCHBOX_CONFIG_STORAGE_KEY,
+  WATCHBOX_PHOTO_SESSION_KEY,
 } from '@/lib/storageKeys'
 import { watches as catalogWatches } from '@/lib/watches'
 import { createCatalogWatchMap, resolveCatalogWatchId, resolveOwnedWatches } from '@/lib/watchData'
@@ -123,6 +124,8 @@ interface CollectionSessionContextValue {
   setWatchboxFrame: (frameId: string) => void
   setWatchboxLining: (liningId: string) => void
   setWatchboxSlotCount: (slotCount: number) => void
+  watchboxPhotoUrl: string | null
+  setWatchboxPhotoUrl: (dataUrl: string | null) => void
   isInCollection: (watchId: string) => boolean
   isWatchFollowed: (watchId: string) => boolean
   isWatchTarget: (watchId: string) => boolean
@@ -541,6 +544,8 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   const [collectionJewelWatchId, setCollectionJewelWatchId] = useState<string | null>(null)
   const [selectedWatchId, setSelectedWatchId] = useState<string | null>(null)
   const [watchboxConfig, setWatchboxConfig] = useState<WatchboxConfig>(DEFAULT_WATCHBOX_CONFIG)
+  const [watchboxPhotoUrl, setWatchboxPhotoUrlState] = useState<string | null>(null)
+  const [watchboxPhotoCloudHydrated, setWatchboxPhotoCloudHydrated] = useState(false)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
   const [toastVisible, setToastVisible] = useState(false)
   const [hydrated, setHydrated] = useState(false)
@@ -605,6 +610,15 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       }
     } catch {
       // Ignore malformed session data.
+    }
+
+    try {
+      const rawPhoto = sessionStorage.getItem(WATCHBOX_PHOTO_SESSION_KEY)
+      if (typeof rawPhoto === 'string' && rawPhoto.startsWith('data:image')) {
+        setWatchboxPhotoUrlState(rawPhoto)
+      }
+    } catch {
+      // Ignore malformed photo data.
     }
 
     try {
@@ -745,6 +759,78 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     if (!hydrated || user) return
     localStorage.setItem(WATCHBOX_CONFIG_STORAGE_KEY, JSON.stringify(watchboxConfig))
   }, [hydrated, user, watchboxConfig])
+
+  useEffect(() => {
+    if (!hydrated || user) return
+    try {
+      if (watchboxPhotoUrl) {
+        sessionStorage.setItem(WATCHBOX_PHOTO_SESSION_KEY, watchboxPhotoUrl)
+      } else {
+        sessionStorage.removeItem(WATCHBOX_PHOTO_SESSION_KEY)
+      }
+    } catch {
+      // sessionStorage may reject when full; the photo just won't survive a reload.
+    }
+  }, [hydrated, user, watchboxPhotoUrl])
+
+  // Cloud read of the watchbox photo. Runs once per signed-in user; the hydration
+  // gate prevents the debounced save below from overwriting a remote value with
+  // an initial null on first mount.
+  useEffect(() => {
+    if (!user) {
+      setWatchboxPhotoCloudHydrated(false)
+      return
+    }
+    let cancelled = false
+    ;(async () => {
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('watchbox_photo_url')
+          .eq('id', user.id)
+          .maybeSingle()
+        if (cancelled) return
+        if (error) console.error('[vwb] watchbox photo read error', error)
+        const remote = data && typeof (data as { watchbox_photo_url?: unknown }).watchbox_photo_url === 'string'
+          ? (data as { watchbox_photo_url: string }).watchbox_photo_url
+          : null
+        setWatchboxPhotoUrlState(remote)
+      } catch (err) {
+        if (cancelled) return
+        console.error('[vwb] watchbox photo hydrate failed', err)
+      } finally {
+        if (!cancelled) setWatchboxPhotoCloudHydrated(true)
+      }
+    })()
+    return () => { cancelled = true }
+  }, [user])
+
+  // Debounced upsert of the watchbox photo. Mirrors the profile auto-save in
+  // ProfileSurface.tsx — gated on the cloud-hydrated flag so we never write a
+  // local default before reading the existing row.
+  useEffect(() => {
+    if (!user || !watchboxPhotoCloudHydrated) return
+    const handle = setTimeout(() => {
+      ;(async () => {
+        try {
+          const supabase = createClient()
+          const { error } = await supabase.from('user_profiles').upsert({
+            id: user.id,
+            watchbox_photo_url: watchboxPhotoUrl ?? null,
+          }, { onConflict: 'id' })
+          if (error) console.error('[vwb] watchbox photo upsert error', error)
+        } catch (err) {
+          console.error('[vwb] watchbox photo upsert failed', err)
+        }
+      })()
+    }, 500)
+    return () => clearTimeout(handle)
+  }, [user, watchboxPhotoUrl, watchboxPhotoCloudHydrated])
+
+  const setWatchboxPhotoUrl = useCallback((dataUrl: string | null) => {
+    setWatchboxPhotoUrlState(dataUrl)
+  }, [])
 
   useEffect(() => {
     if (!hydrated) return
@@ -1283,6 +1369,8 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     setWatchboxFrame,
     setWatchboxLining,
     setWatchboxSlotCount,
+    watchboxPhotoUrl,
+    setWatchboxPhotoUrl,
     isInCollection: (watchId: string) => isOwnedWatch(watchId),
     isWatchFollowed: (watchId: string) => followedWatchIds.includes(watchId),
     isWatchTarget: (watchId: string) => nextTargets.some(target => target.watchId === watchId),
