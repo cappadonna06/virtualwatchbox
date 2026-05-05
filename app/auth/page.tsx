@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { brand } from '@/lib/brand'
 import { createClient } from '@/lib/supabase/client'
@@ -19,9 +20,26 @@ function GoogleIcon() {
 }
 
 export default function AuthPage() {
+  return (
+    <Suspense fallback={null}>
+      <AuthPageInner />
+    </Suspense>
+  )
+}
+
+function AuthPageInner() {
   const [email, setEmail] = useState('')
   const [authState, setAuthState] = useState<AuthState>('idle')
   const [error, setError] = useState<string | null>(null)
+  const searchParams = useSearchParams()
+  const rawNext = searchParams?.get('next') ?? null
+  // Only allow same-origin paths to avoid open-redirect via the query string.
+  const safeNext = rawNext && rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : null
+
+  function callbackUrl() {
+    const base = window.location.origin + '/auth/callback'
+    return safeNext ? `${base}?next=${encodeURIComponent(safeNext)}` : base
+  }
 
   async function handleGoogle() {
     if (authState === 'loading') return
@@ -30,7 +48,7 @@ export default function AuthPage() {
     const supabase = createClient()
     const { error: authError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin + '/auth/callback' },
+      options: { redirectTo: callbackUrl() },
     })
     if (authError) {
       setError(authError.message)
@@ -46,7 +64,7 @@ export default function AuthPage() {
     const supabase = createClient()
     const { error: authError } = await supabase.auth.signInWithOtp({
       email: email.trim(),
-      options: { emailRedirectTo: window.location.origin + '/auth/callback' },
+      options: { emailRedirectTo: callbackUrl() },
     })
     if (authError) {
       setError(authError.message)

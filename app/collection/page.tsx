@@ -41,7 +41,8 @@ export default function CollectionPage() {
     reorderCollectionWatches,
     showToast,
     watchboxPhotoUrl,
-    setWatchboxPhotoUrl,
+    watchboxPhotoCrop,
+    setWatchboxPhoto,
   } = useCollectionSession()
 
   const [activeView, setActiveView] = useState<View>('watchbox')
@@ -49,8 +50,6 @@ export default function CollectionPage() {
   const [deleteTarget, setDeleteTarget] = useState<ResolvedOwnedWatch | null>(null)
   const [screenWidth, setScreenWidth] = useState(0)
   const [mobileStatsOpen, setMobileStatsOpen] = useState(true)
-  const [photoUploading, setPhotoUploading] = useState(false)
-  const [photoErrorMessage, setPhotoErrorMessage] = useState<string | null>(null)
 
   const displayWatches = useMemo(() => {
     if (sortBy === 'manual') return collectionWatches
@@ -191,12 +190,9 @@ export default function CollectionPage() {
         ) : activeView === 'photo' ? (
           <CollectionPhotoView
             photoUrl={watchboxPhotoUrl}
-            onPhotoChange={setWatchboxPhotoUrl}
+            photoCrop={watchboxPhotoCrop}
+            onPhotoChange={setWatchboxPhoto}
             isSignedIn={Boolean(user)}
-            uploading={photoUploading}
-            setUploading={setPhotoUploading}
-            errorMessage={photoErrorMessage}
-            setErrorMessage={setPhotoErrorMessage}
           />
         ) : (
           <CardsView

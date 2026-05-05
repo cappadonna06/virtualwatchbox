@@ -26,7 +26,27 @@ import type {
   WatchStateSource,
   WatchTarget,
 } from '@/types/watch'
+import type { ProfileImageCropState } from '@/types/profile'
 import { brand } from '@/lib/brand'
+
+export type WatchboxPhotoCrop = ProfileImageCropState
+
+const WATCHBOX_PHOTO_CROP_SESSION_KEY = 'vwb-watchbox-photo-crop'
+
+function isValidPhotoCrop(value: unknown): value is WatchboxPhotoCrop {
+  if (!value || typeof value !== 'object') return false
+  const v = value as Partial<WatchboxPhotoCrop> & { area?: Partial<WatchboxPhotoCrop['area']> }
+  return (
+    typeof v.x === 'number'
+    && typeof v.y === 'number'
+    && typeof v.zoom === 'number'
+    && !!v.area
+    && typeof v.area.x === 'number'
+    && typeof v.area.y === 'number'
+    && typeof v.area.width === 'number'
+    && typeof v.area.height === 'number'
+  )
+}
 
 const MIGRATION_DONE_KEY = 'vwb-migration-done'
 
@@ -125,7 +145,8 @@ interface CollectionSessionContextValue {
   setWatchboxLining: (liningId: string) => void
   setWatchboxSlotCount: (slotCount: number) => void
   watchboxPhotoUrl: string | null
-  setWatchboxPhotoUrl: (dataUrl: string | null) => void
+  watchboxPhotoCrop: WatchboxPhotoCrop | null
+  setWatchboxPhoto: (value: { url: string | null; crop: WatchboxPhotoCrop | null }) => void
   isInCollection: (watchId: string) => boolean
   isWatchFollowed: (watchId: string) => boolean
   isWatchTarget: (watchId: string) => boolean
@@ -545,6 +566,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   const [selectedWatchId, setSelectedWatchId] = useState<string | null>(null)
   const [watchboxConfig, setWatchboxConfig] = useState<WatchboxConfig>(DEFAULT_WATCHBOX_CONFIG)
   const [watchboxPhotoUrl, setWatchboxPhotoUrlState] = useState<string | null>(null)
+  const [watchboxPhotoCrop, setWatchboxPhotoCropState] = useState<WatchboxPhotoCrop | null>(null)
   const [watchboxPhotoCloudHydrated, setWatchboxPhotoCloudHydrated] = useState(false)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
   const [toastVisible, setToastVisible] = useState(false)
@@ -616,6 +638,11 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       const rawPhoto = sessionStorage.getItem(WATCHBOX_PHOTO_SESSION_KEY)
       if (typeof rawPhoto === 'string' && rawPhoto.startsWith('data:image')) {
         setWatchboxPhotoUrlState(rawPhoto)
+      }
+      const rawCrop = sessionStorage.getItem(WATCHBOX_PHOTO_CROP_SESSION_KEY)
+      if (rawCrop) {
+        const parsed = JSON.parse(rawCrop)
+        if (isValidPhotoCrop(parsed)) setWatchboxPhotoCropState(parsed)
       }
     } catch {
       // Ignore malformed photo data.
@@ -768,10 +795,15 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       } else {
         sessionStorage.removeItem(WATCHBOX_PHOTO_SESSION_KEY)
       }
+      if (watchboxPhotoCrop) {
+        sessionStorage.setItem(WATCHBOX_PHOTO_CROP_SESSION_KEY, JSON.stringify(watchboxPhotoCrop))
+      } else {
+        sessionStorage.removeItem(WATCHBOX_PHOTO_CROP_SESSION_KEY)
+      }
     } catch {
       // sessionStorage may reject when full; the photo just won't survive a reload.
     }
-  }, [hydrated, user, watchboxPhotoUrl])
+  }, [hydrated, user, watchboxPhotoUrl, watchboxPhotoCrop])
 
   // Cloud read of the watchbox photo. Runs once per signed-in user; the hydration
   // gate prevents the debounced save below from overwriting a remote value with
@@ -787,15 +819,16 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
         const supabase = createClient()
         const { data, error } = await supabase
           .from('watchbox_config')
-          .select('watchbox_photo_url')
+          .select('watchbox_photo_url,watchbox_photo_crop')
           .eq('user_id', user.id)
           .maybeSingle()
         if (cancelled) return
         if (error) console.error('[vwb] watchbox photo read error', error)
-        const remote = data && typeof (data as { watchbox_photo_url?: unknown }).watchbox_photo_url === 'string'
-          ? (data as { watchbox_photo_url: string }).watchbox_photo_url
-          : null
-        setWatchboxPhotoUrlState(remote)
+        const row = data as { watchbox_photo_url?: unknown; watchbox_photo_crop?: unknown } | null
+        const remoteUrl = row && typeof row.watchbox_photo_url === 'string' ? row.watchbox_photo_url : null
+        const remoteCrop = row && isValidPhotoCrop(row.watchbox_photo_crop) ? row.watchbox_photo_crop : null
+        setWatchboxPhotoUrlState(remoteUrl)
+        setWatchboxPhotoCropState(remoteCrop)
       } catch (err) {
         if (cancelled) return
         console.error('[vwb] watchbox photo hydrate failed', err)
@@ -808,7 +841,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
 
   // Debounced upsert of the watchbox photo onto watchbox_config. Frame/lining/
   // slot_count have NOT NULL defaults so a new row from this upsert will get
-  // sensible defaults; an existing row is partial-updated only on the photo column.
+  // sensible defaults; an existing row is partial-updated only on the photo columns.
   useEffect(() => {
     if (!user || !watchboxPhotoCloudHydrated) return
     const handle = setTimeout(() => {
@@ -818,6 +851,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
           const { error } = await supabase.from('watchbox_config').upsert({
             user_id: user.id,
             watchbox_photo_url: watchboxPhotoUrl ?? null,
+            watchbox_photo_crop: watchboxPhotoCrop ?? null,
           }, { onConflict: 'user_id' })
           if (error) console.error('[vwb] watchbox photo upsert error', error)
         } catch (err) {
@@ -826,10 +860,11 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       })()
     }, 500)
     return () => clearTimeout(handle)
-  }, [user, watchboxPhotoUrl, watchboxPhotoCloudHydrated])
+  }, [user, watchboxPhotoUrl, watchboxPhotoCrop, watchboxPhotoCloudHydrated])
 
-  const setWatchboxPhotoUrl = useCallback((dataUrl: string | null) => {
-    setWatchboxPhotoUrlState(dataUrl)
+  const setWatchboxPhoto = useCallback((value: { url: string | null; crop: WatchboxPhotoCrop | null }) => {
+    setWatchboxPhotoUrlState(value.url)
+    setWatchboxPhotoCropState(value.url ? value.crop : null)
   }, [])
 
   useEffect(() => {
@@ -1370,7 +1405,8 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     setWatchboxLining,
     setWatchboxSlotCount,
     watchboxPhotoUrl,
-    setWatchboxPhotoUrl,
+    watchboxPhotoCrop,
+    setWatchboxPhoto,
     isInCollection: (watchId: string) => isOwnedWatch(watchId),
     isWatchFollowed: (watchId: string) => followedWatchIds.includes(watchId),
     isWatchTarget: (watchId: string) => nextTargets.some(target => target.watchId === watchId),

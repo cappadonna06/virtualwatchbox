@@ -30,7 +30,7 @@ Current user-backed persistence includes:
 - `public.watch_states`
 - `public.watchbox_config`
   - `frame`, `lining`, `slot_count`
-  - `watchbox_photo_url`
+  - `watchbox_photo_url`, `watchbox_photo_crop`
 - `public.playground_boxes`
 
 If a new user-based field is added in UI state (`ProfileDemoState`, collection session state, playground state, etc.), you must update all of:

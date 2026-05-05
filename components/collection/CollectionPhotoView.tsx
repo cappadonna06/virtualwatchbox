@@ -1,18 +1,16 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { brand } from '@/lib/brand'
-import { resizeImageFileToDataUrl } from '@/lib/profileDemo'
+import WatchboxPhotoEditModal from './WatchboxPhotoEditModal'
+import type { WatchboxPhotoCrop } from '@/app/collection/CollectionSessionProvider'
 
 interface Props {
   photoUrl: string | null
-  onPhotoChange: (dataUrl: string) => void
+  photoCrop: WatchboxPhotoCrop | null
+  onPhotoChange: (value: { url: string | null; crop: WatchboxPhotoCrop | null }) => void
   isSignedIn: boolean
-  uploading: boolean
-  setUploading: (value: boolean) => void
-  errorMessage: string | null
-  setErrorMessage: (message: string | null) => void
 }
 
 const CONTAINER_STYLE: React.CSSProperties = {
@@ -22,22 +20,21 @@ const CONTAINER_STYLE: React.CSSProperties = {
   minHeight: 320,
   borderRadius: brand.radius.lg,
   overflow: 'hidden',
-  background: brand.colors.white,
+  background: brand.colors.slot,
 }
+
+type EditTrigger = 'crop' | 'camera'
 
 export default function CollectionPhotoView({
   photoUrl,
+  photoCrop,
   onPhotoChange,
   isSignedIn,
-  uploading,
-  setUploading,
-  errorMessage,
-  setErrorMessage,
 }: Props) {
-  const captureInputRef = useRef<HTMLInputElement | null>(null)
-  const uploadInputRef = useRef<HTMLInputElement | null>(null)
   const [isHovered, setIsHovered] = useState(false)
   const [isTouchDevice, setIsTouchDevice] = useState(false)
+  const [editorOpen, setEditorOpen] = useState(false)
+  const [editorMode, setEditorMode] = useState<EditTrigger>('crop')
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -48,211 +45,171 @@ export default function CollectionPhotoView({
     return () => mq.removeEventListener('change', update)
   }, [])
 
-  async function handleFile(file: File | undefined) {
-    if (!file) return
-    setErrorMessage(null)
-    setUploading(true)
-    try {
-      const dataUrl = await resizeImageFileToDataUrl(file, {
-        maxWidth: 1600,
-        maxHeight: 1600,
-        quality: 0.82,
-      })
-      onPhotoChange(dataUrl)
-    } catch {
-      setErrorMessage('Upload failed. Please try again.')
-    } finally {
-      setUploading(false)
-    }
+  function openEditor(trigger: EditTrigger) {
+    setEditorMode(trigger)
+    setEditorOpen(true)
   }
 
   if (photoUrl) {
     const showPill = isTouchDevice || isHovered
     return (
-      <div
-        style={CONTAINER_STYLE}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <img
-          src={photoUrl}
-          alt="Your watchbox"
-          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+      <>
+        <div
+          style={CONTAINER_STYLE}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <CroppedPhoto photoUrl={photoUrl} photoCrop={photoCrop} />
+          {isSignedIn ? (
+            <button
+              type="button"
+              onClick={() => openEditor('crop')}
+              style={{
+                position: 'absolute',
+                bottom: 14,
+                right: 14,
+                fontFamily: brand.font.sans,
+                fontSize: 11,
+                fontWeight: 500,
+                letterSpacing: '0.04em',
+                color: brand.colors.bg,
+                background: 'rgba(26,20,16,0.65)',
+                padding: '6px 14px',
+                borderRadius: 20,
+                border: 'none',
+                cursor: 'pointer',
+                opacity: showPill ? 1 : 0,
+                transition: `opacity ${brand.transition.base}`,
+              }}
+            >
+              Change Photo
+            </button>
+          ) : null}
+        </div>
+        <WatchboxPhotoEditModal
+          open={editorOpen}
+          sourceUrl={photoUrl}
+          sourceCrop={photoCrop}
+          initialMode={editorMode}
+          onClose={() => setEditorOpen(false)}
+          onSave={next => { onPhotoChange(next); setEditorOpen(false) }}
+          onRemove={() => onPhotoChange({ url: null, crop: null })}
         />
-        {uploading ? <UploadingOverlay /> : null}
-        {isSignedIn && !uploading ? (
-          <button
-            type="button"
-            onClick={() => uploadInputRef.current?.click()}
-            style={{
-              position: 'absolute',
-              bottom: 14,
-              right: 14,
-              fontFamily: brand.font.sans,
-              fontSize: 11,
-              fontWeight: 500,
-              letterSpacing: '0.04em',
-              color: brand.colors.bg,
-              background: 'rgba(26,20,16,0.65)',
-              padding: '6px 14px',
-              borderRadius: 20,
-              border: 'none',
-              cursor: 'pointer',
-              opacity: showPill ? 1 : 0,
-              transition: `opacity ${brand.transition.base}`,
-            }}
-          >
-            Change Photo
-          </button>
-        ) : null}
-        <input
-          ref={uploadInputRef}
-          type="file"
-          accept="image/*"
-          style={{ display: 'none' }}
-          onChange={async event => {
-            const file = event.target.files?.[0]
-            event.target.value = ''
-            await handleFile(file)
-          }}
-        />
-      </div>
+      </>
     )
   }
 
   return (
-    <div
-      style={{
-        ...CONTAINER_STYLE,
-        border: `1.5px dashed ${brand.colors.border}`,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
-        padding: '40px 24px',
-      }}
-    >
-      {uploading ? (
-        <UploadingOverlay />
-      ) : (
-        <>
-          <CameraIcon size={32} color={brand.colors.muted} />
-          <h2
-            style={{
-              fontFamily: brand.font.serif,
-              fontSize: 22,
-              fontWeight: 500,
-              color: brand.colors.ink,
-              margin: 0,
-              marginTop: 16,
-              lineHeight: 1.2,
-            }}
-          >
-            Photo of Your Box
-          </h2>
-          <p
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 13,
-              color: brand.colors.muted,
-              margin: 0,
-              marginTop: 6,
-              maxWidth: 360,
-            }}
-          >
-            Take or upload a photo of your physical watch box.
-          </p>
+    <>
+      <div
+        style={{
+          ...CONTAINER_STYLE,
+          background: brand.colors.white,
+          border: `1.5px dashed ${brand.colors.border}`,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          padding: '40px 24px',
+        }}
+      >
+        <CameraIcon size={32} color={brand.colors.muted} />
+        <h2
+          style={{
+            fontFamily: brand.font.serif,
+            fontSize: 22,
+            fontWeight: 500,
+            color: brand.colors.ink,
+            margin: 0,
+            marginTop: 16,
+            lineHeight: 1.2,
+          }}
+        >
+          Photo of Your Box
+        </h2>
+        <p
+          style={{
+            fontFamily: brand.font.sans,
+            fontSize: 13,
+            color: brand.colors.muted,
+            margin: 0,
+            marginTop: 6,
+            maxWidth: 360,
+          }}
+        >
+          Take or upload a photo of your physical watch box.
+        </p>
 
-          {isSignedIn ? (
-            <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <button
-                type="button"
-                onClick={() => captureInputRef.current?.click()}
-                style={primaryButtonStyle}
-              >
-                Take Photo
-              </button>
-              <button
-                type="button"
-                onClick={() => uploadInputRef.current?.click()}
-                style={secondaryButtonStyle}
-              >
-                Upload Photo
-              </button>
-            </div>
-          ) : (
-            <div style={{ marginTop: 24 }}>
-              <Link href="/auth" style={{ ...primaryButtonStyle, textDecoration: 'none', display: 'inline-block' }}>
-                Sign in to save your watchbox photo
-              </Link>
-            </div>
-          )}
-
-          {errorMessage ? (
-            <div
-              style={{
-                marginTop: 14,
-                fontFamily: brand.font.sans,
-                fontSize: 12,
-                color: brand.colors.muted,
-              }}
+        {isSignedIn ? (
+          <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button type="button" onClick={() => openEditor('camera')} style={primaryButtonStyle}>
+              Take Photo
+            </button>
+            <button type="button" onClick={() => openEditor('crop')} style={secondaryButtonStyle}>
+              Upload Photo
+            </button>
+          </div>
+        ) : (
+          <div style={{ marginTop: 24 }}>
+            <Link
+              href="/auth?next=/collection"
+              style={{ ...primaryButtonStyle, textDecoration: 'none', display: 'inline-block' }}
             >
-              {errorMessage}
-            </div>
-          ) : null}
-        </>
-      )}
+              Sign in to save your watchbox photo
+            </Link>
+          </div>
+        )}
 
+      </div>
       {isSignedIn ? (
-        <>
-          <input
-            ref={captureInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            style={{ display: 'none' }}
-            onChange={async event => {
-              const file = event.target.files?.[0]
-              event.target.value = ''
-              await handleFile(file)
-            }}
-          />
-          <input
-            ref={uploadInputRef}
-            type="file"
-            accept="image/*"
-            style={{ display: 'none' }}
-            onChange={async event => {
-              const file = event.target.files?.[0]
-              event.target.value = ''
-              await handleFile(file)
-            }}
-          />
-        </>
+        <WatchboxPhotoEditModal
+          open={editorOpen}
+          sourceUrl={null}
+          sourceCrop={null}
+          initialMode={editorMode}
+          onClose={() => setEditorOpen(false)}
+          onSave={next => { onPhotoChange(next); setEditorOpen(false) }}
+        />
       ) : null}
-    </div>
+    </>
   )
 }
 
-function UploadingOverlay() {
+function CroppedPhoto({ photoUrl, photoCrop }: { photoUrl: string; photoCrop: WatchboxPhotoCrop | null }) {
+  const area = photoCrop?.area
+  const hasSavedCrop = Boolean(
+    area
+    && area.x >= 0
+    && area.y >= 0
+    && area.width > 0 && area.width <= 100
+    && area.height > 0 && area.height <= 100,
+  )
+  if (!hasSavedCrop) {
+    return (
+      <img
+        src={photoUrl}
+        alt="Your watchbox"
+        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+      />
+    )
+  }
   return (
-    <div
+    <img
+      src={photoUrl}
+      alt="Your watchbox"
+      draggable={false}
       style={{
         position: 'absolute',
-        inset: 0,
-        background: 'rgba(255,255,255,0.78)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontFamily: brand.font.sans,
-        fontSize: 13,
-        color: brand.colors.muted,
-        letterSpacing: '0.04em',
+        width: `${10000 / area!.width}%`,
+        height: `${10000 / area!.height}%`,
+        maxWidth: 'none',
+        left: `${-(area!.x / area!.width) * 100}%`,
+        top: `${-(area!.y / area!.height) * 100}%`,
+        userSelect: 'none',
+        pointerEvents: 'none',
       }}
-    >
-      Uploading…
-    </div>
+    />
   )
 }
 
