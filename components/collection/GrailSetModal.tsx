@@ -224,13 +224,13 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
               transition: prefersReducedMotion ? 'none' : `transform ${ceremonialTransition} 110ms, opacity ${ceremonialTransition} 110ms`,
             }}
           >
-            <div style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 28 : 36, fontWeight: 400, color: isMobile ? brand.colors.ink : brand.colors.white, lineHeight: 1.02, marginBottom: isMobile ? 10 : 14 }}>
+            <div style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 28 : 36, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.02, marginBottom: isMobile ? 10 : 14 }}>
               Your Grail
             </div>
-            <div style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 13 : 14, fontWeight: 500, color: isMobile ? brand.colors.ink : brand.colors.white, marginBottom: isMobile ? 8 : 10 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 13 : 14, fontWeight: 500, color: brand.colors.ink, marginBottom: isMobile ? 8 : 10 }}>
               {watch.brand} {watch.model}
             </div>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: isMobile ? brand.colors.muted : brand.colors.bg }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted }}>
               {isChange ? 'The crown moves to a new watch.' : 'The watch worth chasing.'}
             </div>
           </div>
@@ -304,8 +304,8 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
                 marginTop: 12,
                 textAlign: 'center',
                 fontFamily: brand.font.sans,
-                fontSize: 10,
-                color: brand.colors.muted,
+                fontSize: 13,
+                color: brand.colors.ink,
                 opacity: showPreviousFootnote ? 1 : 0,
                 transition: prefersReducedMotion ? 'none' : `opacity ${ceremonialTransition}`,
               }}

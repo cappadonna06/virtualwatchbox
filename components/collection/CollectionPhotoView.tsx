@@ -89,7 +89,6 @@ export default function CollectionPhotoView({
   }
 
   function handleDragOver(e: React.DragEvent) {
-    if (!isSignedIn) return
     e.preventDefault()
     setDragging(true)
   }
@@ -99,7 +98,6 @@ export default function CollectionPhotoView({
   }
 
   function handleDrop(e: React.DragEvent) {
-    if (!isSignedIn) return
     e.preventDefault()
     setDragging(false)
     const file = e.dataTransfer.files?.[0]
@@ -139,31 +137,29 @@ export default function CollectionPhotoView({
           <CroppedPhoto photoUrl={photoUrl} photoCrop={photoCrop} />
           {dragging ? <DropOverlay /> : null}
           {busy ? <BusyOverlay /> : null}
-          {isSignedIn ? (
-            <button
-              type="button"
-              onClick={() => openEditor('crop')}
-              style={{
-                position: 'absolute',
-                bottom: 14,
-                right: 14,
-                fontFamily: brand.font.sans,
-                fontSize: 11,
-                fontWeight: 500,
-                letterSpacing: '0.04em',
-                color: brand.colors.bg,
-                background: 'rgba(26,20,16,0.65)',
-                padding: '6px 14px',
-                borderRadius: 20,
-                border: 'none',
-                cursor: 'pointer',
-                opacity: showPill && !dragging ? 1 : 0,
-                transition: `opacity ${brand.transition.base}`,
-              }}
-            >
-              Change Photo
-            </button>
-          ) : null}
+          <button
+            type="button"
+            onClick={() => openEditor('crop')}
+            style={{
+              position: 'absolute',
+              bottom: 14,
+              right: 14,
+              fontFamily: brand.font.sans,
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: '0.04em',
+              color: brand.colors.bg,
+              background: 'rgba(26,20,16,0.65)',
+              padding: '6px 14px',
+              borderRadius: 20,
+              border: 'none',
+              cursor: 'pointer',
+              opacity: showPill && !dragging ? 1 : 0,
+              transition: `opacity ${brand.transition.base}`,
+            }}
+          >
+            Change Photo
+          </button>
         </div>
         {errorMessage ? <ErrorRow message={errorMessage} /> : null}
         <WatchboxPhotoEditModal
@@ -225,43 +221,44 @@ export default function CollectionPhotoView({
             maxWidth: 360,
           }}
         >
-          {isSignedIn
-            ? 'Drag a photo here, take one with your camera, or upload from your device.'
-            : 'Take or upload a photo of your physical watch box.'}
+          Drag a photo here, take one with your camera, or upload from your device.
         </p>
 
-        {isSignedIn ? (
-          <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button type="button" onClick={() => openEditor('camera')} style={primaryButtonStyle}>
-              Take Photo
-            </button>
-            <button type="button" onClick={() => openEditor('crop')} style={secondaryButtonStyle}>
-              Upload Photo
-            </button>
-          </div>
-        ) : (
-          <div style={{ marginTop: 24 }}>
-            <Link
-              href="/auth?next=/collection"
-              style={{ ...primaryButtonStyle, textDecoration: 'none', display: 'inline-block' }}
-            >
-              Sign in to save your watchbox photo
-            </Link>
-          </div>
-        )}
+        <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <button type="button" onClick={() => openEditor('camera')} style={primaryButtonStyle}>
+            Take Photo
+          </button>
+          <button type="button" onClick={() => openEditor('crop')} style={secondaryButtonStyle}>
+            Upload Photo
+          </button>
+        </div>
+
+        {!isSignedIn ? (
+          <Link
+            href="/auth?next=/collection"
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 11,
+              color: brand.colors.muted,
+              marginTop: 14,
+              letterSpacing: '0.04em',
+              textDecoration: 'underline',
+            }}
+          >
+            Sign in to save it across devices
+          </Link>
+        ) : null}
         {busy ? <BusyOverlay /> : null}
       </div>
       {errorMessage ? <ErrorRow message={errorMessage} /> : null}
-      {isSignedIn ? (
-        <WatchboxPhotoEditModal
-          open={editorOpen}
-          sourceUrl={pendingSourceUrl}
-          sourceCrop={null}
-          initialMode={editorMode}
-          onClose={closeEditor}
-          onSave={next => { onPhotoChange(next); closeEditor() }}
-        />
-      ) : null}
+      <WatchboxPhotoEditModal
+        open={editorOpen}
+        sourceUrl={pendingSourceUrl}
+        sourceCrop={null}
+        initialMode={editorMode}
+        onClose={closeEditor}
+        onSave={next => { onPhotoChange(next); closeEditor() }}
+      />
     </>
   )
 }

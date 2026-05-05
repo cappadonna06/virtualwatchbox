@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import type { PlaygroundBox, PlaygroundBoxEntry, ResolvedWatch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import {
+  buildAbsoluteProfileDemoUrl,
   copyProfileDemoUrl,
   getBoxSharePath,
   getPlaygroundBoxSlug,
@@ -22,6 +23,7 @@ import SortDropdown from '@/components/collection/SortDropdown'
 import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import CollectionStats from '@/components/collection/CollectionStats'
+import ShareBoxModal from '@/components/collection/ShareBoxModal'
 import WatchboxHeader from '@/components/collection/WatchboxHeader'
 import { brand } from '@/lib/brand'
 
@@ -93,6 +95,7 @@ function PlaygroundPageInner() {
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
   const [deleteEntryTarget, setDeleteEntryTarget] = useState<ResolvedPlaygroundWatch | null>(null)
   const [shareToast, setShareToast] = useState(false)
+  const [shareModalOpen, setShareModalOpen] = useState(false)
   const [editingName, setEditingName] = useState(false)
   const [editingNameValue, setEditingNameValue] = useState('')
   const [renameModalOpen, setRenameModalOpen] = useState(false)
@@ -322,15 +325,17 @@ function PlaygroundPageInner() {
         </div>
       ) : (
         <>
-          <div style={{ padding: '56px 56px 0' }}>
-            <h1 style={{ fontFamily: brand.font.serif, fontSize: 36, fontWeight: 400, color: brand.colors.ink, margin: 0, lineHeight: 1.1 }}>
-              Playground
-            </h1>
-            <p style={{ fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, marginTop: 4, marginBottom: 0 }}>
-              Build your dream collection. No limits.
-            </p>
+          <div style={{ padding: '40px 56px 0' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 18, flexWrap: 'wrap', marginBottom: 28 }}>
+              <h1 style={{ fontFamily: brand.font.serif, fontSize: 48, fontWeight: 400, color: brand.colors.ink, margin: 0, lineHeight: 1.1 }}>
+                Playground
+              </h1>
+              <p style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, margin: 0, letterSpacing: '0.02em' }}>
+                Build your dream collection. No limits.
+              </p>
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: 6, padding: '20px 56px 0', overflowX: 'auto', borderBottom: `1px solid ${brand.colors.border}` }}>
+          <div style={{ display: 'flex', gap: 4, alignItems: 'flex-end', padding: '0 56px', overflowX: 'auto', borderBottom: `1px solid ${brand.colors.border}` }}>
             {boxes.map(box => {
               const isActive = box.id === activeBoxId
               return (
@@ -338,37 +343,52 @@ function PlaygroundPageInner() {
                   key={box.id}
                   onClick={() => switchBox(box.id)}
                   style={{
-                    padding: '8px 16px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '10px 18px',
                     borderRadius: '8px 8px 0 0',
                     fontFamily: brand.font.sans,
                     fontSize: 12,
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
-                    border: isActive ? `1px solid ${brand.colors.border}` : '1px solid transparent',
+                    border: '1px solid',
+                    borderColor: isActive ? brand.colors.border : 'transparent',
                     borderBottom: isActive ? `1px solid ${brand.colors.bg}` : '1px solid transparent',
+                    marginBottom: -1,
                     background: isActive ? brand.colors.bg : 'transparent',
                     color: isActive ? brand.colors.ink : brand.colors.muted,
                     fontWeight: isActive ? 500 : 400,
                     transition: 'all 0.15s',
                   }}
                 >
-                  {box.name} · {box.entries.length}
+                  {box.name}
+                  <span style={{ fontSize: 10, color: isActive ? brand.colors.muted : brand.colors.borderLight, fontVariantNumeric: 'tabular-nums' }}>
+                    · {box.entries.length}
+                  </span>
                 </button>
               )
             })}
             <button
               onClick={() => setNewBoxModalOpen(true)}
+              title="New box"
+              aria-label="New box"
               style={{
-                padding: '8px 16px',
-                borderRadius: '8px 8px 0 0',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 30,
+                height: 30,
+                marginLeft: 4,
+                marginBottom: 6,
+                borderRadius: brand.radius.sm,
                 fontFamily: brand.font.sans,
-                fontSize: 14,
-                fontWeight: 600,
+                fontSize: 16,
+                fontWeight: 300,
                 cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                border: '1px solid transparent',
                 background: 'transparent',
-                color: brand.colors.gold,
+                color: brand.colors.muted,
+                border: `1px dashed ${brand.colors.borderLight}`,
                 transition: 'all 0.15s',
               }}
             >
@@ -378,152 +398,264 @@ function PlaygroundPageInner() {
         </>
       )}
 
-      <div style={{ padding: `${isMobile ? 24 : 24}px ${isMobile ? 20 : 32}px 32px` }}>
+      <div style={{ padding: `${isMobile ? 24 : 24}px ${isMobile ? 20 : 56}px 32px` }}>
         {!isMobile ? (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18, gap: 20, flexWrap: 'wrap' }}>
-          <div>
-            {editingName ? (
-              <input
-                ref={nameInputRef}
-                value={editingNameValue}
-                onChange={e => setEditingNameValue(e.target.value)}
-                onBlur={() => handleRenameBox(editingNameValue)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') handleRenameBox(editingNameValue)
-                  if (e.key === 'Escape') setEditingName(false)
-                }}
-                style={{
-                  fontFamily: 'var(--font-cormorant)',
-                  fontSize: 24,
-                  color: '#1A1410',
-                  border: 'none',
-                  borderBottom: '1.5px solid #C9A84C',
-                  background: 'transparent',
-                  outline: 'none',
-                  minWidth: 180,
-                }}
-              />
-            ) : (
-              <div
-                onClick={startEditing}
-                style={{ fontFamily: 'var(--font-cormorant)', fontSize: 24, color: '#1A1410', cursor: 'text', display: 'inline-block' }}
-              >
-                {activeBox?.name}
-              </div>
-            )}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 20,
+              padding: '16px 0 20px',
+              marginBottom: 20,
+              borderBottom: `1px solid ${brand.colors.border}`,
+              flexWrap: 'wrap',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', minWidth: 0 }}>
+              {editingName ? (
+                <input
+                  ref={nameInputRef}
+                  value={editingNameValue}
+                  onChange={e => setEditingNameValue(e.target.value)}
+                  onBlur={() => handleRenameBox(editingNameValue)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') handleRenameBox(editingNameValue)
+                    if (e.key === 'Escape') setEditingName(false)
+                  }}
+                  style={{
+                    fontFamily: brand.font.serif,
+                    fontSize: 24,
+                    fontWeight: 400,
+                    color: brand.colors.ink,
+                    background: 'transparent',
+                    border: 'none',
+                    borderBottom: `1.5px solid ${brand.colors.gold}`,
+                    outline: 'none',
+                    minWidth: 220,
+                    padding: '0 0 2px',
+                  }}
+                />
+              ) : (
+                <h2
+                  onClick={startEditing}
+                  title="Click to rename"
+                  style={{ fontFamily: brand.font.serif, fontSize: 24, fontWeight: 400, color: brand.colors.ink, margin: 0, lineHeight: 1.1, cursor: 'text' }}
+                >
+                  {activeBox?.name}
+                </h2>
+              )}
 
-            {activeBox && activeBox.tags.length > 0 && (
-              <div style={{ display: 'flex', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
-                {activeBox.tags.map(tag => (
-                  <span
-                    key={tag}
+              {!editingName && (
+                <button
+                  onClick={startEditing}
+                  title="Rename"
+                  aria-label="Rename box"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 24,
+                    height: 24,
+                    borderRadius: brand.radius.sm,
+                    border: `1px solid ${brand.colors.border}`,
+                    background: brand.colors.white,
+                    color: brand.colors.muted,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M2 12l2.2-.5L11 4.7l-1.7-1.7L2.5 9.8 2 12z" />
+                    <line x1="9" y1="5" x2="10.7" y2="6.7" />
+                  </svg>
+                </button>
+              )}
+
+              {activeBox && activeBox.tags.length > 0 && (
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {activeBox.tags.map(tag => (
+                    <span
+                      key={tag}
+                      style={{
+                        fontFamily: brand.font.sans,
+                        fontSize: 9.5,
+                        padding: '2px 9px',
+                        borderRadius: brand.radius.pill,
+                        border: `1px solid ${brand.colors.border}`,
+                        color: brand.colors.muted,
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+              <span
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 10.5,
+                  fontWeight: 500,
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  color: brand.colors.muted,
+                }}
+              >
+                {displayWatches.length} {displayWatches.length === 1 ? 'Watch' : 'Watches'}
+              </span>
+
+              <button
+                onClick={() => router.push(`/collection/add?dest=playground&boxId=${activeBoxId}`)}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 7,
+                  fontFamily: brand.font.sans,
+                  fontSize: 11,
+                  fontWeight: 500,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  padding: '8px 14px',
+                  background: brand.colors.ink,
+                  color: brand.colors.bg,
+                  border: 'none',
+                  borderRadius: brand.radius.btn,
+                  cursor: 'pointer',
+                }}
+              >
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+                  <line x1="7" y1="2.5" x2="7" y2="11.5" />
+                  <line x1="2.5" y1="7" x2="11.5" y2="7" />
+                </svg>
+                Add Watch
+              </button>
+
+              {boxes.length > 1 && deleteConfirmId !== activeBoxId && (
+                <button
+                  onClick={() => setDeleteConfirmId(activeBoxId)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 7,
+                    fontFamily: brand.font.sans,
+                    fontSize: 11,
+                    fontWeight: 500,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    padding: '7px 14px',
+                    background: brand.colors.white,
+                    color: brand.colors.muted,
+                    border: `1px solid ${brand.colors.border}`,
+                    borderRadius: brand.radius.sm,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="2.5,3.5 11.5,3.5" />
+                    <path d="M5 3.5V2.5a1 1 0 011-1h2a1 1 0 011 1v1" />
+                    <path d="M3.5 3.5l.7 8a1 1 0 001 .9h3.6a1 1 0 001-.9l.7-8" />
+                  </svg>
+                  Delete Box
+                </button>
+              )}
+
+              {deleteConfirmId === activeBoxId && (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted }}>
+                    Delete?
+                  </span>
+                  <button
+                    onClick={() => setDeleteConfirmId(null)}
                     style={{
-                      fontSize: 9,
-                      padding: '2px 8px',
-                      borderRadius: 20,
-                      border: '1px solid #EAE5DC',
-                      color: '#A89880',
-                      fontFamily: 'var(--font-dm-sans)',
+                      fontFamily: brand.font.sans,
+                      fontSize: 10,
+                      fontWeight: 500,
+                      letterSpacing: '0.06em',
+                      padding: '6px 10px',
+                      background: 'transparent',
+                      color: brand.colors.muted,
+                      border: `1px solid ${brand.colors.border}`,
+                      borderRadius: brand.radius.sm,
+                      cursor: 'pointer',
                     }}
                   >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0, paddingTop: 4 }}>
-            <button
-              onClick={handleShareBox}
-              style={{
-                fontSize: 10,
-                padding: '6px 12px',
-                borderRadius: 6,
-                border: '1px solid #EAE5DC',
-                color: '#A89880',
-                background: 'transparent',
-                cursor: 'pointer',
-                fontFamily: 'var(--font-dm-sans)',
-              }}
-            >
-              Share Box
-            </button>
-
-            {boxes.length > 1 && deleteConfirmId !== activeBoxId && (
-              <button
-                onClick={() => setDeleteConfirmId(activeBoxId)}
-                style={{
-                  fontSize: 10,
-                  padding: '6px 12px',
-                  borderRadius: 6,
-                  border: '1px solid #EAE5DC',
-                  color: '#C4A882',
-                  background: 'transparent',
-                  cursor: 'pointer',
-                  fontFamily: 'var(--font-dm-sans)',
-                }}
-              >
-                Delete Box
-              </button>
-            )}
-
-            {deleteConfirmId === activeBoxId && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#A89880' }}>
-                  Delete this box?
-                </span>
-                <button
-                  onClick={() => setDeleteConfirmId(null)}
-                  style={{
-                    fontSize: 10,
-                    padding: '4px 10px',
-                    borderRadius: 5,
-                    border: '1px solid #EAE5DC',
-                    color: '#A89880',
-                    background: 'transparent',
-                    cursor: 'pointer',
-                    fontFamily: 'var(--font-dm-sans)',
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDeleteBox}
-                  style={{
-                    fontSize: 10,
-                    padding: '4px 10px',
-                    borderRadius: 5,
-                    border: 'none',
-                    color: '#FAF8F4',
-                    background: '#1A1410',
-                    cursor: 'pointer',
-                    fontFamily: 'var(--font-dm-sans)',
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            )}
-          </div>
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteBox}
+                    style={{
+                      fontFamily: brand.font.sans,
+                      fontSize: 10,
+                      fontWeight: 600,
+                      letterSpacing: '0.06em',
+                      padding: '6px 10px',
+                      background: brand.colors.ink,
+                      color: brand.colors.bg,
+                      border: 'none',
+                      borderRadius: brand.radius.sm,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         ) : null}
 
         {!isMobile ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28 }}>
-          <ViewSwitcher activeView={activeView} setActiveView={setActiveView} availableViews={['watchbox', 'cards']} />
-          <a
-            href="#playground-stats"
+          <div
+            className="collection-toolbar-row"
             style={{
-              fontFamily: 'var(--font-dm-sans)',
-              fontSize: 11,
-              color: '#A89880',
-              textDecoration: 'none',
-              letterSpacing: '0.04em',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 12,
+              marginBottom: 20,
+              minHeight: 36,
+              flexWrap: 'wrap',
+              paddingRight: isMobile ? 0 : 332,
             }}
           >
-            Stats ↓
-          </a>
+            <ViewSwitcher activeView={activeView} setActiveView={setActiveView} availableViews={['watchbox', 'cards']} />
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+            {activeView === 'cards' ? (
+              <SortDropdown
+                value={sortBy}
+                options={SORT_OPTIONS}
+                onChange={value => setSortBy(value as SortMode)}
+              />
+            ) : null}
+            <button
+              onClick={() => setShareModalOpen(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 7,
+                fontFamily: brand.font.sans,
+                fontSize: 11,
+                fontWeight: 500,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                padding: '7px 14px',
+                background: brand.colors.white,
+                color: brand.colors.muted,
+                border: `1px solid ${brand.colors.border}`,
+                borderRadius: brand.radius.sm,
+                cursor: 'pointer',
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M10.5 5V2.5h-2.5" />
+                <line x1="10.5" y1="2.5" x2="6" y2="7" />
+                <path d="M10.5 8.5v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5.5a1 1 0 0 1 1-1H6" />
+              </svg>
+              Share Box
+            </button>
+            </div>
           </div>
         ) : null}
 
@@ -535,9 +667,17 @@ function PlaygroundPageInner() {
             {activeView === 'watchbox' ? (
               <WatchboxView
                 box={activeBox}
-                watches={displayWatches}
-                activeSlot={activeSlot >= 0 ? activeSlot : null}
-                onSlotClick={handleSlotClick}
+                watches={resolvedEntries.map(item => item.displayWatch)}
+                activeSlot={(() => {
+                  if (!selectedEntryId) return null
+                  const idx = resolvedEntries.findIndex(item => item.entry.id === selectedEntryId)
+                  return idx >= 0 ? idx : null
+                })()}
+                onSlotClick={index => {
+                  const item = resolvedEntries[index]
+                  if (!item) return
+                  setSelectedEntryId(prev => (prev === item.entry.id ? null : item.entry.id))
+                }}
                 watchboxSlotPx={watchboxSlotPx}
                 watchboxMaxW={watchboxMaxW}
                 screenW={screenW}
@@ -546,19 +686,17 @@ function PlaygroundPageInner() {
                 onLiningChange={value => handleBoxConfigChange('lining', value)}
                 onSlotCountChange={value => handleBoxConfigChange('slotCount', value)}
                 overflowSummary={overflowSummary}
-                onReorder={sortBy === 'manual' ? (from, to) => {
+                onReorder={(from, to) => {
                   const entries = [...(activeBox?.entries ?? [])]
                   ;[entries[from], entries[to]] = [entries[to], entries[from]]
                   reorderBoxEntries(activeBoxId, entries)
-                } : undefined}
+                }}
               />
             ) : (
               <CardsView
                 watches={displayWatches}
                 activeSlot={activeSlot >= 0 ? activeSlot : null}
                 onCardSelect={handleCardSelect}
-                sortBy={sortBy}
-                setSortBy={setSortBy}
               />
             )}
           </div>
@@ -580,27 +718,20 @@ function PlaygroundPageInner() {
       </div>
 
       {isMobile && !mobileStatsOpen ? null : (
-      <div id="playground-stats" style={{ marginTop: isMobile ? 56 : 72, padding: `${isMobile ? 28 : 48}px 32px 0`, borderTop: `1px solid ${brand.colors.border}` }}>
-        <div style={{ marginBottom: 32 }}>
-          <h2
-            style={{
-              fontFamily: brand.font.serif,
-              fontSize: 36,
-              fontWeight: 400,
-              color: brand.colors.ink,
-              margin: '0 0 6px',
-              lineHeight: 1.1,
-            }}
-          >
-            Box Stats
-          </h2>
-          <p style={{ fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, margin: 0 }}>
-            A market-only breakdown of this playground box.
-          </p>
-        </div>
+      <div id="playground-stats" style={{ marginTop: isMobile ? 56 : 72, padding: `${isMobile ? 28 : 48}px ${isMobile ? 20 : 56}px 0`, borderTop: `1px solid ${brand.colors.border}` }}>
         <CollectionStats watches={displayWatches} mode="playground" />
       </div>
       )}
+
+      <ShareBoxModal
+        open={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        watches={displayWatches.map(w => ({ id: w.id, brand: w.brand, model: w.model, imageUrl: w.imageUrl ?? null, estimatedValue: w.estimatedValue }))}
+        totalValue={displayWatches.reduce((s, w) => s + w.estimatedValue, 0)}
+        handle={activeBox?.name ?? 'Box'}
+        shareUrl={activeBox ? buildAbsoluteProfileDemoUrl(getBoxSharePath(getPlaygroundBoxSlug(activeBox))) : ''}
+        title={activeBox?.name}
+      />
 
       {newBoxModalOpen && (
         <NewBoxModal
@@ -1266,26 +1397,15 @@ interface CardsViewProps {
   watches: ResolvedWatch[]
   activeSlot: number | null
   onCardSelect: (index: number) => void
-  sortBy: SortMode
-  setSortBy: (v: SortMode) => void
 }
 
 function CardsView({
   watches,
   activeSlot,
   onCardSelect,
-  sortBy,
-  setSortBy,
 }: CardsViewProps) {
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
-        <SortDropdown
-          value={sortBy}
-          options={SORT_OPTIONS}
-          onChange={value => setSortBy(value as SortMode)}
-        />
-      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {watches.map((watch, index) => (
           <div key={watch.id}>
@@ -1334,18 +1454,22 @@ function NewBoxModal({ onClose, onCreate }: NewBoxModalProps) {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          background: '#FAF8F4',
-          borderRadius: 12,
-          padding: 28,
-          width: 380,
-          maxWidth: '90vw',
-          boxShadow: '0 16px 60px rgba(26,20,16,0.18)',
+          background: brand.colors.slot,
+          border: `1px solid ${brand.colors.border}`,
+          borderRadius: 14,
+          padding: 24,
+          width: '90vw',
+          maxWidth: 460,
+          boxShadow: '0 24px 60px rgba(26,20,16,0.32)',
           zIndex: 201,
         }}
       >
-        <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: 22, color: '#1A1410', marginBottom: 20 }}>
-          New Playground Box
+        <div style={{ fontFamily: brand.font.sans, fontSize: 9.5, fontWeight: 500, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
+          New Box
         </div>
+        <h3 style={{ fontFamily: brand.font.serif, fontSize: 28, fontWeight: 400, color: brand.colors.ink, margin: '0 0 18px', lineHeight: 1.1 }}>
+          Start a new playground box
+        </h3>
 
         <div style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', fontFamily: 'var(--font-dm-sans)', marginBottom: 8 }}>

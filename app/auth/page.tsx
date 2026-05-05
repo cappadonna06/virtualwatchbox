@@ -79,12 +79,12 @@ function AuthPageInner() {
   return (
     <div
       style={{
-        minHeight: '100vh',
+        minHeight: 'calc(100vh - 80px)',
         background: brand.colors.bg,
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'center',
-        padding: '40px 24px',
+        padding: '48px 24px',
       }}
     >
       <div style={{ width: '100%', maxWidth: 420 }}>

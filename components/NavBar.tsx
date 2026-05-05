@@ -2,7 +2,7 @@
 
 import { type CSSProperties, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
 
@@ -82,10 +82,51 @@ export default function NavBar() {
   const [accountOpen, setAccountOpen] = useState(false)
   const [toastMsg, setToastMsg] = useState<string | null>(null)
   const [toastVisible, setToastVisible] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
+  const [mobileSearchTerm, setMobileSearchTerm] = useState('')
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const accountWrapRef = useRef<HTMLDivElement>(null)
+  const searchWrapRef = useRef<HTMLDivElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
   const pathname = usePathname()
+  const router = useRouter()
   const { user, signOut } = useAuth()
+
+  useEffect(() => {
+    if (!searchOpen) return
+    const id = window.setTimeout(() => searchInputRef.current?.focus(), 50)
+    function onPointerDown(e: PointerEvent) {
+      if (!searchWrapRef.current?.contains(e.target as Node)) {
+        if (!searchTerm.trim()) setSearchOpen(false)
+      }
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setSearchOpen(false)
+        setSearchTerm('')
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      window.clearTimeout(id)
+      document.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [searchOpen, searchTerm])
+
+  function submitSearch(term: string) {
+    const trimmed = term.trim()
+    const params = new URLSearchParams({ from: 'home' })
+    if (trimmed) params.set('q', trimmed)
+    router.push(`/collection/add?${params.toString()}`)
+    setSearchOpen(false)
+    setSearchTerm('')
+    setMobileSearchOpen(false)
+    setMobileSearchTerm('')
+  }
 
   useEffect(() => {
     setOpen(false)
@@ -236,6 +277,95 @@ export default function NavBar() {
           })}
         </div>
 
+        <div className="nav-right-cluster" style={{ display: 'inline-flex', alignItems: 'center', gap: 12 }}>
+        <div
+          ref={searchWrapRef}
+          className="nav-search-desktop"
+          style={{ display: 'inline-flex', alignItems: 'center', position: 'relative' }}
+        >
+          {searchOpen ? (
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                width: 280,
+                padding: '8px 10px 8px 12px',
+                background: brand.colors.white,
+                border: `1px solid ${brand.colors.goldLine}`,
+                borderRadius: brand.radius.md,
+                boxShadow: brand.shadow.sm,
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke={brand.colors.muted} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="9" cy="9" r="6" />
+                <line x1="13.5" y1="13.5" x2="17.5" y2="17.5" />
+              </svg>
+              <input
+                ref={searchInputRef}
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') submitSearch(searchTerm) }}
+                placeholder="Search brand, model, or reference"
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  border: 'none',
+                  outline: 'none',
+                  background: 'transparent',
+                  fontFamily: brand.font.sans,
+                  fontSize: 13,
+                  color: brand.colors.ink,
+                }}
+              />
+              <button
+                type="button"
+                aria-label="Close search"
+                onClick={() => { setSearchOpen(false); setSearchTerm('') }}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: brand.colors.muted,
+                  display: 'inline-flex',
+                  padding: 2,
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+                  <line x1="3.5" y1="3.5" x2="10.5" y2="10.5" />
+                  <line x1="10.5" y1="3.5" x2="3.5" y2="10.5" />
+                </svg>
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              aria-label="Search watches"
+              onClick={() => setSearchOpen(true)}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = brand.colors.goldLine; e.currentTarget.style.color = brand.colors.ink }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = brand.colors.border; e.currentTarget.style.color = brand.colors.muted }}
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: brand.radius.circle,
+                background: brand.colors.white,
+                border: `1px solid ${brand.colors.border}`,
+                color: brand.colors.muted,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'border-color 0.15s, color 0.15s',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="9" cy="9" r="6" />
+                <line x1="13.5" y1="13.5" x2="17.5" y2="17.5" />
+              </svg>
+            </button>
+          )}
+        </div>
+
         {user ? (
           <div ref={accountWrapRef} className="nav-account-wrap" style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
             <button
@@ -324,7 +454,7 @@ export default function NavBar() {
         ) : (
           <Link
             href="/auth"
-            className="nav-link-button"
+            className="nav-link-button nav-signin"
             style={{
               ...desktopLinkStyle(false),
               padding: '7px 14px',
@@ -335,7 +465,42 @@ export default function NavBar() {
             Sign in
           </Link>
         )}
+        </div>
 
+        <div className="nav-mobile-actions" style={{ display: 'none', alignItems: 'center', gap: 8 }}>
+          <button
+            type="button"
+            aria-label={mobileSearchOpen ? 'Close search' : 'Search watches'}
+            aria-expanded={mobileSearchOpen}
+            onClick={() => setMobileSearchOpen(o => !o)}
+            className="nav-search-mobile"
+            style={{
+              width: 44,
+              height: 44,
+              padding: 0,
+              borderRadius: brand.radius.md,
+              background: brand.colors.slot,
+              border: `1px solid ${brand.colors.border}`,
+              color: brand.colors.ink,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              boxShadow: brand.shadow.xs,
+              cursor: 'pointer',
+            }}
+          >
+            {mobileSearchOpen ? (
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                <path d="M4 4L16 16M16 4L4 16" stroke={brand.colors.ink} strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="9" cy="9" r="6" />
+                <line x1="13.5" y1="13.5" x2="17.5" y2="17.5" />
+              </svg>
+            )}
+          </button>
         <button
           className="nav-hamburger"
           onClick={() => setOpen(o => !o)}
@@ -369,7 +534,81 @@ export default function NavBar() {
           )}
         </button>
         </div>
+        </div>
       </nav>
+
+      {/* Mobile search drawer (drops below navbar) */}
+      <div
+        className={`nav-mobile-search-drawer ${mobileSearchOpen ? 'is-open' : ''}`}
+        style={{
+          display: 'none',
+          position: 'sticky',
+          top: 80,
+          zIndex: brand.zIndex.nav,
+          background: brand.colors.bg,
+          borderBottom: `1px solid ${brand.colors.border}`,
+          padding: '12px 20px',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: brand.colors.white,
+            border: `1px solid ${brand.colors.goldLine}`,
+            borderRadius: brand.radius.md,
+            padding: '10px 12px',
+            boxShadow: brand.shadow.sm,
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke={brand.colors.muted} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="9" cy="9" r="6" />
+            <line x1="13.5" y1="13.5" x2="17.5" y2="17.5" />
+          </svg>
+          <input
+            value={mobileSearchTerm}
+            onChange={e => setMobileSearchTerm(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') submitSearch(mobileSearchTerm)
+              if (e.key === 'Escape') { setMobileSearchOpen(false); setMobileSearchTerm('') }
+            }}
+            placeholder="Search brand, model, or reference"
+            autoFocus={mobileSearchOpen}
+            style={{
+              flex: 1,
+              minWidth: 0,
+              border: 'none',
+              outline: 'none',
+              background: 'transparent',
+              fontFamily: brand.font.sans,
+              fontSize: 14,
+              color: brand.colors.ink,
+            }}
+          />
+          {mobileSearchTerm.trim() ? (
+            <button
+              type="button"
+              onClick={() => submitSearch(mobileSearchTerm)}
+              style={{
+                fontFamily: brand.font.sans,
+                fontSize: 11,
+                fontWeight: 500,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                padding: '6px 12px',
+                background: brand.colors.ink,
+                color: brand.colors.bg,
+                border: 'none',
+                borderRadius: brand.radius.btn,
+                cursor: 'pointer',
+              }}
+            >
+              Search
+            </button>
+          ) : null}
+        </div>
+      </div>
 
       {/* Mobile drawer */}
       <div
@@ -521,13 +760,12 @@ export default function NavBar() {
                 <span>Settings</span>
               </span>
             </Link>
-            <div style={{ height: 1, background: brand.colors.border, margin: '6px 0' }} />
             <button
               onClick={() => { void signOut(); setOpen(false) }}
               className="nav-mobile-row"
               style={{
                 ...mobileRowStyle(false, false),
-                marginTop: 4,
+                marginTop: 14,
                 '--nav-mobile-color': brand.colors.ink,
               } as CSSProperties}
             >
