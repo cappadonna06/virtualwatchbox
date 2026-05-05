@@ -12,8 +12,8 @@ type NavLink = { label: string; href: string; coming?: boolean; icon: NavIconNam
 const LINKS: NavLink[] = [
   { label: 'My Collection', href: '/collection', icon: 'collection' },
   { label: 'Playground', href: '/playground', icon: 'playground' },
-  { label: 'Discover', href: '#', coming: true, icon: 'discover' },  // TODO(coming-soon): Discover / explore page
-  { label: 'News', href: '#', coming: true, icon: 'news' },  // TODO(coming-soon): News / editorial page
+  { label: 'Discover', href: '/discover', icon: 'discover' },
+  { label: 'News', href: '/discover#reads', icon: 'news' },
 ]
 
 function NavIcon({ name, size = 16 }: { name: NavIconName; size?: number }) {

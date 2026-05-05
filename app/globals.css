@@ -184,6 +184,25 @@ body {
   to   { transform: translateY(0); }
 }
 
+/* ─── Discover page ───────────────────────────────────────────── */
+.discover-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.discover-reads-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .discover-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* ─── Mobile overrides (max-width: 767px) ─────────────────────────────── */
 @media (max-width: 767px) {
 
@@ -335,6 +354,11 @@ body {
     padding: 28px 20px !important;
     text-align: center;
   }
+
+  /* Discover */
+  .discover-shell { padding: 24px 20px !important; }
+  .discover-grid { grid-template-columns: 1fr !important; }
+  .discover-reads-grid { grid-template-columns: 1fr !important; }
 }
 
 @media (min-width: 768px) {
