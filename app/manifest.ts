@@ -4,7 +4,8 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Virtual Watchbox',
     short_name: 'Watchbox',
-    description: 'The definitive digital home for watch collectors.',
+    description:
+      'Virtual Watchbox is the digital home for watch collectors. Showcase what you own, follow what you love, and discover what’s next.',
     start_url: '/',
     display: 'standalone',
     background_color: '#FAF8F4',
@@ -15,9 +16,9 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ['lifestyle', 'shopping', 'utilities'],
     icons: [
       {
-        src: '/favicon-16x16.png',
-        sizes: '16x16',
-        type: 'image/png',
+        src: '/icon.svg',
+        sizes: 'any',
+        type: 'image/svg+xml',
         purpose: 'any',
       },
       {
@@ -33,8 +34,14 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: 'any',
       },
       {
-        src: '/og-image.png',
-        sizes: '1200x630',
+        src: '/android-chrome-192x192.png',
+        sizes: '192x192',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: '/android-chrome-512x512.png',
+        sizes: '512x512',
         type: 'image/png',
         purpose: 'any',
       },
