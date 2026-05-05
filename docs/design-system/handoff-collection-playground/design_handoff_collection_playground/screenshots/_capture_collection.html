@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Collection — Virtual Watchbox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #FAF8F4;
+    color: #1A1410;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #FAF8F4; }
+  ::-webkit-scrollbar-thumb { background: #D4CBBF; border-radius: 3px; }
+  button { font: inherit; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="env,react">
+
+// === WatchData.jsx ===
+// WatchData.jsx — shared watch data, DialSVG, formatting helpers
+
+const fmt = n => new Intl.NumberFormat('en-US', {
+  style: 'currency', currency: 'USD', maximumFractionDigits: 0
+}).format(n);
+
+const WATCHES = [
+  {
+    id: 'omega-aqua-terra', brand: 'Omega', model: 'Seamaster Aqua Terra',
+    reference: '220.10.41.21.03.001', caseSizeMm: 41, caseMaterial: 'Stainless Steel',
+    dialColor: 'Blue', movement: 'Cal. 8900 (Auto)', complications: ['Date', 'GMT'],
+    condition: 'Like New', purchaseDate: '2024-09-01', purchasePrice: 4800,
+    estimatedValue: 6000, notes: 'AD purchase, full set',
+    imageUrl: '../assets/watches/longines-02.avif',
+    dialConfig: { dialColor: '#1B2A4A', markerColor: '#FAF8F4', handColor: '#FAF8F4' },
+    watchType: 'Sport', ownershipStatus: 'Owned',
+  },
+  {
+    id: 'tudor-bb-gmt', brand: 'Tudor', model: 'Black Bay GMT',
+    reference: 'M79830RB-0001', caseSizeMm: 41, caseMaterial: 'Stainless Steel',
+    dialColor: 'Black', movement: 'Cal. MT5652 (Auto)', complications: ['Date', 'GMT'],
+    condition: 'Excellent', purchaseDate: '2023-04-12', purchasePrice: 3800,
+    estimatedValue: 4200, notes: 'Pepsi bezel, original bracelet',
+    imageUrl: '../assets/watches/longines-04.avif',
+    dialConfig: { dialColor: '#111111', markerColor: '#FAF8F4', handColor: '#FAF8F4' },
+    watchType: 'GMT', ownershipStatus: 'Owned',
+  },
+  {
+    id: 'sinn-556', brand: 'Sinn', model: '556 I',
+    reference: '556.0102', caseSizeMm: 38.5, caseMaterial: 'Stainless Steel',
+    dialColor: 'Black', movement: 'SW 200-1 (Auto)', complications: ['Date'],
+    condition: 'Like New', purchaseDate: '2024-01-15', purchasePrice: 1450,
+    estimatedValue: 1500, notes: 'Tegimented case, daily wear',
+    imageUrl: '../assets/watches/longines-01.avif',
+    dialConfig: { dialColor: '#0F0F0F', markerColor: '#FAF8F4', handColor: '#FAF8F4' },
+    watchType: 'Sport', ownershipStatus: 'Recently Added',
+  },
+  {
+    id: 'oris-bigcrown', brand: 'Oris', model: 'Big Crown Pointer Date',
+    reference: '01 754 7741 4067', caseSizeMm: 40, caseMaterial: 'Stainless Steel',
+    dialColor: 'Green', movement: 'Cal. 754 (Auto)', complications: ['Date'],
+    condition: 'Excellent', purchaseDate: '2022-08-22', purchasePrice: 1700,
+    estimatedValue: 1850, notes: 'Brown leather, vintage feel',
+    imageUrl: '../assets/watches/longines-03.avif',
+    dialConfig: { dialColor: '#2A4A2E', markerColor: '#FAF8F4', handColor: '#FAF8F4' },
+    watchType: 'Pilot', ownershipStatus: 'Owned',
+  },
+  {
+    id: 'hamilton-khaki', brand: 'Hamilton', model: 'Khaki Field Mechanical',
+    reference: 'H69439933', caseSizeMm: 38, caseMaterial: 'Stainless Steel',
+    dialColor: 'White', movement: 'H-50 (Manual)', complications: [],
+    condition: 'Unworn', purchaseDate: '2025-02-10', purchasePrice: 520,
+    estimatedValue: 580, notes: 'Birthday gift from spouse',
+    imageUrl: '../assets/watches/longines-05.avif',
+    dialConfig: { dialColor: '#F5F0E8', markerColor: '#1A1410', handColor: '#1A1410' },
+    watchType: 'Dress', ownershipStatus: 'Recently Added',
+  },
+];
+
+const PLAYGROUND_WATCHES = [
+  {
+    id: 'patek-5711', brand: 'Patek Philippe', model: 'Nautilus',
+    reference: '5711/1A-010', caseSizeMm: 40, caseMaterial: 'Stainless Steel',
+    dialColor: 'Blue Horizontal', movement: 'Cal. 324 S C (Auto)', complications: ['Date'],
+    condition: 'Excellent', purchaseDate: '', purchasePrice: 0,
+    estimatedValue: 120000, notes: '',
+    imageUrl: null,
+    dialConfig: { dialColor: '#1B3A6A', markerColor: '#FAF8F4', handColor: '#FAF8F4' },
+    watchType: 'Integrated Bracelet', ownershipStatus: 'Owned',
+  },
+  {
+    id: 'ap-15500', brand: 'Audemars Piguet', model: 'Royal Oak',
+    reference: '15500ST.OO.1220ST.01', caseSizeMm: 41, caseMaterial: 'Stainless Steel',
+    dialColor: 'Blue Tapisserie', movement: 'Cal. 4302 (Auto)', complications: ['Date'],
+    condition: 'Excellent', purchaseDate: '', purchasePrice: 0,
+    estimatedValue: 45000, notes: '',
+    imageUrl: null,
+    dialConfig: { dialColor: '#2A4A8A', markerColor: '#FAF8F4', handColor: '#FAF8F4' },
+    watchType: 'Integrated Bracelet', ownershipStatus: 'Owned',
+  },
+  {
+    id: 'rolex-daytona', brand: 'Rolex', model: 'Cosmograph Daytona',
+    reference: '116500LN', caseSizeMm: 40, caseMaterial: 'Stainless Steel',
+    dialColor: 'Black Ceramic', movement: 'Cal. 4130 (Auto)', complications: ['Chronograph'],
+    condition: 'Unworn', purchaseDate: '', purchasePrice: 0,
+    estimatedValue: 32000, notes: '',
+    imageUrl: null,
+    dialConfig: { dialColor: '#111111', markerColor: '#FAF8F4', handColor: '#FAF8F4' },
+    watchType: 'Chronograph', ownershipStatus: 'Owned',
+  },
+  {
+    id: 'grand-seiko-snowflake', brand: 'Grand Seiko', model: 'Snowflake',
+    reference: 'SBGA211', caseSizeMm: 41, caseMaterial: 'Titanium',
+    dialColor: 'White Snowflake', movement: '9R65 (Spring Drive)', complications: ['Date'],
+    condition: 'Like New', purchaseDate: '', purchasePrice: 0,
+    estimatedValue: 5200, notes: '',
+    imageUrl: null,
+    dialConfig: { dialColor: '#E8E8E8', markerColor: '#2A2520', handColor: '#2A2520' },
+    watchType: 'Dress', ownershipStatus: 'Owned',
+  },
+];
+
+const STATUS_STYLES = {
+  'Owned':          { background: '#E8F4E8', color: '#2D6A2D' },
+  'For Sale':       { background: '#FFF8E6', color: '#8A6A10' },
+  'Recently Added': { background: '#E8F0FA', color: '#1A4A8A' },
+  'Needs Service':  { background: '#FFF3E0', color: '#8A5010' },
+};
+
+const CONDITION_STYLES = {
+  'Unworn':   { background: '#E8F4E8', color: '#2D6A2D' },
+  'Like New': { background: '#EDF4E8', color: '#3A6A2D' },
+  'Excellent':{ background: '#FFF8E6', color: '#8A6A10' },
+  'Good':     { background: '#FDF0E0', color: '#8A5010' },
+  'Fair':     { background: '#FAE8E8', color: '#8A2020' },
+};
+
+const DialSVG = ({ dialColor, markerColor, handColor, size = 80 }) => {
+  const cx = size / 2, cy = size / 2, r = size * 0.44;
+  const hour = 10.5, min = 10;
+  const hourAngle = (hour % 12) / 12 * 360 - 90;
+  const minAngle = min / 60 * 360 - 90;
+  const toRad = d => d * Math.PI / 180;
+  const hx = cx + r * 0.55 * Math.cos(toRad(hourAngle));
+  const hy = cy + r * 0.55 * Math.sin(toRad(hourAngle));
+  const mx = cx + r * 0.78 * Math.cos(toRad(minAngle));
+  const my = cy + r * 0.78 * Math.sin(toRad(minAngle));
+
+  return React.createElement('svg', { width: size, height: size, viewBox: `0 0 ${size} ${size}` },
+    React.createElement('circle', { cx, cy, r, fill: dialColor, stroke: markerColor, strokeWidth: size * 0.015, opacity: 0.9 }),
+    React.createElement('circle', { cx, cy, r: r * 0.82, fill: 'none', stroke: markerColor, strokeWidth: 0.8, opacity: 0.15 }),
+    // Hour markers
+    ...[0,1,2,3,4,5,6,7,8,9,10,11].map(i => {
+      const angle = i / 12 * 2 * Math.PI - Math.PI / 2;
+      const outerR = r * 0.88, innerR = i % 3 === 0 ? r * 0.72 : r * 0.80;
+      return React.createElement('line', {
+        key: i,
+        x1: cx + outerR * Math.cos(angle), y1: cy + outerR * Math.sin(angle),
+        x2: cx + innerR * Math.cos(angle), y2: cy + innerR * Math.sin(angle),
+        stroke: markerColor, strokeWidth: i % 3 === 0 ? size * 0.022 : size * 0.012,
+        strokeLinecap: 'round', opacity: 0.85,
+      });
+    }),
+    // Hour hand
+    React.createElement('line', { x1: cx, y1: cy, x2: hx, y2: hy, stroke: handColor, strokeWidth: size * 0.032, strokeLinecap: 'round' }),
+    // Minute hand
+    React.createElement('line', { x1: cx, y1: cy, x2: mx, y2: my, stroke: handColor, strokeWidth: size * 0.022, strokeLinecap: 'round' }),
+    // Center dot
+    React.createElement('circle', { cx, cy, r: size * 0.025, fill: handColor }),
+  );
+};
+
+Object.assign(window, { fmt, WATCHES, PLAYGROUND_WATCHES, STATUS_STYLES, CONDITION_STYLES, DialSVG });
+
+
+// === NavBar.jsx ===
+// NavBar.jsx — Virtual Watchbox UI Kit
+
+const NavBar = ({ page, setPage }) => {
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const links = [
+    { label: 'My Collection', id: 'collection' },
+    { label: 'Playground', id: 'playground' },
+    { label: 'Discover', id: null },
+    { label: 'News', id: null },
+  ];
+
+  return React.createElement(React.Fragment, null,
+    React.createElement('nav', {
+      style: {
+        borderBottom: '1px solid #EAE5DC',
+        background: '#FAF8F4',
+        position: 'sticky', top: 0, zIndex: 100,
+      }
+    },
+      React.createElement('div', {
+        style: {
+          maxWidth: 1280, margin: '0 auto',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '20px 56px',
+        }
+      },
+        // Logo
+        React.createElement('span', {
+          onClick: () => setPage('home'),
+          style: {
+            fontFamily: 'Cormorant Garamond, Georgia, serif',
+            fontSize: 20, fontWeight: 500, letterSpacing: '0.03em',
+            color: '#1A1410', cursor: 'pointer',
+          }
+        }, 'Virtual Watchbox'),
+
+        // Desktop links
+        React.createElement('div', {
+          style: { display: 'flex', gap: 32, alignItems: 'center' }
+        },
+          links.map(link =>
+            React.createElement('a', {
+              key: link.label,
+              onClick: link.id ? () => setPage(link.id) : undefined,
+              style: {
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 12, fontWeight: page === link.id ? 500 : 400,
+                letterSpacing: '0.04em',
+                color: page === link.id ? '#1A1410' : '#A89880',
+                cursor: link.id ? 'pointer' : 'default',
+                textDecoration: 'none',
+                borderBottom: page === link.id ? '1px solid #1A1410' : 'none',
+                paddingBottom: page === link.id ? 1 : 0,
+              }
+            }, link.label)
+          )
+        ),
+
+        // Sign In
+        React.createElement('button', {
+          style: {
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 11, fontWeight: 500, letterSpacing: '0.08em',
+            padding: '9px 22px', background: '#1A1410', color: '#FAF8F4',
+            border: 'none', borderRadius: 4, cursor: 'pointer',
+          }
+        }, 'Sign In')
+      )
+    )
+  );
+};
+
+Object.assign(window, { NavBar });
+
+
+// === WatchSidebar.jsx ===
+// WatchSidebar.jsx — Detail sidebar used across collection + playground
+
+const WatchSidebar = ({ watch, mode = 'collection', onClose, onDelete }) => {
+  const s = {
+    panel: {
+      background: '#FFFFFF', borderLeft: '1px solid #E8E2D8',
+      width: 'min(360px,100vw)', height: '100%', overflowY: 'auto',
+      boxShadow: '-8px 0 32px rgba(26,20,16,0.09)',
+      padding: 24,
+    },
+    metaLabel: {
+      fontFamily: 'DM Sans,sans-serif', fontSize: 10, fontWeight: 500,
+      letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880',
+    },
+    specRow: {
+      display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
+      padding: '9px 0', borderBottom: '1px solid #F0EBE3', fontSize: 12,
+    },
+  };
+
+  if (!watch) return React.createElement('div', {
+    style: {
+      ...s.panel, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      minHeight: 400,
+    }
+  },
+    React.createElement('div', { style: { textAlign: 'center' } },
+      React.createElement('div', { style: { ...s.metaLabel, marginBottom: 10 } }, 'Select a Watch'),
+      React.createElement('div', {
+        style: { fontFamily: 'Cormorant Garamond,Georgia,serif', fontSize: 18, color: '#D4CBBF' }
+      }, 'Click any slot to view details')
+    )
+  );
+
+  const condStyle = CONDITION_STYLES[watch.condition] || CONDITION_STYLES['Excellent'];
+  const specs = [
+    ['Case Size', `${watch.caseSizeMm}mm`],
+    ['Case Material', watch.caseMaterial],
+    ['Dial Color', watch.dialColor],
+    ['Movement', watch.movement],
+    ['Complications', watch.complications.join(', ') || '—'],
+    ...(mode === 'collection' ? [['Price Paid', fmt(watch.purchasePrice)]] : []),
+  ];
+
+  return React.createElement('div', { style: s.panel },
+    // Header row
+    React.createElement('div', {
+      style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }
+    },
+      React.createElement('span', { style: s.metaLabel }, 'Watch Detail'),
+      React.createElement('div', { style: { display: 'flex', gap: 8, alignItems: 'center' } },
+        mode === 'collection' && onDelete && React.createElement('button', {
+          onClick: () => onDelete(watch),
+          title: 'Remove',
+          style: {
+            width: 24, height: 24, borderRadius: 6, border: '1px solid #E8E2D8',
+            background: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', color: '#A89880', fontSize: 11,
+          }
+        },
+          React.createElement('svg', { width: 11, height: 11, viewBox: '0 0 12 12', fill: 'none' },
+            React.createElement('path', { d: 'M4.5 1.5h3l.3.8H10v1H2v-1h2.2l.3-.8zM3 4h6l-.5 6.2a.8.8 0 01-.8.8H4.3a.8.8 0 01-.8-.8L3 4zm2 1v5h1V5H5zm2 0v5h1V5H7z', fill: 'currentColor' })
+          )
+        ),
+        onClose && React.createElement('button', {
+          onClick: onClose,
+          style: { background: 'none', border: 'none', cursor: 'pointer', color: '#A89880', fontSize: 18, lineHeight: 1, padding: 4 }
+        }, '✕')
+      )
+    ),
+
+    // Dial
+    React.createElement('div', { style: { display: 'flex', justifyContent: 'center', marginBottom: 16 } },
+      React.createElement(DialSVG, { ...watch.dialConfig, size: 140 })
+    ),
+
+    // Brand
+    React.createElement('div', { style: { ...s.metaLabel, marginBottom: 4 } }, watch.brand.toUpperCase()),
+
+    // Model + condition badge
+    React.createElement('div', {
+      style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 3 }
+    },
+      React.createElement('h3', {
+        style: { fontFamily: 'Cormorant Garamond,Georgia,serif', fontSize: 26, fontWeight: 400, lineHeight: 1.1, color: '#1A1410', margin: 0 }
+      }, watch.model),
+      React.createElement('span', {
+        style: { fontSize: 10, fontWeight: 600, letterSpacing: '0.04em', padding: '3px 10px', borderRadius: 20, background: condStyle.background, color: condStyle.color, flexShrink: 0 }
+      }, watch.condition)
+    ),
+    React.createElement('div', { style: { fontSize: 12, color: '#A89880', marginBottom: 4 } }, `Ref. ${watch.reference}`),
+    watch.notes && React.createElement('div', {
+      style: { fontSize: 11, color: '#C9A84C', fontStyle: 'italic', marginBottom: 14 }
+    }, `"${watch.notes}"`),
+
+    // Est. value
+    React.createElement('div', {
+      style: {
+        background: '#FAF8F4', border: '1px solid #EAE5DC', borderRadius: 8,
+        padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        margin: '16px 0',
+      }
+    },
+      React.createElement('span', { style: { ...s.metaLabel } }, 'Est. Market Value'),
+      React.createElement('span', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 18, fontWeight: 600, color: '#C9A84C' } }, fmt(watch.estimatedValue))
+    ),
+
+    // Specs
+    React.createElement('div', { style: { marginBottom: 16 } },
+      specs.map(([label, value]) =>
+        React.createElement('div', { key: label, style: s.specRow },
+          React.createElement('span', { style: { color: '#A89880', fontWeight: 400, fontFamily: 'DM Sans,sans-serif' } }, label),
+          React.createElement('span', { style: { color: '#1A1410', fontWeight: 500, fontFamily: 'DM Sans,sans-serif', textAlign: 'right', maxWidth: '55%' } }, value)
+        )
+      )
+    ),
+
+    // CTAs
+    mode === 'playground'
+      ? React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: 8 } },
+          React.createElement('a', {
+            href: `https://www.chrono24.com/search/index.htm?query=${encodeURIComponent(watch.brand+' '+watch.model)}`,
+            target: '_blank', rel: 'noopener noreferrer',
+            style: { display: 'block', fontFamily: 'DM Sans,sans-serif', fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', padding: '9px 18px', background: '#1A1410', color: '#FAF8F4', border: 'none', borderRadius: 4, cursor: 'pointer', textDecoration: 'none', textAlign: 'center' }
+          }, 'Find For Sale ↗'),
+          React.createElement('button', {
+            style: { fontFamily: 'DM Sans,sans-serif', fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', padding: '9px 18px', background: 'transparent', color: '#1A1410', border: '1px solid #D4CBBF', borderRadius: 4, cursor: 'pointer', width: '100%' }
+          }, 'Add to My Collection'),
+          React.createElement('button', {
+            onClick: onClose,
+            style: { fontFamily: 'DM Sans,sans-serif', fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', padding: '6px', background: 'transparent', color: '#A89880', border: 'none', cursor: 'pointer', textDecoration: 'underline', width: '100%' }
+          }, 'Remove from Box')
+        )
+      : React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: 8 } },
+          React.createElement('a', {
+            href: `https://www.chrono24.com/search/index.htm?query=${encodeURIComponent(watch.brand+' '+watch.model)}`,
+            target: '_blank', rel: 'noopener noreferrer',
+            style: { display: 'block', fontFamily: 'DM Sans,sans-serif', fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', padding: '9px 18px', background: '#1A1410', color: '#FAF8F4', border: 'none', borderRadius: 4, cursor: 'pointer', textDecoration: 'none', textAlign: 'center' }
+          }, 'Find For Sale ↗'),
+          React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 } },
+            React.createElement('button', {
+              style: { fontFamily: 'DM Sans,sans-serif', fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', padding: '9px', background: 'transparent', color: '#1A1410', border: '1px solid #D4CBBF', borderRadius: 4, cursor: 'pointer' }
+            }, 'Sell This Watch'),
+            React.createElement('button', {
+              style: { fontFamily: 'DM Sans,sans-serif', fontSize: 10, fontWeight: 500, letterSpacing: '0.08em', padding: '9px', background: 'transparent', color: '#1A1410', border: '1px solid #D4CBBF', borderRadius: 4, cursor: 'pointer' }
+            }, 'Swap Strap')
+          )
+        )
+  );
+};
+
+Object.assign(window, { WatchSidebar });
+
+
+// === WatchBoxGrid.jsx ===
+// WatchBoxGrid.jsx — extracted from HomePage so the collection page doesn't
+// need to load the full home page.
+
+const HoverCard = ({ watch }) =>
+  React.createElement('div', {
+    style: {
+      position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+      bottom: 'calc(100% + 8px)', zIndex: 20,
+      background: '#FFFCF7', border: '1px solid #E8E2D8',
+      borderRadius: 10, padding: 12, width: 180,
+      boxShadow: '0 8px 24px rgba(26,20,16,0.13)',
+      pointerEvents: 'none', whiteSpace: 'nowrap',
+    }
+  },
+    React.createElement('p', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 9, color: '#A89880', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 3 } }, watch.brand.toUpperCase()),
+    React.createElement('p', { style: { fontFamily: 'Cormorant Garamond,Georgia,serif', fontSize: 16, color: '#1A1410', fontWeight: 500, lineHeight: 1.2, marginBottom: 3 } }, watch.model),
+    React.createElement('p', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 10, color: '#A89880', marginBottom: 8 } }, `Ref. ${watch.reference}`),
+    React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #E8E2D8', paddingTop: 8 } },
+      React.createElement('span', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 10, color: '#A89880' } }, `${watch.caseSizeMm}mm`),
+      React.createElement('span', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 12, color: '#C9A84C', fontWeight: 600 } }, fmt(watch.estimatedValue))
+    ),
+    React.createElement('p', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 9, color: '#A89880', marginTop: 5, textAlign: 'right' } }, 'Click to expand ↗')
+  );
+
+const WatchBoxGrid = ({ watches, slotCount, activeIdx, onSlotClick }) => {
+  const [hovered, setHovered] = React.useState(null);
+  const overflowCount = Math.max(0, watches.length - (slotCount - 1));
+  const visible = watches.slice(0, overflowCount > 0 ? slotCount - 1 : slotCount);
+
+  return React.createElement('div', {
+    style: {
+      background: 'linear-gradient(180deg, #C9A04C 0%, #B58836 100%)',
+      border: '1px solid #A87A2E', borderRadius: 12, padding: 14,
+      display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10,
+      boxShadow: '0 8px 28px rgba(26,20,16,0.12), inset 0 1px 0 rgba(255,255,255,0.15)',
+    }
+  },
+    ...[...Array(slotCount)].map((_, i) => {
+      const isOverflowSlot = overflowCount > 0 && i === slotCount - 1;
+      if (isOverflowSlot) {
+        return React.createElement('div', {
+          key: 'overflow',
+          style: {
+            aspectRatio: '3/4', borderRadius: 8, background: '#F5EFE5',
+            border: '1.5px solid #D4CBBF', display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', gap: 4, cursor: 'pointer',
+          }
+        },
+          React.createElement('span', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 18, fontWeight: 600, color: '#1A1410' } }, `+${overflowCount}`),
+          React.createElement('span', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 8, letterSpacing: '0.08em', color: '#A89880' } }, 'MORE')
+        );
+      }
+      const watch = visible[i];
+      if (!watch) {
+        return React.createElement('div', {
+          key: i,
+          onClick: () => onSlotClick(null),
+          style: {
+            aspectRatio: '3/4', borderRadius: 8, background: '#F5EFE5',
+            border: '1.5px dashed #D0C9BE', display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', gap: 6, cursor: 'pointer',
+            color: '#A89880',
+          }
+        },
+          React.createElement('span', { style: { fontSize: 22, color: '#D4CBBF', lineHeight: 1 } }, '+'),
+          React.createElement('span', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 7.5, letterSpacing: '0.08em' } }, 'ADD')
+        );
+      }
+      const isActive = activeIdx === i;
+      const isHov = hovered === i;
+      return React.createElement('div', {
+        key: i,
+        onClick: () => onSlotClick(i),
+        onMouseEnter: () => setHovered(i),
+        onMouseLeave: () => setHovered(null),
+        style: {
+          aspectRatio: '3/4', borderRadius: 8, background: '#FFFCF7',
+          border: `1.5px solid ${isActive ? '#C9A84C' : isHov ? '#C9A84C' : '#E0DAD0'}`,
+          boxShadow: isActive ? '0 0 0 1px rgba(201,168,76,0.4),0 6px 24px rgba(201,168,76,0.12)' : isHov ? '0 4px 16px rgba(201,168,76,0.16)' : '0 1px 4px rgba(26,20,16,0.05)',
+          transition: 'border-color 0.15s, box-shadow 0.15s',
+          cursor: 'pointer', position: 'relative',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 12, overflow: 'hidden',
+        }
+      },
+        React.createElement('span', { style: { position: 'absolute', top: 7, left: 9, fontFamily: 'DM Sans,sans-serif', fontSize: 8, color: '#A89880', letterSpacing: '0.05em', zIndex: 2 } }, String(i+1).padStart(2,'0')),
+        watch.imageUrl
+          ? React.createElement('img', { src: watch.imageUrl, alt: watch.model, style: { maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', filter: 'drop-shadow(0 6px 12px rgba(26,20,16,0.18))' } })
+          : React.createElement(DialSVG, { ...watch.dialConfig, size: 72 }),
+        isHov && React.createElement(HoverCard, { watch })
+      );
+    })
+  );
+};
+
+Object.assign(window, { WatchBoxGrid, HoverCard });
+
+
+// === CollectionPage.jsx ===
+// CollectionPage.jsx — My Collection (redesigned)
+// Changes vs original:
+//  - Header: removed "Open Playground"; "Est. Value" reads as a quiet stat (no border, no hover);
+//    added watch count + a discreet "Stats ↓" jump-link
+//  - View switcher: 2 icon buttons (watchbox, cards). Stats removed (it lives below-fold).
+//  - ORDER dropdown: only renders in Cards view.
+//  - Stats: now a permanent below-fold section. Default hides zero-count chips with
+//    a "Show all" reveal. Tighter padding. Prominent Overview/Graphical toggle.
+//  - Untouched: ADD WATCH button placement + style, sidebar empty state, watchbox grid.
+
+// ---------- Icons (1.5px stroke, no fill, currentColor) ----------
+
+const IconWatchbox = ({ size = 16 }) =>
+  React.createElement('svg', { width: size, height: size, viewBox: '0 0 20 20', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' },
+    React.createElement('rect', { x: 2.5, y: 3.5, width: 15, height: 13, rx: 1.5 }),
+    React.createElement('line', { x1: 7.5, y1: 3.5, x2: 7.5, y2: 16.5 }),
+    React.createElement('line', { x1: 12.5, y1: 3.5, x2: 12.5, y2: 16.5 }),
+    React.createElement('line', { x1: 2.5, y1: 10, x2: 17.5, y2: 10 })
+  );
+
+const IconCards = ({ size = 16 }) =>
+  React.createElement('svg', { width: size, height: size, viewBox: '0 0 20 20', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' },
+    React.createElement('rect', { x: 2.5, y: 2.5, width: 6.5, height: 6.5, rx: 1 }),
+    React.createElement('rect', { x: 11, y: 2.5, width: 6.5, height: 6.5, rx: 1 }),
+    React.createElement('rect', { x: 2.5, y: 11, width: 6.5, height: 6.5, rx: 1 }),
+    React.createElement('rect', { x: 11, y: 11, width: 6.5, height: 6.5, rx: 1 })
+  );
+
+const IconChevron = ({ size = 12, dir = 'down' }) => {
+  const rot = { down: 0, up: 180, left: 90, right: -90 }[dir] || 0;
+  return React.createElement('svg', { width: size, height: size, viewBox: '0 0 12 12', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round', style: { transform: `rotate(${rot}deg)` } },
+    React.createElement('polyline', { points: '3,4.5 6,7.5 9,4.5' })
+  );
+};
+
+const IconArrowDown = ({ size = 11 }) =>
+  React.createElement('svg', { width: size, height: size, viewBox: '0 0 12 12', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' },
+    React.createElement('line', { x1: 6, y1: 2, x2: 6, y2: 10 }),
+    React.createElement('polyline', { points: '3,7 6,10 9,7' })
+  );
+
+// ---------- View switcher (2 icon buttons) ----------
+
+const ViewSwitcher = ({ view, setView }) => {
+  const items = [
+    { id: 'watchbox', label: 'Watchbox', Icon: IconWatchbox },
+    { id: 'cards', label: 'Cards', Icon: IconCards },
+  ];
+  return React.createElement('div', {
+    role: 'tablist',
+    style: { display: 'inline-flex', gap: 2, background: '#F0EBE3', borderRadius: 6, padding: 3 }
+  },
+    items.map(({ id, label, Icon }) => {
+      const active = view === id;
+      return React.createElement('button', {
+        key: id,
+        role: 'tab',
+        'aria-selected': active,
+        'aria-label': label,
+        title: label,
+        onClick: () => setView(id),
+        style: {
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          fontFamily: 'DM Sans,sans-serif', fontSize: 11, fontWeight: 500,
+          letterSpacing: '0.06em',
+          padding: '7px 12px', borderRadius: 4, border: 'none', cursor: 'pointer',
+          background: active ? '#FFFFFF' : 'transparent',
+          color: active ? '#1A1410' : '#A89880',
+          boxShadow: active ? '0 1px 3px rgba(26,20,16,0.08)' : 'none',
+          transition: 'background 0.15s, color 0.15s',
+        }
+      },
+        React.createElement(Icon, { size: 15 }),
+        React.createElement('span', { style: { fontSize: 10.5, letterSpacing: '0.08em', textTransform: 'uppercase' } }, label)
+      );
+    })
+  );
+};
+
+// ---------- Order dropdown (Cards view only) ----------
+
+const SORT_OPTIONS = [
+  { id: 'recent', label: 'Recently Added' },
+  { id: 'value-desc', label: 'Value, High → Low' },
+  { id: 'value-asc',  label: 'Value, Low → High' },
+  { id: 'brand', label: 'Brand A → Z' },
+  { id: 'type', label: 'Watch Type' },
+];
+
+const OrderDropdown = ({ value, setValue }) => {
+  const [open, setOpen] = React.useState(false);
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    if (!open) return;
+    const onDoc = e => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [open]);
+
+  const current = SORT_OPTIONS.find(o => o.id === value) || SORT_OPTIONS[0];
+
+  return React.createElement('div', { ref, style: { position: 'relative' } },
+    React.createElement('button', {
+      onClick: () => setOpen(o => !o),
+      style: {
+        display: 'inline-flex', alignItems: 'center', gap: 14,
+        background: '#FFFFFF', border: '1px solid #EAE5DC', borderRadius: 6,
+        padding: '8px 14px', cursor: 'pointer',
+        fontFamily: 'DM Sans,sans-serif',
+      }
+    },
+      React.createElement('span', { style: { fontSize: 9.5, fontWeight: 500, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#A89880' } }, 'Order'),
+      React.createElement('span', { style: { fontSize: 12, fontWeight: 500, color: '#1A1410' } }, current.label),
+      React.createElement('span', { style: { color: '#A89880', display: 'inline-flex' } }, React.createElement(IconChevron, { size: 12, dir: open ? 'up' : 'down' }))
+    ),
+    open && React.createElement('div', {
+      style: {
+        position: 'absolute', top: 'calc(100% + 6px)', right: 0, zIndex: 30,
+        background: '#FFFFFF', border: '1px solid #EAE5DC', borderRadius: 8,
+        boxShadow: '0 8px 24px rgba(26,20,16,0.10)', padding: 4, minWidth: 200,
+      }
+    },
+      SORT_OPTIONS.map(o =>
+        React.createElement('button', {
+          key: o.id,
+          onClick: () => { setValue(o.id); setOpen(false); },
+          style: {
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            width: '100%', padding: '8px 10px', borderRadius: 4, border: 'none',
+            background: o.id === value ? '#FAF8F4' : 'transparent',
+            color: '#1A1410', fontFamily: 'DM Sans,sans-serif', fontSize: 12,
+            fontWeight: o.id === value ? 500 : 400, cursor: 'pointer', textAlign: 'left',
+          }
+        },
+          o.label,
+          o.id === value && React.createElement('span', { style: { color: '#C9A84C', fontSize: 12 } }, '✓')
+        )
+      )
+    )
+  );
+};
+
+// ---------- Sort logic ----------
+
+const sortWatches = (watches, sortId) => {
+  const w = [...watches];
+  switch (sortId) {
+    case 'value-desc': return w.sort((a, b) => b.estimatedValue - a.estimatedValue);
+    case 'value-asc':  return w.sort((a, b) => a.estimatedValue - b.estimatedValue);
+    case 'brand':      return w.sort((a, b) => a.brand.localeCompare(b.brand));
+    case 'type':       return w.sort((a, b) => a.watchType.localeCompare(b.watchType));
+    case 'recent':
+    default:           return w.sort((a, b) => (b.purchaseDate || '').localeCompare(a.purchaseDate || ''));
+  }
+};
+
+// ---------- Cards grid ----------
+
+const WatchCardGrid = ({ watches, activeId, onSelect }) =>
+  React.createElement('div', {
+    style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }
+  },
+    watches.map(watch => {
+      const isActive = activeId === watch.id;
+      const statusStyle = STATUS_STYLES[watch.ownershipStatus] || STATUS_STYLES['Owned'];
+      return React.createElement('div', {
+        key: watch.id, onClick: () => onSelect(watch),
+        style: {
+          background: '#FFFFFF',
+          border: isActive ? '2px solid rgba(201,168,76,0.8)' : '1px solid #E8E2D8',
+          borderRadius: 10, overflow: 'hidden',
+          boxShadow: isActive
+            ? '0 0 0 1px rgba(201,168,76,0.4),0 6px 24px rgba(201,168,76,0.12)'
+            : '0 1px 4px rgba(26,20,16,0.04)',
+          cursor: 'pointer',
+          transform: isActive ? 'translateY(-2px)' : 'none',
+          transition: 'box-shadow 0.18s ease, transform 0.18s ease',
+        }
+      },
+        React.createElement('div', {
+          style: { background: '#FAF8F4', aspectRatio: '4/3', borderBottom: '1px solid #E8E2D8', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 12 }
+        },
+          watch.imageUrl
+            ? React.createElement('img', { src: watch.imageUrl, alt: watch.model, style: { maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', filter: 'drop-shadow(0 4px 10px rgba(26,20,16,0.10))' } })
+            : React.createElement(DialSVG, { ...watch.dialConfig, size: 72 })
+        ),
+        React.createElement('div', { style: { padding: '14px 16px 16px' } },
+          React.createElement('div', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: 4 } }, watch.brand),
+          React.createElement('div', { style: { fontFamily: 'Cormorant Garamond,Georgia,serif', fontSize: 19, fontWeight: 400, color: '#1A1410', lineHeight: 1.15, marginBottom: 4 } }, watch.model),
+          React.createElement('div', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 11, color: '#A89880', marginBottom: 2 } }, `Ref. ${watch.reference}`),
+          React.createElement('div', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 11, color: '#A89880', marginBottom: 12 } }, `${watch.caseSizeMm}mm · ${watch.dialColor}`),
+          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+            React.createElement('div', { style: { fontFamily: 'Cormorant Garamond,Georgia,serif', fontSize: 22, fontWeight: 500, color: '#1A1410' } }, fmt(watch.estimatedValue)),
+            React.createElement('span', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 9, fontWeight: 600, letterSpacing: '0.06em', padding: '3px 10px', borderRadius: 20, background: statusStyle.background, color: statusStyle.color } }, watch.ownershipStatus)
+          )
+        )
+      );
+    })
+  );
+
+Object.assign(window, { ViewSwitcher, OrderDropdown, WatchCardGrid, sortWatches, IconWatchbox, IconCards, IconChevron, IconArrowDown });
+
+
+// === CollectionStats.jsx ===
+// CollectionStats.jsx — denser single-column layout
+//  - Single column rows, label left / data right (more like a data sheet)
+//  - Hides zero-count chips by default with "Show all" reveal
+//  - Prominent Overview/Graphical toggle
+
+const statsLabel = {
+  fontFamily: 'DM Sans,sans-serif', fontSize: 10, fontWeight: 500,
+  letterSpacing: '0.14em', textTransform: 'uppercase', color: '#A89880',
+};
+
+const ALL_WATCH_TYPES = ['Diver', 'Dress', 'Sport', 'Chronograph', 'GMT', 'Pilot', 'Field', 'Integrated Bracelet', 'Vintage'];
+const ALL_COMPLICATIONS = ['Date', 'Day-Date', 'GMT', 'Chronograph', 'Moonphase', 'Annual Calendar', 'Perpetual Calendar', 'Power Reserve', 'Tourbillon'];
+const ALL_DIAL_COLORS = [
+  { name: 'Black',     hex: '#1A1410' },
+  { name: 'White',     hex: '#F5F0E8' },
+  { name: 'Blue',      hex: '#1B2A4A' },
+  { name: 'Grey',      hex: '#7A7A7A' },
+  { name: 'Green',     hex: '#2A4A2E' },
+  { name: 'Silver',    hex: '#D4CDC0' },
+  { name: 'Champagne', hex: '#E8D9B0' },
+  { name: 'Salmon',    hex: '#E8C8B8' },
+  { name: 'Brown',     hex: '#7A5A3A' },
+  { name: 'Red',       hex: '#A83838' },
+];
+
+const matchDialColor = (raw) => {
+  if (!raw) return null;
+  const s = raw.toLowerCase();
+  if (s.includes('black')) return 'Black';
+  if (s.includes('white') || s.includes('lacquer')) return 'White';
+  if (s.includes('blue') || s.includes('navy')) return 'Blue';
+  if (s.includes('grey') || s.includes('gray') || s.includes('anthracite')) return 'Grey';
+  if (s.includes('green')) return 'Green';
+  if (s.includes('silver')) return 'Silver';
+  if (s.includes('champagne')) return 'Champagne';
+  if (s.includes('salmon')) return 'Salmon';
+  if (s.includes('brown')) return 'Brown';
+  if (s.includes('red'))   return 'Red';
+  return null;
+};
+
+// ---- Toggle ----
+
+const StatsModeToggle = ({ mode, setMode }) =>
+  React.createElement('div', {
+    role: 'tablist',
+    style: {
+      display: 'inline-flex', gap: 4,
+      background: '#1A1410', borderRadius: 999, padding: 4,
+      boxShadow: '0 2px 10px rgba(26,20,16,0.10)',
+    }
+  },
+    ['overview', 'graphical'].map(id => {
+      const active = mode === id;
+      const label = id === 'overview' ? 'Overview' : 'Graphical';
+      return React.createElement('button', {
+        key: id, role: 'tab', 'aria-selected': active,
+        onClick: () => setMode(id),
+        style: {
+          fontFamily: 'DM Sans,sans-serif', fontSize: 11, fontWeight: 500,
+          letterSpacing: '0.10em', textTransform: 'uppercase',
+          padding: '8px 20px', borderRadius: 999, border: 'none', cursor: 'pointer',
+          background: active ? '#FAF8F4' : 'transparent',
+          color: active ? '#1A1410' : 'rgba(250,248,244,0.55)',
+          transition: 'background 0.15s, color 0.15s',
+        }
+      }, label);
+    })
+  );
+
+// ---- Chip ----
+
+const StatChip = ({ label, count, dim }) =>
+  React.createElement('span', {
+    style: {
+      display: 'inline-flex', alignItems: 'center', gap: 6,
+      fontFamily: 'DM Sans,sans-serif', fontSize: 11, fontWeight: 500,
+      padding: '4px 10px', borderRadius: 20,
+      background: dim ? 'transparent' : '#1A1410',
+      border: dim ? '1px solid #EAE5DC' : '1px solid #1A1410',
+      color: dim ? '#C8BCA9' : '#FAF8F4',
+      opacity: dim ? 0.7 : 1,
+    }
+  },
+    label,
+    React.createElement('span', { style: { fontSize: 10, opacity: 0.65 } }, count)
+  );
+
+const RevealToggle = ({ open, setOpen, hiddenCount }) =>
+  hiddenCount === 0 ? null :
+  React.createElement('button', {
+    onClick: () => setOpen(o => !o),
+    style: {
+      fontFamily: 'DM Sans,sans-serif', fontSize: 10, fontWeight: 500,
+      letterSpacing: '0.10em', textTransform: 'uppercase',
+      background: 'transparent', border: 'none', cursor: 'pointer',
+      color: '#A89880', padding: 0, display: 'inline-flex', alignItems: 'center', gap: 4,
+    }
+  },
+    open ? 'Show fewer' : `Show all (+${hiddenCount})`,
+    React.createElement('span', { style: { display: 'inline-flex', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' } },
+      React.createElement(IconChevron, { size: 10, dir: 'down' })
+    )
+  );
+
+// ---- Data row: label-left / values-right (single column friendly) ----
+
+const DataRow = ({ label, hiddenCount, open, setOpen, isLast, children }) =>
+  React.createElement('div', {
+    style: {
+      display: 'grid', gridTemplateColumns: '180px 1fr auto',
+      alignItems: 'flex-start', gap: 24,
+      padding: '18px 0', borderBottom: isLast ? 'none' : '1px solid #EAE5DC',
+    }
+  },
+    React.createElement('div', { style: { ...statsLabel, paddingTop: 4 } }, label),
+    React.createElement('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' } }, children),
+    typeof open === 'boolean'
+      ? React.createElement(RevealToggle, { open, setOpen, hiddenCount })
+      : React.createElement('span')
+  );
+
+// ---- Portfolio value: horizontal row of numbers ----
+
+const PortfolioValueRow = ({ watches }) => {
+  const total = watches.reduce((s, w) => s + w.estimatedValue, 0);
+  const cost  = watches.reduce((s, w) => s + w.purchasePrice, 0);
+  const gain  = total - cost;
+  const sorted = [...watches].sort((a, b) => b.estimatedValue - a.estimatedValue);
+  const highest = sorted[0];
+  const median  = sorted.length ? sorted[Math.floor(sorted.length / 2)] : null;
+
+  const Cell = ({ label, value, color = '#1A1410', icon, sub }) =>
+    React.createElement('div', { style: { flex: '1 1 0', minWidth: 140 } },
+      React.createElement('div', { style: { ...statsLabel, marginBottom: 6 } }, label),
+      React.createElement('div', { style: { fontFamily: 'Cormorant Garamond,Georgia,serif', fontSize: 26, fontWeight: 500, color, lineHeight: 1, display: 'inline-flex', alignItems: 'baseline', gap: 6 } },
+        icon && React.createElement('span', { style: { fontSize: 16, color } }, icon),
+        value
+      ),
+      sub && React.createElement('div', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 11, color: '#A89880', marginTop: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, sub)
+    );
+
+  return React.createElement('div', {
+    style: {
+      background: '#FFFCF7', border: '1px solid #EAE5DC', borderRadius: 12,
+      padding: '20px 24px',
+      display: 'flex', flexWrap: 'wrap', gap: 24, alignItems: 'flex-start',
+      marginBottom: 8,
+    }
+  },
+    React.createElement(Cell, { label: 'Total Est. Value', value: fmt(total) }),
+    React.createElement(Cell, { label: 'Cost Basis', value: fmt(cost) }),
+    React.createElement(Cell, { label: 'Gain / Loss', value: `${gain >= 0 ? '+' : ''}${fmt(gain)}`, color: gain >= 0 ? '#2D6A2D' : '#8A2020', icon: gain >= 0 ? '↑' : '↓' }),
+    median && React.createElement(Cell, { label: 'Median Value', value: fmt(median.estimatedValue) }),
+    highest && React.createElement(Cell, { label: 'Highest', value: fmt(highest.estimatedValue), color: '#C9A84C', sub: `${highest.brand} ${highest.model}` })
+  );
+};
+
+// ---- Dial color row (swatches inline) ----
+
+const DialColorsInline = ({ watches }) => {
+  const [showAll, setShowAll] = React.useState(false);
+  const counts = ALL_DIAL_COLORS.map(c => ({
+    ...c, count: watches.filter(w => matchDialColor(w.dialColor) === c.name).length
+  }));
+  const nonzero = counts.filter(c => c.count > 0);
+  const zero = counts.filter(c => c.count === 0);
+  const list = showAll ? counts : nonzero;
+
+  return React.createElement(DataRow, { label: 'Dial Colors', hiddenCount: zero.length, open: showAll, setOpen: setShowAll },
+    list.map(c =>
+      React.createElement('div', { key: c.name, style: { display: 'inline-flex', alignItems: 'center', gap: 7, padding: '3px 11px 3px 4px', borderRadius: 20, border: '1px solid #EAE5DC', opacity: c.count === 0 ? 0.45 : 1 } },
+        React.createElement('span', {
+          style: {
+            position: 'relative', width: 18, height: 18, borderRadius: '50%',
+            background: c.hex,
+            border: c.name === 'White' || c.name === 'Champagne' || c.name === 'Silver' ? '1px solid #D4CBBF' : 'none',
+          }
+        }),
+        React.createElement('span', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 11, fontWeight: 500, color: c.count > 0 ? '#1A1410' : '#A89880' } }, c.name),
+        c.count > 0 && React.createElement('span', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 10, color: '#A89880' } }, c.count)
+      )
+    )
+  );
+};
+
+// ---- Generic chip row ----
+
+const ChipRow = ({ label, items, getCount }) => {
+  const [showAll, setShowAll] = React.useState(false);
+  const withCounts = items.map(it => ({ ...it, count: getCount(it) }));
+  const nonzero = withCounts.filter(it => it.count > 0);
+  const zero = withCounts.filter(it => it.count === 0);
+  const list = showAll ? withCounts : nonzero;
+
+  return React.createElement(DataRow, { label, hiddenCount: zero.length, open: showAll, setOpen: setShowAll },
+    list.length === 0
+      ? React.createElement('span', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 12, color: '#A89880' } }, 'None recorded yet.')
+      : list.map(it => React.createElement(StatChip, { key: it.name, label: it.name, count: it.count, dim: it.count === 0 }))
+  );
+};
+
+// ---- Brands row ----
+
+const BrandsRow = ({ watches }) => {
+  const brandCounts = watches.reduce((acc, w) => { acc[w.brand] = (acc[w.brand] || 0) + 1; return acc; }, {});
+  const brands = Object.entries(brandCounts).sort((a, b) => b[1] - a[1]);
+  return React.createElement(DataRow, { label: 'Brands', isLast: true },
+    brands.map(([name, n]) =>
+      React.createElement('span', {
+        key: name,
+        style: {
+          display: 'inline-flex', alignItems: 'center', gap: 5,
+          fontFamily: 'DM Sans,sans-serif', fontSize: 11, fontWeight: 500,
+          padding: '4px 10px', borderRadius: 20,
+          background: 'rgba(201,168,76,0.10)', color: '#8A6A10',
+        }
+      },
+        name,
+        React.createElement('span', { style: { fontSize: 10, opacity: 0.6 } }, `×${n}`)
+      )
+    )
+  );
+};
+
+// ---- Graphical: bar chart of value by brand ----
+
+const GraphicalView = ({ watches }) => {
+  const byBrand = {};
+  watches.forEach(w => { byBrand[w.brand] = (byBrand[w.brand] || 0) + w.estimatedValue; });
+  const entries = Object.entries(byBrand).sort((a, b) => b[1] - a[1]);
+  const max = Math.max(...entries.map(([, v]) => v), 1);
+  const total = entries.reduce((s, [, v]) => s + v, 0);
+
+  return React.createElement('div', { style: { background: '#FFFCF7', border: '1px solid #EAE5DC', borderRadius: 12, padding: 24 } },
+    React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 18 } },
+      React.createElement('div', { style: statsLabel }, 'Value by Brand'),
+      React.createElement('div', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 11, color: '#A89880' } }, `${entries.length} brands · ${fmt(total)} total`)
+    ),
+    React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: 12 } },
+      entries.map(([brand, value]) =>
+        React.createElement('div', { key: brand },
+          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 5 } },
+            React.createElement('span', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 12, color: '#1A1410', fontWeight: 500 } }, brand),
+            React.createElement('span', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 12, color: '#A89880' } }, `${fmt(value)} · ${Math.round(value / total * 100)}%`)
+          ),
+          React.createElement('div', { style: { height: 6, borderRadius: 3, background: '#F0EBE3', overflow: 'hidden' } },
+            React.createElement('div', { style: { width: `${value / max * 100}%`, height: '100%', background: 'linear-gradient(90deg, #C9A84C 0%, #B89535 100%)', borderRadius: 3, transition: 'width 0.4s ease' } })
+          )
+        )
+      )
+    )
+  );
+};
+
+// ---- Main ----
+
+const CollectionStats = ({ watches }) => {
+  const [mode, setMode] = React.useState('overview');
+
+  return React.createElement('section', {
+    id: 'stats',
+    style: {
+      padding: '40px 56px 56px',
+      borderTop: '1px solid #EAE5DC',
+      background: '#FAF8F4',
+      scrollMarginTop: 80,
+    }
+  },
+    React.createElement('div', { style: { maxWidth: 1280, margin: '0 auto' } },
+      React.createElement('div', {
+        style: {
+          display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end',
+          flexWrap: 'wrap', gap: 16, marginBottom: 20,
+        }
+      },
+        React.createElement('div', null,
+          React.createElement('h2', { style: { fontFamily: 'Cormorant Garamond,Georgia,serif', fontSize: 32, fontWeight: 400, lineHeight: 1.1, color: '#1A1410', margin: 0 } }, 'Collection Stats'),
+          React.createElement('p', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 13, color: '#A89880', margin: '6px 0 0' } }, 'A factual breakdown of what you own.')
+        ),
+        React.createElement(StatsModeToggle, { mode, setMode })
+      ),
+
+      mode === 'overview'
+        ? React.createElement(React.Fragment, null,
+            React.createElement(PortfolioValueRow, { watches }),
+            React.createElement('div', {
+              style: {
+                background: '#FFFCF7', border: '1px solid #EAE5DC', borderRadius: 12,
+                padding: '0 24px',
+              }
+            },
+              React.createElement(DialColorsInline, { watches }),
+              React.createElement(ChipRow, {
+                label: 'Watch Types',
+                items: ALL_WATCH_TYPES.map(name => ({ name })),
+                getCount: it => watches.filter(w => w.watchType === it.name).length,
+              }),
+              React.createElement(ChipRow, {
+                label: 'Complications',
+                items: ALL_COMPLICATIONS.map(name => ({ name })),
+                getCount: it => watches.filter(w => w.complications.includes(it.name)).length,
+              }),
+              React.createElement(BrandsRow, { watches })
+            )
+          )
+        : React.createElement(GraphicalView, { watches })
+    )
+  );
+};
+
+Object.assign(window, { CollectionStats });
+
+
+// === ShareBox.jsx ===
+// ShareBox.jsx — Share button + modal showing OG-image preview + public profile link
+
+const IconShare = ({ size = 13 }) =>
+  React.createElement('svg', { width: size, height: size, viewBox: '0 0 14 14', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' },
+    React.createElement('path', { d: 'M9.5 4.5L7 2 4.5 4.5' }),
+    React.createElement('line', { x1: 7, y1: 2, x2: 7, y2: 9 }),
+    React.createElement('path', { d: 'M2.5 8v3a1 1 0 001 1h7a1 1 0 001-1V8' })
+  );
+
+const IconCopy = ({ size = 13 }) =>
+  React.createElement('svg', { width: size, height: size, viewBox: '0 0 14 14', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' },
+    React.createElement('rect', { x: 4, y: 4, width: 8, height: 8, rx: 1.2 }),
+    React.createElement('path', { d: 'M2 9V3a1 1 0 011-1h6' })
+  );
+
+const IconCheck = ({ size = 13 }) =>
+  React.createElement('svg', { width: size, height: size, viewBox: '0 0 14 14', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round' },
+    React.createElement('polyline', { points: '3,7.5 6,10.5 11,4' })
+  );
+
+const IconClose = ({ size = 14 }) =>
+  React.createElement('svg', { width: size, height: size, viewBox: '0 0 14 14', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round' },
+    React.createElement('line', { x1: 3.5, y1: 3.5, x2: 10.5, y2: 10.5 }),
+    React.createElement('line', { x1: 10.5, y1: 3.5, x2: 3.5, y2: 10.5 })
+  );
+
+// Inline OG-image preview (1200x630 ratio scaled). Renders the box at 3-up using the same
+// gold frame language. Static SVG-style preview; in production this would be a real OG image.
+const OGPreview = ({ watches, profileHandle, totalValue }) => {
+  const visible = watches.slice(0, 6);
+  return React.createElement('div', {
+    style: {
+      position: 'relative',
+      width: '100%', aspectRatio: '1200 / 630',
+      borderRadius: 10, overflow: 'hidden',
+      background: 'linear-gradient(160deg, #1e1b16 0%, #2a2420 100%)',
+      border: '1px solid #2A2520',
+      display: 'flex',
+    }
+  },
+    // Subtle gold glow
+    React.createElement('div', {
+      style: {
+        position: 'absolute', inset: 0,
+        background: 'radial-gradient(ellipse 60% 55% at 30% 50%, rgba(201,168,76,0.12) 0%, transparent 70%)',
+      }
+    }),
+    // Left meta column
+    React.createElement('div', {
+      style: {
+        flex: '0 0 38%', padding: '7% 6%',
+        display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+        position: 'relative', zIndex: 1,
+      }
+    },
+      React.createElement('div', null,
+        React.createElement('div', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 'clamp(8px, 1.2cqw, 11px)', fontWeight: 500, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(201,168,76,0.85)', marginBottom: 8 } }, 'Virtual Watchbox'),
+        React.createElement('div', { style: { fontFamily: 'Cormorant Garamond,Georgia,serif', fontSize: 'clamp(20px, 4cqw, 38px)', color: '#FAF8F4', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.01em' } }, profileHandle + "'s"),
+        React.createElement('div', { style: { fontFamily: 'Cormorant Garamond,Georgia,serif', fontStyle: 'italic', fontSize: 'clamp(20px, 4cqw, 38px)', color: '#FAF8F4', fontWeight: 300, lineHeight: 1.05 } }, 'Watchbox.')
+      ),
+      React.createElement('div', null,
+        React.createElement('div', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 'clamp(7px, 1cqw, 10px)', fontWeight: 500, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', marginBottom: 4 } }, `${watches.length} Watches · Est.`),
+        React.createElement('div', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 'clamp(14px, 2.6cqw, 24px)', fontWeight: 600, color: '#C9A84C', lineHeight: 1 } }, fmt(totalValue))
+      )
+    ),
+    // Right: mini watchbox
+    React.createElement('div', {
+      style: {
+        flex: '1 1 auto', padding: '4% 5% 4% 0',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        position: 'relative', zIndex: 1,
+      }
+    },
+      React.createElement('div', {
+        style: {
+          width: '100%', aspectRatio: '3 / 2',
+          background: 'linear-gradient(180deg, #C9A04C 0%, #B58836 100%)',
+          border: '1px solid #A87A2E', borderRadius: 6,
+          padding: '3%',
+          display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridTemplateRows: 'repeat(2, 1fr)', gap: '3%',
+          boxShadow: '0 8px 28px rgba(0,0,0,0.4)',
+        }
+      },
+        [...Array(6)].map((_, i) => {
+          const w = visible[i];
+          return React.createElement('div', {
+            key: i,
+            style: {
+              borderRadius: 4,
+              background: w ? '#FFFCF7' : '#F5EFE5',
+              border: w ? '1px solid #E0DAD0' : '1.5px dashed #D0C9BE',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: '8%', overflow: 'hidden',
+            }
+          },
+            w && (w.imageUrl
+              ? React.createElement('img', { src: w.imageUrl, alt: '', style: { maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' } })
+              : React.createElement(DialSVG, { ...w.dialConfig, size: 40 }))
+          );
+        })
+      )
+    )
+  );
+};
+
+const ShareBox = ({ watches, totalValue }) => {
+  const [open, setOpen] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
+  const profileHandle = 'collector';
+  const url = `https://virtualwatchbox.com/u/${profileHandle}`;
+
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(url); } catch {}
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
+  };
+
+  const SocialBtn = ({ label, onClick, children }) =>
+    React.createElement('button', {
+      onClick, title: label, 'aria-label': label,
+      style: {
+        flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+        fontFamily: 'DM Sans,sans-serif', fontSize: 10.5, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase',
+        padding: '9px 12px', background: 'transparent', color: '#1A1410',
+        border: '1px solid #D4CBBF', borderRadius: 4, cursor: 'pointer',
+      }
+    }, children);
+
+  const text = encodeURIComponent(`My Virtual Watchbox — ${watches.length} watches.`);
+  const enc = encodeURIComponent(url);
+
+  return React.createElement(React.Fragment, null,
+    // Trigger button — matches secondary button style
+    React.createElement('button', {
+      onClick: () => setOpen(true),
+      style: {
+        display: 'inline-flex', alignItems: 'center', gap: 7,
+        fontFamily: 'DM Sans,sans-serif', fontSize: 11, fontWeight: 500,
+        letterSpacing: '0.08em', textTransform: 'uppercase',
+        padding: '7px 14px', background: '#FFFFFF', color: '#1A1410',
+        border: '1px solid #EAE5DC', borderRadius: 6, cursor: 'pointer',
+      },
+      onMouseEnter: e => { e.currentTarget.style.borderColor = '#C9A84C'; e.currentTarget.style.color = '#8A6A10'; },
+      onMouseLeave: e => { e.currentTarget.style.borderColor = '#EAE5DC'; e.currentTarget.style.color = '#1A1410'; },
+    },
+      React.createElement(IconShare, { size: 13 }),
+      'Share Box'
+    ),
+
+    // Modal
+    open && React.createElement('div', {
+      onClick: () => setOpen(false),
+      style: {
+        position: 'fixed', inset: 0, zIndex: 200,
+        background: 'rgba(26,20,16,0.5)', backdropFilter: 'blur(4px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 20,
+      }
+    },
+      React.createElement('div', {
+        onClick: e => e.stopPropagation(),
+        style: {
+          background: '#FFFCF7', border: '1px solid #EAE5DC', borderRadius: 14,
+          width: '100%', maxWidth: 620,
+          boxShadow: '0 24px 60px rgba(26,20,16,0.32)',
+          overflow: 'hidden',
+        }
+      },
+        // Header
+        React.createElement('div', { style: { padding: '18px 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #EAE5DC' } },
+          React.createElement('div', null,
+            React.createElement('div', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 9.5, fontWeight: 500, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#A89880', marginBottom: 4 } }, 'Share'),
+            React.createElement('h3', { style: { fontFamily: 'Cormorant Garamond,Georgia,serif', fontSize: 22, fontWeight: 400, color: '#1A1410', margin: 0, lineHeight: 1.1 } }, 'Your Public ', React.createElement('em', { style: { fontStyle: 'italic' } }, 'Watchbox.'))
+          ),
+          React.createElement('button', {
+            onClick: () => setOpen(false), 'aria-label': 'Close',
+            style: { background: 'transparent', border: 'none', cursor: 'pointer', color: '#A89880', display: 'inline-flex', padding: 6 }
+          }, React.createElement(IconClose, { size: 14 }))
+        ),
+
+        // OG preview
+        React.createElement('div', { style: { padding: 22, paddingBottom: 14 } },
+          React.createElement('div', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 9.5, fontWeight: 500, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+            React.createElement('span', null, 'Preview · 1200 × 630'),
+            React.createElement('span', { style: { color: '#C9A84C' } }, 'Auto-generated')
+          ),
+          React.createElement(OGPreview, { watches, profileHandle, totalValue })
+        ),
+
+        // URL row
+        React.createElement('div', { style: { padding: '0 22px 14px' } },
+          React.createElement('div', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 9.5, fontWeight: 500, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#A89880', marginBottom: 8 } }, 'Public Profile Link'),
+          React.createElement('div', {
+            style: {
+              display: 'flex', alignItems: 'center', gap: 8,
+              background: '#FAF8F4', border: '1px solid #EAE5DC', borderRadius: 6,
+              padding: '8px 8px 8px 14px',
+            }
+          },
+            React.createElement('span', { style: { flex: 1, fontFamily: 'DM Sans,sans-serif', fontSize: 12, color: '#1A1410', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, url),
+            React.createElement('button', {
+              onClick: copy,
+              style: {
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                fontFamily: 'DM Sans,sans-serif', fontSize: 10.5, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase',
+                padding: '7px 12px', background: copied ? '#E8F4E8' : '#1A1410',
+                color: copied ? '#2D6A2D' : '#FAF8F4',
+                border: 'none', borderRadius: 4, cursor: 'pointer',
+                transition: 'background 0.15s, color 0.15s',
+              }
+            },
+              copied ? React.createElement(IconCheck, { size: 12 }) : React.createElement(IconCopy, { size: 12 }),
+              copied ? 'Copied' : 'Copy'
+            )
+          )
+        ),
+
+        // Share targets
+        React.createElement('div', { style: { padding: '0 22px 22px', display: 'flex', gap: 8 } },
+          React.createElement(SocialBtn, {
+            label: 'Share on X',
+            onClick: () => window.open(`https://twitter.com/intent/tweet?text=${text}&url=${enc}`, '_blank', 'noopener'),
+          }, 'X / Twitter'),
+          React.createElement(SocialBtn, {
+            label: 'Share on Threads',
+            onClick: () => window.open(`https://www.threads.net/intent/post?text=${text}%20${enc}`, '_blank', 'noopener'),
+          }, 'Threads'),
+          React.createElement(SocialBtn, {
+            label: 'Share via Email',
+            onClick: () => window.open(`mailto:?subject=${text}&body=${enc}`, '_self'),
+          }, 'Email'),
+          React.createElement(SocialBtn, {
+            label: 'Download OG image',
+            onClick: () => alert('In production, downloads the rendered 1200×630 OG image.'),
+          }, 'Download')
+        ),
+
+        // Footer note
+        React.createElement('div', {
+          style: {
+            padding: '10px 22px', borderTop: '1px solid #EAE5DC',
+            background: '#FAF8F4',
+            fontFamily: 'DM Sans,sans-serif', fontSize: 11, color: '#A89880',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12,
+          }
+        },
+          React.createElement('span', null, 'Shared links open your public profile.'),
+          React.createElement('a', {
+            href: '#', onClick: e => e.preventDefault(),
+            style: { color: '#C9A84C', textDecoration: 'none', fontWeight: 500 }
+          }, 'Profile settings →')
+        )
+      )
+    )
+  );
+};
+
+Object.assign(window, { ShareBox, IconShare });
+
+
+// === CollectionPageRoot.jsx ===
+// CollectionPageRoot.jsx — orchestrates header + view + below-fold stats
+
+const IconPlus = ({ size = 13 }) =>
+  React.createElement('svg', { width: size, height: size, viewBox: '0 0 14 14', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' },
+    React.createElement('line', { x1: 7, y1: 2.5, x2: 7, y2: 11.5 }),
+    React.createElement('line', { x1: 2.5, y1: 7, x2: 11.5, y2: 7 })
+  );
+
+const CollectionPageRoot = ({ setPage }) => {
+  const [view, setView] = React.useState('watchbox');
+  const [activeWatch, setActiveWatch] = React.useState(null);
+  const [activeIdx, setActiveIdx] = React.useState(null);
+  const [watches, setWatches] = React.useState(WATCHES);
+  const [unsaved, setUnsaved] = React.useState(0);
+  const [sort, setSort] = React.useState('recent');
+
+  const totalEstValue = watches.reduce((s, w) => s + w.estimatedValue, 0);
+
+  const handleBoxSlotClick = idx => {
+    if (idx === null) return;
+    setActiveIdx(prev => {
+      const n = prev === idx ? null : idx;
+      setActiveWatch(n !== null ? watches[n] : null);
+      return n;
+    });
+  };
+  const handleCardSelect = w => setActiveWatch(prev => (prev?.id === w.id ? null : w));
+
+  const handleDelete = w => {
+    setWatches(prev => prev.filter(x => x.id !== w.id));
+    setActiveWatch(null); setActiveIdx(null);
+    setUnsaved(n => n + 1);
+  };
+
+  const sorted = sortWatches(watches, sort);
+
+  const metaLabel = { fontFamily: 'DM Sans,sans-serif', fontSize: 9.5, fontWeight: 500, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#A89880' };
+  const metaValue = { fontFamily: 'DM Sans,sans-serif', fontSize: 14, fontWeight: 500, color: '#1A1410' };
+
+  return React.createElement('div', { style: { minHeight: '100vh', background: '#FAF8F4' } },
+
+    // ============ HEADER ============
+    React.createElement('div', { style: { maxWidth: 1280, margin: '0 auto', padding: '40px 56px 0' } },
+
+      React.createElement('div', { style: { marginBottom: 24, display: 'flex', alignItems: 'baseline', gap: 18, flexWrap: 'wrap' } },
+        React.createElement('h1', { style: { fontFamily: 'Cormorant Garamond,Georgia,serif', fontSize: 48, fontWeight: 400, lineHeight: 1.1, color: '#1A1410', margin: 0 } }, 'My Collection'),
+        React.createElement('p', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 14, color: '#A89880', margin: 0, letterSpacing: '0.02em' } }, 'Your source of truth.')
+      ),
+
+      // Meta row: Add Watch + quiet stats
+      React.createElement('div', {
+        style: {
+          display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap',
+          marginBottom: 24, paddingBottom: 20, borderBottom: '1px solid #EAE5DC',
+        }
+      },
+        React.createElement('button', {
+          style: {
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            fontFamily: 'DM Sans,sans-serif', fontSize: 11, fontWeight: 500,
+            letterSpacing: '0.08em', textTransform: 'uppercase',
+            padding: '9px 22px 9px 18px', background: '#1A1410', color: '#FAF8F4',
+            border: 'none', borderRadius: 4, cursor: 'pointer',
+          }
+        },
+          React.createElement(IconPlus, { size: 13 }),
+          'Add Watch'
+        ),
+
+        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 16 } },
+          React.createElement('div', { style: { display: 'flex', alignItems: 'baseline', gap: 6 } },
+            React.createElement('span', { style: metaLabel }, 'Watches'),
+            React.createElement('span', { style: metaValue }, watches.length)
+          ),
+          React.createElement('span', { style: { width: 1, height: 14, background: '#EAE5DC' } }),
+          React.createElement('div', { style: { display: 'flex', alignItems: 'baseline', gap: 6 } },
+            React.createElement('span', { style: metaLabel }, 'Est. Value'),
+            React.createElement('span', { style: metaValue }, fmt(totalEstValue))
+          ),
+          React.createElement('span', { style: { width: 1, height: 14, background: '#EAE5DC' } }),
+          React.createElement('a', {
+            href: '#stats',
+            onClick: e => { e.preventDefault(); document.getElementById('stats')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
+            style: { display: 'inline-flex', alignItems: 'center', gap: 5, ...metaLabel, textDecoration: 'none', cursor: 'pointer' },
+            onMouseEnter: e => { e.currentTarget.style.color = '#1A1410'; },
+            onMouseLeave: e => { e.currentTarget.style.color = '#A89880'; },
+          },
+            'Stats',
+            React.createElement(IconArrowDown, { size: 11 })
+          )
+        ),
+
+        unsaved > 0 && React.createElement('span', { style: { marginLeft: 'auto', fontFamily: 'DM Sans,sans-serif', fontSize: 11, color: '#C9A84C', opacity: 0.85 } }, `${unsaved} unsaved`)
+      )
+    ),
+
+    // ============ MAIN CONTENT ============
+    React.createElement('div', {
+      style: {
+        maxWidth: 1280, margin: '0 auto',
+        padding: '0 56px 64px',
+        display: 'grid',
+        gridTemplateColumns: '1fr 320px', gap: 32, alignItems: 'start',
+      }
+    },
+      // LEFT column: toolbar (view switcher / order) + watchbox or cards
+      React.createElement('div', null,
+        React.createElement('div', {
+          style: {
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            gap: 12, marginBottom: 14, minHeight: 36,
+          }
+        },
+          React.createElement(ViewSwitcher, { view, setView }),
+          React.createElement('div', { style: { display: 'inline-flex', alignItems: 'center', gap: 10 } },
+            view === 'cards' && React.createElement(OrderDropdown, { value: sort, setValue: setSort }),
+            React.createElement(ShareBox, { watches: sorted, totalValue: totalEstValue })
+          )
+        ),
+        view === 'watchbox' && React.createElement(WatchBoxGrid, { watches: sorted, slotCount: 6, activeIdx, onSlotClick: handleBoxSlotClick }),
+        view === 'cards'    && React.createElement(WatchCardGrid, { watches: sorted, activeId: activeWatch?.id, onSelect: handleCardSelect })
+      ),
+      // RIGHT column: sidebar
+      React.createElement(WatchSidebar, {
+        watch: activeWatch, mode: 'collection',
+        onClose: () => { setActiveWatch(null); setActiveIdx(null); },
+        onDelete: handleDelete,
+      })
+    ),
+
+    // ============ STATS ============
+    React.createElement(CollectionStats, { watches }),
+
+    // ============ Unsaved bar ============
+    unsaved > 0 && React.createElement('div', {
+      style: { position: 'fixed', bottom: 0, left: 0, right: 0, background: '#1A1410', borderTop: '1px solid #3A3028', padding: '14px 56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 50 }
+    },
+      React.createElement('span', { style: { fontFamily: 'DM Sans,sans-serif', fontSize: 12, color: '#FAF8F4' } }, `You have ${unsaved} unsaved ${unsaved === 1 ? 'change' : 'changes'}`),
+      React.createElement('div', { style: { display: 'flex', gap: 8 } },
+        React.createElement('button', { onClick: () => setUnsaved(0), style: { fontFamily: 'DM Sans,sans-serif', fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', padding: '7px 16px', background: '#FAF8F4', color: '#1A1410', border: 'none', borderRadius: 4, cursor: 'pointer' } }, 'Save to My Collection'),
+        React.createElement('button', { onClick: () => setUnsaved(0), style: { fontFamily: 'DM Sans,sans-serif', fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', padding: '7px 16px', background: 'transparent', color: '#FAF8F4', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 4, cursor: 'pointer' } }, 'Discard')
+      )
+    )
+  );
+};
+
+Object.assign(window, { CollectionPageRoot, IconPlus });
+
+
+</script>
+
+
+
+<script type="text/babel" data-presets="env,react">
+(function mount() {
+  if (!window.NavBar || !window.CollectionPageRoot) {
+    return setTimeout(mount, 30);
+  }
+  const App = () => {
+    const [page, setPage] = React.useState('collection');
+    return React.createElement('div', null,
+      React.createElement(window.NavBar, { page, setPage }),
+      React.createElement(window.CollectionPageRoot, { setPage })
+    );
+  };
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(React.createElement(App));
+})();
+</script>
+</body>
+</html>

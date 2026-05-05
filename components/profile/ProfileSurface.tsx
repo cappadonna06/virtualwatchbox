@@ -1892,7 +1892,7 @@ function ReadonlyBoxShowcase({
   const lining = LININGS.find(item => item.id === box.lining) ?? LININGS[0]
   const isMobile = screenWidth > 0 && screenWidth < 768
   const watchboxContainerWidth = isMobile ? screenWidth - 40 : Math.max(200, screenWidth - 444)
-  const watchboxMaxHeight = isMobile ? 300 : 480
+  const watchboxMaxHeight = isMobile ? 300 : 380
   const watchboxSlotWidth = screenWidth > 0
     ? Math.floor(
         calcSlotPx(

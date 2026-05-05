@@ -194,6 +194,9 @@ body {
   .nav-links        { display: none !important; }
   .nav-signin       { display: none !important; }
   .nav-account-wrap { display: none !important; }
+  .nav-search-desktop { display: none !important; }
+  .nav-mobile-actions { display: inline-flex !important; }
+  .nav-mobile-search-drawer.is-open { display: block !important; }
   .nav-hamburger    { display: flex !important; align-items: center; justify-content: center; }
   .nav-drawer    {
     display: flex !important;
@@ -221,6 +224,7 @@ body {
   /* Collection */
   .collection-section { padding: 36px 20px 40px !important; }
   .collection-grid    { grid-template-columns: 1fr !important; }
+  .collection-toolbar-row { padding-right: 0 !important; }
   .box-configurator   { flex-wrap: wrap !important; gap: 20px !important; }
 
   /* Inline configurator hidden on mobile; edit button shown */

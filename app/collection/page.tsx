@@ -9,13 +9,14 @@ import SortDropdown from '@/components/collection/SortDropdown'
 import CollectionPhotoView from '@/components/collection/CollectionPhotoView'
 import CollectionWatchboxSurface from '@/components/collection/CollectionWatchboxSurface'
 import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarSheet'
+import ShareBoxModal from '@/components/collection/ShareBoxModal'
 import UnsavedChangesBar, { type DraftChange } from '@/components/collection/UnsavedChangesBar'
 import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import WatchSidebar from '@/components/collection/WatchSidebar'
 import WatchboxHeader from '@/components/collection/WatchboxHeader'
 import { useAuth } from '@/lib/auth/AuthProvider'
-import { copyProfileDemoUrl } from '@/lib/profileDemo'
+import { buildAbsoluteProfileDemoUrl, copyProfileDemoUrl, getProfileSharePath } from '@/lib/profileDemo'
 import { useCollectionSession } from './CollectionSessionProvider'
 import { brand } from '@/lib/brand'
 
@@ -50,6 +51,7 @@ export default function CollectionPage() {
   const [deleteTarget, setDeleteTarget] = useState<ResolvedOwnedWatch | null>(null)
   const [screenWidth, setScreenWidth] = useState(0)
   const [mobileStatsOpen, setMobileStatsOpen] = useState(true)
+  const [shareModalOpen, setShareModalOpen] = useState(false)
 
   const displayWatches = useMemo(() => {
     if (sortBy === 'manual') return collectionWatches
@@ -148,26 +150,61 @@ export default function CollectionPage() {
         ) : (
           <>
             <CollectionHeader
+              watchCount={collectionWatches.length}
               totalEstValue={totalEstimatedValue}
               pendingChangesCount={0}
               onAddWatch={() => router.push('/collection/add')}
-              onOpenPlayground={() => router.push('/playground')}
+              onJumpStats={() => document.getElementById('collection-stats')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
             />
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28 }}>
+            <div
+              className="collection-toolbar-row"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 12,
+                marginBottom: 20,
+                flexWrap: 'wrap',
+                paddingRight: isMobile ? 0 : 332,
+              }}
+            >
               <ViewSwitcher activeView={activeView} setActiveView={setActiveView} />
-              <a
-                href="#collection-stats"
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+              {activeView === 'cards' ? (
+                <SortDropdown
+                  value={sortBy}
+                  options={SORT_OPTIONS}
+                  onChange={value => setSortBy(value as SortMode)}
+                />
+              ) : null}
+              <button
+                onClick={() => setShareModalOpen(true)}
                 style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 7,
                   fontFamily: brand.font.sans,
                   fontSize: 11,
+                  fontWeight: 500,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  padding: '7px 14px',
+                  background: brand.colors.white,
                   color: brand.colors.muted,
-                  textDecoration: 'none',
-                  letterSpacing: '0.04em',
+                  border: `1px solid ${brand.colors.border}`,
+                  borderRadius: brand.radius.sm,
+                  cursor: 'pointer',
                 }}
               >
-                Stats ↓
-              </a>
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M10.5 5V2.5h-2.5" />
+                  <line x1="10.5" y1="2.5" x2="6" y2="7" />
+                  <path d="M10.5 8.5v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5.5a1 1 0 0 1 1-1H6" />
+                </svg>
+                Share Box
+              </button>
+              </div>
             </div>
           </>
         )}
@@ -176,16 +213,9 @@ export default function CollectionPage() {
       <div style={{ padding: `0 ${isMobile ? 20 : 56}px` }}>
         {activeView === 'watchbox' ? (
           <CollectionWatchboxSurface
-            watches={displayWatches}
+            watches={collectionWatches}
             onEmptySlotClick={() => router.push('/collection/add')}
-            onReorder={sortBy === 'manual' ? handleReorder : undefined}
-            topToolbar={!isMobile ? (
-              <SortDropdown
-                value={sortBy}
-                options={SORT_OPTIONS}
-                onChange={value => setSortBy(value as SortMode)}
-              />
-            ) : undefined}
+            onReorder={handleReorder}
           />
         ) : activeView === 'photo' ? (
           <CollectionPhotoView
@@ -201,8 +231,6 @@ export default function CollectionPage() {
             activeWatch={activeWatch}
             activeSlot={activeSlot >= 0 ? activeSlot : null}
             onCardSelect={handleCardSelect}
-            sortBy={sortBy}
-            setSortBy={setSortBy}
             onCloseSidebar={() => setSelectedWatchId(null)}
             onRequestDelete={watch => setDeleteTarget(watch)}
           />
@@ -218,34 +246,19 @@ export default function CollectionPage() {
             id="collection-stats"
             style={{ marginTop: 72, paddingTop: 48, borderTop: `1px solid ${brand.colors.border}` }}
           >
-            <div style={{ marginBottom: 32 }}>
-              <h2
-                style={{
-                  fontFamily: brand.font.serif,
-                  fontSize: 36,
-                  fontWeight: 400,
-                  color: brand.colors.ink,
-                  margin: '0 0 6px',
-                  lineHeight: 1.1,
-                }}
-              >
-                Collection Stats
-              </h2>
-              <p
-                style={{
-                  fontFamily: brand.font.sans,
-                  fontSize: 13,
-                  color: brand.colors.muted,
-                  margin: 0,
-                }}
-              >
-                A factual breakdown of what you own.
-              </p>
-            </div>
             <CollectionStats watches={collectionWatches} />
           </div>
         )}
       </div>
+
+      <ShareBoxModal
+        open={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        watches={collectionWatches.map(w => ({ id: w.id, brand: w.brand, model: w.model, imageUrl: w.imageUrl ?? null, estimatedValue: w.estimatedValue }))}
+        totalValue={totalEstimatedValue}
+        handle={user?.email?.split('@')[0] ?? 'collector'}
+        shareUrl={buildAbsoluteProfileDemoUrl(getProfileSharePath())}
+      />
 
       <UnsavedChangesBar
         pendingChanges={EMPTY_PENDING_CHANGES}
@@ -340,8 +353,6 @@ function CardsView({
   activeWatch,
   activeSlot,
   onCardSelect,
-  sortBy,
-  setSortBy,
   onCloseSidebar,
   onRequestDelete,
 }: {
@@ -349,8 +360,6 @@ function CardsView({
   activeWatch: ResolvedOwnedWatch | null
   activeSlot: number | null
   onCardSelect: (index: number) => void
-  sortBy: SortMode
-  setSortBy: (value: SortMode) => void
   onCloseSidebar: () => void
   onRequestDelete: (watch: ResolvedOwnedWatch) => void
 }) {
@@ -358,16 +367,6 @@ function CardsView({
     <>
       <div className="collection-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}>
         <div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
-            <div>
-              <SortDropdown
-                value={sortBy}
-                options={SORT_OPTIONS}
-                onChange={value => setSortBy(value as SortMode)}
-              />
-            </div>
-          </div>
-
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 18 }}>
             {watches.map((watch, index) => (
               <div key={watch.id}>
