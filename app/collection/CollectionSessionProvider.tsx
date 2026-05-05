@@ -786,9 +786,9 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       try {
         const supabase = createClient()
         const { data, error } = await supabase
-          .from('user_profiles')
+          .from('watchbox_config')
           .select('watchbox_photo_url')
-          .eq('id', user.id)
+          .eq('user_id', user.id)
           .maybeSingle()
         if (cancelled) return
         if (error) console.error('[vwb] watchbox photo read error', error)
@@ -806,19 +806,19 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     return () => { cancelled = true }
   }, [user])
 
-  // Debounced upsert of the watchbox photo. Mirrors the profile auto-save in
-  // ProfileSurface.tsx — gated on the cloud-hydrated flag so we never write a
-  // local default before reading the existing row.
+  // Debounced upsert of the watchbox photo onto watchbox_config. Frame/lining/
+  // slot_count have NOT NULL defaults so a new row from this upsert will get
+  // sensible defaults; an existing row is partial-updated only on the photo column.
   useEffect(() => {
     if (!user || !watchboxPhotoCloudHydrated) return
     const handle = setTimeout(() => {
       ;(async () => {
         try {
           const supabase = createClient()
-          const { error } = await supabase.from('user_profiles').upsert({
-            id: user.id,
+          const { error } = await supabase.from('watchbox_config').upsert({
+            user_id: user.id,
             watchbox_photo_url: watchboxPhotoUrl ?? null,
-          }, { onConflict: 'id' })
+          }, { onConflict: 'user_id' })
           if (error) console.error('[vwb] watchbox photo upsert error', error)
         } catch (err) {
           console.error('[vwb] watchbox photo upsert failed', err)
