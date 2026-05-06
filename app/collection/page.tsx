@@ -9,14 +9,20 @@ import SortDropdown from '@/components/collection/SortDropdown'
 import CollectionPhotoView from '@/components/collection/CollectionPhotoView'
 import CollectionWatchboxSurface from '@/components/collection/CollectionWatchboxSurface'
 import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarSheet'
-import ShareBoxModal from '@/components/collection/ShareBoxModal'
+import ShareBoxModal, { type ShareFlags } from '@/components/collection/ShareBoxModal'
 import UnsavedChangesBar, { type DraftChange } from '@/components/collection/UnsavedChangesBar'
 import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import WatchSidebar from '@/components/collection/WatchSidebar'
 import WatchboxHeader from '@/components/collection/WatchboxHeader'
 import { useAuth } from '@/lib/auth/AuthProvider'
-import { buildAbsoluteProfileDemoUrl, copyProfileDemoUrl, getProfileSharePath } from '@/lib/profileDemo'
+import {
+  buildAbsoluteProfileDemoUrl,
+  buildBoxShareUrl,
+  copyProfileDemoUrl,
+  getCollectionBoxSlug,
+  getProfileDemoState,
+} from '@/lib/profileDemo'
 import { useCollectionSession } from './CollectionSessionProvider'
 import { brand } from '@/lib/brand'
 
@@ -44,6 +50,7 @@ export default function CollectionPage() {
     watchboxPhotoUrl,
     watchboxPhotoCrop,
     setWatchboxPhoto,
+    watchboxConfig,
   } = useCollectionSession()
 
   const [activeView, setActiveView] = useState<View>('watchbox')
@@ -52,6 +59,11 @@ export default function CollectionPage() {
   const [screenWidth, setScreenWidth] = useState(0)
   const [mobileStatsOpen, setMobileStatsOpen] = useState(true)
   const [shareModalOpen, setShareModalOpen] = useState(false)
+  const [displayName, setDisplayName] = useState<string>('')
+
+  useEffect(() => {
+    setDisplayName(getProfileDemoState().displayName ?? '')
+  }, [shareModalOpen])
 
   const displayWatches = useMemo(() => {
     if (sortBy === 'manual') return collectionWatches
@@ -251,14 +263,32 @@ export default function CollectionPage() {
         )}
       </div>
 
-      <ShareBoxModal
-        open={shareModalOpen}
-        onClose={() => setShareModalOpen(false)}
-        watches={collectionWatches.map(w => ({ id: w.id, brand: w.brand, model: w.model, imageUrl: w.imageUrl ?? null, estimatedValue: w.estimatedValue }))}
-        totalValue={totalEstimatedValue}
-        handle={user?.email?.split('@')[0] ?? 'collector'}
-        shareUrl={buildAbsoluteProfileDemoUrl(getProfileSharePath())}
-      />
+      {(() => {
+        const handle = (displayName.trim() || user?.email?.split('@')[0] || 'collector')
+        const brandCount = new Set(collectionWatches.map(w => w.brand).filter(Boolean)).size
+        const data = {
+          handle,
+          watchCount: collectionWatches.length,
+          totalValue: totalEstimatedValue,
+          brandCount,
+          slotCount: watchboxConfig.slotCount,
+          watchImageUrls: collectionWatches.map(w => w.imageUrl ?? null),
+        }
+        const buildShareUrl = (flags: ShareFlags) =>
+          buildAbsoluteProfileDemoUrl(buildBoxShareUrl(getCollectionBoxSlug(), 'collection', data, flags))
+        return (
+          <ShareBoxModal
+            open={shareModalOpen}
+            onClose={() => setShareModalOpen(false)}
+            watches={collectionWatches.map(w => ({ id: w.id, brand: w.brand, model: w.model, imageUrl: w.imageUrl ?? null, estimatedValue: w.estimatedValue }))}
+            totalValue={totalEstimatedValue}
+            handle={handle}
+            shareUrl={buildShareUrl({ showCount: true, showValue: true, showBrands: true })}
+            buildShareUrl={buildShareUrl}
+            slotCount={watchboxConfig.slotCount}
+          />
+        )
+      })()}
 
       <UnsavedChangesBar
         pendingChanges={EMPTY_PENDING_CHANGES}

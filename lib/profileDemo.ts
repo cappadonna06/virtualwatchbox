@@ -544,12 +544,101 @@ export function getPublicBoxSnapshotBySlug(slug: string) {
   return snapshot.playgroundBoxes.find(box => box.slug === slug) ?? null
 }
 
+export const PROFILE_SECTION_ANCHORS = {
+  box: 'profile-the-box',
+  dreamBoxes: 'profile-dream-boxes',
+} as const
+
 export function getProfileSharePath() {
   return '/profile/preview'
 }
 
-export function getBoxSharePath(slug: string) {
-  return `/profile/box/${slug}`
+export function getBoxSharePath(slug: string, source: 'collection' | 'playground') {
+  const params = new URLSearchParams({ box: slug, type: source })
+  const anchor = source === 'collection'
+    ? PROFILE_SECTION_ANCHORS.box
+    : `dream-box-${slug}`
+  return `/profile/preview?${params.toString()}#${anchor}`
+}
+
+export interface BoxShareOgData {
+  handle: string
+  watchCount: number
+  totalValue: number
+  brandCount: number
+  slotCount: number
+  boxTitle?: string
+  watchImageUrls: (string | null | undefined)[]
+}
+
+export interface BoxShareFlags {
+  showCount?: boolean
+  showValue?: boolean
+  showBrands?: boolean
+}
+
+function applyShareFlags(params: URLSearchParams, flags?: BoxShareFlags) {
+  if (flags?.showCount === false) params.set('c', '0')
+  if (flags?.showValue === false) params.set('v', '0')
+  if (flags?.showBrands === false) params.set('b', '0')
+}
+
+function absolutizeImageUrl(url: string | null | undefined): string | null {
+  if (!url) return null
+  const trimmed = url.trim()
+  if (!trimmed) return null
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+  if (typeof window === 'undefined') return null
+  if (trimmed.startsWith('/')) return `${window.location.origin}${trimmed}`
+  return null
+}
+
+export function buildBoxShareUrl(
+  slug: string,
+  source: 'collection' | 'playground',
+  data: BoxShareOgData,
+  flags?: BoxShareFlags,
+) {
+  const params = new URLSearchParams()
+  params.set('box', slug)
+  params.set('type', source)
+  params.set('handle', data.handle)
+  params.set('count', String(data.watchCount))
+  params.set('total', String(Math.round(data.totalValue)))
+  params.set('brands', String(data.brandCount))
+  params.set('slots', String(data.slotCount))
+  if (data.boxTitle && source === 'playground') params.set('t', data.boxTitle)
+  applyShareFlags(params, flags)
+  data.watchImageUrls.slice(0, data.slotCount).forEach((url, i) => {
+    const abs = absolutizeImageUrl(url)
+    if (abs) params.set(`img${i}`, abs)
+  })
+  const anchor = source === 'collection'
+    ? PROFILE_SECTION_ANCHORS.box
+    : `dream-box-${slug}`
+  return `/profile/preview?${params.toString()}#${anchor}`
+}
+
+export function buildBoxOgImagePath(
+  slug: string,
+  source: 'collection' | 'playground',
+  data: BoxShareOgData,
+  flags?: BoxShareFlags,
+) {
+  const params = new URLSearchParams()
+  params.set('type', source)
+  params.set('handle', data.handle)
+  params.set('count', String(data.watchCount))
+  params.set('total', String(Math.round(data.totalValue)))
+  params.set('brands', String(data.brandCount))
+  params.set('slots', String(data.slotCount))
+  if (data.boxTitle && source === 'playground') params.set('t', data.boxTitle)
+  applyShareFlags(params, flags)
+  data.watchImageUrls.slice(0, data.slotCount).forEach((url, i) => {
+    const abs = absolutizeImageUrl(url)
+    if (abs) params.set(`img${i}`, abs)
+  })
+  return `/api/og/box/${encodeURIComponent(slug)}?${params.toString()}`
 }
 
 export function buildAbsoluteProfileDemoUrl(path: string) {

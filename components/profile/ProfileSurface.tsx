@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import Cropper, { type Area, type Point } from 'react-easy-crop'
 import 'react-easy-crop/react-easy-crop.css'
 import Image from 'next/image'
@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarSheet'
-import WatchBox from '@/components/collection/WatchBox'
+import ShareBoxModal, { type ShareFlags } from '@/components/collection/ShareBoxModal'
 import WatchCard from '@/components/collection/WatchCard'
 import WatchSidebar from '@/components/collection/WatchSidebar'
 import {
@@ -25,6 +25,8 @@ import { brand } from '@/lib/brand'
 import { createClient } from '@/lib/supabase/client'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import {
+  buildAbsoluteProfileDemoUrl,
+  buildBoxShareUrl,
   copyProfileDemoUrl,
   createCollectionBoxSnapshot,
   createDefaultProfileDemoState,
@@ -33,7 +35,6 @@ import {
   getOrCreatePublicProfileSnapshot,
   getProfileDemoState,
   getProfileSharePath,
-  getPublicBoxSnapshotBySlug,
   getStoredPlaygroundBoxes,
   resizeImageFileToDataUrl,
   saveProfileDemoState,
@@ -53,13 +54,7 @@ import type {
 } from '@/types/profile'
 import type { PlaygroundBox, ResolvedWatch, WatchSavedState } from '@/types/watch'
 
-const WATCHBOX_WIDTH_PADDING = 64
-const WATCHBOX_HEIGHT_PADDING = 72
-const WATCHBOX_GAP = 6
-const PREVIEW_WIDTH_PADDING = 38
-const PREVIEW_HEIGHT_PADDING = 45
 const PREVIEW_GAP = 5
-const ROWS = 2
 const SECTION_IDS = {
   box: 'profile-the-box',
   dreamBoxes: 'profile-dream-boxes',
@@ -86,6 +81,28 @@ function getPublicHandle(displayName: string) {
     .replace(/[^a-z0-9]+/g, '')
 
   return `@${normalized || 'collector'}`
+}
+
+function getShareHandle(displayName: string | null | undefined, email?: string | null) {
+  const trimmed = displayName?.trim()
+  if (trimmed) return trimmed
+  const fromEmail = email?.split('@')[0]?.trim()
+  if (fromEmail) return fromEmail
+  return 'collector'
+}
+
+function buildBoxShareData(box: PublicBoxSnapshot, handle: string) {
+  const totalValue = box.watches.reduce((sum, w) => sum + (w.estimatedValue ?? 0), 0)
+  const brandCount = new Set(box.watches.map(w => w.brand).filter(Boolean)).size
+  return {
+    handle,
+    watchCount: box.watchCount,
+    totalValue,
+    brandCount,
+    slotCount: box.slotCount,
+    boxTitle: box.title,
+    watchImageUrls: box.watches.map(w => w.imageUrl ?? null),
+  }
 }
 
 function getProfileHeroSummary(
@@ -128,19 +145,6 @@ function getFeaturedProfileWatch(
   if (featuredProfileWatch === 'grail') return grailWatch
   if (featuredProfileWatch === 'jewel') return jewelWatch
   return null
-}
-
-function calcSlotPx(
-  containerWidth: number,
-  maxHeight: number,
-  columns: number,
-  widthPadding: number,
-  heightPadding: number,
-  gap: number,
-) {
-  const slotFromWidth = (containerWidth - widthPadding - ((columns - 1) * gap)) / columns
-  const slotFromHeight = ((maxHeight - heightPadding) * 3) / (4 * ROWS)
-  return Math.max(16, Math.min(slotFromWidth, slotFromHeight))
 }
 
 function getInitials(name: string) {
@@ -1718,7 +1722,7 @@ function BoxPreviewCarousel({
                 minWidth: 0,
               }}
             >
-              <Link href={getBoxSharePath(box.slug)} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Link href={getBoxSharePath(box.slug, box.source)} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <div>
                   <div style={{ marginBottom: 12 }}>
                     <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 5 }}>
@@ -1762,7 +1766,7 @@ function BoxPreviewCarousel({
               )}
 
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 14 }}>
-                <ActionButton href={getBoxSharePath(box.slug)}>Open Box</ActionButton>
+                <ActionButton href={getBoxSharePath(box.slug, box.source)}>Open Box</ActionButton>
                 <ActionButton onClick={() => onShareBox(box)}>Share Box</ActionButton>
               </div>
             </div>
@@ -1840,127 +1844,6 @@ function ReadonlyWatchGridSection({
           </div>
         </>
       )}
-    </section>
-  )
-}
-
-function ReadonlyBoxShowcase({
-  box,
-  eyebrow,
-  title,
-  description,
-  heroImageUrl = '',
-  showCollectionStats = false,
-  collectionStats,
-  jewelWatchIds,
-  actions,
-  footerContent,
-}: {
-  box: PublicBoxSnapshot
-  eyebrow: string
-  title: string
-  description: string
-  heroImageUrl?: string
-  showCollectionStats?: boolean
-  collectionStats?: PublicCollectionStats
-  jewelWatchIds?: string[]
-  actions?: ReactNode
-  footerContent?: ReactNode
-}) {
-  const [screenWidth, setScreenWidth] = useState(0)
-  const [selectedWatchId, setSelectedWatchId] = useState<string | null>(null)
-
-  useLayoutEffect(() => {
-    const update = () => setScreenWidth(window.innerWidth)
-    update()
-    window.addEventListener('resize', update)
-    return () => window.removeEventListener('resize', update)
-  }, [])
-
-  useEffect(() => {
-    setSelectedWatchId(null)
-  }, [box.slug])
-
-  const slotConfig = SLOT_COUNTS.find(item => item.n === box.slotCount) ?? SLOT_COUNTS[1]
-  const overflowSummary = getOverflowSummary(
-    slotConfig.n,
-    getWatchboxOverflow(box.watches, slotConfig.n).overflowCount,
-  )
-  const activeSlot = selectedWatchId ? box.watches.findIndex(watch => watch.id === selectedWatchId) : -1
-  const activeWatch = activeSlot >= 0 ? box.watches[activeSlot] ?? null : null
-  const frame = FRAMES.find(item => item.id === box.frame) ?? FRAMES[0]
-  const lining = LININGS.find(item => item.id === box.lining) ?? LININGS[0]
-  const isMobile = screenWidth > 0 && screenWidth < 768
-  const watchboxContainerWidth = isMobile ? screenWidth - 40 : Math.max(200, screenWidth - 444)
-  const watchboxMaxHeight = isMobile ? 300 : 380
-  const watchboxSlotWidth = screenWidth > 0
-    ? Math.floor(
-        calcSlotPx(
-          watchboxContainerWidth,
-          watchboxMaxHeight,
-          slotConfig.cols,
-          WATCHBOX_WIDTH_PADDING,
-          WATCHBOX_HEIGHT_PADDING,
-          WATCHBOX_GAP,
-        ),
-      )
-    : undefined
-  const watchboxMaxWidth = watchboxSlotWidth !== undefined
-    ? WATCHBOX_WIDTH_PADDING + ((slotConfig.cols - 1) * WATCHBOX_GAP) + (slotConfig.cols * watchboxSlotWidth)
-    : undefined
-
-  return (
-    <section style={getSectionShellStyle()}>
-      <SectionHeader eyebrow={eyebrow} title={title} description={description} actions={actions} />
-      <HeroImage imageUrl={heroImageUrl} title={title} />
-      {showCollectionStats && collectionStats ? <CollectionStatsRow stats={collectionStats} /> : null}
-
-      <div className="collection-grid" style={{ display: 'grid', gridTemplateColumns: activeWatch ? '1fr 300px' : '1fr', gap: 32, alignItems: 'start' }}>
-        <div>
-          <div
-            style={{
-              position: 'relative',
-              ...(watchboxMaxWidth !== undefined ? { maxWidth: watchboxMaxWidth, width: '100%', margin: '0 auto' } : {}),
-            }}
-          >
-            <WatchBox
-              watches={box.watches}
-              activeSlot={activeSlot >= 0 ? activeSlot : null}
-              onSlotClick={index => {
-                const watch = box.watches[index]
-                if (!watch) return
-                setSelectedWatchId(selectedWatchId === watch.id ? null : watch.id)
-              }}
-              frame={box.frame}
-              lining={box.lining}
-              slotCount={box.slotCount}
-              slotWidth={watchboxSlotWidth}
-              mode={box.source === 'playground' ? 'playground' : 'collection'}
-              jewelWatchIds={jewelWatchIds}
-              readonly
-            />
-
-            <div style={{ marginTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-              <span style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted }}>
-                {frame.label} · {lining.label} · {slotConfig.n} slots
-                {overflowSummary ? ` · ${overflowSummary}` : ''}
-              </span>
-              {footerContent}
-            </div>
-          </div>
-        </div>
-
-        {activeWatch ? (
-          <ResponsiveSidebarSheet active={Boolean(activeWatch)} onClose={() => setSelectedWatchId(null)}>
-            <WatchSidebar
-              watch={activeWatch}
-              sticky={false}
-              catalogWatchId={activeWatch?.watchId ?? null}
-              mode="public"
-            />
-          </ResponsiveSidebarSheet>
-        ) : null}
-      </div>
     </section>
   )
 }
@@ -2641,7 +2524,7 @@ function PublicBoxFeatureCard({
   const overflowSummary = getOverflowSummary(slotConfig.n, getWatchboxOverflow(box.watches, slotConfig.n).overflowCount)
 
   return (
-    <section id={sectionId} style={isMobile ? getMobileFlowSectionStyle() : getSectionShellStyle()}>
+    <section id={sectionId} style={{ ...(isMobile ? getMobileFlowSectionStyle() : getSectionShellStyle()), scrollMarginTop: 88 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 14 }}>
         <div>
           <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
@@ -2669,7 +2552,17 @@ function PublicBoxFeatureCard({
         </div>
       ) : null}
 
-      <Link href={getBoxSharePath(box.slug)} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+      <Link
+        href={getBoxSharePath(box.slug, box.source)}
+        style={{
+          textDecoration: 'none',
+          color: 'inherit',
+          display: 'block',
+          maxWidth: 560,
+          margin: '0 auto',
+          width: '100%',
+        }}
+      >
         <div
           style={{
             background: brand.colors.bg,
@@ -2703,7 +2596,7 @@ function PublicDreamBoxesSection({
   const isMobile = useIsMobile()
 
   return (
-    <section id={SECTION_IDS.dreamBoxes} style={isMobile ? getMobileFlowSectionStyle() : getSectionShellStyle()}>
+    <section id={SECTION_IDS.dreamBoxes} style={{ ...(isMobile ? getMobileFlowSectionStyle() : getSectionShellStyle()), scrollMarginTop: 88 }}>
       <SectionHeader
         eyebrow="Playground"
         title="Dream Boxes"
@@ -2716,7 +2609,8 @@ function PublicDreamBoxesSection({
           {boxes.map(box => (
             <Link
               key={box.slug}
-              href={getBoxSharePath(box.slug)}
+              id={`dream-box-${box.slug}`}
+              href={getBoxSharePath(box.slug, box.source)}
               style={{
                 position: 'relative',
                 display: 'block',
@@ -2726,6 +2620,7 @@ function PublicDreamBoxesSection({
                 border: `1px solid ${brand.colors.border}`,
                 borderRadius: brand.radius.xl,
                 padding: 16,
+                scrollMarginTop: 88,
               }}
             >
               <div style={{ position: 'absolute', top: 14, right: 14, zIndex: 2 }}>
@@ -3130,6 +3025,7 @@ export function OwnerProfilePage() {
   const [avatarEditOpen, setAvatarEditOpen] = useState(false)
   const [coverEditOpen, setCoverEditOpen] = useState(false)
   const [visibilityOpen, setVisibilityOpen] = useState(false)
+  const [shareBox, setShareBox] = useState<PublicBoxSnapshot | null>(null)
   // Cloud-hydration must be state (not ref) so the save effect re-runs once it flips
   // to true. Without this, save races cloud read and can clobber Browser-1 data with
   // local defaults on a fresh Browser-2 sign-in.
@@ -3455,7 +3351,7 @@ export function OwnerProfilePage() {
             title="The Box"
             sectionId={SECTION_IDS.box}
             shareLabel="Share The Box"
-            onShare={() => handleCopy(getBoxSharePath(collectionBox.slug), 'The Box link copied to clipboard.')}
+            onShare={() => setShareBox(collectionBox)}
             stats={profile.visibility.showCollectionStats ? collectionStats : undefined}
           />
         )}
@@ -3463,7 +3359,7 @@ export function OwnerProfilePage() {
         {profile.visibility.showPlayground && (
           <PublicDreamBoxesSection
             boxes={publicBoxes}
-            onShareBox={box => handleCopy(getBoxSharePath(box.slug), `${box.title} link copied to clipboard.`)}
+            onShareBox={box => setShareBox(box)}
             actions={<ActionButton href="/playground">Manage</ActionButton>}
           />
         )}
@@ -3502,6 +3398,27 @@ export function OwnerProfilePage() {
         onClose={() => setVisibilityOpen(false)}
         onChange={nextVisibility => setProfile(current => ({ ...current, visibility: nextVisibility }))}
       />
+      {(() => {
+        const handle = getShareHandle(profile.displayName, user?.email)
+        const data = shareBox ? buildBoxShareData(shareBox, handle) : null
+        const buildShareUrl = (flags: ShareFlags) => shareBox && data
+          ? buildAbsoluteProfileDemoUrl(buildBoxShareUrl(shareBox.slug, shareBox.source, data, flags))
+          : ''
+        return (
+          <ShareBoxModal
+            open={Boolean(shareBox)}
+            onClose={() => setShareBox(null)}
+            watches={shareBox ? shareBox.watches.map(w => ({ id: w.id, brand: w.brand, model: w.model, imageUrl: w.imageUrl ?? null, estimatedValue: w.estimatedValue })) : []}
+            totalValue={data?.totalValue ?? 0}
+            handle={handle}
+            shareUrl={buildShareUrl({ showCount: true, showValue: true, showBrands: true })}
+            buildShareUrl={buildShareUrl}
+            slotCount={shareBox?.slotCount ?? 6}
+            source={shareBox?.source ?? 'collection'}
+            title={shareBox?.title}
+          />
+        )
+      })()}
       <FloatingToast message={message} />
     </div>
   )
@@ -3513,7 +3430,9 @@ function ProfilePreviewLayout({
   snapshot: PublicProfileSnapshot
 }) {
   const isMobile = useIsMobile()
+  const { user } = useAuth()
   const { message, showToast } = useToast()
+  const [shareBox, setShareBox] = useState<PublicBoxSnapshot | null>(null)
   const showPublicFeaturedWatch = snapshot.visibility.showGrail && snapshot.profile.featuredProfileWatch !== 'none'
   const profileIsPrivate = !hasAnyPublicProfileModules(snapshot.visibility, showPublicFeaturedWatch)
 
@@ -3521,6 +3440,12 @@ function ProfilePreviewLayout({
     await copyProfileDemoUrl(path)
     showToast(successMessage)
   }
+
+  const handle = getShareHandle(snapshot.profile.displayName, user?.email)
+  const shareData = shareBox ? buildBoxShareData(shareBox, handle) : null
+  const shareBuildUrl = (flags: ShareFlags) => shareBox && shareData
+    ? buildAbsoluteProfileDemoUrl(buildBoxShareUrl(shareBox.slug, shareBox.source, shareData, flags))
+    : ''
 
   return (
     <div className="profile-page-shell" style={{ padding: isMobile ? '0 0 96px' : '56px 56px 120px', borderTop: isMobile ? 'none' : `1px solid ${brand.colors.border}` }}>
@@ -3539,7 +3464,7 @@ function ProfilePreviewLayout({
             title="The Box"
             sectionId={SECTION_IDS.box}
             shareLabel="Share The Box"
-            onShare={() => handleCopy(getBoxSharePath(snapshot.collectionBox.slug), 'The Box link copied to clipboard.')}
+            onShare={() => setShareBox(snapshot.collectionBox)}
             stats={snapshot.visibility.showCollectionStats ? snapshot.collectionStats : undefined}
           />
         )}
@@ -3547,7 +3472,7 @@ function ProfilePreviewLayout({
         {snapshot.visibility.showPlayground && (
           <PublicDreamBoxesSection
             boxes={snapshot.playgroundBoxes}
-            onShareBox={box => handleCopy(getBoxSharePath(box.slug), `${box.title} link copied to clipboard.`)}
+            onShareBox={box => setShareBox(box)}
           />
         )}
 
@@ -3555,6 +3480,19 @@ function ProfilePreviewLayout({
           <PublicRadarSection watches={snapshot.followedWatches} />
         )}
       </div>
+
+      <ShareBoxModal
+        open={Boolean(shareBox)}
+        onClose={() => setShareBox(null)}
+        watches={shareBox ? shareBox.watches.map(w => ({ id: w.id, brand: w.brand, model: w.model, imageUrl: w.imageUrl ?? null, estimatedValue: w.estimatedValue })) : []}
+        totalValue={shareData?.totalValue ?? 0}
+        handle={handle}
+        shareUrl={shareBuildUrl({ showCount: true, showValue: true, showBrands: true })}
+        buildShareUrl={shareBuildUrl}
+        slotCount={shareBox?.slotCount ?? 6}
+        source={shareBox?.source ?? 'collection'}
+        title={shareBox?.title}
+      />
 
       <FloatingToast message={message} />
     </div>
@@ -3568,6 +3506,18 @@ export function PublicProfilePreviewPage() {
   useEffect(() => {
     setSnapshot(getOrCreatePublicProfileSnapshot())
   }, [])
+
+  useEffect(() => {
+    if (!snapshot) return
+    if (typeof window === 'undefined') return
+    const hash = window.location.hash.replace(/^#/, '')
+    if (!hash) return
+    const id = window.requestAnimationFrame(() => {
+      const el = document.getElementById(hash)
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+    return () => window.cancelAnimationFrame(id)
+  }, [snapshot])
 
   if (!snapshot) {
     return (
@@ -3587,126 +3537,3 @@ export function PublicProfilePreviewPage() {
   return <ProfilePreviewLayout snapshot={snapshot} />
 }
 
-export function PublicBoxPage({ slug }: { slug: string }) {
-  const isMobile = useIsMobile()
-  const { message, showToast } = useToast()
-  const [snapshot, setSnapshot] = useState<PublicProfileSnapshot | null>(null)
-  const [box, setBox] = useState<PublicBoxSnapshot | null>(null)
-
-  useEffect(() => {
-    const nextSnapshot = getOrCreatePublicProfileSnapshot()
-    setSnapshot(nextSnapshot)
-    setBox(getPublicBoxSnapshotBySlug(slug))
-  }, [slug])
-
-  if (!snapshot || !box) {
-    return (
-      <div className="collection-section" style={{ padding: isMobile ? '24px 20px 96px' : '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}>
-        <section style={getSectionShellStyle()}>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
-            Box Page
-          </div>
-          <h1 style={{ fontFamily: brand.font.serif, fontSize: 40, fontWeight: 400, color: brand.colors.ink, margin: '0 0 10px' }}>
-            This box is not available right now.
-          </h1>
-          <p style={{ margin: '0 0 16px', fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.7 }}>
-            Please head back to the profile and try again.
-          </p>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <ActionButton href="/profile/preview" tone="primary">Back to Public Profile</ActionButton>
-          </div>
-        </section>
-      </div>
-    )
-  }
-
-  return (
-    <div className="collection-section" style={{ padding: isMobile ? '24px 20px 96px' : '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}>
-      <div style={{ display: 'grid', gap: 20, gridTemplateColumns: 'minmax(0, 1fr)' }}>
-        <section style={getSectionShellStyle()}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
-            <div>
-              <Link
-                href="/profile/preview"
-                style={{
-                  display: 'inline-block',
-                  textDecoration: 'none',
-                  fontFamily: brand.font.sans,
-                  fontSize: 10,
-                  fontWeight: 600,
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                  color: brand.colors.muted,
-                  marginBottom: 10,
-                }}
-              >
-                Public Profile →
-              </Link>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
-                <span style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold }}>
-                  {box.source === 'collection' ? 'Collection Box' : 'Dream Box'}
-                </span>
-                {box.tags.map(tag => (
-                  <span
-                    key={tag}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      padding: '4px 8px',
-                      borderRadius: brand.radius.pill,
-                      border: `1px solid ${brand.colors.border}`,
-                      color: brand.colors.muted,
-                      fontFamily: brand.font.sans,
-                      fontSize: 9,
-                      fontWeight: 600,
-                      letterSpacing: '0.08em',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <h1 style={{ fontFamily: brand.font.serif, fontSize: 44, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.02, margin: '0 0 8px' }}>
-                {box.title}
-              </h1>
-              <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.7 }}>
-                {box.source === 'collection'
-                  ? `${snapshot.profile.displayName}'s collection box.`
-                  : `${snapshot.profile.displayName}'s dream box.`}
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <ActionButton href="/profile/preview" tone="secondary">Back to Profile</ActionButton>
-              <ActionButton
-                onClick={async () => {
-                  await copyProfileDemoUrl(getBoxSharePath(box.slug))
-                  showToast('Box link copied to clipboard.')
-                }}
-                tone="primary"
-              >
-                Share
-              </ActionButton>
-            </div>
-          </div>
-        </section>
-
-        <ReadonlyBoxShowcase
-          box={box}
-          eyebrow={box.source === 'collection' ? 'My Collection' : 'Playground'}
-          title={box.title}
-          description={box.source === 'collection'
-            ? 'A closer look at the collection.'
-            : 'A closer look at this dream box.'}
-          heroImageUrl={box.source === 'collection' ? snapshot.profile.coverImageUrl : ''}
-          showCollectionStats={box.source === 'collection' && snapshot.visibility.showCollectionStats}
-          collectionStats={box.source === 'collection' ? snapshot.collectionStats : undefined}
-          jewelWatchIds={box.source === 'collection' && snapshot.jewelWatch ? [snapshot.jewelWatch.watchId] : undefined}
-        />
-      </div>
-
-      <FloatingToast message={message} />
-    </div>
-  )
-}
