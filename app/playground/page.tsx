@@ -6,11 +6,12 @@ import type { PlaygroundBox, PlaygroundBoxEntry, ResolvedWatch } from '@/types/w
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import {
   buildAbsoluteProfileDemoUrl,
-  copyProfileDemoUrl,
-  getBoxSharePath,
+  buildBoxShareUrl,
   getPlaygroundBoxSlug,
+  getProfileDemoState,
   syncPublicProfileSnapshot,
 } from '@/lib/profileDemo'
+import { useAuth } from '@/lib/auth/AuthProvider'
 import { watches as catalogWatches } from '@/lib/watches'
 import { createPlaygroundBox, normalizePlaygroundBoxes, resolvePlaygroundWatches, type ResolvedPlaygroundWatch } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
@@ -23,7 +24,7 @@ import SortDropdown from '@/components/collection/SortDropdown'
 import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import CollectionStats from '@/components/collection/CollectionStats'
-import ShareBoxModal from '@/components/collection/ShareBoxModal'
+import ShareBoxModal, { type ShareFlags } from '@/components/collection/ShareBoxModal'
 import WatchboxHeader from '@/components/collection/WatchboxHeader'
 import { brand } from '@/lib/brand'
 
@@ -83,8 +84,10 @@ export default function PlaygroundPage() {
 function PlaygroundPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { user } = useAuth()
   const requestedBoxId = searchParams.get('boxId')
   const requestedEntryId = searchParams.get('entryId')
+  const [shareDisplayName, setShareDisplayName] = useState('')
 
   const [boxes, setBoxes] = useState<PlaygroundBox[]>(SEEDED_PLAYGROUND_BOXES)
   const [activeBoxId, setActiveBoxId] = useState<string>(SEEDED_PLAYGROUND_BOXES[0].id)
@@ -94,7 +97,6 @@ function PlaygroundPageInner() {
   const [newBoxModalOpen, setNewBoxModalOpen] = useState(false)
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
   const [deleteEntryTarget, setDeleteEntryTarget] = useState<ResolvedPlaygroundWatch | null>(null)
-  const [shareToast, setShareToast] = useState(false)
   const [shareModalOpen, setShareModalOpen] = useState(false)
   const [editingName, setEditingName] = useState(false)
   const [editingNameValue, setEditingNameValue] = useState('')
@@ -199,11 +201,8 @@ function PlaygroundPageInner() {
   async function handleShareBox() {
     if (!activeBox) return
 
-    await copyProfileDemoUrl(
-      getBoxSharePath(getPlaygroundBoxSlug(activeBox)),
-    )
-    setShareToast(true)
-    setTimeout(() => setShareToast(false), 2500)
+    setShareDisplayName(getProfileDemoState().displayName ?? '')
+    setShareModalOpen(true)
   }
 
   function handleRenameBox(newName: string) {
@@ -723,15 +722,37 @@ function PlaygroundPageInner() {
       </div>
       )}
 
-      <ShareBoxModal
-        open={shareModalOpen}
-        onClose={() => setShareModalOpen(false)}
-        watches={displayWatches.map(w => ({ id: w.id, brand: w.brand, model: w.model, imageUrl: w.imageUrl ?? null, estimatedValue: w.estimatedValue }))}
-        totalValue={displayWatches.reduce((s, w) => s + w.estimatedValue, 0)}
-        handle={activeBox?.name ?? 'Box'}
-        shareUrl={activeBox ? buildAbsoluteProfileDemoUrl(getBoxSharePath(getPlaygroundBoxSlug(activeBox))) : ''}
-        title={activeBox?.name}
-      />
+      {(() => {
+        const total = displayWatches.reduce((s, w) => s + w.estimatedValue, 0)
+        const handle = (shareDisplayName.trim() || user?.email?.split('@')[0] || 'collector')
+        const brandCount = new Set(displayWatches.map(w => w.brand).filter(Boolean)).size
+        const data = activeBox ? {
+          handle,
+          watchCount: displayWatches.length,
+          totalValue: total,
+          brandCount,
+          slotCount: activeBox.slotCount,
+          boxTitle: activeBox.name,
+          watchImageUrls: displayWatches.map(w => w.imageUrl ?? null),
+        } : null
+        const buildShareUrl = (flags: ShareFlags) => activeBox && data
+          ? buildAbsoluteProfileDemoUrl(buildBoxShareUrl(getPlaygroundBoxSlug(activeBox), 'playground', data, flags))
+          : ''
+        return (
+          <ShareBoxModal
+            open={shareModalOpen}
+            onClose={() => setShareModalOpen(false)}
+            watches={displayWatches.map(w => ({ id: w.id, brand: w.brand, model: w.model, imageUrl: w.imageUrl ?? null, estimatedValue: w.estimatedValue }))}
+            totalValue={total}
+            handle={handle}
+            shareUrl={buildShareUrl({ showCount: true, showValue: true, showBrands: true })}
+            buildShareUrl={buildShareUrl}
+            slotCount={activeBox?.slotCount ?? 6}
+            source="playground"
+            title={activeBox?.name}
+          />
+        )
+      })()}
 
       {newBoxModalOpen && (
         <NewBoxModal
@@ -756,27 +777,6 @@ function PlaygroundPageInner() {
         />
       ) : null}
 
-      {shareToast && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: 28,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: '#1A1410',
-            color: '#FAF8F4',
-            padding: '10px 22px',
-            borderRadius: 8,
-            fontFamily: 'var(--font-dm-sans)',
-            fontSize: 12,
-            zIndex: 300,
-            whiteSpace: 'nowrap',
-            pointerEvents: 'none',
-          }}
-        >
-          Link copied to clipboard
-        </div>
-      )}
 
       {deleteEntryTarget && (
         <>
