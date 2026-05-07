@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import Cropper, { type Area, type Point } from 'react-easy-crop'
 import 'react-easy-crop/react-easy-crop.css'
 import Image from 'next/image'
@@ -3028,9 +3028,44 @@ export function OwnerProfilePage() {
   const [shareBox, setShareBox] = useState<PublicBoxSnapshot | null>(null)
   // Cloud-hydration must be state (not ref) so the save effect re-runs once it flips
   // to true. Without this, save races cloud read and can clobber Browser-1 data with
-  // local defaults on a fresh Browser-2 sign-in.
+  // local defaults on a fresh Browser-2 sign-in. After the initial hydrate (per
+  // user-id) it stays true for the lifetime of the session — tab-focus refetch is
+  // a direct read that does NOT toggle this flag (see comment on `refetchProfile`).
   const [profileCloudHydrated, setProfileCloudHydrated] = useState(false)
   const lastUserIdRef = useRef<string | null>(null)
+
+  // Dirty-tracking for the save/refetch coordination.
+  //
+  // The previous design re-used `profileCloudHydrated` for both "have we done the
+  // initial cloud read?" and "should we re-read on tab focus?". Toggling that flag
+  // back to false on focus had two destructive side-effects: (1) the save effect's
+  // cleanup ran during the 500 ms debounce window, cancelling the pending upsert
+  // entirely; (2) the cloud-read effect immediately re-fetched stale data and
+  // overwrote the un-saved local edit. The user-visible symptom: switching the
+  // featured-watch view (grail/jewel) — or any other quick edit — would silently
+  // revert if the tab regained focus before the debounce fired.
+  //
+  // The fix is to track unsaved-local-changes explicitly via change-id refs:
+  //   - `localChangeIdRef` is bumped by every user-initiated profile change.
+  //   - `lastSavedChangeIdRef` is set to the change-id we last persisted to (or
+  //     hydrated from) Supabase.
+  //   - When they're equal, local state matches cloud state ("clean").
+  //   - `saveInFlightRef` is true while an upsert is in flight.
+  // Refetch is allowed only when clean and not saving; otherwise it's skipped to
+  // protect the in-progress edit. The save effect tracks the change-id snapshot
+  // it persisted so concurrent typing during a save isn't accidentally marked clean.
+  const localChangeIdRef = useRef(0)
+  const lastSavedChangeIdRef = useRef(0)
+  const saveInFlightRef = useRef(false)
+
+  // User-initiated profile mutations go through this wrapper so they bump the
+  // change-id and mark the local state as dirty. Cloud-read code paths must call
+  // `setProfile` directly so they don't accidentally mark dirty after pulling
+  // values from the server.
+  const updateProfile = useCallback((updater: (current: ProfileDemoState) => ProfileDemoState) => {
+    localChangeIdRef.current += 1
+    setProfile(updater)
+  }, [])
 
   useEffect(() => {
     setProfile(getProfileDemoState())
@@ -3044,12 +3079,62 @@ export function OwnerProfilePage() {
     if (lastUserIdRef.current !== nextId) {
       lastUserIdRef.current = nextId
       setProfileCloudHydrated(false)
+      // A new user means whatever local change-id we accumulated is no longer
+      // meaningful — reset both counters so the upcoming hydrate writes a clean
+      // baseline.
+      localChangeIdRef.current = 0
+      lastSavedChangeIdRef.current = 0
     }
   }, [user?.id])
 
-  // Cloud read of the profile row. Runs whenever profileCloudHydrated is false and
-  // there's an authenticated user — including after tab-focus refetch (which flips
-  // the flag back to false).
+  // Merge a cloud `user_profiles` row onto the local profile state. Same shape
+  // for both the initial hydrate and the tab-focus refetch — only the gating
+  // policy differs.
+  const mergeCloudProfileRow = useCallback((data: Record<string, unknown>) => {
+    setProfile(current => ({
+      ...current,
+      displayName: typeof data.display_name === 'string' ? data.display_name : current.displayName,
+      bio: typeof data.bio === 'string' ? data.bio : current.bio,
+      profileImageUrl: typeof data.profile_image_url === 'string' ? data.profile_image_url : current.profileImageUrl,
+      profileImageCrop: typeof data.profile_image_crop === 'object' && data.profile_image_crop
+        ? (data.profile_image_crop as ProfileImageCropState)
+        : current.profileImageCrop,
+      coverImageUrl: typeof data.cover_image_url === 'string' ? data.cover_image_url : current.coverImageUrl,
+      collectionHeroImageUrl: typeof data.collection_hero_image_url === 'string'
+        ? data.collection_hero_image_url
+        : current.collectionHeroImageUrl,
+      featuredProfileWatch: data.featured_profile_watch === 'grail' || data.featured_profile_watch === 'jewel' || data.featured_profile_watch === 'none'
+        ? data.featured_profile_watch
+        : current.featuredProfileWatch,
+      visibility: typeof data.visibility === 'object' && data.visibility
+        ? {
+          ...current.visibility,
+          ...(typeof (data.visibility as Record<string, unknown>).isPublic === 'boolean'
+            ? { isPublic: (data.visibility as Record<string, unknown>).isPublic as boolean }
+            : {}),
+          ...(typeof (data.visibility as Record<string, unknown>).showCollection === 'boolean'
+            ? { showCollection: (data.visibility as Record<string, unknown>).showCollection as boolean }
+            : {}),
+          ...(typeof (data.visibility as Record<string, unknown>).showCollectionStats === 'boolean'
+            ? { showCollectionStats: (data.visibility as Record<string, unknown>).showCollectionStats as boolean }
+            : {}),
+          ...(typeof (data.visibility as Record<string, unknown>).showPlayground === 'boolean'
+            ? { showPlayground: (data.visibility as Record<string, unknown>).showPlayground as boolean }
+            : {}),
+          ...(typeof (data.visibility as Record<string, unknown>).showFollowedWatches === 'boolean'
+            ? { showFollowedWatches: (data.visibility as Record<string, unknown>).showFollowedWatches as boolean }
+            : {}),
+          ...(typeof (data.visibility as Record<string, unknown>).showGrail === 'boolean'
+            ? { showGrail: (data.visibility as Record<string, unknown>).showGrail as boolean }
+            : {}),
+        }
+        : current.visibility,
+    }))
+  }, [])
+
+  // Initial cloud read of the profile row. Runs once per signed-in user (gated by
+  // `profileCloudHydrated`). Never re-runs from tab focus — that path is handled
+  // by `refetchProfile` below, which is dirty-aware.
   useEffect(() => {
     if (!user || !hydrated || profileCloudHydrated) return
 
@@ -3066,50 +3151,15 @@ export function OwnerProfilePage() {
         if (cancelled) return
         if (error) console.error('[vwb] user profile read error', error)
 
-        if (!data) {
-          setProfileCloudHydrated(true)
-          return
+        if (data) {
+          mergeCloudProfileRow(data as Record<string, unknown>)
         }
-
-        setProfile(current => ({
-          ...current,
-          displayName: typeof data.display_name === 'string' ? data.display_name : current.displayName,
-          bio: typeof data.bio === 'string' ? data.bio : current.bio,
-          profileImageUrl: typeof data.profile_image_url === 'string' ? data.profile_image_url : current.profileImageUrl,
-          profileImageCrop: typeof data.profile_image_crop === 'object' && data.profile_image_crop
-            ? (data.profile_image_crop as ProfileImageCropState)
-            : current.profileImageCrop,
-          coverImageUrl: typeof data.cover_image_url === 'string' ? data.cover_image_url : current.coverImageUrl,
-          collectionHeroImageUrl: typeof data.collection_hero_image_url === 'string'
-            ? data.collection_hero_image_url
-            : current.collectionHeroImageUrl,
-          featuredProfileWatch: data.featured_profile_watch === 'grail' || data.featured_profile_watch === 'jewel' || data.featured_profile_watch === 'none'
-            ? data.featured_profile_watch
-            : current.featuredProfileWatch,
-          visibility: typeof data.visibility === 'object' && data.visibility
-            ? {
-              ...current.visibility,
-              ...(typeof (data.visibility as Record<string, unknown>).isPublic === 'boolean'
-                ? { isPublic: (data.visibility as Record<string, unknown>).isPublic as boolean }
-                : {}),
-              ...(typeof (data.visibility as Record<string, unknown>).showCollection === 'boolean'
-                ? { showCollection: (data.visibility as Record<string, unknown>).showCollection as boolean }
-                : {}),
-              ...(typeof (data.visibility as Record<string, unknown>).showCollectionStats === 'boolean'
-                ? { showCollectionStats: (data.visibility as Record<string, unknown>).showCollectionStats as boolean }
-                : {}),
-              ...(typeof (data.visibility as Record<string, unknown>).showPlayground === 'boolean'
-                ? { showPlayground: (data.visibility as Record<string, unknown>).showPlayground as boolean }
-                : {}),
-              ...(typeof (data.visibility as Record<string, unknown>).showFollowedWatches === 'boolean'
-                ? { showFollowedWatches: (data.visibility as Record<string, unknown>).showFollowedWatches as boolean }
-                : {}),
-              ...(typeof (data.visibility as Record<string, unknown>).showGrail === 'boolean'
-                ? { showGrail: (data.visibility as Record<string, unknown>).showGrail as boolean }
-                : {}),
-            }
-            : current.visibility,
-        }))
+        // Snapshot the current change-id as the last-saved baseline. The merge
+        // above used `setProfile` (not `updateProfile`), so localChangeIdRef
+        // wasn't bumped — they should already be equal here, but pin it
+        // explicitly so any user-initiated change earlier in this render flips
+        // dirty correctly on the next bump.
+        lastSavedChangeIdRef.current = localChangeIdRef.current
         setProfileCloudHydrated(true)
       } catch (error) {
         if (cancelled) return
@@ -3119,27 +3169,56 @@ export function OwnerProfilePage() {
     })()
 
     return () => { cancelled = true }
-  }, [user, hydrated, profileCloudHydrated])
+  }, [user, hydrated, profileCloudHydrated, mergeCloudProfileRow])
 
-  // Tab-focus refetch: when the user comes back to the tab, re-read profile from
-  // Supabase so cross-browser edits show up without a hard reload. Skip if no edit
-  // modal is open to avoid clobbering an in-progress edit.
+  // Tab-focus refetch. Pulls the latest cloud row so cross-browser edits show up
+  // without a hard reload, but ONLY when local state is clean — otherwise the
+  // user has unsaved edits and we'd be regressing them. We also skip while any
+  // edit modal is open and while a save is in flight (the save will land soon
+  // and the next focus event picks up that round-tripped value).
   useEffect(() => {
-    if (!user) return
+    if (!user || !profileCloudHydrated) return
 
-    function handleVisibility() {
+    let cancelled = false
+
+    async function refetchProfile() {
+      if (!user) return
       if (document.visibilityState !== 'visible') return
       if (textEditOpen || avatarEditOpen || coverEditOpen || visibilityOpen) return
-      setProfileCloudHydrated(false)
+      if (saveInFlightRef.current) return
+      if (localChangeIdRef.current !== lastSavedChangeIdRef.current) return
+
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('display_name,bio,profile_image_url,profile_image_crop,cover_image_url,collection_hero_image_url,featured_profile_watch,visibility')
+          .eq('id', user.id)
+          .maybeSingle()
+        if (cancelled) return
+        if (error) {
+          console.error('[vwb] user profile refetch error', error)
+          return
+        }
+        // Re-check the dirty/in-flight gates: the user may have started editing
+        // during the network round-trip.
+        if (saveInFlightRef.current) return
+        if (localChangeIdRef.current !== lastSavedChangeIdRef.current) return
+        if (data) mergeCloudProfileRow(data as Record<string, unknown>)
+        lastSavedChangeIdRef.current = localChangeIdRef.current
+      } catch (err) {
+        if (!cancelled) console.error('[vwb] user profile refetch failed', err)
+      }
     }
 
-    document.addEventListener('visibilitychange', handleVisibility)
-    window.addEventListener('focus', handleVisibility)
+    document.addEventListener('visibilitychange', refetchProfile)
+    window.addEventListener('focus', refetchProfile)
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibility)
-      window.removeEventListener('focus', handleVisibility)
+      cancelled = true
+      document.removeEventListener('visibilitychange', refetchProfile)
+      window.removeEventListener('focus', refetchProfile)
     }
-  }, [user, textEditOpen, avatarEditOpen, coverEditOpen, visibilityOpen])
+  }, [user, profileCloudHydrated, textEditOpen, avatarEditOpen, coverEditOpen, visibilityOpen, mergeCloudProfileRow])
 
   const ownerGrailWatch = useMemo<ResolvedWatch | null>(
     () => grailWatch ? { ...grailWatch, watchId: grailWatch.id, condition: 'Excellent', notes: '' } : null,
@@ -3227,11 +3306,21 @@ export function OwnerProfilePage() {
   // Cloud upsert — gated on profileCloudHydrated so we never write local defaults
   // before reading the existing cloud row. Debounced 500 ms so rapid edits (typing
   // bio, etc.) collapse into a single network call.
+  //
+  // Concurrency model: each user-initiated change bumps `localChangeIdRef`. The
+  // debounced upsert captures the change-id at fire time and only marks the save
+  // as "landed" (lastSavedChangeIdRef = targetChangeId) on success — so a typing
+  // burst that lands during an in-flight upsert leaves the state correctly dirty
+  // and triggers another save when the deps re-run. `saveInFlightRef` is set
+  // around the network call so the refetch handler can defer.
   useEffect(() => {
     if (!hydrated || !user || !profileCloudHydrated) return
+    if (localChangeIdRef.current === lastSavedChangeIdRef.current) return // clean — nothing to save
 
+    const targetChangeId = localChangeIdRef.current
     const handle = setTimeout(() => {
       ;(async () => {
+        saveInFlightRef.current = true
         try {
           const supabase = createClient()
           const { error } = await supabase.from('user_profiles').upsert({
@@ -3245,9 +3334,15 @@ export function OwnerProfilePage() {
             featured_profile_watch: profile.featuredProfileWatch,
             visibility: profile.visibility,
           }, { onConflict: 'id' })
-          if (error) console.error('[vwb] profile upsert error', error)
+          if (error) {
+            console.error('[vwb] profile upsert error', error)
+          } else {
+            lastSavedChangeIdRef.current = targetChangeId
+          }
         } catch (err) {
           console.error('[vwb] profile upsert failed', err)
+        } finally {
+          saveInFlightRef.current = false
         }
       })()
     }, 500)
@@ -3266,7 +3361,7 @@ export function OwnerProfilePage() {
   }
 
   async function handleProfileImageSave(nextValue: { imageUrl: string; imageCrop: ProfileImageCropState }) {
-    setProfile(current => ({
+    updateProfile(current => ({
       ...current,
       profileImageUrl: nextValue.imageUrl,
       profileImageCrop: nextValue.imageCrop,
@@ -3276,7 +3371,7 @@ export function OwnerProfilePage() {
 
   async function handleCoverImageUpload(file: File) {
     const imageUrl = await resizeImageFileToDataUrl(file, { maxWidth: 1600, maxHeight: 720, quality: 0.78 })
-    setProfile(current => ({ ...current, coverImageUrl: imageUrl, collectionHeroImageUrl: imageUrl }))
+    updateProfile(current => ({ ...current, coverImageUrl: imageUrl, collectionHeroImageUrl: imageUrl }))
     showToast('Cover image updated.')
   }
 
@@ -3340,7 +3435,7 @@ export function OwnerProfilePage() {
           onEditAvatar={() => setAvatarEditOpen(true)}
           onEditCover={() => setCoverEditOpen(true)}
           onOpenVisibility={() => setVisibilityOpen(true)}
-          onFeaturedProfileWatchChange={value => setProfile(current => ({ ...current, featuredProfileWatch: value }))}
+          onFeaturedProfileWatchChange={value => updateProfile(current => ({ ...current, featuredProfileWatch: value }))}
         />
 
         {ownerProfilePrivate ? <PrivateProfileNotice /> : null}
@@ -3373,7 +3468,7 @@ export function OwnerProfilePage() {
         open={textEditOpen}
         profile={profile}
         onClose={() => setTextEditOpen(false)}
-        onSave={nextValues => setProfile(current => ({ ...current, ...nextValues }))}
+        onSave={nextValues => updateProfile(current => ({ ...current, ...nextValues }))}
       />
       <ProfileImageCropModal
         open={avatarEditOpen}
@@ -3381,7 +3476,7 @@ export function OwnerProfilePage() {
         imageCrop={profile.profileImageCrop}
         onClose={() => setAvatarEditOpen(false)}
         onSave={handleProfileImageSave}
-        onRemove={() => setProfile(current => ({ ...current, profileImageUrl: '', profileImageCrop: undefined }))}
+        onRemove={() => updateProfile(current => ({ ...current, profileImageUrl: '', profileImageCrop: undefined }))}
       />
       <ImageAssetModal
         open={coverEditOpen}
@@ -3390,13 +3485,13 @@ export function OwnerProfilePage() {
         showRemove={Boolean(profile.coverImageUrl)}
         onClose={() => setCoverEditOpen(false)}
         onUpload={handleCoverImageUpload}
-        onRemove={() => setProfile(current => ({ ...current, coverImageUrl: '', collectionHeroImageUrl: '' }))}
+        onRemove={() => updateProfile(current => ({ ...current, coverImageUrl: '', collectionHeroImageUrl: '' }))}
       />
       <VisibilityModal
         open={visibilityOpen}
         visibility={profile.visibility}
         onClose={() => setVisibilityOpen(false)}
-        onChange={nextVisibility => setProfile(current => ({ ...current, visibility: nextVisibility }))}
+        onChange={nextVisibility => updateProfile(current => ({ ...current, visibility: nextVisibility }))}
       />
       {(() => {
         const handle = getShareHandle(profile.displayName, user?.email)

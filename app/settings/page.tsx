@@ -151,6 +151,17 @@ export default function SettingsPage() {
   const lastUserIdRef = useRef<string | null>(null)
   const upsertTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  // Dirty-tracking for save/refetch coordination — same pattern as
+  // OwnerProfilePage. localChangeIdRef bumps on every user toggle;
+  // lastSavedChangeIdRef catches up only when an upsert successfully lands.
+  // saveInFlightRef is set across the network call so the tab-focus refetch
+  // skips while the upsert is still in flight. Without this, a `focus` event
+  // landing within the 500 ms debounce window would clobber the user's
+  // optimistic visibility toggle with a stale cloud read.
+  const localChangeIdRef = useRef(0)
+  const lastSavedChangeIdRef = useRef(0)
+  const saveInFlightRef = useRef(false)
+
   useEffect(() => {
     setProfile(getProfileDemoState())
   }, [])
@@ -160,12 +171,15 @@ export default function SettingsPage() {
     if (lastUserIdRef.current !== nextId) {
       lastUserIdRef.current = nextId
       setProfileCloudHydrated(false)
+      localChangeIdRef.current = 0
+      lastSavedChangeIdRef.current = 0
     }
   }, [user?.id])
 
   // Cloud read: hydrate visibility from user_profiles when signed in. Mirrors the
   // pattern in components/profile/ProfileSurface.tsx so /profile and /settings stay
-  // in sync across devices.
+  // in sync across devices. Runs once per user-id; tab-focus refetch is its own
+  // dirty-aware effect below.
   useEffect(() => {
     if (!user || !profile || profileCloudHydrated) return
     let cancelled = false
@@ -202,6 +216,10 @@ export default function SettingsPage() {
             return saved
           })
         }
+        // Snapshot the change-id as the saved baseline. The setProfile above
+        // didn't bump localChangeIdRef (only handleToggle does), so this just
+        // pins the cloud-side state as the last-saved.
+        lastSavedChangeIdRef.current = localChangeIdRef.current
         setProfileCloudHydrated(true)
       } catch (err) {
         if (cancelled) return
@@ -212,20 +230,69 @@ export default function SettingsPage() {
     return () => { cancelled = true }
   }, [user, profile, profileCloudHydrated])
 
-  // Tab-focus refetch: re-hydrate when the user comes back so cross-device edits show up.
+  // Tab-focus refetch: re-read from cloud so cross-device edits show up. Skip
+  // entirely while local has unsaved changes or a save is in flight, and
+  // re-check after the network round-trip in case the user started toggling
+  // mid-request.
   useEffect(() => {
-    if (!user) return
-    function handleVisibility() {
+    if (!user || !profileCloudHydrated) return
+    let cancelled = false
+
+    async function refetch() {
+      if (!user) return
       if (document.visibilityState !== 'visible') return
-      setProfileCloudHydrated(false)
+      if (saveInFlightRef.current) return
+      if (localChangeIdRef.current !== lastSavedChangeIdRef.current) return
+
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('visibility')
+          .eq('id', user.id)
+          .maybeSingle()
+        if (cancelled) return
+        if (error) {
+          console.error('[vwb] settings visibility refetch error', error)
+          return
+        }
+        if (saveInFlightRef.current) return
+        if (localChangeIdRef.current !== lastSavedChangeIdRef.current) return
+        if (data && typeof data.visibility === 'object' && data.visibility) {
+          const v = data.visibility as Record<string, unknown>
+          setProfile(current => {
+            if (!current) return current
+            const merged: ProfileDemoState = {
+              ...current,
+              visibility: {
+                ...current.visibility,
+                ...(typeof v.isPublic === 'boolean' ? { isPublic: v.isPublic } : {}),
+                ...(typeof v.showCollection === 'boolean' ? { showCollection: v.showCollection } : {}),
+                ...(typeof v.showCollectionStats === 'boolean' ? { showCollectionStats: v.showCollectionStats } : {}),
+                ...(typeof v.showPlayground === 'boolean' ? { showPlayground: v.showPlayground } : {}),
+                ...(typeof v.showFollowedWatches === 'boolean' ? { showFollowedWatches: v.showFollowedWatches } : {}),
+                ...(typeof v.showGrail === 'boolean' ? { showGrail: v.showGrail } : {}),
+              },
+            }
+            const saved = saveProfileDemoState(merged)
+            syncPublicProfileSnapshot({ profile: saved })
+            return saved
+          })
+        }
+        lastSavedChangeIdRef.current = localChangeIdRef.current
+      } catch (err) {
+        if (!cancelled) console.error('[vwb] settings visibility refetch failed', err)
+      }
     }
-    document.addEventListener('visibilitychange', handleVisibility)
-    window.addEventListener('focus', handleVisibility)
+
+    document.addEventListener('visibilitychange', refetch)
+    window.addEventListener('focus', refetch)
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibility)
-      window.removeEventListener('focus', handleVisibility)
+      cancelled = true
+      document.removeEventListener('visibilitychange', refetch)
+      window.removeEventListener('focus', refetch)
     }
-  }, [user])
+  }, [user, profileCloudHydrated])
 
   useEffect(() => {
     return () => {
@@ -249,17 +316,28 @@ export default function SettingsPage() {
   function scheduleVisibilityUpsert(visibility: ProfileVisibilitySettings) {
     if (!user) return
     if (upsertTimer.current) clearTimeout(upsertTimer.current)
+    // Capture the change-id at fire time so concurrent toggles during an
+    // in-flight upsert correctly leave the state dirty until the *latest*
+    // visibility lands on the server.
+    const targetChangeId = localChangeIdRef.current
     upsertTimer.current = setTimeout(() => {
       ;(async () => {
+        saveInFlightRef.current = true
         try {
           const supabase = createClient()
           const { error } = await supabase.from('user_profiles').upsert(
             { id: user.id, visibility },
             { onConflict: 'id' },
           )
-          if (error) console.error('[vwb] settings visibility upsert error', error)
+          if (error) {
+            console.error('[vwb] settings visibility upsert error', error)
+          } else {
+            lastSavedChangeIdRef.current = targetChangeId
+          }
         } catch (err) {
           console.error('[vwb] settings visibility upsert failed', err)
+        } finally {
+          saveInFlightRef.current = false
         }
       })()
     }, 500)
@@ -274,6 +352,7 @@ export default function SettingsPage() {
     const saved = saveProfileDemoState(next)
     setProfile(saved)
     syncPublicProfileSnapshot({ profile: saved })
+    localChangeIdRef.current += 1
     scheduleVisibilityUpsert(saved.visibility)
   }
 
