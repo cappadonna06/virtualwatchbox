@@ -7,20 +7,15 @@ import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import { normalizePlaygroundBoxes } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
-import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
-import WatchStateControl from '@/components/collection/WatchStateControl'
-import { useCollectionSession } from '../CollectionSessionProvider'
 import { brand } from '@/lib/brand'
+import AddSearchWatchCard from '@/components/collection/AddSearchWatchCard'
+import PhotoSearch from '@/components/PhotoSearch'
 
 const MATERIAL_OPTIONS = ['Stainless Steel', 'Yellow Gold', 'Rose Gold', 'White Gold', 'Titanium', 'Ceramic', 'Bronze']
 const COLOR_OPTIONS = ['Black', 'White', 'Blue', 'Green', 'Grey', 'Silver', 'Champagne', 'Brown', 'Red', 'Salmon']
 const SIZE_OPTIONS = ['≤38mm', '39–41mm', '≥42mm'] as const
 
 type SizeFilter = (typeof SIZE_OPTIONS)[number] | null
-
-function fmt(n: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
-}
 
 function matchesColor(watch: CatalogWatch, color: string) {
   return watch.dialColor.toLowerCase().includes(color.toLowerCase())
@@ -40,15 +35,6 @@ function loadPlaygroundBoxes() {
   } catch {
     return SEEDED_PLAYGROUND_BOXES
   }
-}
-
-function buildDetailHref(watchId: string, options: { duplicate?: boolean; dest?: string | null; boxId?: string | null }) {
-  const params = new URLSearchParams()
-  if (options.duplicate) params.set('duplicate', 'true')
-  if (options.dest) params.set('dest', options.dest)
-  if (options.boxId) params.set('boxId', options.boxId)
-  const query = params.toString()
-  return `/collection/add/${watchId}${query ? `?${query}` : ''}`
 }
 
 // ─── Filter UI primitives ─────────────────────────────────────────────────────
@@ -617,7 +603,6 @@ export default function AddWatchSearchPage() {
 function AddWatchSearchInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { isInCollection } = useCollectionSession()
   const { allWatches: catalogWatches } = useCatalog()
   const { getImageUrl } = useWatchImages()
 
@@ -627,6 +612,7 @@ function AddWatchSearchInner() {
   const isPlaygroundContext = dest === 'playground'
   const isExploreContext = dest === 'explore'
 
+  const [mode, setMode] = useState<'search' | 'photo'>('search')
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') ?? '')
   const [materialFilter, setMaterialFilter] = useState<string | null>(null)
   const [colorFilter, setColorFilter] = useState<string | null>(null)
@@ -769,19 +755,71 @@ function AddWatchSearchInner() {
         {pageSubtitle}
       </p>
 
-      <input
-        value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
-        placeholder="Search brand, model, or reference..."
+      <div
+        role="tablist"
+        aria-label="Find a watch"
         style={{
-          width: '100%', padding: '12px 16px',
-          border: '1px solid #E0DAD0', borderRadius: 8,
-          fontFamily: 'var(--font-dm-sans)', fontSize: 15, color: '#1A1410',
-          background: '#FFFFFF', outline: 'none', marginBottom: 16,
+          display: 'inline-flex',
+          borderRadius: brand.radius.pill,
+          border: `0.5px solid ${brand.colors.border}`,
+          overflow: 'hidden',
+          marginBottom: 18,
+        }}
+      >
+        {(['search', 'photo'] as const).map(value => {
+          const active = mode === value
+          return (
+            <button
+              key={value}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => setMode(value)}
+              style={{
+                padding: '8px 18px',
+                background: active ? brand.colors.ink : 'transparent',
+                color: active ? brand.colors.bg : brand.colors.muted,
+                border: 'none',
+                fontFamily: brand.font.sans,
+                fontSize: 10,
+                fontWeight: 600,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                cursor: 'pointer',
+                lineHeight: 1.2,
+              }}
+            >
+              {value}
+            </button>
+          )
+        })}
+      </div>
+
+      {mode === 'search' && (
+        <input
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          placeholder="Search brand, model, or reference..."
+          style={{
+            width: '100%', padding: '12px 16px',
+            border: '1px solid #E0DAD0', borderRadius: 8,
+            fontFamily: 'var(--font-dm-sans)', fontSize: 15, color: '#1A1410',
+            background: '#FFFFFF', outline: 'none', marginBottom: 16,
+          }}
+        />
+      )}
+
+      <PhotoSearch
+        visible={mode === 'photo'}
+        dest={dest}
+        boxId={boxId}
+        onSwitchToSearch={(prefill) => {
+          setMode('search')
+          if (prefill) setSearchTerm(prefill)
         }}
       />
 
-      {searchTerm.length > 0 && (
+      {mode === 'search' && searchTerm.length > 0 && (
         <>
           {(() => {
             const activeCount =
@@ -1047,88 +1085,9 @@ function AddWatchSearchInner() {
           )}
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 360px))', gap: 16, justifyContent: 'start' }}>
-            {filteredResults.map(watch => {
-              const inCollection = isInCollection(watch.id)
-
-              return (
-                <div
-                  key={watch.id}
-                  onClick={() => router.push(buildDetailHref(watch.id, { dest, boxId }))}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = brand.colors.goldLine }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = brand.colors.border }}
-                  style={{
-                    position: 'relative',
-                    background: brand.colors.white,
-                    border: `1px solid ${brand.colors.border}`,
-                    borderRadius: brand.radius.xl,
-                    overflow: 'hidden',
-                    cursor: 'pointer',
-                    transition: 'border-color 0.15s',
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
-                >
-                  <WatchStateControl
-                    catalogWatchId={watch.id}
-                    source="add_flow"
-                    size="sm"
-                    placement="top-right"
-                  />
-                  <div
-                    style={{
-                      position: 'relative',
-                      width: '100%',
-                      aspectRatio: '4 / 3',
-                      background: brand.colors.bg,
-                      borderBottom: `1px solid ${brand.colors.border}`,
-                    }}
-                  >
-                    <WatchImageOrDial
-                      watch={watch}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 360px"
-                      dialSize={140}
-                      imageStyle={{ objectFit: 'contain', padding: 14 }}
-                    />
-                  </div>
-                  <div style={{ padding: '14px 16px 16px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    <div style={{ fontFamily: brand.font.sans, fontSize: 9.5, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold }}>
-                      {watch.brand}
-                    </div>
-                    <div style={{ fontFamily: brand.font.serif, fontSize: 20, fontWeight: 400, lineHeight: 1.1, color: brand.colors.ink }}>
-                      {watch.model}
-                    </div>
-                    <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      Ref. {watch.reference}
-                    </div>
-                    <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginTop: 2 }}>
-                      {watch.caseSizeMm}mm · {watch.caseMaterial} · {watch.dialColor}
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
-                      <span style={{ fontFamily: brand.font.sans, fontSize: 15, fontWeight: 600, color: brand.colors.ink }}>
-                        {fmt(watch.estimatedValue)}
-                      </span>
-                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                        {!watchHasImage(watch) && (
-                          <span style={{ fontFamily: brand.font.sans, fontSize: 9, padding: '2px 7px', borderRadius: brand.radius.pill, border: `1px solid ${brand.colors.border}`, color: brand.colors.muted, fontStyle: 'italic' }}>
-                            no photo
-                          </span>
-                        )}
-                        {inCollection ? (
-                          <span style={{ fontFamily: brand.font.sans, fontSize: 9, padding: '2px 8px', borderRadius: brand.radius.pill, background: '#E8F4E8', color: '#2D6A2D' }}>
-                            In Collection
-                          </span>
-                        ) : (
-                          <span style={{ fontFamily: brand.font.sans, fontSize: 9, padding: '2px 8px', borderRadius: brand.radius.pill, background: brand.colors.ink, color: brand.colors.bg }}>
-                            {watch.watchType}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
+            {filteredResults.map(watch => (
+              <AddSearchWatchCard key={watch.id} watch={watch} dest={dest} boxId={boxId} />
+            ))}
           </div>
         </>
       )}
