@@ -21,7 +21,7 @@ import UpgradeCard from '@/components/discover/UpgradeCard'
 import DiscoverWatchCard from '@/components/discover/DiscoverWatchCard'
 import StrapCard from '@/components/discover/StrapCard'
 import BoxUpgradeCard from '@/components/discover/BoxUpgradeCard'
-import ReadsCard from '@/components/discover/ReadsCard'
+import DiscoverReadsStrip from '@/app/discover/DiscoverReadsStrip'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -395,49 +395,10 @@ export default function DiscoverPage() {
 
       <section id="reads" style={{ marginBottom: SECTION_GAP }}>
         <SectionHeader
-          label="Reads for Your Taste"
-          subhead="From the publications collectors trust"
+          label="From the Watch World"
+          subhead="The latest from the publications collectors trust"
         />
-        <div className="discover-reads-grid">
-          <ReadsCard
-            publication="Hodinkee"
-            title="The Case for the Steel Datejust in 2026"
-            category="Market"
-            date="3 days ago"
-            href="https://www.hodinkee.com"
-          />
-          <ReadsCard
-            publication="Fratello"
-            title="Tudor Black Bay 58: Still the Sweet Spot?"
-            category="Review"
-            date="1 week ago"
-            href="https://www.fratellowatches.com"
-          />
-          <ReadsCard
-            publication="Monochrome"
-            title="Grand Seiko Spring Drive Explained"
-            category="Education"
-            date="5 days ago"
-            href="https://monochrome-watches.com"
-          />
-          <ReadsCard
-            publication="Worn & Wound"
-            title="Five Underrated GMTs Under $2,000"
-            category="Buying Guide"
-            date="2 weeks ago"
-            href="https://wornandwound.com"
-          />
-        </div>
-        <div
-          style={{
-            fontFamily: brand.font.sans,
-            fontSize: 12,
-            color: brand.colors.muted,
-            marginTop: 12,
-          }}
-        >
-          Personalized RSS feed coming soon.
-        </div>
+        <DiscoverReadsStrip />
       </section>
     </div>
   )

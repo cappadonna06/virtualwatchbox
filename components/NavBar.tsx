@@ -13,7 +13,7 @@ const LINKS: NavLink[] = [
   { label: 'My Collection', href: '/collection', icon: 'collection' },
   { label: 'Playground', href: '/playground', icon: 'playground' },
   { label: 'Discover', href: '/discover', icon: 'discover' },
-  { label: 'News', href: '/discover#reads', icon: 'news' },
+  { label: 'News', href: '/news', icon: 'news' },
 ]
 
 function NavIcon({ name, size = 16 }: { name: NavIconName; size?: number }) {
