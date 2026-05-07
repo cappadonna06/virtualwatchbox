@@ -6,6 +6,7 @@ import { getOverflowSummary, getWatchboxOverflow } from '@/lib/watchboxOverflow'
 import type { ResolvedOwnedWatch } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import EditWatchModal from './EditWatchModal'
 import ResponsiveSidebarSheet from './ResponsiveSidebarSheet'
 import WatchBox from './WatchBox'
 import WatchSidebar from './WatchSidebar'
@@ -298,15 +299,18 @@ export default function CollectionWatchboxSurface({
     selectedWatchId,
     setSelectedWatchId,
     removeFromCollection,
+    updateCollectionWatch,
     watchboxConfig,
     setWatchboxFrame,
     setWatchboxLining,
     setWatchboxSlotCount,
+    showToast,
   } = useCollectionSession()
 
   const [customizerOpen, setCustomizerOpen] = useState(false)
   const [configOpen, setConfigOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<ResolvedOwnedWatch | null>(null)
+  const [editTarget, setEditTarget] = useState<ResolvedOwnedWatch | null>(null)
   const [screenWidth, setScreenWidth] = useState(0)
 
   useLayoutEffect(() => {
@@ -597,6 +601,7 @@ export default function CollectionWatchboxSurface({
             watch={activeWatch}
             sticky={false}
             onRequestDelete={watch => setDeleteTarget(watch as ResolvedOwnedWatch)}
+            onRequestEdit={watch => setEditTarget(watch as ResolvedOwnedWatch)}
           />
         </ResponsiveSidebarSheet>
       </div>
@@ -704,6 +709,18 @@ export default function CollectionWatchboxSurface({
             </div>
           </div>
         </>
+      )}
+
+      {editTarget && (
+        <EditWatchModal
+          watch={editTarget}
+          onClose={() => setEditTarget(null)}
+          onSave={updates => {
+            updateCollectionWatch(editTarget.id, updates)
+            setEditTarget(null)
+            showToast('Watch details updated.')
+          }}
+        />
       )}
     </>
   )

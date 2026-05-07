@@ -142,6 +142,7 @@ interface CollectionSessionContextValue {
   ) => { ok: boolean; reason?: 'target_limit' | 'invalid_watch' | 'owned_watch' | 'not_in_collection' }
   removeSavedWatchState: (watchId: string, options?: { source?: WatchStateSource }) => void
   removeFromCollection: (watchId: string) => void
+  updateCollectionWatch: (watchId: string, updates: Partial<Pick<OwnedWatch, 'condition' | 'ownershipStatus' | 'purchasePrice' | 'purchaseDate' | 'notes'>>) => void
   reorderCollectionWatches: (newWatches: ResolvedOwnedWatch[]) => void
   setWatchboxFrame: (frameId: string) => void
   setWatchboxLining: (liningId: string) => void
@@ -344,6 +345,27 @@ async function syncWatchAdd(watch: OwnedWatch, catalogWatch: CatalogWatch, userI
     if (error) console.error('[vwb] syncWatchAdd error', error)
   } catch (err) {
     console.error('[vwb] syncWatchAdd failed', err)
+  }
+}
+
+async function syncWatchUpdate(watchId: string, updates: Partial<OwnedWatch>, userId: string) {
+  try {
+    const supabase = createClient()
+    const payload: Record<string, unknown> = {}
+    if (updates.condition !== undefined) payload.condition = updates.condition
+    if (updates.ownershipStatus !== undefined) payload.ownership_status = updates.ownershipStatus
+    if (updates.purchasePrice !== undefined) payload.purchase_price = updates.purchasePrice
+    if (updates.purchaseDate !== undefined) payload.purchase_date = updates.purchaseDate || null
+    if (updates.notes !== undefined) payload.notes = updates.notes
+    if (Object.keys(payload).length === 0) return
+    const { error } = await supabase
+      .from('watches')
+      .update(payload)
+      .eq('user_id', userId)
+      .eq('id', watchId)
+    if (error) console.error('[vwb] syncWatchUpdate error', error)
+  } catch (err) {
+    console.error('[vwb] syncWatchUpdate failed', err)
   }
 }
 
@@ -580,6 +602,39 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   const showTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  // Pending-writes tracking for the save/refetch coordination.
+  //
+  // Every cloud mutation (collection upsert, watch_states upsert/delete,
+  // watchbox_config upsert, playground sync, …) is fire-and-forget after an
+  // optimistic local setState. The tab-focus refetch and the auth-change
+  // hydrate both call `loadFromSupabase` and unconditionally setState the
+  // returned snapshot — which clobbers the local optimistic value if the
+  // mutation hasn't landed on the server yet. The dirty counter records the
+  // number of mutations currently in flight; refetch is skipped (or its result
+  // is dropped) while the counter is non-zero. `loadInFlightRef` prevents
+  // overlapping reads — also covers the cleanup-cancellation pattern (a
+  // refetch that started before a write must not apply its stale result after
+  // the write has begun).
+  const pendingWritesRef = useRef(0)
+  const loadInFlightRef = useRef(false)
+
+  const trackedSync = useCallback(<T,>(promise: Promise<T>): Promise<T> => {
+    pendingWritesRef.current += 1
+    promise.finally(() => {
+      pendingWritesRef.current = Math.max(0, pendingWritesRef.current - 1)
+    })
+    return promise
+  }, [])
+
+  const applyServerSnapshot = useCallback((snapshot: SessionSnapshot) => {
+    setCollectionEntries(snapshot.collectionWatches)
+    setFollowedWatchIds(snapshot.followedWatchIds)
+    setNextTargets(snapshot.nextTargets)
+    setGrailWatchId(snapshot.grailWatchId)
+    setCollectionJewelWatchId(snapshot.collectionJewelWatchId)
+    setWatchboxConfig(snapshot.watchboxConfig)
+  }, [])
+
   const collectionWatches = useMemo(
     () => resolveOwnedWatches(collectionEntries, catalogWatchMap),
     [collectionEntries, catalogWatchMap],
@@ -684,15 +739,10 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     if (migrationAlreadyDone) {
       // Load fresh from Supabase
       setDataLoading(true)
+      loadInFlightRef.current = true
       loadFromSupabase(currentId, catalogIds, catalogIdSet).then(snapshot => {
-        if (snapshot) {
-          setCollectionEntries(snapshot.collectionWatches)
-          setFollowedWatchIds(snapshot.followedWatchIds)
-          setNextTargets(snapshot.nextTargets)
-          setGrailWatchId(snapshot.grailWatchId)
-          setCollectionJewelWatchId(snapshot.collectionJewelWatchId)
-          setWatchboxConfig(snapshot.watchboxConfig)
-        }
+        loadInFlightRef.current = false
+        if (snapshot) applyServerSnapshot(snapshot)
         setDataLoading(false)
         setHydrated(true)
       })
@@ -717,15 +767,10 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     } else {
       // No local state — load from Supabase directly
       setDataLoading(true)
+      loadInFlightRef.current = true
       loadFromSupabase(currentId, catalogIds, catalogIdSet).then(snapshot => {
-        if (snapshot) {
-          setCollectionEntries(snapshot.collectionWatches)
-          setFollowedWatchIds(snapshot.followedWatchIds)
-          setNextTargets(snapshot.nextTargets)
-          setGrailWatchId(snapshot.grailWatchId)
-          setCollectionJewelWatchId(snapshot.collectionJewelWatchId)
-          setWatchboxConfig(snapshot.watchboxConfig)
-        }
+        loadInFlightRef.current = false
+        if (snapshot) applyServerSnapshot(snapshot)
         setDataLoading(false)
         setHydrated(true)
         markMigrationDone()
@@ -736,8 +781,17 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
 
   // ── Tab-focus refetch ──────────────────────────────────────────────────
   // When the tab becomes visible again, re-pull collection/states/config from
-  // Supabase so cross-browser edits show up without a hard reload. Skipped while
-  // a sync is in flight (dataLoading) or if a migration prompt is pending.
+  // Supabase so cross-browser edits show up without a hard reload.
+  //
+  // Dirty-aware gates (in order):
+  //  - migrationPending    — never refetch while the user is mid-migration
+  //  - loadInFlightRef     — another loadFromSupabase is already running (auth
+  //                          change, dismissMigration, or an earlier refetch)
+  //  - pendingWritesRef    — local optimistic mutations haven't all landed on
+  //                          the server yet; reading now would yield a stale
+  //                          snapshot that overwrites the just-mutated field
+  // The post-await re-check covers the case where a mutation started during
+  // the network round-trip — drop the refetch result rather than apply it.
   useEffect(() => {
     const currentId = user?.id ?? null
     if (!currentId || authLoading || migrationPending) return
@@ -747,14 +801,15 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     function refetch() {
       if (document.visibilityState !== 'visible') return
       if (cancelled || !currentId) return
+      if (loadInFlightRef.current) return
+      if (pendingWritesRef.current > 0) return
+
+      loadInFlightRef.current = true
       loadFromSupabase(currentId, catalogIds, catalogIdSet).then(snapshot => {
+        loadInFlightRef.current = false
         if (cancelled || !snapshot) return
-        setCollectionEntries(snapshot.collectionWatches)
-        setFollowedWatchIds(snapshot.followedWatchIds)
-        setNextTargets(snapshot.nextTargets)
-        setGrailWatchId(snapshot.grailWatchId)
-        setCollectionJewelWatchId(snapshot.collectionJewelWatchId)
-        setWatchboxConfig(snapshot.watchboxConfig)
+        if (pendingWritesRef.current > 0) return
+        applyServerSnapshot(snapshot)
       })
     }
 
@@ -765,7 +820,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       document.removeEventListener('visibilitychange', refetch)
       window.removeEventListener('focus', refetch)
     }
-  }, [user?.id, authLoading, migrationPending, catalogIds, catalogIdSet])
+  }, [user?.id, authLoading, migrationPending, catalogIds, catalogIdSet, applyServerSnapshot])
 
   // ── Guest state persistence to sessionStorage / localStorage ────────────
 
@@ -844,10 +899,15 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   // Debounced upsert of the watchbox photo onto watchbox_config. Frame/lining/
   // slot_count have NOT NULL defaults so a new row from this upsert will get
   // sensible defaults; an existing row is partial-updated only on the photo columns.
+  //
+  // Wrapped in trackedSync so a concurrent loadFromSupabase refetch doesn't
+  // proceed until the photo upsert has landed (loadFromSupabase pulls
+  // watchbox_config, which would otherwise read stale photo + frame/lining and
+  // stomp the debounced photo write).
   useEffect(() => {
     if (!user || !watchboxPhotoCloudHydrated) return
     const handle = setTimeout(() => {
-      ;(async () => {
+      void trackedSync((async () => {
         try {
           const supabase = createClient()
           const { error } = await supabase.from('watchbox_config').upsert({
@@ -859,10 +919,10 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
         } catch (err) {
           console.error('[vwb] watchbox photo upsert failed', err)
         }
-      })()
+      })())
     }, 500)
     return () => clearTimeout(handle)
-  }, [user, watchboxPhotoUrl, watchboxPhotoCrop, watchboxPhotoCloudHydrated])
+  }, [user, watchboxPhotoUrl, watchboxPhotoCrop, watchboxPhotoCloudHydrated, trackedSync])
 
   const setWatchboxPhoto = useCallback((value: { url: string | null; crop: WatchboxPhotoCrop | null }) => {
     setWatchboxPhotoUrlState(value.url)
@@ -918,49 +978,54 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     const userId = user.id
     const catalogWatchMapLocal = catalogWatchMap
 
-    // Upsert all current watches
-    await Promise.all(
-      collectionEntries.map((w, i) => {
-        const catalogWatch = catalogWatchMapLocal.get(w.watchId)
-        if (!catalogWatch) return Promise.resolve()
-        return syncWatchAdd(w, catalogWatch, userId, i)
-      })
-    )
+    // Bump pendingWritesRef around the whole migration so a tab-focus refetch
+    // landing mid-migration doesn't read a partial cloud snapshot and snap the
+    // local UI back to nothing.
+    await trackedSync((async () => {
+      // Upsert all current watches
+      await Promise.all(
+        collectionEntries.map((w, i) => {
+          const catalogWatch = catalogWatchMapLocal.get(w.watchId)
+          if (!catalogWatch) return Promise.resolve()
+          return syncWatchAdd(w, catalogWatch, userId, i)
+        })
+      )
 
-    // Upsert watch states
-    const statePromises: Promise<void>[] = []
-    for (const id of followedWatchIds) {
-      statePromises.push(syncWatchState(id, 'follow', true, {}, userId))
-    }
-    for (const t of nextTargets) {
-      statePromises.push(syncWatchState(t.watchId, 'target', true, {
-        desiredCondition: t.desiredCondition,
-        intent: t.intent,
-        targetPrice: t.targetPrice,
-        notes: t.notes,
-        targetDate: t.targetDate,
-      }, userId))
-    }
-    if (grailWatchId) statePromises.push(syncWatchState(grailWatchId, 'grail', true, {}, userId))
-    if (collectionJewelWatchId) statePromises.push(syncWatchState(collectionJewelWatchId, 'jewel', true, {}, userId))
-    await Promise.all(statePromises)
-
-    // Sync watchbox config
-    await syncWatchboxConfig(watchboxConfig, userId)
-
-    // Sync playground boxes
-    try {
-      const raw = localStorage.getItem(PLAYGROUND_BOXES_STORAGE_KEY)
-      if (raw) {
-        const boxes = JSON.parse(raw) as PlaygroundBox[]
-        if (Array.isArray(boxes)) await syncPlaygroundBoxes(boxes, userId)
+      // Upsert watch states
+      const statePromises: Promise<void>[] = []
+      for (const id of followedWatchIds) {
+        statePromises.push(syncWatchState(id, 'follow', true, {}, userId))
       }
-    } catch {}
+      for (const t of nextTargets) {
+        statePromises.push(syncWatchState(t.watchId, 'target', true, {
+          desiredCondition: t.desiredCondition,
+          intent: t.intent,
+          targetPrice: t.targetPrice,
+          notes: t.notes,
+          targetDate: t.targetDate,
+        }, userId))
+      }
+      if (grailWatchId) statePromises.push(syncWatchState(grailWatchId, 'grail', true, {}, userId))
+      if (collectionJewelWatchId) statePromises.push(syncWatchState(collectionJewelWatchId, 'jewel', true, {}, userId))
+      await Promise.all(statePromises)
+
+      // Sync watchbox config
+      await syncWatchboxConfig(watchboxConfig, userId)
+
+      // Sync playground boxes
+      try {
+        const raw = localStorage.getItem(PLAYGROUND_BOXES_STORAGE_KEY)
+        if (raw) {
+          const boxes = JSON.parse(raw) as PlaygroundBox[]
+          if (Array.isArray(boxes)) await syncPlaygroundBoxes(boxes, userId)
+        }
+      } catch {}
+    })())
 
     clearLocalState()
     markMigrationDone()
     setMigrationPending(false)
-  }, [user, collectionEntries, followedWatchIds, nextTargets, grailWatchId, collectionJewelWatchId, watchboxConfig, catalogWatchMap])
+  }, [user, collectionEntries, followedWatchIds, nextTargets, grailWatchId, collectionJewelWatchId, watchboxConfig, catalogWatchMap, trackedSync])
 
   const dismissMigration = useCallback(() => {
     if (!user) return
@@ -979,18 +1044,13 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     setWatchboxConfig(DEFAULT_WATCHBOX_CONFIG)
 
     setDataLoading(true)
+    loadInFlightRef.current = true
     loadFromSupabase(userId, catalogIds, catalogIdSet).then(snapshot => {
-      if (snapshot) {
-        setCollectionEntries(snapshot.collectionWatches)
-        setFollowedWatchIds(snapshot.followedWatchIds)
-        setNextTargets(snapshot.nextTargets)
-        setGrailWatchId(snapshot.grailWatchId)
-        setCollectionJewelWatchId(snapshot.collectionJewelWatchId)
-        setWatchboxConfig(snapshot.watchboxConfig)
-      }
+      loadInFlightRef.current = false
+      if (snapshot) applyServerSnapshot(snapshot)
       setDataLoading(false)
     })
-  }, [user, catalogIds, catalogIdSet])
+  }, [user, catalogIds, catalogIdSet, applyServerSnapshot])
 
   // ── Toast ────────────────────────────────────────────────────────────────
 
@@ -1034,9 +1094,9 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
     setGrailWatchId(prev => (prev === watchId ? null : prev))
     if (user) {
-      void syncWatchState(watchId, 'follow', false, {}, user.id)
-      void syncWatchState(watchId, 'target', false, {}, user.id)
-      void syncWatchState(watchId, 'grail', false, {}, user.id)
+      void trackedSync(syncWatchState(watchId, 'follow', false, {}, user.id))
+      void trackedSync(syncWatchState(watchId, 'target', false, {}, user.id))
+      void trackedSync(syncWatchState(watchId, 'grail', false, {}, user.id))
     }
   }
 
@@ -1050,19 +1110,19 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
 
     if (currentState === 'target') {
       setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
-      if (user) void syncWatchState(watchId, 'target', false, {}, user.id)
+      if (user) void trackedSync(syncWatchState(watchId, 'target', false, {}, user.id))
       return
     }
 
     if (currentState === 'grail') {
       setGrailWatchId(prev => (prev === watchId ? null : prev))
-      if (user) void syncWatchState(watchId, 'grail', false, {}, user.id)
+      if (user) void trackedSync(syncWatchState(watchId, 'grail', false, {}, user.id))
       return
     }
 
     if (currentState === 'jewel') {
       setCollectionJewelWatchId(prev => (prev === watchId ? null : prev))
-      if (user) void syncWatchState(watchId, 'jewel', false, {}, user.id)
+      if (user) void trackedSync(syncWatchState(watchId, 'jewel', false, {}, user.id))
     }
   }
 
@@ -1106,17 +1166,17 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
 
     setCollectionEntries(prev => {
       const next = [...prev, newWatch]
-      if (user) void syncWatchAdd(newWatch, watch, user.id, next.length - 1)
+      if (user) void trackedSync(syncWatchAdd(newWatch, watch, user.id, next.length - 1))
       return next
     })
     setNextTargets(prev => {
       const next = prev.filter(target => target.watchId !== watch.id)
-      if (user && wasTarget) void syncWatchState(watch.id, 'target', false, {}, user.id)
+      if (user && wasTarget) void trackedSync(syncWatchState(watch.id, 'target', false, {}, user.id))
       return next
     })
     setGrailWatchId(prev => {
       const next = prev === watch.id ? null : prev
-      if (user && wasGrail) void syncWatchState(watch.id, 'grail', false, {}, user.id)
+      if (user && wasGrail) void trackedSync(syncWatchState(watch.id, 'grail', false, {}, user.id))
       return next
     })
     setSelectedWatchId(newWatch.id)
@@ -1130,7 +1190,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   function followWatch(watchId: string) {
     if (!catalogIdSet.has(watchId) || followedWatchIds.includes(watchId)) return
     setFollowedWatchIds(prev => [...prev, watchId])
-    if (user) void syncWatchState(watchId, 'follow', true, {}, user.id)
+    if (user) void trackedSync(syncWatchState(watchId, 'follow', true, {}, user.id))
     showToast('Saved to your followed watches.')
   }
 
@@ -1164,19 +1224,19 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     setGrailWatchId(prev => (prev === watchId ? null : prev))
     setNextTargets(prev => {
       const target: WatchTarget = { watchId, desiredCondition: 'Excellent', intent: 'Addition' }
-      if (user) void syncWatchState(watchId, 'target', true, {
+      if (user) void trackedSync(syncWatchState(watchId, 'target', true, {
         desiredCondition: 'Excellent', intent: 'Addition',
-      }, user.id)
+      }, user.id))
       return [...prev, target]
     })
-    if (user) void syncWatchState(watchId, 'follow', true, {}, user.id)
+    if (user) void trackedSync(syncWatchState(watchId, 'follow', true, {}, user.id))
     showToast('Added to your next targets.')
   }
 
   function removeFromNextTargets(watchId: string) {
     if (!nextTargets.some(target => target.watchId === watchId)) return
     setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
-    if (user) void syncWatchState(watchId, 'target', false, {}, user.id)
+    if (user) void trackedSync(syncWatchState(watchId, 'target', false, {}, user.id))
   }
 
   function setGrailWatch(watchId: string) {
@@ -1188,20 +1248,20 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     }
 
     if (grailWatchId) {
-      if (user) void syncWatchState(grailWatchId, 'grail', false, {}, user.id)
+      if (user) void trackedSync(syncWatchState(grailWatchId, 'grail', false, {}, user.id))
     }
     setFollowedWatchIds(prev => (prev.includes(watchId) ? prev : [...prev, watchId]))
     setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
     setGrailWatchId(watchId)
     if (user) {
-      void syncWatchState(watchId, 'follow', true, {}, user.id)
-      void syncWatchState(watchId, 'grail', true, {}, user.id)
+      void trackedSync(syncWatchState(watchId, 'follow', true, {}, user.id))
+      void trackedSync(syncWatchState(watchId, 'grail', true, {}, user.id))
     }
   }
 
   function clearGrailWatch() {
     if (!grailWatchId) return
-    if (user) void syncWatchState(grailWatchId, 'grail', false, {}, user.id)
+    if (user) void trackedSync(syncWatchState(grailWatchId, 'grail', false, {}, user.id))
     setGrailWatchId(null)
   }
 
@@ -1214,15 +1274,15 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     }
 
     if (collectionJewelWatchId) {
-      if (user) void syncWatchState(collectionJewelWatchId, 'jewel', false, {}, user.id)
+      if (user) void trackedSync(syncWatchState(collectionJewelWatchId, 'jewel', false, {}, user.id))
     }
     setCollectionJewelWatchId(watchId)
-    if (user) void syncWatchState(watchId, 'jewel', true, {}, user.id)
+    if (user) void trackedSync(syncWatchState(watchId, 'jewel', true, {}, user.id))
   }
 
   function clearCollectionJewelWatch() {
     if (!collectionJewelWatchId) return
-    if (user) void syncWatchState(collectionJewelWatchId, 'jewel', false, {}, user.id)
+    if (user) void trackedSync(syncWatchState(collectionJewelWatchId, 'jewel', false, {}, user.id))
     setCollectionJewelWatchId(null)
   }
 
@@ -1240,7 +1300,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
       setGrailWatchId(prev => (prev === watchId ? null : prev))
       setCollectionJewelWatchId(prev => (prev === watchId ? null : prev))
-      if (user) void syncWatchState(watchId, 'follow', true, {}, user.id)
+      if (user) void trackedSync(syncWatchState(watchId, 'follow', true, {}, user.id))
       showToast('Saved to your followed watches.')
       return { ok: true as const }
     }
@@ -1266,8 +1326,8 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
             ]
       ))
       if (user) {
-        void syncWatchState(watchId, 'follow', true, {}, user.id)
-        void syncWatchState(watchId, 'target', true, { desiredCondition: 'Excellent', intent: 'Addition' }, user.id)
+        void trackedSync(syncWatchState(watchId, 'follow', true, {}, user.id))
+        void trackedSync(syncWatchState(watchId, 'target', true, { desiredCondition: 'Excellent', intent: 'Addition' }, user.id))
       }
       showToast('Added to your next targets.')
       return { ok: true as const }
@@ -1279,13 +1339,13 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
         return { ok: false as const, reason: 'owned_watch' as const }
       }
 
-      if (grailWatchId && user) void syncWatchState(grailWatchId, 'grail', false, {}, user.id)
+      if (grailWatchId && user) void trackedSync(syncWatchState(grailWatchId, 'grail', false, {}, user.id))
       setFollowedWatchIds(prev => (prev.includes(watchId) ? prev : [...prev, watchId]))
       setNextTargets(prev => prev.filter(target => target.watchId !== watchId))
       setGrailWatchId(watchId)
       if (user) {
-        void syncWatchState(watchId, 'follow', true, {}, user.id)
-        void syncWatchState(watchId, 'grail', true, {}, user.id)
+        void trackedSync(syncWatchState(watchId, 'follow', true, {}, user.id))
+        void trackedSync(syncWatchState(watchId, 'grail', true, {}, user.id))
       }
       return { ok: true as const }
     }
@@ -1295,9 +1355,9 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       return { ok: false as const, reason: 'not_in_collection' as const }
     }
 
-    if (collectionJewelWatchId && user) void syncWatchState(collectionJewelWatchId, 'jewel', false, {}, user.id)
+    if (collectionJewelWatchId && user) void trackedSync(syncWatchState(collectionJewelWatchId, 'jewel', false, {}, user.id))
     setCollectionJewelWatchId(watchId)
-    if (user) void syncWatchState(watchId, 'jewel', true, {}, user.id)
+    if (user) void trackedSync(syncWatchState(watchId, 'jewel', true, {}, user.id))
     return { ok: true as const }
   }
 
@@ -1315,13 +1375,26 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       if (!hasAnotherOwnedCopy) {
         setCollectionJewelWatchId(prev => (prev === removedWatch.watchId ? null : prev))
         if (user && collectionJewelWatchId === removedWatch.watchId) {
-          void syncWatchState(removedWatch.watchId, 'jewel', false, {}, user.id)
+          void trackedSync(syncWatchState(removedWatch.watchId, 'jewel', false, {}, user.id))
         }
       }
     }
     setCollectionEntries(prev => prev.filter(watch => watch.id !== watchId))
-    if (user) void syncWatchRemove(watchId, user.id)
+    if (user) void trackedSync(syncWatchRemove(watchId, user.id))
     setSelectedWatchId(prev => (prev === watchId ? null : prev))
+  }
+
+  function updateCollectionWatch(
+    watchId: string,
+    updates: Partial<Pick<OwnedWatch, 'condition' | 'ownershipStatus' | 'purchasePrice' | 'purchaseDate' | 'notes'>>,
+  ) {
+    setCollectionEntries(prev => {
+      const target = prev.find(watch => watch.id === watchId)
+      if (!target) return prev
+      const next = prev.map(watch => (watch.id === watchId ? { ...watch, ...updates } : watch))
+      if (user) void trackedSync(syncWatchUpdate(watchId, updates, user.id))
+      return next
+    })
   }
 
   function reorderCollectionWatches(newWatches: ResolvedOwnedWatch[]) {
@@ -1332,7 +1405,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
         .filter((watch): watch is OwnedWatch => watch !== undefined)
 
       if (next.length !== prev.length) return prev
-      if (user) void syncWatchReorder(next, user.id)
+      if (user) void trackedSync(syncWatchReorder(next, user.id))
       return next
     })
   }
@@ -1341,7 +1414,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     if (!FRAMES.some(frame => frame.id === frameId)) return
     setWatchboxConfig(prev => {
       const next = { ...prev, frame: frameId }
-      if (user) void syncWatchboxConfig(next, user.id)
+      if (user) void trackedSync(syncWatchboxConfig(next, user.id))
       return next
     })
   }
@@ -1350,7 +1423,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     if (!LININGS.some(lining => lining.id === liningId)) return
     setWatchboxConfig(prev => {
       const next = { ...prev, lining: liningId }
-      if (user) void syncWatchboxConfig(next, user.id)
+      if (user) void trackedSync(syncWatchboxConfig(next, user.id))
       return next
     })
   }
@@ -1359,7 +1432,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     if (!SLOT_COUNTS.some(slot => slot.n === slotCount)) return
     setWatchboxConfig(prev => {
       const next = { ...prev, slotCount }
-      if (user) void syncWatchboxConfig(next, user.id)
+      if (user) void trackedSync(syncWatchboxConfig(next, user.id))
       return next
     })
   }
@@ -1402,6 +1475,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     setWatchSavedState,
     removeSavedWatchState,
     removeFromCollection,
+    updateCollectionWatch,
     reorderCollectionWatches,
     setWatchboxFrame,
     setWatchboxLining,
