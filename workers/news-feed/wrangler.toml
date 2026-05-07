@@ -1,0 +1,11 @@
+name = "vw-news-feed"
+main = "index.ts"
+compatibility_date = "2025-01-01"
+
+# Run `wrangler kv:namespace create NEWS_CACHE` and paste the returned id below.
+[[kv_namespaces]]
+binding = "NEWS_CACHE"
+id = "11d17b827f084d59a4b7917ebe031302"
+
+[observability]
+enabled = true

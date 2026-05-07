@@ -37,6 +37,10 @@ export const brand = {
     heroDark1: '#1e1b16',
     /** Hero dark panel — end */
     heroDark2: '#2a2420',
+    /** News card image placeholder gradient — start */
+    placeholderStart: '#EDE9E2',
+    /** News card image placeholder gradient — end */
+    placeholderEnd: '#E0DAD0',
   },
 
   /** Ownership status badge colors */
