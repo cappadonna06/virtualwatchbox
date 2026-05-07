@@ -8,6 +8,7 @@ import CollectionStats from '@/components/collection/CollectionStats'
 import SortDropdown from '@/components/collection/SortDropdown'
 import CollectionPhotoView from '@/components/collection/CollectionPhotoView'
 import CollectionWatchboxSurface from '@/components/collection/CollectionWatchboxSurface'
+import EditWatchModal from '@/components/collection/EditWatchModal'
 import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarSheet'
 import ShareBoxModal, { type ShareFlags } from '@/components/collection/ShareBoxModal'
 import UnsavedChangesBar, { type DraftChange } from '@/components/collection/UnsavedChangesBar'
@@ -45,6 +46,7 @@ export default function CollectionPage() {
     selectedWatchId,
     setSelectedWatchId,
     removeFromCollection,
+    updateCollectionWatch,
     reorderCollectionWatches,
     showToast,
     watchboxPhotoUrl,
@@ -56,6 +58,7 @@ export default function CollectionPage() {
   const [activeView, setActiveView] = useState<View>('watchbox')
   const [sortBy, setSortBy] = useState<SortMode>('manual')
   const [deleteTarget, setDeleteTarget] = useState<ResolvedOwnedWatch | null>(null)
+  const [editTarget, setEditTarget] = useState<ResolvedOwnedWatch | null>(null)
   const [screenWidth, setScreenWidth] = useState(0)
   const [mobileStatsOpen, setMobileStatsOpen] = useState(true)
   const [shareModalOpen, setShareModalOpen] = useState(false)
@@ -245,6 +248,7 @@ export default function CollectionPage() {
             onCardSelect={handleCardSelect}
             onCloseSidebar={() => setSelectedWatchId(null)}
             onRequestDelete={watch => setDeleteTarget(watch)}
+            onRequestEdit={watch => setEditTarget(watch)}
           />
         )}
         {isMobile ? (
@@ -374,6 +378,18 @@ export default function CollectionPage() {
           </div>
         </>
       )}
+
+      {editTarget && (
+        <EditWatchModal
+          watch={editTarget}
+          onClose={() => setEditTarget(null)}
+          onSave={updates => {
+            updateCollectionWatch(editTarget.id, updates)
+            setEditTarget(null)
+            showToast('Watch details updated.')
+          }}
+        />
+      )}
     </div>
   )
 }
@@ -385,6 +401,7 @@ function CardsView({
   onCardSelect,
   onCloseSidebar,
   onRequestDelete,
+  onRequestEdit,
 }: {
   watches: ResolvedOwnedWatch[]
   activeWatch: ResolvedOwnedWatch | null
@@ -392,6 +409,7 @@ function CardsView({
   onCardSelect: (index: number) => void
   onCloseSidebar: () => void
   onRequestDelete: (watch: ResolvedOwnedWatch) => void
+  onRequestEdit: (watch: ResolvedOwnedWatch) => void
 }) {
   return (
     <>
@@ -415,6 +433,7 @@ function CardsView({
             watch={activeWatch}
             sticky={false}
             onRequestDelete={watch => onRequestDelete(watch as ResolvedOwnedWatch)}
+            onRequestEdit={watch => onRequestEdit(watch as ResolvedOwnedWatch)}
           />
         </ResponsiveSidebarSheet>
       </div>

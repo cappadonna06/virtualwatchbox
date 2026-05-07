@@ -142,6 +142,7 @@ interface CollectionSessionContextValue {
   ) => { ok: boolean; reason?: 'target_limit' | 'invalid_watch' | 'owned_watch' | 'not_in_collection' }
   removeSavedWatchState: (watchId: string, options?: { source?: WatchStateSource }) => void
   removeFromCollection: (watchId: string) => void
+  updateCollectionWatch: (watchId: string, updates: Partial<Pick<OwnedWatch, 'condition' | 'ownershipStatus' | 'purchasePrice' | 'purchaseDate' | 'notes'>>) => void
   reorderCollectionWatches: (newWatches: ResolvedOwnedWatch[]) => void
   setWatchboxFrame: (frameId: string) => void
   setWatchboxLining: (liningId: string) => void
@@ -344,6 +345,27 @@ async function syncWatchAdd(watch: OwnedWatch, catalogWatch: CatalogWatch, userI
     if (error) console.error('[vwb] syncWatchAdd error', error)
   } catch (err) {
     console.error('[vwb] syncWatchAdd failed', err)
+  }
+}
+
+async function syncWatchUpdate(watchId: string, updates: Partial<OwnedWatch>, userId: string) {
+  try {
+    const supabase = createClient()
+    const payload: Record<string, unknown> = {}
+    if (updates.condition !== undefined) payload.condition = updates.condition
+    if (updates.ownershipStatus !== undefined) payload.ownership_status = updates.ownershipStatus
+    if (updates.purchasePrice !== undefined) payload.purchase_price = updates.purchasePrice
+    if (updates.purchaseDate !== undefined) payload.purchase_date = updates.purchaseDate || null
+    if (updates.notes !== undefined) payload.notes = updates.notes
+    if (Object.keys(payload).length === 0) return
+    const { error } = await supabase
+      .from('watches')
+      .update(payload)
+      .eq('user_id', userId)
+      .eq('id', watchId)
+    if (error) console.error('[vwb] syncWatchUpdate error', error)
+  } catch (err) {
+    console.error('[vwb] syncWatchUpdate failed', err)
   }
 }
 
@@ -1324,6 +1346,19 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     setSelectedWatchId(prev => (prev === watchId ? null : prev))
   }
 
+  function updateCollectionWatch(
+    watchId: string,
+    updates: Partial<Pick<OwnedWatch, 'condition' | 'ownershipStatus' | 'purchasePrice' | 'purchaseDate' | 'notes'>>,
+  ) {
+    setCollectionEntries(prev => {
+      const target = prev.find(watch => watch.id === watchId)
+      if (!target) return prev
+      const next = prev.map(watch => (watch.id === watchId ? { ...watch, ...updates } : watch))
+      if (user) void syncWatchUpdate(watchId, updates, user.id)
+      return next
+    })
+  }
+
   function reorderCollectionWatches(newWatches: ResolvedOwnedWatch[]) {
     setCollectionEntries(prev => {
       const byId = new Map(prev.map(watch => [watch.id, watch]))
@@ -1402,6 +1437,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     setWatchSavedState,
     removeSavedWatchState,
     removeFromCollection,
+    updateCollectionWatch,
     reorderCollectionWatches,
     setWatchboxFrame,
     setWatchboxLining,
