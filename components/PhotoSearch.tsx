@@ -4,6 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import type { CatalogWatch } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import AddSearchWatchCard from '@/components/collection/AddSearchWatchCard'
+import CameraCapture from '@/components/CameraCapture'
 
 type AiResult = {
   brand: string
@@ -72,6 +73,7 @@ const PhotoSearch = forwardRef<PhotoSearchHandle, Props>(function PhotoSearch(
   const [aiResult, setAiResult] = useState<AiResult | null>(null)
   const [matches, setMatches] = useState<CatalogWatch[]>([])
   const [isMobile, setIsMobile] = useState(false)
+  const [cameraOpen, setCameraOpen] = useState(false)
 
   useEffect(() => {
     const update = () => setIsMobile(window.innerWidth < 768)
@@ -118,6 +120,7 @@ const PhotoSearch = forwardRef<PhotoSearchHandle, Props>(function PhotoSearch(
     setImageDataUrl(null)
     setAiResult(null)
     setMatches([])
+    setCameraOpen(false)
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
@@ -126,14 +129,33 @@ const PhotoSearch = forwardRef<PhotoSearchHandle, Props>(function PhotoSearch(
     return [aiResult.brand, aiResult.model].filter(Boolean).join(' ').trim()
   }
 
+  async function handleCameraCapture(dataUrl: string) {
+    setCameraOpen(false)
+    try {
+      const res = await fetch(dataUrl)
+      const blob = await res.blob()
+      const file = new File([blob], 'capture.jpg', { type: blob.type || 'image/jpeg' })
+      await handleFile(file)
+    } catch {
+      setPhase('error')
+    }
+  }
+
+  function fallbackToUpload() {
+    setCameraOpen(false)
+    // give the modal a tick to unmount before clicking the (visually-hidden) input
+    setTimeout(() => fileInputRef.current?.click(), 0)
+  }
+
   useImperativeHandle(ref, () => ({
-    open: () => fileInputRef.current?.click(),
+    open: () => setCameraOpen(true),
     reset,
   }))
 
   return (
     <div>
-      {/* On mobile this offers Camera or Photo Library natively; on desktop, file picker. */}
+      {/* Hidden file input — used as the upload fallback path inside the camera modal,
+          and as the entry point on platforms where getUserMedia isn't available. */}
       <input
         ref={fileInputRef}
         type="file"
@@ -141,6 +163,15 @@ const PhotoSearch = forwardRef<PhotoSearchHandle, Props>(function PhotoSearch(
         onChange={e => handleFile(e.target.files?.[0] ?? null)}
         style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
       />
+
+      {cameraOpen && (
+        <CameraModal
+          onCapture={handleCameraCapture}
+          onCancel={() => setCameraOpen(false)}
+          onUploadInstead={fallbackToUpload}
+          onError={fallbackToUpload}
+        />
+      )}
 
       {phase === 'identifying' && (
         <div>
@@ -333,6 +364,101 @@ const secondaryLinkStyle: React.CSSProperties = {
   cursor: 'pointer',
   textDecoration: 'none',
   display: 'inline-block',
+}
+
+function CameraModal({
+  onCapture,
+  onCancel,
+  onUploadInstead,
+  onError,
+}: {
+  onCapture: (dataUrl: string) => void
+  onCancel: () => void
+  onUploadInstead: () => void
+  onError: (msg: string) => void
+}) {
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Take a photo"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 300,
+        background: 'rgba(26,20,16,0.55)',
+        backdropFilter: 'blur(2px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 16,
+      }}
+      onClick={onCancel}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: brand.colors.bg,
+          borderRadius: brand.radius.xl,
+          width: 'min(640px, 100%)',
+          padding: 24,
+          boxShadow: brand.shadow.xl,
+        }}
+      >
+        <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+          <h2 style={{
+            margin: 0,
+            fontFamily: brand.font.serif,
+            fontSize: 22,
+            fontWeight: 500,
+            color: brand.colors.ink,
+          }}>
+            Take a photo
+          </h2>
+          <button
+            type="button"
+            onClick={onCancel}
+            aria-label="Close"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              fontSize: 20,
+              cursor: 'pointer',
+              color: brand.colors.muted,
+              padding: 4,
+              lineHeight: 1,
+            }}
+          >
+            ✕
+          </button>
+        </header>
+        <CameraCapture
+          onCapture={onCapture}
+          onCancel={onCancel}
+          onError={onError}
+        />
+        <div style={{ marginTop: 12, textAlign: 'center' }}>
+          <button
+            type="button"
+            onClick={onUploadInstead}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+              fontFamily: brand.font.sans,
+              fontSize: 12,
+              color: brand.colors.muted,
+              textDecoration: 'underline',
+              textUnderlineOffset: 2,
+            }}
+          >
+            Upload from device instead
+          </button>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 function ResultHeader({
