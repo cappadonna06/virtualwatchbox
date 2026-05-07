@@ -432,7 +432,7 @@ body {
   }
 
   /* Footer */
-  .site-footer {
+  .site-footer__inner {
     flex-direction: column !important;
     align-items: center !important;
     gap: 12px !important;
