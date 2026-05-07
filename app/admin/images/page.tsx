@@ -4,6 +4,9 @@ import { useCallback, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
+import { isAdminEmail } from '@/lib/auth/admin'
+import { useCatalog } from '@/lib/catalog/CatalogProvider'
+import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import type { WatchIdentification } from '@/lib/watchVision'
 
 export const dynamic = 'force-dynamic'
@@ -40,6 +43,8 @@ function autoWatchId(identification?: WatchIdentification): string {
   if (!identification) return ''
   const brand = slugify(identification.brand)
   const model = slugify(identification.model)
+  const ref = slugify(identification.reference)
+  if (ref) return [brand, model, ref].filter(Boolean).join('-')
   const dial = slugify(identification.dialColor)
   return [brand, model, dial].filter(Boolean).join('-')
 }
@@ -148,18 +153,24 @@ function FieldRow({ label, value, editing, onChange }: { label: string; value: s
 
 function QueueCard({
   item,
+  catalogMatch,
+  catalogRowBusy,
   onApprove,
   onReject,
   onToggleEdit,
   onFieldChange,
   onWatchIdChange,
+  onCreateCatalogRow,
 }: {
   item: QueueItem
+  catalogMatch: boolean
+  catalogRowBusy: boolean
   onApprove: (id: string) => void
   onReject: (id: string) => void
   onToggleEdit: (id: string) => void
   onFieldChange: (id: string, field: keyof WatchIdentification, value: string) => void
   onWatchIdChange: (id: string, value: string) => void
+  onCreateCatalogRow: (id: string) => void
 }) {
   const ident = { ...item.identification, ...item.editedFields }
   const isProcessing = item.status === 'processing'
@@ -250,6 +261,27 @@ function QueueCard({
                     {item.watchId || '—'}
                   </span>
                 )}
+                {item.watchId ? (
+                  catalogMatch ? (
+                    <span style={{
+                      fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600,
+                      letterSpacing: '0.06em', textTransform: 'uppercase',
+                      padding: '2px 8px', borderRadius: brand.radius.pill,
+                      background: '#E8F4E8', color: '#2D6A2D',
+                    }}>
+                      ✓ Catalog match
+                    </span>
+                  ) : (
+                    <span style={{
+                      fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600,
+                      letterSpacing: '0.06em', textTransform: 'uppercase',
+                      padding: '2px 8px', borderRadius: brand.radius.pill,
+                      background: '#FFF8E6', color: '#8A6A10',
+                    }}>
+                      No catalog row
+                    </span>
+                  )
+                ) : null}
               </div>
               <FieldRow label="Brand"    value={ident.brand ?? ''}     editing={item.editing} onChange={v => onFieldChange(item.id, 'brand', v)} />
               <FieldRow label="Model"    value={ident.model ?? ''}     editing={item.editing} onChange={v => onFieldChange(item.id, 'model', v)} />
@@ -270,7 +302,7 @@ function QueueCard({
             </div>
 
             {!isDone && (
-              <div style={{ display: 'flex', gap: 8 }}>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 <button
                   onClick={() => onApprove(item.id)}
                   disabled={isApproving || !item.watchId}
@@ -289,6 +321,26 @@ function QueueCard({
                 >
                   {isApproving ? 'Saving...' : 'Approve →'}
                 </button>
+                {!catalogMatch && item.watchId && ident.brand && ident.model && ident.reference && (
+                  <button
+                    onClick={() => onCreateCatalogRow(item.id)}
+                    disabled={catalogRowBusy || isApproving}
+                    style={{
+                      padding: '8px 14px',
+                      background: 'transparent',
+                      color: brand.colors.ink,
+                      border: `1px solid ${brand.colors.ink}`,
+                      borderRadius: brand.radius.btn,
+                      fontFamily: brand.font.sans,
+                      fontSize: 12,
+                      fontWeight: 500,
+                      letterSpacing: '0.04em',
+                      cursor: catalogRowBusy || isApproving ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {catalogRowBusy ? 'Creating...' : 'Create catalog row'}
+                  </button>
+                )}
                 <button
                   onClick={() => onReject(item.id)}
                   disabled={isApproving}
@@ -324,12 +376,24 @@ function QueueCard({
 export default function AdminImagesPage() {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
+  const { allWatches, refresh: refreshCatalog } = useCatalog()
+  const { refresh: refreshWatchImages } = useWatchImages()
+  const catalogIds = new Set(allWatches.map(w => w.id))
   const [queue, setQueue] = useState<QueueItem[]>([])
+  const [catalogRowBusy, setCatalogRowBusy] = useState<Set<string>>(new Set())
   const [dragging, setDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   function updateItem(id: string, patch: Partial<QueueItem>) {
     setQueue(prev => prev.map(item => item.id === id ? { ...item, ...patch } : item))
+  }
+
+  function setBusy(id: string, busy: boolean) {
+    setCatalogRowBusy(prev => {
+      const next = new Set(prev)
+      if (busy) next.add(id); else next.delete(id)
+      return next
+    })
   }
 
   async function processFile(file: File) {
@@ -414,11 +478,58 @@ export default function AdminImagesPage() {
       })
       if (!res.ok) throw new Error(await res.text())
       updateItem(id, { status: 'approved' })
+      void refreshWatchImages()
     } catch (err) {
       updateItem(id, {
         status: 'error',
         error: err instanceof Error ? err.message : 'Approval failed',
       })
+    }
+  }
+
+  async function handleCreateCatalogRow(id: string) {
+    const item = queue.find(i => i.id === id)
+    if (!item?.identification || !item.watchId) return
+    const ident = { ...item.identification, ...item.editedFields }
+    if (!ident.brand || !ident.model || !ident.reference) return
+
+    setBusy(id, true)
+    try {
+      const payload = {
+        id: item.watchId,
+        brand: ident.brand,
+        model: ident.model,
+        reference: ident.reference,
+        watch_type: ident.watchType || 'Sport',
+        case_size_mm: Number(ident.caseSizeMm ?? 0),
+        lug_width_mm: ident.lugWidthMm ?? null,
+        case_material: ident.caseMaterial ?? '',
+        dial_color: ident.dialColor ?? '',
+        movement: ident.movement ?? '',
+        complications: [] as string[],
+        estimated_value: Number(ident.estimatedValue ?? 0),
+        dial_color_hex: '#1A1410',
+        marker_color_hex: '#C8BCAF',
+        hand_color_hex: '#FFFFFF',
+        source: 'ai_image',
+      }
+      const res = await fetch('/api/admin/catalog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}))
+        throw new Error(j.error ?? 'Catalog row create failed')
+      }
+      await refreshCatalog()
+    } catch (err) {
+      updateItem(id, {
+        status: 'error',
+        error: err instanceof Error ? err.message : 'Catalog row create failed',
+      })
+    } finally {
+      setBusy(id, false)
     }
   }
 
@@ -472,6 +583,39 @@ export default function AdminImagesPage() {
             }}
           >
             Sign in →
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAdminEmail(user.email)) {
+    return (
+      <div style={{
+        minHeight: 'calc(100vh - 61px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 40,
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontFamily: brand.font.serif, fontSize: 22, color: brand.colors.ink, margin: '0 0 12px' }}>
+            You don&apos;t have access to the image intake tool.
+          </p>
+          <button
+            onClick={() => router.push('/')}
+            style={{
+              padding: '10px 24px',
+              background: 'transparent',
+              color: brand.colors.ink,
+              border: `1px solid ${brand.colors.ink}`,
+              borderRadius: brand.radius.btn,
+              fontFamily: brand.font.sans,
+              fontSize: 13,
+              cursor: 'pointer',
+            }}
+          >
+            ← Home
           </button>
         </div>
       </div>
@@ -570,11 +714,14 @@ export default function AdminImagesPage() {
                 <QueueCard
                   key={item.id}
                   item={item}
+                  catalogMatch={item.watchId ? catalogIds.has(item.watchId) : false}
+                  catalogRowBusy={catalogRowBusy.has(item.id)}
                   onApprove={handleApprove}
                   onReject={handleReject}
                   onToggleEdit={handleToggleEdit}
                   onFieldChange={handleFieldChange}
                   onWatchIdChange={handleWatchIdChange}
+                  onCreateCatalogRow={handleCreateCatalogRow}
                 />
               ))}
             </div>

@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { processWatchImageBuffer } from '@/lib/imageProcessing'
 import { identifyWatchWithVision } from '@/lib/watchVision'
-import { createClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/auth/requireAdmin'
 
 export const maxDuration = 60
 export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const gate = await requireAdmin()
+  if (!gate.ok) return gate.response
 
   let formData: FormData
   try {

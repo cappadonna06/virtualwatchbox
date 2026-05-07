@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
+import { isAdminEmail } from '@/lib/auth/admin'
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import type { CatalogWatch, WatchType } from '@/types/watch'
 
@@ -298,6 +299,17 @@ export default function AdminCatalogPage() {
           Sign in to access the catalog manager.
         </p>
         <Link href="/auth" style={{ fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.gold }}>Sign in →</Link>
+      </div>
+    )
+  }
+
+  if (!isAdminEmail(user.email)) {
+    return (
+      <div style={{ padding: '120px 56px', textAlign: 'center' }}>
+        <p style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted }}>
+          You don&apos;t have access to the catalog manager.
+        </p>
+        <Link href="/" style={{ fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.gold }}>← Home</Link>
       </div>
     )
   }
