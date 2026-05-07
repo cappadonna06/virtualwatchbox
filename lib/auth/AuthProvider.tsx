@@ -54,7 +54,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+      // Only refresh server-rendered content for events that change identity.
+      // TOKEN_REFRESHED fires every ~55 min as a routine token rotation and
+      // does NOT change who the user is — refreshing the entire RSC tree on
+      // it is wasteful and was previously a workaround for stale session
+      // cookies that the middleware now refreshes directly on every request.
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
         router.refresh()
       }
     })
