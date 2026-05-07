@@ -5,6 +5,9 @@ import type { OwnershipStatus, ResolvedOwnedWatch, WatchCondition } from '@/type
 import { brand } from '@/lib/brand'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 
+const fmt = (n: number) =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
+
 const CONDITIONS: WatchCondition[] = ['Unworn', 'Like New', 'Excellent', 'Good', 'Fair']
 const OWNERSHIP_STATUSES: OwnershipStatus[] = ['Owned', 'For Sale', 'Recently Added', 'Needs Service']
 
@@ -29,12 +32,12 @@ const labelStyle: CSSProperties = {
   letterSpacing: '0.12em',
   textTransform: 'uppercase',
   color: brand.colors.muted,
-  marginBottom: 8,
+  marginBottom: 6,
 }
 
 const inputStyle: CSSProperties = {
   width: '100%',
-  padding: '10px 12px',
+  padding: '8px 12px',
   border: `1px solid ${brand.colors.border}`,
   borderRadius: brand.radius.sm,
   fontFamily: brand.font.sans,
@@ -134,7 +137,7 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
           left: '50%',
           transform: 'translate(-50%, -50%)',
           width: '94vw',
-          maxWidth: 520,
+          maxWidth: 680,
           maxHeight: '90vh',
           overflowY: 'auto',
           background: brand.colors.white,
@@ -142,10 +145,10 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
           borderRadius: brand.radius.xl,
           boxShadow: brand.shadow.lg,
           zIndex: 211,
-          padding: 22,
+          padding: 20,
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 12 }}>
           <div>
             <div
               style={{
@@ -155,7 +158,7 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: brand.colors.muted,
-                marginBottom: 6,
+                marginBottom: 4,
               }}
             >
               Edit Watch
@@ -172,10 +175,10 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
             >
               {watch.brand}
             </div>
-            <div style={{ fontFamily: brand.font.serif, fontSize: 26, color: brand.colors.ink, lineHeight: 1.1, marginTop: 2 }}>
+            <div style={{ fontFamily: brand.font.serif, fontSize: 22, color: brand.colors.ink, lineHeight: 1.1, marginTop: 2 }}>
               {watch.model}
             </div>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginTop: 4 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginTop: 2 }}>
               Ref. {watch.reference}
             </div>
           </div>
@@ -199,32 +202,98 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
         </div>
 
         <div
+          className="grid grid-cols-1 md:grid-cols-[180px,1fr] gap-4"
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 14,
-            padding: '12px 14px',
-            background: brand.colors.bg,
-            border: `1px solid ${brand.colors.border}`,
-            borderRadius: brand.radius.md,
-            marginBottom: 18,
+            alignItems: 'stretch',
+            marginBottom: 14,
           }}
         >
-          <div style={{ position: 'relative', width: 56, height: 56, flexShrink: 0 }}>
-            <WatchImageOrDial
-              watch={watch}
-              fill
-              sizes="56px"
-              imageStyle={{ objectFit: 'contain' }}
-              dialSize={48}
-            />
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: 180,
+              aspectRatio: '1 / 1',
+              background: brand.colors.bg,
+              border: `1px solid ${brand.colors.border}`,
+              borderRadius: brand.radius.md,
+              overflow: 'hidden',
+              justifySelf: 'center',
+            }}
+          >
+            <div style={{ position: 'absolute', inset: 12 }}>
+              <WatchImageOrDial
+                watch={watch}
+                fill
+                sizes="(max-width: 768px) 180px, 180px"
+                imageStyle={{ objectFit: 'contain' }}
+                dialSize={140}
+              />
+            </div>
           </div>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, lineHeight: 1.5 }}>
-            Catalog details (case, dial, movement) come from the model and cannot be edited here.
+
+          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '7px 12px',
+                background: brand.colors.bg,
+                border: `1px solid ${brand.colors.border}`,
+                borderRadius: brand.radius.md,
+                marginBottom: 6,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 9,
+                  fontWeight: 600,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  color: brand.colors.muted,
+                }}
+              >
+                Est. Market Value
+              </span>
+              <span style={{ fontFamily: brand.font.sans, fontSize: 15, fontWeight: 600, color: brand.colors.gold }}>
+                {fmt(watch.estimatedValue)}
+              </span>
+            </div>
+            {(
+              [
+                ['Case Size', `${watch.caseSizeMm}mm`],
+                ...(watch.lugWidthMm ? [['Lug Width', `${watch.lugWidthMm}mm`] as [string, string]] : []),
+                ['Case Material', watch.caseMaterial],
+                ['Dial Color', watch.dialColor],
+                ['Movement', watch.movement],
+                ['Complications', watch.complications.join(', ') || '—'],
+              ] as [string, string][]
+            ).map(([label, value]) => (
+              <div
+                key={label}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'baseline',
+                  gap: 12,
+                  padding: '5px 0',
+                  borderBottom: '1px solid #F0EBE3',
+                  fontFamily: brand.font.sans,
+                  fontSize: 12,
+                }}
+              >
+                <span style={{ color: brand.colors.muted }}>{label}</span>
+                <span style={{ color: brand.colors.ink, fontWeight: 500, textAlign: 'right', maxWidth: '60%' }}>
+                  {value}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div style={{ display: 'grid', gap: 16, marginBottom: 22 }}>
+        <div style={{ display: 'grid', gap: 12, marginBottom: 14 }}>
           <Field label="Condition">
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {CONDITIONS.map(option => (
@@ -270,7 +339,7 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
 
           <Field label="Notes">
             <textarea
-              rows={4}
+              rows={3}
               value={notes}
               placeholder="Provenance, papers, service history, why you love it…"
               onChange={event => setNotes(event.target.value)}
