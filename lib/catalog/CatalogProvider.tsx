@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
-import { renderableWatches } from '@/lib/renderableWatches'
+import { watches } from '@/lib/watches'
 import type { CatalogWatch, WatchType } from '@/types/watch'
 
 type CatalogContextValue = {
@@ -15,7 +15,7 @@ type CatalogContextValue = {
 
 const CatalogContext = createContext<CatalogContextValue>({
   dynamicWatches: [],
-  allWatches: renderableWatches,
+  allWatches: watches,
   loading: false,
   refresh: async () => {},
 })
@@ -71,9 +71,9 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => { void load() }, [load])
 
-  const staticIds = new Set(renderableWatches.map(w => w.id))
+  const staticIds = new Set(watches.map(w => w.id))
   const allWatches = [
-    ...renderableWatches,
+    ...watches,
     ...dynamicWatches.filter(dw => !staticIds.has(dw.id)),
   ]
 
