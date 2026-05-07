@@ -9,7 +9,7 @@ import { normalizePlaygroundBoxes } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import { brand } from '@/lib/brand'
 import AddSearchWatchCard from '@/components/collection/AddSearchWatchCard'
-import PhotoSearch from '@/components/PhotoSearch'
+import PhotoSearch, { type PhotoSearchHandle } from '@/components/PhotoSearch'
 
 const MATERIAL_OPTIONS = ['Stainless Steel', 'Yellow Gold', 'Rose Gold', 'White Gold', 'Titanium', 'Ceramic', 'Bronze']
 const COLOR_OPTIONS = ['Black', 'White', 'Blue', 'Green', 'Grey', 'Silver', 'Champagne', 'Brown', 'Red', 'Salmon']
@@ -69,6 +69,16 @@ function PhotoIcon({ size = 12 }: { size?: number }) {
       <rect x="1.5" y="3" width="11" height="8.5" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
       <circle cx="7" cy="7.25" r="2" stroke="currentColor" strokeWidth="1.3" />
       <path d="M4.5 3V2.2c0-.4.3-.7.7-.7h3.6c.4 0 .7.3.7.7V3" stroke="currentColor" strokeWidth="1.3" />
+    </svg>
+  )
+}
+
+function CameraIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="2.75" y="6.5" width="18.5" height="13" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="12" cy="13" r="3.5" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M8.5 6.5l1.2-2.2c.2-.4.6-.6 1-.6h2.6c.4 0 .8.2 1 .6l1.2 2.2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   )
 }
@@ -612,8 +622,9 @@ function AddWatchSearchInner() {
   const isPlaygroundContext = dest === 'playground'
   const isExploreContext = dest === 'explore'
 
-  const [mode, setMode] = useState<'search' | 'photo'>('search')
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') ?? '')
+  const [photoActive, setPhotoActive] = useState(false)
+  const photoSearchRef = useRef<PhotoSearchHandle>(null)
   const [materialFilter, setMaterialFilter] = useState<string | null>(null)
   const [colorFilter, setColorFilter] = useState<string | null>(null)
   const [sizeFilter, setSizeFilter] = useState<SizeFilter>(null)
@@ -755,71 +766,58 @@ function AddWatchSearchInner() {
         {pageSubtitle}
       </p>
 
-      <div
-        role="tablist"
-        aria-label="Find a watch"
-        style={{
-          display: 'inline-flex',
-          borderRadius: brand.radius.pill,
-          border: `0.5px solid ${brand.colors.border}`,
-          overflow: 'hidden',
-          marginBottom: 18,
-        }}
-      >
-        {(['search', 'photo'] as const).map(value => {
-          const active = mode === value
-          return (
-            <button
-              key={value}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => setMode(value)}
-              style={{
-                padding: '8px 18px',
-                background: active ? brand.colors.ink : 'transparent',
-                color: active ? brand.colors.bg : brand.colors.muted,
-                border: 'none',
-                fontFamily: brand.font.sans,
-                fontSize: 10,
-                fontWeight: 600,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                cursor: 'pointer',
-                lineHeight: 1.2,
-              }}
-            >
-              {value}
-            </button>
-          )
-        })}
-      </div>
-
-      {mode === 'search' && (
+      <div style={{ position: 'relative', marginBottom: 16 }}>
         <input
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
           placeholder="Search brand, model, or reference..."
           style={{
-            width: '100%', padding: '12px 16px',
+            width: '100%', padding: '12px 52px 12px 16px',
             border: '1px solid #E0DAD0', borderRadius: 8,
             fontFamily: 'var(--font-dm-sans)', fontSize: 15, color: '#1A1410',
-            background: '#FFFFFF', outline: 'none', marginBottom: 16,
+            background: '#FFFFFF', outline: 'none',
           }}
         />
-      )}
+        <button
+          type="button"
+          onClick={() => photoSearchRef.current?.open()}
+          aria-label="Identify a watch from a photo"
+          title="Identify a watch from a photo"
+          style={{
+            position: 'absolute',
+            right: 6,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 36,
+            height: 36,
+            borderRadius: brand.radius.md,
+            background: 'transparent',
+            border: 'none',
+            color: brand.colors.ink,
+            cursor: 'pointer',
+            transition: 'background 0.15s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = brand.colors.slot }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+        >
+          <CameraIcon size={20} />
+        </button>
+      </div>
 
       <PhotoSearch
-        visible={mode === 'photo'}
+        ref={photoSearchRef}
         dest={dest}
         boxId={boxId}
         onSwitchToSearch={(prefill) => {
-          setMode('search')
           if (prefill) setSearchTerm(prefill)
         }}
+        onActiveChange={setPhotoActive}
       />
 
-      {mode === 'search' && searchTerm.length > 0 && (
+      {!photoActive && searchTerm.length > 0 && (
         <>
           {(() => {
             const activeCount =

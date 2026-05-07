@@ -1,7 +1,7 @@
 'use client'
 
-import { useCallback, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { isAdminEmail } from '@/lib/auth/admin'
@@ -374,15 +374,31 @@ function QueueCard({
 }
 
 export default function AdminImagesPage() {
+  return (
+    <Suspense>
+      <AdminImagesPageInner />
+    </Suspense>
+  )
+}
+
+function AdminImagesPageInner() {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { allWatches, refresh: refreshCatalog } = useCatalog()
   const { refresh: refreshWatchImages } = useWatchImages()
   const catalogIds = new Set(allWatches.map(w => w.id))
   const [queue, setQueue] = useState<QueueItem[]>([])
   const [catalogRowBusy, setCatalogRowBusy] = useState<Set<string>>(new Set())
   const [dragging, setDragging] = useState(false)
+  const [pendingWatchId, setPendingWatchId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    const param = searchParams.get('watchId')
+    if (param) setPendingWatchId(param)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function updateItem(id: string, patch: Partial<QueueItem>) {
     setQueue(prev => prev.map(item => item.id === id ? { ...item, ...patch } : item))
@@ -429,6 +445,8 @@ export default function AdminImagesPage() {
         backgroundRemovalApplied: boolean
         identification: WatchIdentification | null
       }
+      const inferredId = autoWatchId(data.identification ?? undefined)
+      const watchId = pendingWatchId ?? inferredId
       updateItem(itemId, {
         status: 'ready',
         pngDataUrl: data.pngDataUrl,
@@ -439,8 +457,9 @@ export default function AdminImagesPage() {
         processedHeight: data.processedHeight,
         backgroundRemovalApplied: data.backgroundRemovalApplied,
         identification: data.identification ?? undefined,
-        watchId: autoWatchId(data.identification ?? undefined),
+        watchId,
       })
+      if (pendingWatchId) setPendingWatchId(null)
     } catch (err) {
       updateItem(itemId, {
         status: 'error',
@@ -649,6 +668,36 @@ export default function AdminImagesPage() {
             Drop watch photos to process, identify, and add to the catalog.
           </p>
         </div>
+
+        {pendingWatchId && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
+            padding: '12px 16px',
+            borderRadius: brand.radius.lg,
+            background: brand.colors.goldWash,
+            border: `1px solid ${brand.colors.goldLine}`,
+            marginBottom: 18,
+          }}>
+            <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink }}>
+              Next upload will use Watch ID:{' '}
+              <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.gold, fontWeight: 600 }}>
+                {pendingWatchId}
+              </span>
+            </span>
+            <button
+              type="button"
+              onClick={() => setPendingWatchId(null)}
+              style={{
+                marginLeft: 'auto',
+                background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted,
+                textDecoration: 'underline', textUnderlineOffset: 2,
+              }}
+            >
+              Clear
+            </button>
+          </div>
+        )}
 
         {/* Drop zone */}
         <div

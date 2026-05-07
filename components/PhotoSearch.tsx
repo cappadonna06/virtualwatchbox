@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import type { CatalogWatch } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import AddSearchWatchCard from '@/components/collection/AddSearchWatchCard'
@@ -23,13 +23,18 @@ type IdentifyResponse = {
   matchMethod: 'reference' | 'brand_model' | 'brand_only' | 'none'
 }
 
-type Phase = 'idle' | 'identifying' | 'results' | 'no_match' | 'error'
+type Phase = null | 'identifying' | 'results' | 'no_match' | 'error'
 
 type Props = {
-  visible: boolean
   dest?: string | null
   boxId?: string | null
   onSwitchToSearch: (prefill?: string) => void
+  onActiveChange?: (active: boolean) => void
+}
+
+export type PhotoSearchHandle = {
+  open: () => void
+  reset: () => void
 }
 
 const SUPPORT_EMAIL = 'support@virtualwatchbox.com'
@@ -57,10 +62,12 @@ function readAsDataUrl(file: File): Promise<string> {
   })
 }
 
-export default function PhotoSearch({ visible, dest = null, boxId = null, onSwitchToSearch }: Props) {
-  const cameraInputRef = useRef<HTMLInputElement | null>(null)
+const PhotoSearch = forwardRef<PhotoSearchHandle, Props>(function PhotoSearch(
+  { dest = null, boxId = null, onSwitchToSearch, onActiveChange },
+  ref,
+) {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
-  const [phase, setPhase] = useState<Phase>('idle')
+  const [phase, setPhase] = useState<Phase>(null)
   const [imageDataUrl, setImageDataUrl] = useState<string | null>(null)
   const [aiResult, setAiResult] = useState<AiResult | null>(null)
   const [matches, setMatches] = useState<CatalogWatch[]>([])
@@ -73,13 +80,17 @@ export default function PhotoSearch({ visible, dest = null, boxId = null, onSwit
     return () => window.removeEventListener('resize', update)
   }, [])
 
+  useEffect(() => {
+    onActiveChange?.(phase !== null)
+  }, [phase, onActiveChange])
+
   async function handleFile(file: File | null) {
     if (!file) return
     try {
       const dataUrl = await readAsDataUrl(file)
       setImageDataUrl(dataUrl)
     } catch {
-      // continue without preview
+      // preview optional
     }
     setPhase('identifying')
     setAiResult(null)
@@ -103,11 +114,10 @@ export default function PhotoSearch({ visible, dest = null, boxId = null, onSwit
   }
 
   function reset() {
-    setPhase('idle')
+    setPhase(null)
     setImageDataUrl(null)
     setAiResult(null)
     setMatches([])
-    if (cameraInputRef.current) cameraInputRef.current.value = ''
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
@@ -116,111 +126,21 @@ export default function PhotoSearch({ visible, dest = null, boxId = null, onSwit
     return [aiResult.brand, aiResult.model].filter(Boolean).join(' ').trim()
   }
 
-  // ─── Buttons ────────────────────────────────────────────────────────────────
-
-  const takePhotoBtn = (
-    <button
-      type="button"
-      onClick={() => cameraInputRef.current?.click()}
-      style={{
-        width: 240,
-        maxWidth: '100%',
-        padding: '12px 18px',
-        borderRadius: brand.radius.btn,
-        background: brand.colors.ink,
-        border: `1px solid ${brand.colors.ink}`,
-        color: brand.colors.bg,
-        fontFamily: brand.font.sans,
-        fontSize: 13,
-        fontWeight: 500,
-        letterSpacing: '0.04em',
-        cursor: 'pointer',
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 10,
-      }}
-    >
-      <span aria-hidden style={{ fontSize: 15, lineHeight: 1 }}>📷</span>
-      <span>Take Photo</span>
-    </button>
-  )
-
-  const uploadBtn = (
-    <button
-      type="button"
-      onClick={() => fileInputRef.current?.click()}
-      style={{
-        width: 240,
-        maxWidth: '100%',
-        padding: '12px 18px',
-        borderRadius: brand.radius.btn,
-        background: 'transparent',
-        border: `1px solid ${brand.colors.ink}`,
-        color: brand.colors.ink,
-        fontFamily: brand.font.sans,
-        fontSize: 13,
-        fontWeight: 500,
-        letterSpacing: '0.04em',
-        cursor: 'pointer',
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 10,
-      }}
-    >
-      <span aria-hidden style={{ fontSize: 14, lineHeight: 1 }}>↑</span>
-      <span>Upload Image</span>
-    </button>
-  )
-
-  // ─── Layout ─────────────────────────────────────────────────────────────────
+  useImperativeHandle(ref, () => ({
+    open: () => fileInputRef.current?.click(),
+    reset,
+  }))
 
   return (
-    <div style={{ display: visible ? 'block' : 'none' }}>
-      <input
-        ref={cameraInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        onChange={e => handleFile(e.target.files?.[0] ?? null)}
-        style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
-      />
+    <div>
+      {/* On mobile this offers Camera or Photo Library natively; on desktop, file picker. */}
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/jpeg,image/png,image/heic,image/webp"
+        accept="image/jpeg,image/png,image/heic,image/webp,image/*"
         onChange={e => handleFile(e.target.files?.[0] ?? null)}
         style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
       />
-
-      {phase === 'idle' && (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 10,
-            padding: '80px 20px',
-          }}
-        >
-          {takePhotoBtn}
-          {uploadBtn}
-          <p
-            style={{
-              marginTop: 14,
-              fontFamily: brand.font.sans,
-              fontSize: 12,
-              color: brand.colors.muted,
-              fontStyle: 'italic',
-              textAlign: 'center',
-              maxWidth: 320,
-            }}
-          >
-            Clear dial shots identify best. Wrist shots work too.
-          </p>
-        </div>
-      )}
 
       {phase === 'identifying' && (
         <div>
@@ -262,11 +182,7 @@ export default function PhotoSearch({ visible, dest = null, boxId = null, onSwit
 
       {phase === 'results' && aiResult && (
         <div>
-          <ResultHeader
-            imageDataUrl={imageDataUrl}
-            ai={aiResult}
-            onChange={reset}
-          />
+          <ResultHeader imageDataUrl={imageDataUrl} ai={aiResult} onChange={reset} />
           <div
             style={{
               display: 'grid',
@@ -283,17 +199,11 @@ export default function PhotoSearch({ visible, dest = null, boxId = null, onSwit
             Not the right watch?{' '}
             <button
               type="button"
-              onClick={() => onSwitchToSearch(prefillFromAi())}
+              onClick={() => { onSwitchToSearch(prefillFromAi()); reset() }}
               style={{
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                cursor: 'pointer',
-                fontFamily: brand.font.sans,
-                fontSize: 12,
-                color: brand.colors.ink,
-                textDecoration: 'underline',
-                textUnderlineOffset: 2,
+                background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink,
+                textDecoration: 'underline', textUnderlineOffset: 2,
               }}
             >
               → Search manually
@@ -304,11 +214,7 @@ export default function PhotoSearch({ visible, dest = null, boxId = null, onSwit
 
       {phase === 'no_match' && aiResult && (
         <div>
-          <ResultHeader
-            imageDataUrl={imageDataUrl}
-            ai={aiResult}
-            onChange={reset}
-          />
+          <ResultHeader imageDataUrl={imageDataUrl} ai={aiResult} onChange={reset} />
           <div
             style={{
               border: `1px solid ${brand.colors.border}`,
@@ -330,7 +236,7 @@ export default function PhotoSearch({ visible, dest = null, boxId = null, onSwit
             <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 4 }}>
               <button
                 type="button"
-                onClick={() => onSwitchToSearch(prefillFromAi())}
+                onClick={() => { onSwitchToSearch(prefillFromAi()); reset() }}
                 style={primaryLinkStyle}
               >
                 Search manually →
@@ -351,12 +257,8 @@ export default function PhotoSearch({ visible, dest = null, boxId = null, onSwit
       {phase === 'error' && (
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 14,
-            padding: '60px 20px',
-            textAlign: 'center',
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            gap: 14, padding: '60px 20px', textAlign: 'center',
           }}
         >
           <div style={{ fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.ink, maxWidth: 360 }}>
@@ -365,36 +267,24 @@ export default function PhotoSearch({ visible, dest = null, boxId = null, onSwit
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
             <button
               type="button"
-              onClick={reset}
+              onClick={() => fileInputRef.current?.click()}
               style={{
-                padding: '10px 18px',
-                borderRadius: brand.radius.btn,
-                background: brand.colors.ink,
-                border: `1px solid ${brand.colors.ink}`,
-                color: brand.colors.bg,
-                fontFamily: brand.font.sans,
-                fontSize: 12,
-                fontWeight: 500,
-                letterSpacing: '0.04em',
-                cursor: 'pointer',
+                padding: '10px 18px', borderRadius: brand.radius.btn,
+                background: brand.colors.ink, border: `1px solid ${brand.colors.ink}`,
+                color: brand.colors.bg, fontFamily: brand.font.sans, fontSize: 12,
+                fontWeight: 500, letterSpacing: '0.04em', cursor: 'pointer',
               }}
             >
               Try again
             </button>
             <button
               type="button"
-              onClick={() => onSwitchToSearch(prefillFromAi())}
+              onClick={() => { onSwitchToSearch(prefillFromAi()); reset() }}
               style={{
-                padding: '10px 18px',
-                borderRadius: brand.radius.btn,
-                background: 'transparent',
-                border: `1px solid ${brand.colors.ink}`,
-                color: brand.colors.ink,
-                fontFamily: brand.font.sans,
-                fontSize: 12,
-                fontWeight: 500,
-                letterSpacing: '0.04em',
-                cursor: 'pointer',
+                padding: '10px 18px', borderRadius: brand.radius.btn,
+                background: 'transparent', border: `1px solid ${brand.colors.ink}`,
+                color: brand.colors.ink, fontFamily: brand.font.sans, fontSize: 12,
+                fontWeight: 500, letterSpacing: '0.04em', cursor: 'pointer',
               }}
             >
               Search manually →
@@ -411,7 +301,9 @@ export default function PhotoSearch({ visible, dest = null, boxId = null, onSwit
       `}</style>
     </div>
   )
-}
+})
+
+export default PhotoSearch
 
 const primaryLinkStyle: React.CSSProperties = {
   background: brand.colors.ink,
@@ -460,9 +352,7 @@ function ResultHeader({
           src={imageDataUrl}
           alt="Uploaded watch"
           style={{
-            width: 72,
-            height: 72,
-            objectFit: 'cover',
+            width: 72, height: 72, objectFit: 'cover',
             borderRadius: brand.radius.md,
             border: `1px solid ${brand.colors.border}`,
             flexShrink: 0,
@@ -474,26 +364,17 @@ function ResultHeader({
           type="button"
           onClick={onChange}
           style={{
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            cursor: 'pointer',
-            fontFamily: brand.font.sans,
-            fontSize: 12,
-            color: brand.colors.muted,
-            textDecoration: 'underline',
-            textUnderlineOffset: 2,
-            alignSelf: 'flex-start',
+            background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+            fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted,
+            textDecoration: 'underline', textUnderlineOffset: 2, alignSelf: 'flex-start',
           }}
         >
           ✕ Change photo
         </button>
         <div
           style={{
-            fontFamily: brand.font.sans,
-            fontSize: 12,
-            color: brand.colors.muted,
-            fontStyle: 'italic',
+            fontFamily: brand.font.sans, fontSize: 12,
+            color: brand.colors.muted, fontStyle: 'italic',
           }}
         >
           {buildSummaryLine(ai)}
@@ -507,9 +388,7 @@ function ShimmerBar({ width }: { width: number }) {
   return (
     <div
       style={{
-        width,
-        height: 12,
-        borderRadius: brand.radius.sm,
+        width, height: 12, borderRadius: brand.radius.sm,
         background: brand.colors.border,
         animation: 'vw-photo-pulse 1.4s ease-in-out infinite',
       }}
@@ -523,8 +402,7 @@ function SkeletonGrid() {
       style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 360px))',
-        gap: 16,
-        justifyContent: 'start',
+        gap: 16, justifyContent: 'start',
       }}
     >
       {[0, 1, 2].map(i => (
@@ -534,15 +412,12 @@ function SkeletonGrid() {
             background: brand.colors.white,
             border: `1px solid ${brand.colors.border}`,
             borderRadius: brand.radius.xl,
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
+            overflow: 'hidden', display: 'flex', flexDirection: 'column',
           }}
         >
           <div
             style={{
-              width: '100%',
-              aspectRatio: '4 / 3',
+              width: '100%', aspectRatio: '4 / 3',
               background: brand.colors.border,
               animation: 'vw-photo-pulse 1.4s ease-in-out infinite',
             }}
