@@ -189,8 +189,16 @@ function ModeTogglePill({
 
 function PortfolioValueRow({ watches, mode }: { watches: Props['watches']; mode: 'collection' | 'playground' }) {
   const total = watches.reduce((s, w) => s + w.estimatedValue, 0)
-  const cost = watches.reduce((s, w) => s + (w.purchasePrice ?? 0), 0)
-  const gain = total - cost
+  // Cost basis / gain is only meaningful for the subset of watches with a known
+  // purchase price. Treating null/0 as $0 paid would inflate gain by the entire
+  // estimated value of unpriced watches. Compare like-for-like instead, and
+  // surface the subset count when partial.
+  const priced = watches.filter(w => (w.purchasePrice ?? 0) > 0)
+  const pricedTotalValue = priced.reduce((s, w) => s + w.estimatedValue, 0)
+  const cost = priced.reduce((s, w) => s + (w.purchasePrice ?? 0), 0)
+  const gain = pricedTotalValue - cost
+  const hasPriced = priced.length > 0
+  const partial = hasPriced && priced.length < watches.length
   const sorted = [...watches].sort((a, b) => b.estimatedValue - a.estimatedValue)
   const highest = sorted[0]
   const median = sorted.length ? sorted[Math.floor(sorted.length / 2)] : null
@@ -212,15 +220,28 @@ function PortfolioValueRow({ watches, mode }: { watches: Props['watches']; mode:
     >
       <Cell label="Total Est. Value" value={fmt(total)} />
       {mode === 'collection' ? (
-        <>
-          <Cell label="Cost Basis" value={fmt(cost)} />
+        hasPriced ? (
+          <>
+            <Cell
+              label="Cost Basis"
+              value={fmt(cost)}
+              sub={partial ? `${priced.length} of ${watches.length} priced` : undefined}
+            />
+            <Cell
+              label="Gain / Loss"
+              value={`${gain >= 0 ? '+' : '-'}${fmt(Math.abs(gain))}`}
+              color={gain >= 0 ? SUCCESS_GREEN : LOSS_RED}
+              icon={gain >= 0 ? '↑' : '↓'}
+              sub={partial ? `vs ${fmt(pricedTotalValue)} est.` : undefined}
+            />
+          </>
+        ) : (
           <Cell
-            label="Gain / Loss"
-            value={`${gain >= 0 ? '+' : '-'}${fmt(Math.abs(gain))}`}
-            color={gain >= 0 ? SUCCESS_GREEN : LOSS_RED}
-            icon={gain >= 0 ? '↑' : '↓'}
+            label="Cost Basis"
+            value="—"
+            sub="add purchase prices to track gain"
           />
-        </>
+        )
       ) : (
         <Cell label="Average Value" value={fmt(average)} />
       )}
