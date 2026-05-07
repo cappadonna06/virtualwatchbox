@@ -1392,7 +1392,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       const target = prev.find(watch => watch.id === watchId)
       if (!target) return prev
       const next = prev.map(watch => (watch.id === watchId ? { ...watch, ...updates } : watch))
-      if (user) void syncWatchUpdate(watchId, updates, user.id)
+      if (user) void trackedSync(syncWatchUpdate(watchId, updates, user.id))
       return next
     })
   }
