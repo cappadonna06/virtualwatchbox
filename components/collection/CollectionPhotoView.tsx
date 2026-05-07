@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { brand } from '@/lib/brand'
 import { resizeImageFileToDataUrl } from '@/lib/profileDemo'
 import WatchboxPhotoEditModal from './WatchboxPhotoEditModal'
@@ -51,6 +51,7 @@ export default function CollectionPhotoView({
   const [dragging, setDragging] = useState(false)
   const [busy, setBusy] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const uploadInputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -228,9 +229,16 @@ export default function CollectionPhotoView({
           <button type="button" onClick={() => openEditor('camera')} style={primaryButtonStyle}>
             Take Photo
           </button>
-          <button type="button" onClick={() => openEditor('crop')} style={secondaryButtonStyle}>
+          <button type="button" onClick={() => uploadInputRef.current?.click()} style={secondaryButtonStyle}>
             Upload Photo
           </button>
+          <input
+            ref={uploadInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/heic,image/webp,image/*"
+            onChange={e => { const f = e.target.files?.[0]; if (f) void ingestDroppedFile(f); e.target.value = '' }}
+            style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
+          />
         </div>
 
         {!isSignedIn ? (

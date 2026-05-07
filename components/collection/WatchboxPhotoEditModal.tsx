@@ -5,6 +5,7 @@ import Cropper, { type Area, type Point } from 'react-easy-crop'
 import 'react-easy-crop/react-easy-crop.css'
 import { brand } from '@/lib/brand'
 import { resizeImageFileToDataUrl } from '@/lib/profileDemo'
+import CameraCapture, { CAMERA_MAX_DIM as MAX_DIM, CAMERA_JPEG_QUALITY as JPEG_QUALITY } from '@/components/CameraCapture'
 import type { WatchboxPhotoCrop } from '@/app/collection/CollectionSessionProvider'
 
 type Mode = 'crop' | 'camera'
@@ -18,9 +19,6 @@ interface Props {
   onSave: (next: { url: string; crop: WatchboxPhotoCrop }) => void
   onRemove?: () => void
 }
-
-const MAX_DIM = 1600
-const JPEG_QUALITY = 0.82
 
 type AspectPreset = { id: string; label: string; value: number | 'auto' }
 const ASPECT_PRESETS: AspectPreset[] = [
@@ -221,7 +219,7 @@ export default function WatchboxPhotoEditModal({
         </header>
 
         {mode === 'camera' ? (
-          <CameraStage
+          <CameraCapture
             onCapture={handleCameraCapture}
             onCancel={() => setMode(workingUrl ? 'crop' : 'crop')}
             onError={msg => { setErrorMessage(msg); setMode('crop') }}
@@ -438,125 +436,6 @@ function AspectChips({ presetId, onChange }: { presetId: string; onChange: (id: 
           </button>
         )
       })}
-    </div>
-  )
-}
-
-function CameraStage({
-  onCapture,
-  onCancel,
-  onError,
-}: {
-  onCapture: (dataUrl: string) => void
-  onCancel: () => void
-  onError: (message: string) => void
-}) {
-  const videoRef = useRef<HTMLVideoElement | null>(null)
-  const streamRef = useRef<MediaStream | null>(null)
-  const [ready, setReady] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-    async function start() {
-      if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
-        onError('Camera not available in this browser. Use Upload instead.')
-        return
-      }
-      try {
-        let stream: MediaStream
-        try {
-          stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1200 } },
-            audio: false,
-          })
-        } catch {
-          stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-        }
-        if (cancelled) {
-          stream.getTracks().forEach(t => t.stop())
-          return
-        }
-        streamRef.current = stream
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream
-          await videoRef.current.play().catch(() => {})
-          setReady(true)
-        }
-      } catch {
-        onError('Camera permission denied. Use Upload instead.')
-      }
-    }
-    start()
-    return () => {
-      cancelled = true
-      streamRef.current?.getTracks().forEach(t => t.stop())
-      streamRef.current = null
-    }
-  }, [onError])
-
-  function capture() {
-    const video = videoRef.current
-    if (!video || !video.videoWidth) return
-    const ratio = Math.min(MAX_DIM / video.videoWidth, MAX_DIM / video.videoHeight, 1)
-    const w = Math.round(video.videoWidth * ratio)
-    const h = Math.round(video.videoHeight * ratio)
-    const canvas = document.createElement('canvas')
-    canvas.width = w
-    canvas.height = h
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    ctx.drawImage(video, 0, 0, w, h)
-    const dataUrl = canvas.toDataURL('image/jpeg', JPEG_QUALITY)
-    onCapture(dataUrl)
-  }
-
-  return (
-    <div style={{ display: 'grid', gap: 12 }}>
-      <div
-        style={{
-          position: 'relative',
-          width: '100%',
-          aspectRatio: '16 / 10',
-          background: brand.colors.dark,
-          borderRadius: brand.radius.lg,
-          overflow: 'hidden',
-          border: `1px solid ${brand.colors.border}`,
-        }}
-      >
-        <video
-          ref={videoRef}
-          playsInline
-          muted
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            display: 'block',
-          }}
-        />
-        {!ready ? (
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: brand.colors.bg,
-            fontSize: 13,
-            letterSpacing: '0.04em',
-          }}>
-            Starting camera…
-          </div>
-        ) : null}
-      </div>
-      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-        <button type="button" onClick={onCancel} style={secondaryButtonStyle}>
-          Cancel
-        </button>
-        <button type="button" onClick={capture} disabled={!ready} style={{ ...primaryButtonStyle, opacity: ready ? 1 : 0.4, cursor: ready ? 'pointer' : 'not-allowed' }}>
-          Capture
-        </button>
-      </div>
     </div>
   )
 }

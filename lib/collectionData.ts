@@ -3,7 +3,7 @@ import type { OwnedWatch } from '@/types/watch'
 export const SEEDED_OWNED_WATCHES: OwnedWatch[] = [
   {
     id: 'owned-seed-1',
-    watchId: 'longines-ld-white',
+    watchId: 'longines-legend-diver-white',
     condition: 'Like New',
     purchaseDate: '2023-09-01',
     purchasePrice: 1180,
@@ -12,7 +12,7 @@ export const SEEDED_OWNED_WATCHES: OwnedWatch[] = [
   },
   {
     id: 'owned-seed-2',
-    watchId: 'longines-ld-navy',
+    watchId: 'longines-legend-diver-blue',
     condition: 'Unworn',
     purchaseDate: '2024-02-01',
     purchasePrice: 1220,
@@ -21,7 +21,7 @@ export const SEEDED_OWNED_WATCHES: OwnedWatch[] = [
   },
   {
     id: 'owned-seed-3',
-    watchId: 'longines-ld-green',
+    watchId: 'longines-legend-diver-green',
     condition: 'Excellent',
     purchaseDate: '2022-11-01',
     purchasePrice: 1100,
@@ -30,7 +30,7 @@ export const SEEDED_OWNED_WATCHES: OwnedWatch[] = [
   },
   {
     id: 'owned-seed-4',
-    watchId: 'longines-ld-black',
+    watchId: 'longines-legend-diver-black',
     condition: 'Good',
     purchaseDate: '2021-06-01',
     purchasePrice: 980,
@@ -39,7 +39,7 @@ export const SEEDED_OWNED_WATCHES: OwnedWatch[] = [
   },
   {
     id: 'owned-seed-5',
-    watchId: 'longines-ld-grey',
+    watchId: 'longines-legend-diver-grey',
     condition: 'Excellent',
     purchaseDate: '2023-04-01',
     purchasePrice: 1150,

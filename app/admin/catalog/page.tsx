@@ -1,17 +1,21 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
+import { isAdminEmail } from '@/lib/auth/admin'
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
+import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
+import { brandTier, heatScore } from '@/lib/heatScore'
 import type { CatalogWatch, WatchType } from '@/types/watch'
 
 export const dynamic = 'force-dynamic'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type View = 'list' | 'add' | 'import'
+type View = 'list' | 'add' | 'import' | 'queue'
 type ImportRow = Record<string, string> & { _id: string; _error?: string }
 
 const WATCH_TYPES: WatchType[] = [
@@ -151,9 +155,20 @@ function StaticBadge() {
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function AdminCatalogPage() {
+  return (
+    <Suspense>
+      <AdminCatalogPageInner />
+    </Suspense>
+  )
+}
+
+function AdminCatalogPageInner() {
   const { user } = useAuth()
+  const searchParams = useSearchParams()
   const { dynamicWatches, allWatches, refresh } = useCatalog()
-  const [view, setView] = useState<View>('list')
+  const { getImageUrl } = useWatchImages()
+  const initialView: View = searchParams.get('view') === 'queue' ? 'queue' : 'list'
+  const [view, setView] = useState<View>(initialView)
   const [search, setSearch] = useState('')
   const [form, setForm] = useState({ ...BLANK_FORM })
   const [editId, setEditId] = useState<string | null>(null)
@@ -169,12 +184,21 @@ export default function AdminCatalogPage() {
 
   const dynamicIds = new Set(dynamicWatches.map(w => w.id))
   const isStatic = (w: CatalogWatch) => !dynamicIds.has(w.id)
+  const watchHasImage = useCallback((w: CatalogWatch) => !!(getImageUrl(w.id) || w.imageUrl), [getImageUrl])
 
-  const filtered = allWatches.filter(w => {
-    if (!search.trim()) return true
+  const queueRows = useMemo(() => {
+    return allWatches
+      .filter(w => !watchHasImage(w))
+      .map(w => ({ watch: w, heat: heatScore(w) }))
+      .sort((a, b) => b.heat - a.heat || a.watch.brand.localeCompare(b.watch.brand))
+  }, [allWatches, watchHasImage])
+
+  const filtered = (() => {
+    const baseList: CatalogWatch[] = view === 'queue' ? queueRows.map(r => r.watch) : allWatches
+    if (!search.trim()) return baseList
     const q = search.toLowerCase()
-    return [w.brand, w.model, w.reference, w.watchType].some(v => v?.toLowerCase().includes(q))
-  })
+    return baseList.filter(w => [w.brand, w.model, w.reference, w.watchType].some(v => v?.toLowerCase().includes(q)))
+  })()
 
   function openAdd() {
     setEditId(null)
@@ -302,6 +326,17 @@ export default function AdminCatalogPage() {
     )
   }
 
+  if (!isAdminEmail(user.email)) {
+    return (
+      <div style={{ padding: '120px 56px', textAlign: 'center' }}>
+        <p style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted }}>
+          You don&apos;t have access to the catalog manager.
+        </p>
+        <Link href="/" style={{ fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.gold }}>← Home</Link>
+      </div>
+    )
+  }
+
   const inputStyle: React.CSSProperties = {
     width: '100%', boxSizing: 'border-box',
     border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.md,
@@ -327,7 +362,7 @@ export default function AdminCatalogPage() {
             Watch Catalog
           </h1>
           <p style={{ margin: '4px 0 0', fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted }}>
-            {allWatches.length} watches · {dynamicWatches.length} in Supabase
+            {allWatches.length} watches · {dynamicWatches.length} in Supabase · {queueRows.length} missing photos
           </p>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
@@ -580,21 +615,63 @@ export default function AdminCatalogPage() {
         </div>
       )}
 
-      {/* ── Search + Table ── */}
-      <div style={{ marginBottom: 16 }}>
-        <input
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Search brand, model, reference, or type…"
-          style={{ ...inputStyle, maxWidth: 400 }}
-        />
-      </div>
+      {/* ── View tabs + Search ── */}
+      {view !== 'add' && view !== 'import' && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+          <div
+            role="tablist"
+            style={{
+              display: 'inline-flex',
+              borderRadius: brand.radius.pill,
+              border: `0.5px solid ${brand.colors.border}`,
+              overflow: 'hidden',
+            }}
+          >
+            {([
+              { value: 'list' as const, label: `All watches (${allWatches.length})` },
+              { value: 'queue' as const, label: `Photo Queue (${queueRows.length})` },
+            ]).map(tab => {
+              const active = view === tab.value
+              return (
+                <button
+                  key={tab.value}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setView(tab.value)}
+                  style={{
+                    padding: '8px 16px',
+                    background: active ? brand.colors.ink : 'transparent',
+                    color: active ? brand.colors.bg : brand.colors.muted,
+                    border: 'none',
+                    fontFamily: brand.font.sans,
+                    fontSize: 11,
+                    fontWeight: 600,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    cursor: 'pointer',
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {tab.label}
+                </button>
+              )
+            })}
+          </div>
+          <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search brand, model, reference, or type…"
+            style={{ ...inputStyle, maxWidth: 360, flex: 1 }}
+          />
+        </div>
+      )}
 
       <div style={{ background: brand.colors.white, border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.xl, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: brand.font.sans, fontSize: 13 }}>
           <thead>
             <tr style={{ background: brand.colors.slot, borderBottom: `1px solid ${brand.colors.border}` }}>
-              {['Brand / Model', 'Reference', 'Type', 'Size', 'Est. Value', 'Source', 'Actions'].map(h => (
+              {['Brand / Model', 'Reference', 'Type', 'Size', 'Est. Value', 'Image', 'Heat', 'Source', 'Actions'].map(h => (
                 <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', color: brand.colors.muted, whiteSpace: 'nowrap' }}>{h}</th>
               ))}
             </tr>
@@ -602,6 +679,9 @@ export default function AdminCatalogPage() {
           <tbody>
             {filtered.map(w => {
               const isBuiltin = isStatic(w)
+              const hasImage = watchHasImage(w)
+              const heat = heatScore(w)
+              const tier = brandTier(w.brand)
               return (
                 <tr key={w.id} style={{ borderBottom: `1px solid ${brand.colors.borderLight}` }}>
                   <td style={{ padding: '10px 14px' }}>
@@ -613,6 +693,29 @@ export default function AdminCatalogPage() {
                   <td style={{ padding: '10px 14px', color: brand.colors.ink }}>{w.caseSizeMm}mm</td>
                   <td style={{ padding: '10px 14px', fontFamily: brand.font.serif, fontSize: 16, color: brand.colors.ink }}>
                     {w.estimatedValue > 0 ? `$${w.estimatedValue.toLocaleString()}` : '—'}
+                  </td>
+                  <td style={{ padding: '10px 14px' }}>
+                    {hasImage ? (
+                      <span style={{
+                        display: 'inline-block', padding: '2px 8px', borderRadius: brand.radius.pill,
+                        fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600,
+                        letterSpacing: '0.06em', textTransform: 'uppercase',
+                        background: '#E8F4E8', color: '#2D6A2D',
+                      }}>✓ Photo</span>
+                    ) : (
+                      <span style={{
+                        display: 'inline-block', padding: '2px 8px', borderRadius: brand.radius.pill,
+                        fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600,
+                        letterSpacing: '0.06em', textTransform: 'uppercase',
+                        background: '#FFF8E6', color: '#8A6A10',
+                      }}>Missing</span>
+                    )}
+                  </td>
+                  <td style={{ padding: '10px 14px', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.ink, fontWeight: 500 }}>{heat}</span>
+                    <span style={{ fontFamily: brand.font.sans, fontSize: 9, color: brand.colors.muted, marginLeft: 6, letterSpacing: '0.08em' }}>
+                      Tier {tier}
+                    </span>
                   </td>
                   <td style={{ padding: '10px 14px' }}>
                     {isBuiltin ? <StaticBadge /> : <Pill ink>Catalog</Pill>}
@@ -641,7 +744,7 @@ export default function AdminCatalogPage() {
                         href={`/admin/images?watchId=${w.id}`}
                         style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.gold, textDecoration: 'none', letterSpacing: '0.02em' }}
                       >
-                        → Image
+                        {hasImage ? '→ Replace' : '→ Upload'}
                       </Link>
                     </div>
                   </td>
@@ -650,8 +753,8 @@ export default function AdminCatalogPage() {
             })}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={7} style={{ padding: '32px', textAlign: 'center', fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted }}>
-                  No watches found.
+                <td colSpan={9} style={{ padding: '32px', textAlign: 'center', fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted }}>
+                  {view === 'queue' ? 'Photo queue is empty — every catalog watch has an image.' : 'No watches found.'}
                 </td>
               </tr>
             )}

@@ -1,12 +1,14 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import WatchStateControl from '@/components/collection/WatchStateControl'
 import DialSVG from '@/components/watchbox/DialSVG'
 import { brand } from '@/lib/brand'
 import { renderableWatches } from '@/lib/renderableWatches'
+import { heatScore } from '@/lib/heatScore'
+import { pickSeeded, todayUTC } from '@/lib/dailyShuffle'
 import { usePrefersReducedMotion } from '@/components/collection/useResponsiveState'
 
 export interface CarouselWatch {
@@ -24,16 +26,44 @@ export interface CarouselWatch {
   }
 }
 
-const CAROUSEL_WATCHES: CarouselWatch[] = renderableWatches.slice(0, 5).map(watch => ({
-  id: watch.id,
-  img: watch.imageUrl ?? '',
-  brand: watch.brand,
-  model: watch.model,
-  ref: watch.reference,
-  dial: watch.dialColor,
-  value: watch.estimatedValue,
-  dialConfig: watch.dialConfig,
-}))
+/**
+ * Pool size matters: too small and the daily shuffle barely changes anything;
+ * too large and we drift past the prestige tier. 15 keeps the carousel inside
+ * the heat-score top of the photo-having catalog while still giving 5-of-15
+ * picks meaningful day-over-day variety.
+ */
+const CAROUSEL_POOL_SIZE = 15
+const CAROUSEL_COUNT = 5
+
+function toCarouselWatch(watch: typeof renderableWatches[number]): CarouselWatch {
+  return {
+    id: watch.id,
+    img: watch.imageUrl ?? '',
+    brand: watch.brand,
+    model: watch.model,
+    ref: watch.reference,
+    dial: watch.dialColor,
+    value: watch.estimatedValue,
+    dialConfig: watch.dialConfig,
+  }
+}
+
+/**
+ * Top of the photo-having catalog by heat score, with id alphabetical as a
+ * deterministic tiebreak so the pool order is stable across runs.
+ */
+const CAROUSEL_POOL: CarouselWatch[] = [...renderableWatches]
+  .sort((a, b) => heatScore(b) - heatScore(a) || a.id.localeCompare(b.id))
+  .slice(0, CAROUSEL_POOL_SIZE)
+  .map(toCarouselWatch)
+
+/**
+ * SSR-safe initial selection: the deterministic top of the pool. The client
+ * swaps to the date-seeded daily shuffle on mount — same item count, no
+ * layout shift, just a different ordering. Avoids a hydration mismatch from
+ * computing today's date at render time.
+ */
+const INITIAL_CAROUSEL: CarouselWatch[] = CAROUSEL_POOL.slice(0, CAROUSEL_COUNT)
 
 const FALLBACK_WATCH: CarouselWatch = {
   id: 'hero-fallback',
@@ -60,10 +90,23 @@ export default function HeroCarousel() {
   const [dir, setDir] = useState(1)
   const [hovered, setHovered] = useState(false)
   const [manualPaused, setManualPaused] = useState(false)
+  const [dateSeed, setDateSeed] = useState<string | null>(null)
   const prefersReducedMotion = usePrefersReducedMotion()
 
-  const watch = CAROUSEL_WATCHES[idx] ?? FALLBACK_WATCH
-  const total = CAROUSEL_WATCHES.length
+  // Daily shuffle of the heat-score top pool. Initial render (SSR + first
+  // hydration) uses INITIAL_CAROUSEL so the markup matches; useEffect swaps
+  // in today's seeded selection once we're on the client.
+  useEffect(() => {
+    setDateSeed(todayUTC())
+  }, [])
+
+  const carouselWatches = useMemo(
+    () => (dateSeed ? pickSeeded(CAROUSEL_POOL, dateSeed, CAROUSEL_COUNT) : INITIAL_CAROUSEL),
+    [dateSeed],
+  )
+
+  const watch = carouselWatches[idx] ?? FALLBACK_WATCH
+  const total = carouselWatches.length
 
   function navigate(newIdx: number, options?: { manual?: boolean }) {
     if (total === 0) return
@@ -328,7 +371,7 @@ export default function HeroCarousel() {
             display: 'flex', gap: 5, justifyContent: 'center',
             position: 'absolute', bottom: 10, left: 0, right: 0, zIndex: 10,
             }}>
-            {CAROUSEL_WATCHES.map((_, i) => (
+            {carouselWatches.map((_, i) => (
               <div
                 key={i}
                 onClick={() => navigate(i, { manual: true })}
@@ -348,5 +391,3 @@ export default function HeroCarousel() {
     </section>
   )
 }
-
-export { CAROUSEL_WATCHES }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/auth/requireAdmin'
 
 export const maxDuration = 30
 export const runtime = 'nodejs'
@@ -16,9 +17,9 @@ type ApprovePayload = {
 }
 
 export async function POST(request: NextRequest) {
+  const gate = await requireAdmin()
+  if (!gate.ok) return gate.response
   const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json() as ApprovePayload
   const { watchId, pngDataUrl, webpDataUrl, sourceWidth, sourceHeight, processedWidth, processedHeight, backgroundRemovalApplied } = body

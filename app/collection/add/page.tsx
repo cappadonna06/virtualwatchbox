@@ -7,20 +7,15 @@ import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import { normalizePlaygroundBoxes } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
-import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
-import WatchStateControl from '@/components/collection/WatchStateControl'
-import { useCollectionSession } from '../CollectionSessionProvider'
 import { brand } from '@/lib/brand'
+import AddSearchWatchCard from '@/components/collection/AddSearchWatchCard'
+import PhotoSearch, { type PhotoSearchHandle } from '@/components/PhotoSearch'
 
 const MATERIAL_OPTIONS = ['Stainless Steel', 'Yellow Gold', 'Rose Gold', 'White Gold', 'Titanium', 'Ceramic', 'Bronze']
 const COLOR_OPTIONS = ['Black', 'White', 'Blue', 'Green', 'Grey', 'Silver', 'Champagne', 'Brown', 'Red', 'Salmon']
 const SIZE_OPTIONS = ['≤38mm', '39–41mm', '≥42mm'] as const
 
 type SizeFilter = (typeof SIZE_OPTIONS)[number] | null
-
-function fmt(n: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
-}
 
 function matchesColor(watch: CatalogWatch, color: string) {
   return watch.dialColor.toLowerCase().includes(color.toLowerCase())
@@ -40,15 +35,6 @@ function loadPlaygroundBoxes() {
   } catch {
     return SEEDED_PLAYGROUND_BOXES
   }
-}
-
-function buildDetailHref(watchId: string, options: { duplicate?: boolean; dest?: string | null; boxId?: string | null }) {
-  const params = new URLSearchParams()
-  if (options.duplicate) params.set('duplicate', 'true')
-  if (options.dest) params.set('dest', options.dest)
-  if (options.boxId) params.set('boxId', options.boxId)
-  const query = params.toString()
-  return `/collection/add/${watchId}${query ? `?${query}` : ''}`
 }
 
 // ─── Filter UI primitives ─────────────────────────────────────────────────────
@@ -83,6 +69,16 @@ function PhotoIcon({ size = 12 }: { size?: number }) {
       <rect x="1.5" y="3" width="11" height="8.5" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
       <circle cx="7" cy="7.25" r="2" stroke="currentColor" strokeWidth="1.3" />
       <path d="M4.5 3V2.2c0-.4.3-.7.7-.7h3.6c.4 0 .7.3.7.7V3" stroke="currentColor" strokeWidth="1.3" />
+    </svg>
+  )
+}
+
+function CameraIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="2.75" y="6.5" width="18.5" height="13" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="12" cy="13" r="3.5" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M8.5 6.5l1.2-2.2c.2-.4.6-.6 1-.6h2.6c.4 0 .8.2 1 .6l1.2 2.2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   )
 }
@@ -617,7 +613,6 @@ export default function AddWatchSearchPage() {
 function AddWatchSearchInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { isInCollection } = useCollectionSession()
   const { allWatches: catalogWatches } = useCatalog()
   const { getImageUrl } = useWatchImages()
 
@@ -628,6 +623,8 @@ function AddWatchSearchInner() {
   const isExploreContext = dest === 'explore'
 
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') ?? '')
+  const [photoActive, setPhotoActive] = useState(false)
+  const photoSearchRef = useRef<PhotoSearchHandle>(null)
   const [materialFilter, setMaterialFilter] = useState<string | null>(null)
   const [colorFilter, setColorFilter] = useState<string | null>(null)
   const [sizeFilter, setSizeFilter] = useState<SizeFilter>(null)
@@ -769,19 +766,58 @@ function AddWatchSearchInner() {
         {pageSubtitle}
       </p>
 
-      <input
-        value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
-        placeholder="Search brand, model, or reference..."
-        style={{
-          width: '100%', padding: '12px 16px',
-          border: '1px solid #E0DAD0', borderRadius: 8,
-          fontFamily: 'var(--font-dm-sans)', fontSize: 15, color: '#1A1410',
-          background: '#FFFFFF', outline: 'none', marginBottom: 16,
+      <div style={{ position: 'relative', marginBottom: 16 }}>
+        <input
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          placeholder="Search brand, model, or reference..."
+          style={{
+            width: '100%', padding: '12px 52px 12px 16px',
+            border: '1px solid #E0DAD0', borderRadius: 8,
+            fontFamily: 'var(--font-dm-sans)', fontSize: 15, color: '#1A1410',
+            background: '#FFFFFF', outline: 'none',
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => photoSearchRef.current?.open()}
+          aria-label="Identify a watch from a photo"
+          title="Identify a watch from a photo"
+          style={{
+            position: 'absolute',
+            right: 6,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 36,
+            height: 36,
+            borderRadius: brand.radius.md,
+            background: 'transparent',
+            border: 'none',
+            color: brand.colors.ink,
+            cursor: 'pointer',
+            transition: 'background 0.15s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = brand.colors.slot }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+        >
+          <CameraIcon size={20} />
+        </button>
+      </div>
+
+      <PhotoSearch
+        ref={photoSearchRef}
+        dest={dest}
+        boxId={boxId}
+        onSwitchToSearch={(prefill) => {
+          if (prefill) setSearchTerm(prefill)
         }}
+        onActiveChange={setPhotoActive}
       />
 
-      {searchTerm.length > 0 && (
+      {!photoActive && searchTerm.length > 0 && (
         <>
           {(() => {
             const activeCount =
@@ -1047,88 +1083,9 @@ function AddWatchSearchInner() {
           )}
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 360px))', gap: 16, justifyContent: 'start' }}>
-            {filteredResults.map(watch => {
-              const inCollection = isInCollection(watch.id)
-
-              return (
-                <div
-                  key={watch.id}
-                  onClick={() => router.push(buildDetailHref(watch.id, { dest, boxId }))}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = brand.colors.goldLine }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = brand.colors.border }}
-                  style={{
-                    position: 'relative',
-                    background: brand.colors.white,
-                    border: `1px solid ${brand.colors.border}`,
-                    borderRadius: brand.radius.xl,
-                    overflow: 'hidden',
-                    cursor: 'pointer',
-                    transition: 'border-color 0.15s',
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
-                >
-                  <WatchStateControl
-                    catalogWatchId={watch.id}
-                    source="add_flow"
-                    size="sm"
-                    placement="top-right"
-                  />
-                  <div
-                    style={{
-                      position: 'relative',
-                      width: '100%',
-                      aspectRatio: '4 / 3',
-                      background: brand.colors.bg,
-                      borderBottom: `1px solid ${brand.colors.border}`,
-                    }}
-                  >
-                    <WatchImageOrDial
-                      watch={watch}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 360px"
-                      dialSize={140}
-                      imageStyle={{ objectFit: 'contain', padding: 14 }}
-                    />
-                  </div>
-                  <div style={{ padding: '14px 16px 16px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    <div style={{ fontFamily: brand.font.sans, fontSize: 9.5, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold }}>
-                      {watch.brand}
-                    </div>
-                    <div style={{ fontFamily: brand.font.serif, fontSize: 20, fontWeight: 400, lineHeight: 1.1, color: brand.colors.ink }}>
-                      {watch.model}
-                    </div>
-                    <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      Ref. {watch.reference}
-                    </div>
-                    <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginTop: 2 }}>
-                      {watch.caseSizeMm}mm · {watch.caseMaterial} · {watch.dialColor}
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
-                      <span style={{ fontFamily: brand.font.sans, fontSize: 15, fontWeight: 600, color: brand.colors.ink }}>
-                        {fmt(watch.estimatedValue)}
-                      </span>
-                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                        {!watchHasImage(watch) && (
-                          <span style={{ fontFamily: brand.font.sans, fontSize: 9, padding: '2px 7px', borderRadius: brand.radius.pill, border: `1px solid ${brand.colors.border}`, color: brand.colors.muted, fontStyle: 'italic' }}>
-                            no photo
-                          </span>
-                        )}
-                        {inCollection ? (
-                          <span style={{ fontFamily: brand.font.sans, fontSize: 9, padding: '2px 8px', borderRadius: brand.radius.pill, background: '#E8F4E8', color: '#2D6A2D' }}>
-                            In Collection
-                          </span>
-                        ) : (
-                          <span style={{ fontFamily: brand.font.sans, fontSize: 9, padding: '2px 8px', borderRadius: brand.radius.pill, background: brand.colors.ink, color: brand.colors.bg }}>
-                            {watch.watchType}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
+            {filteredResults.map(watch => (
+              <AddSearchWatchCard key={watch.id} watch={watch} dest={dest} boxId={boxId} />
+            ))}
           </div>
         </>
       )}
