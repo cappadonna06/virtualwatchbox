@@ -58,6 +58,20 @@ export interface OwnedWatch {
   purchasePrice: number
   notes: string
   ownershipStatus: OwnershipStatus
+  // Legacy single-photo field — kept for transition compatibility.
+  // New writes go to user_watch_photos; reads prefer the primary photo from
+  // there and fall back to this field when present.
+  photoUrl?: string
+}
+
+export interface UserWatchPhoto {
+  id: string
+  watchId: string         // owned-watch id
+  photoUrl: string
+  caption: string | null
+  sortOrder: number
+  isPrimary: boolean
+  createdAt: string
 }
 
 export interface WatchTarget {

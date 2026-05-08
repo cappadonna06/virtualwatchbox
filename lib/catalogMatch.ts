@@ -5,7 +5,7 @@ export type CatalogMatchMethod = 'reference' | 'brand_model' | 'brand_only' | 'n
 export type AiIdentity = {
   brand: string
   model: string
-  reference: string
+  references: string[]
 }
 
 export type CatalogMatchResult = {
@@ -41,19 +41,23 @@ type ScoredWatch = { watch: CatalogWatch; score: number; tier: CatalogMatchMetho
 
 function scoreOne(watch: CatalogWatch, ai: AiIdentity): ScoredWatch {
   const aiBrand = ai.brand.trim().toLowerCase()
-  const aiRef = ai.reference?.trim() ?? ''
   const watchBrand = watch.brand.trim().toLowerCase()
-
-  const aiRefNorm = normalizeRef(aiRef)
   const catRefNorm = normalizeRef(watch.reference)
 
-  if (aiRefNorm && catRefNorm) {
-    if (aiRefNorm === catRefNorm) {
-      return { watch, score: 1.0, tier: 'reference' }
+  let bestRefScore = 0
+  if (catRefNorm) {
+    for (const ref of ai.references) {
+      const aiRefNorm = normalizeRef(ref)
+      if (!aiRefNorm) continue
+      if (aiRefNorm === catRefNorm) {
+        bestRefScore = Math.max(bestRefScore, 1.0)
+      } else if (aiRefNorm.includes(catRefNorm) || catRefNorm.includes(aiRefNorm)) {
+        bestRefScore = Math.max(bestRefScore, 0.85)
+      }
     }
-    if (aiRefNorm.includes(catRefNorm) || catRefNorm.includes(aiRefNorm)) {
-      return { watch, score: 0.85, tier: 'reference' }
-    }
+  }
+  if (bestRefScore > 0) {
+    return { watch, score: bestRefScore, tier: 'reference' }
   }
 
   if (aiBrand && watchBrand && aiBrand === watchBrand) {

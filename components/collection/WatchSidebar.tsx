@@ -1,11 +1,13 @@
 'use client'
 
 import type { ReactNode } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { ResolvedOwnedWatch, ResolvedWatch, WatchCondition } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
+import WatchPhotoGallery from './WatchPhotoGallery'
 import WatchStateControl from './WatchStateControl'
 import { IntentBadge } from './WatchStateIcons'
 
@@ -334,6 +336,31 @@ export default function WatchSidebar({
             <button style={btnSecondary} onClick={() => showToast('Coming soon.')}>Sell This Watch</button>
             {/* TODO(coming-soon): Virtual strap swap / matchmaker */}
             <button style={btnSecondary} onClick={() => showToast('Coming soon.')}>Swap Strap</button>
+          </div>
+        </div>
+      )}
+
+      {/* Photo gallery — owner-only, hidden on followed/public surfaces */}
+      {isOwnedWatch && (
+        <div style={{
+          marginTop: 18,
+          paddingTop: 18,
+          borderTop: `1px solid ${brand.colors.borderLight}`,
+        }}>
+          <WatchPhotoGallery ownedWatchId={watch.id} variant="sidebar" />
+          <div style={{ marginTop: 12 }}>
+            <Link
+              href={`/collection/watch/${watch.id}`}
+              style={{
+                fontFamily: brand.font.sans,
+                fontSize: 11,
+                color: brand.colors.gold,
+                textDecoration: 'none',
+                letterSpacing: '0.04em',
+              }}
+            >
+              View full detail →
+            </Link>
           </div>
         </div>
       )}

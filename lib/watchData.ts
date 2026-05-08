@@ -19,6 +19,7 @@ export function createCatalogDisplayWatch(watch: CatalogWatch): ResolvedWatch {
 export function resolveOwnedWatch(
   ownedWatch: OwnedWatch,
   catalog: CatalogWatch[] | Map<string, CatalogWatch>,
+  primaryPhotoByOwnedId?: Map<string, string>,
 ): ResolvedOwnedWatch | null {
   const sourceWatch = catalog instanceof Map
     ? catalog.get(ownedWatch.watchId)
@@ -26,8 +27,17 @@ export function resolveOwnedWatch(
 
   if (!sourceWatch) return null
 
+  // Image fallback chain (highest priority first):
+  //   1. Catalog imageUrl       — admin curated, always wins
+  //   2. Primary gallery photo  — user's chosen primary from user_watch_photos
+  //   3. Legacy ownedWatch.photoUrl — kept during the gallery transition
+  //   4. SVG dial fallback      — handled downstream by WatchImageOrDial
+  const galleryPrimary = primaryPhotoByOwnedId?.get(ownedWatch.id)
+  const imageUrl = sourceWatch.imageUrl || galleryPrimary || ownedWatch.photoUrl || undefined
+
   return {
     ...sourceWatch,
+    imageUrl,
     id: ownedWatch.id,
     watchId: sourceWatch.id,
     condition: ownedWatch.condition,
@@ -41,9 +51,10 @@ export function resolveOwnedWatch(
 export function resolveOwnedWatches(
   ownedWatches: OwnedWatch[],
   catalog: CatalogWatch[] | Map<string, CatalogWatch>,
+  primaryPhotoByOwnedId?: Map<string, string>,
 ) {
   return ownedWatches
-    .map(watch => resolveOwnedWatch(watch, catalog))
+    .map(watch => resolveOwnedWatch(watch, catalog, primaryPhotoByOwnedId))
     .filter((watch): watch is ResolvedOwnedWatch => watch !== null)
 }
 

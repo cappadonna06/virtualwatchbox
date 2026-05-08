@@ -10,7 +10,7 @@ import {
   WATCHBOX_CONFIG_STORAGE_KEY,
   WATCHBOX_PHOTO_SESSION_KEY,
 } from '@/lib/storageKeys'
-import { watches as catalogWatches } from '@/lib/watches'
+import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { createCatalogWatchMap, resolveCatalogWatchId, resolveOwnedWatches } from '@/lib/watchData'
 import { getEffectiveSlotCount } from '@/lib/watchboxOverflow'
 import { useAuth } from '@/lib/auth/AuthProvider'
@@ -21,6 +21,7 @@ import type {
   OwnershipStatus,
   PlaygroundBox,
   ResolvedOwnedWatch,
+  UserWatchPhoto,
   WatchCondition,
   WatchSavedState,
   WatchStateSource,
@@ -71,6 +72,7 @@ type PurchaseDetails = {
   price?: number
   date?: string
   notes?: string
+  photoUrl?: string
 }
 
 type WatchIntentAvailability = {
@@ -89,6 +91,7 @@ type SessionSnapshot = {
   grailWatchId: string | null
   collectionJewelWatchId: string | null
   watchboxConfig: WatchboxConfig
+  photosByWatchId?: Map<string, UserWatchPhoto[]>
 }
 
 type LegacyWatchSnapshot = {
@@ -125,7 +128,7 @@ interface CollectionSessionContextValue {
   dataLoading: boolean
   migrationPending: boolean
   setSelectedWatchId: (watchId: string | null) => void
-  addToCollection: (watch: CatalogWatch, condition: WatchCondition, purchaseDetails?: PurchaseDetails) => void
+  addToCollection: (watch: CatalogWatch, condition: WatchCondition, purchaseDetails?: PurchaseDetails) => string
   followWatch: (watchId: string) => void
   unfollowWatch: (watchId: string) => void
   toggleFollowedWatch: (watchId: string) => void
@@ -166,6 +169,14 @@ interface CollectionSessionContextValue {
   showToast: (message: string) => void
   acceptMigration: () => Promise<void>
   dismissMigration: () => void
+  // Per-watch photo gallery (user_watch_photos)
+  getWatchPhotos: (ownedWatchId: string) => UserWatchPhoto[]
+  uploadWatchPhotos: (ownedWatchId: string, files: File[]) => Promise<UserWatchPhoto[]>
+  setPrimaryWatchPhoto: (ownedWatchId: string, photoId: string) => Promise<void>
+  updateWatchPhotoCaption: (ownedWatchId: string, photoId: string, caption: string) => Promise<void>
+  deleteWatchPhoto: (ownedWatchId: string, photoId: string) => Promise<void>
+  reorderWatchPhotos: (ownedWatchId: string, orderedIds: string[]) => Promise<void>
+  refreshWatchPhotos: (ownedWatchId?: string) => Promise<void>
 }
 
 const CollectionSessionContext = createContext<CollectionSessionContextValue | null>(null)
@@ -302,6 +313,7 @@ type DbWatch = {
   purchase_date: string | null
   notes: string | null
   sort_order: number
+  photo_url: string | null
 }
 
 type DbWatchState = {
@@ -340,6 +352,7 @@ async function syncWatchAdd(watch: OwnedWatch, catalogWatch: CatalogWatch, userI
       purchase_price: watch.purchasePrice,
       purchase_date: watch.purchaseDate || null,
       notes: watch.notes,
+      photo_url: watch.photoUrl ?? null,
       sort_order: sortOrder,
     })
     if (error) console.error('[vwb] syncWatchAdd error', error)
@@ -492,10 +505,12 @@ async function loadFromSupabase(
   try {
     const supabase = createClient()
 
-    const [watchesRes, statesRes, configRes] = await Promise.all([
+    const [watchesRes, statesRes, configRes, photosRes] = await Promise.all([
       supabase.from('watches').select('*').eq('user_id', userId).order('sort_order'),
       supabase.from('watch_states').select('*').eq('user_id', userId),
       supabase.from('watchbox_config').select('*').eq('user_id', userId).maybeSingle(),
+      supabase.from('user_watch_photos').select('*').eq('user_id', userId)
+        .order('watch_id').order('sort_order').order('created_at'),
     ])
 
     if (watchesRes.error) console.error('[vwb] loadFromSupabase watches error', watchesRes.error)
@@ -518,6 +533,7 @@ async function loadFromSupabase(
         purchasePrice: w.purchase_price ?? 0,
         purchaseDate: w.purchase_date ?? fallbackDate,
         notes: w.notes ?? '',
+        photoUrl: w.photo_url ?? undefined,
       }))
 
     const followedWatchIds: string[] = []
@@ -559,6 +575,25 @@ async function loadFromSupabase(
       ? { frame: dbConfig.frame, lining: dbConfig.lining, slotCount: dbConfig.slot_count }
       : DEFAULT_WATCHBOX_CONFIG
 
+    if (photosRes.error) console.error('[vwb] loadFromSupabase user_watch_photos error', photosRes.error)
+    const photosByWatchId = new Map<string, UserWatchPhoto[]>()
+    for (const row of (photosRes.data ?? []) as Array<Record<string, unknown>>) {
+      const watchId = String(row.watch_id ?? '')
+      if (!watchId) continue
+      const photo: UserWatchPhoto = {
+        id: String(row.id),
+        watchId,
+        photoUrl: String(row.photo_url ?? ''),
+        caption: typeof row.caption === 'string' ? row.caption : null,
+        sortOrder: typeof row.sort_order === 'number' ? row.sort_order : 0,
+        isPrimary: !!row.is_primary,
+        createdAt: String(row.created_at ?? new Date().toISOString()),
+      }
+      const list = photosByWatchId.get(watchId) ?? []
+      list.push(photo)
+      photosByWatchId.set(watchId, list)
+    }
+
     return {
       collectionWatches,
       followedWatchIds: [...new Set(followedWatchIds)],
@@ -566,6 +601,7 @@ async function loadFromSupabase(
       grailWatchId,
       collectionJewelWatchId,
       watchboxConfig,
+      photosByWatchId,
     }
   } catch (err) {
     console.error('[vwb] loadFromSupabase failed', err)
@@ -578,11 +614,13 @@ async function loadFromSupabase(
 export function CollectionSessionProvider({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth()
 
-  const catalogWatchMap = useMemo(() => createCatalogWatchMap(catalogWatches), [])
-  const catalogIds = useMemo(() => catalogWatches.map(watch => watch.id), [])
+  const { allWatches: catalogWatches } = useCatalog()
+  const catalogWatchMap = useMemo(() => createCatalogWatchMap(catalogWatches), [catalogWatches])
+  const catalogIds = useMemo(() => catalogWatches.map(watch => watch.id), [catalogWatches])
   const catalogIdSet = useMemo(() => new Set(catalogIds), [catalogIds])
 
   const [collectionEntries, setCollectionEntries] = useState<OwnedWatch[]>([])
+  const [photosByWatchId, setPhotosByWatchId] = useState<Map<string, UserWatchPhoto[]>>(new Map())
   const [followedWatchIds, setFollowedWatchIds] = useState<string[]>([])
   const [nextTargets, setNextTargets] = useState<WatchTarget[]>([])
   const [grailWatchId, setGrailWatchId] = useState<string | null>(null)
@@ -628,6 +666,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
 
   const applyServerSnapshot = useCallback((snapshot: SessionSnapshot) => {
     setCollectionEntries(snapshot.collectionWatches)
+    if (snapshot.photosByWatchId) setPhotosByWatchId(snapshot.photosByWatchId)
     setFollowedWatchIds(snapshot.followedWatchIds)
     setNextTargets(snapshot.nextTargets)
     setGrailWatchId(snapshot.grailWatchId)
@@ -635,9 +674,18 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     setWatchboxConfig(snapshot.watchboxConfig)
   }, [])
 
+  const primaryPhotoByOwnedId = useMemo(() => {
+    const map = new Map<string, string>()
+    photosByWatchId.forEach((list, watchId) => {
+      const primary = list.find(p => p.isPrimary)?.photoUrl
+      if (primary) map.set(watchId, primary)
+    })
+    return map
+  }, [photosByWatchId])
+
   const collectionWatches = useMemo(
-    () => resolveOwnedWatches(collectionEntries, catalogWatchMap),
-    [collectionEntries, catalogWatchMap],
+    () => resolveOwnedWatches(collectionEntries, catalogWatchMap, primaryPhotoByOwnedId),
+    [collectionEntries, catalogWatchMap, primaryPhotoByOwnedId],
   )
   const followedWatches = useMemo(
     () => followedWatchIds
@@ -1162,6 +1210,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       purchasePrice: purchaseDetails?.price ?? 0,
       purchaseDate: purchaseDetails?.date ?? new Date().toISOString().split('T')[0],
       notes: purchaseDetails?.notes ?? '',
+      photoUrl: purchaseDetails?.photoUrl,
     }
 
     setCollectionEntries(prev => {
@@ -1185,6 +1234,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
         ? 'Aspirational notes cleared now that it is in your collection.'
         : `${watch.brand} ${watch.model} added to your collection`,
     )
+    return newWatch.id
   }
 
   function followWatch(watchId: string) {
@@ -1447,6 +1497,130 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     } catch { return 0 }
   })()
 
+  // ── User watch photos ─────────────────────────────────────────────────────
+
+  const getWatchPhotos = useCallback(
+    (ownedWatchId: string) => photosByWatchId.get(ownedWatchId) ?? [],
+    [photosByWatchId],
+  )
+
+  const refreshWatchPhotos = useCallback(async (ownedWatchId?: string) => {
+    if (!user) return
+    try {
+      const supabase = createClient()
+      const query = supabase.from('user_watch_photos').select('*').eq('user_id', user.id)
+      if (ownedWatchId) query.eq('watch_id', ownedWatchId)
+      query.order('watch_id').order('sort_order').order('created_at')
+      const { data, error } = await query
+      if (error) throw error
+      const next = new Map(photosByWatchId)
+      // If ownedWatchId is given, replace just that bucket; else replace all.
+      if (ownedWatchId) next.delete(ownedWatchId)
+      else next.clear()
+      for (const row of (data ?? []) as Array<Record<string, unknown>>) {
+        const wId = String(row.watch_id ?? '')
+        if (!wId) continue
+        const photo: UserWatchPhoto = {
+          id: String(row.id),
+          watchId: wId,
+          photoUrl: String(row.photo_url ?? ''),
+          caption: typeof row.caption === 'string' ? row.caption : null,
+          sortOrder: typeof row.sort_order === 'number' ? row.sort_order : 0,
+          isPrimary: !!row.is_primary,
+          createdAt: String(row.created_at ?? new Date().toISOString()),
+        }
+        const list = next.get(wId) ?? []
+        list.push(photo)
+        next.set(wId, list)
+      }
+      setPhotosByWatchId(next)
+    } catch (err) {
+      console.error('[vwb] refreshWatchPhotos failed', err)
+    }
+  }, [user, photosByWatchId])
+
+  const uploadWatchPhotos = useCallback(async (ownedWatchId: string, files: File[]) => {
+    const formData = new FormData()
+    for (const f of files) formData.append('image', f, f.name || 'photo.jpg')
+    const res = await fetch(`/api/user-watches/${ownedWatchId}/photos`, { method: 'POST', body: formData })
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}))
+      throw new Error(errBody.detail ?? errBody.error ?? `HTTP ${res.status}`)
+    }
+    const body = await res.json() as { photos: UserWatchPhoto[] }
+    setPhotosByWatchId(prev => {
+      const next = new Map(prev)
+      const list = next.get(ownedWatchId) ?? []
+      next.set(ownedWatchId, [...list, ...body.photos])
+      return next
+    })
+    return body.photos
+  }, [])
+
+  const setPrimaryWatchPhoto = useCallback(async (ownedWatchId: string, photoId: string) => {
+    const res = await fetch(`/api/user-watches/${ownedWatchId}/photos/${photoId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isPrimary: true }),
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    setPhotosByWatchId(prev => {
+      const next = new Map(prev)
+      const list = (next.get(ownedWatchId) ?? []).map(p => ({ ...p, isPrimary: p.id === photoId }))
+      next.set(ownedWatchId, list)
+      return next
+    })
+  }, [])
+
+  const updateWatchPhotoCaption = useCallback(async (ownedWatchId: string, photoId: string, caption: string) => {
+    const res = await fetch(`/api/user-watches/${ownedWatchId}/photos/${photoId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ caption: caption || null }),
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    setPhotosByWatchId(prev => {
+      const next = new Map(prev)
+      const list = (next.get(ownedWatchId) ?? []).map(p => p.id === photoId ? { ...p, caption: caption || null } : p)
+      next.set(ownedWatchId, list)
+      return next
+    })
+  }, [])
+
+  const deleteWatchPhoto = useCallback(async (ownedWatchId: string, photoId: string) => {
+    const res = await fetch(`/api/user-watches/${ownedWatchId}/photos/${photoId}`, { method: 'DELETE' })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    // Server may have promoted another photo to primary; reload this bucket to be safe.
+    await refreshWatchPhotos(ownedWatchId)
+  }, [refreshWatchPhotos])
+
+  const reorderWatchPhotos = useCallback(async (ownedWatchId: string, orderedIds: string[]) => {
+    // Optimistic local update.
+    setPhotosByWatchId(prev => {
+      const next = new Map(prev)
+      const current = next.get(ownedWatchId) ?? []
+      const byId = new Map(current.map(p => [p.id, p] as const))
+      const reordered = orderedIds
+        .map((id, i) => {
+          const p = byId.get(id)
+          return p ? { ...p, sortOrder: i } : null
+        })
+        .filter((p): p is UserWatchPhoto => p !== null)
+      next.set(ownedWatchId, reordered)
+      return next
+    })
+    const res = await fetch(`/api/user-watches/${ownedWatchId}/photos/reorder`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderedIds }),
+    })
+    if (!res.ok) {
+      // Roll back from server state.
+      await refreshWatchPhotos(ownedWatchId)
+      throw new Error(`HTTP ${res.status}`)
+    }
+  }, [refreshWatchPhotos])
+
   const value: CollectionSessionContextValue = {
     collectionWatches,
     followedWatchIds,
@@ -1499,6 +1673,13 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     showToast,
     acceptMigration,
     dismissMigration,
+    getWatchPhotos,
+    uploadWatchPhotos,
+    setPrimaryWatchPhoto,
+    updateWatchPhotoCaption,
+    deleteWatchPhoto,
+    reorderWatchPhotos,
+    refreshWatchPhotos,
   }
 
   return (

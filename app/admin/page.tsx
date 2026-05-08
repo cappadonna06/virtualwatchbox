@@ -110,6 +110,12 @@ export default function AdminDashboardPage() {
           cta="Work the backlog →"
           accent
         />
+        <Tile
+          title="User Submissions"
+          description="Watches submitted by users via the photo flow. Approve to add to the public catalog, or reject."
+          href="/admin/submissions"
+          cta="Review submissions →"
+        />
       </div>
     </div>
   )

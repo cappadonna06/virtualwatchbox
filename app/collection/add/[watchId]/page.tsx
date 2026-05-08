@@ -1,6 +1,7 @@
 'use client'
 
 import type { CSSProperties } from 'react'
+import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import type { PlaygroundBox, WatchCondition } from '@/types/watch'
@@ -33,10 +34,17 @@ export default function AddWatchConfirmPage() {
   const params = useParams<{ watchId: string }>()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { addToCollection, followWatch, isInCollection } = useCollectionSession()
+  const { addToCollection, followWatch, isInCollection, collectionWatches } = useCollectionSession()
 
   const { allWatches } = useCatalog()
   const watch = useMemo(() => allWatches.find(w => w.id === params.watchId), [allWatches, params.watchId])
+
+  // Owned instances of this catalog watch — for the duplicate-aware UX. One user
+  // can own multiple of the same model (a vintage and a current production, etc.).
+  const ownedInstances = useMemo(
+    () => collectionWatches.filter(w => w.watchId === params.watchId),
+    [collectionWatches, params.watchId],
+  )
 
   const dest = searchParams.get('dest')
   const source = searchParams.get('source')
@@ -46,6 +54,7 @@ export default function AddWatchConfirmPage() {
   const [choice, setChoice] = useState<OwnershipChoice>(isPlaygroundContext ? 'playground' : 'owned')
   const [condition, setCondition] = useState<WatchCondition | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
+  const [addAnotherOpen, setAddAnotherOpen] = useState(false)
   const [purchasePrice, setPurchasePrice] = useState('')
   const [purchaseDate, setPurchaseDate] = useState('')
   const [notes, setNotes] = useState('')
@@ -116,14 +125,43 @@ export default function AddWatchConfirmPage() {
     router.push(`/playground?boxId=${newBox.id}`)
   }
 
-  function commitCollectionAdd() {
+  async function commitCollectionAdd() {
     if (!condition) return
 
-    addToCollection(resolvedWatch, condition, {
+    // If the user arrived from the photo-search flow, PhotoSearch stashed
+    // their uploaded photo URL keyed by this watch's id. Use it as the
+    // owned-watch photo so the catalog SVG fallback is replaced by their
+    // actual shot when the catalog row has no curated image.
+    let photoUrl: string | undefined
+    try {
+      const raw = sessionStorage.getItem(`vwb:pending-photo:${resolvedWatch.id}`)
+      if (raw) {
+        const parsed = JSON.parse(raw) as { photoUrl?: string }
+        if (parsed?.photoUrl) photoUrl = parsed.photoUrl
+        sessionStorage.removeItem(`vwb:pending-photo:${resolvedWatch.id}`)
+      }
+    } catch { /* ignore */ }
+
+    const newOwnedId = addToCollection(resolvedWatch, condition, {
       price: purchasePrice ? Number(purchasePrice) : undefined,
       date: purchaseDate || undefined,
       notes: notes.trim() || undefined,
+      photoUrl,
     })
+
+    // Register the user's uploaded photo into the gallery so it appears in
+    // the watch detail. Best-effort — failure to register doesn't prevent
+    // the watch from being added.
+    if (photoUrl && newOwnedId) {
+      try {
+        await fetch(`/api/user-watches/${newOwnedId}/photos`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ photoUrl }),
+        })
+      } catch { /* non-fatal */ }
+    }
+
     router.push('/collection')
   }
 
@@ -299,8 +337,106 @@ export default function AddWatchConfirmPage() {
 
             <div style={{ height: 1, background: '#EAE5DC', marginBottom: 20 }} />
 
+            {alreadyInCollection && !addAnotherOpen && (
+              <div style={{
+                padding: '14px 16px',
+                background: 'rgba(232,244,232,0.6)',
+                border: '1px solid #C8E6C8',
+                borderRadius: 10,
+                marginBottom: 18,
+              }}>
+                <div style={{
+                  fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600,
+                  letterSpacing: '0.12em', textTransform: 'uppercase', color: '#2D6A2D', marginBottom: 6,
+                }}>
+                  ✓ {ownedInstances.length === 1 ? 'You already have one of these' : `You have ${ownedInstances.length} of these`}
+                </div>
+
+                {ownedInstances.length === 1 ? (
+                  <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#1A1410', lineHeight: 1.5, marginBottom: 14 }}>
+                    Added{ownedInstances[0].purchaseDate ? ` ${ownedInstances[0].purchaseDate}` : ''}{ownedInstances[0].condition ? ` · ${ownedInstances[0].condition}` : ''}.
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 14 }}>
+                    {ownedInstances.map(inst => (
+                      <div
+                        key={inst.id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: 12,
+                          padding: '8px 10px',
+                          background: '#FFFFFF',
+                          border: '1px solid #DCEAD9',
+                          borderRadius: 6,
+                          fontFamily: 'var(--font-dm-sans)',
+                          fontSize: 11,
+                          color: '#1A1410',
+                        }}
+                      >
+                        <span>
+                          <span style={{ fontWeight: 500 }}>{inst.condition}</span>
+                          {inst.purchaseDate && <span style={{ color: '#A89880', marginLeft: 6 }}>· {inst.purchaseDate}</span>}
+                        </span>
+                        <Link
+                          href={`/collection/watch/${inst.id}`}
+                          style={{ color: '#C9A84C', textDecoration: 'none', fontWeight: 500 }}
+                        >
+                          Manage →
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  {ownedInstances.length === 1 && (
+                    <Link
+                      href={`/collection/watch/${ownedInstances[0].id}`}
+                      style={{
+                        padding: '10px 16px',
+                        background: '#1A1410',
+                        color: '#FAF8F4',
+                        border: '1px solid #1A1410',
+                        borderRadius: 6,
+                        fontFamily: 'var(--font-dm-sans)',
+                        fontSize: 11,
+                        fontWeight: 500,
+                        letterSpacing: '0.08em',
+                        textTransform: 'uppercase',
+                        textDecoration: 'none',
+                      }}
+                    >
+                      Manage your watch →
+                    </Link>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setAddAnotherOpen(true)}
+                    style={{
+                      padding: '10px 16px',
+                      background: 'transparent',
+                      color: '#1A1410',
+                      border: '1px solid #1A1410',
+                      borderRadius: 6,
+                      fontFamily: 'var(--font-dm-sans)',
+                      fontSize: 11,
+                      fontWeight: 500,
+                      letterSpacing: '0.06em',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    + Add another
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {(!alreadyInCollection || addAnotherOpen) && (
+            <>
             <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
-              Where does it go?
+              {alreadyInCollection ? 'Add another copy — where does it go?' : 'Where does it go?'}
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: isCompact ? '1fr' : '1fr 1fr', gap: 10, marginBottom: 20 }}>
               {([
@@ -515,7 +651,7 @@ export default function AddWatchConfirmPage() {
                 }}
                 style={primaryButtonStyle(!condition)}
               >
-                Add to My Collection
+                {alreadyInCollection ? 'Add another to My Collection' : 'Add to My Collection'}
               </button>
             ) : (
               <button
@@ -525,6 +661,29 @@ export default function AddWatchConfirmPage() {
               >
                 Add to Playground
               </button>
+            )}
+            {alreadyInCollection && addAnotherOpen && (
+              <button
+                type="button"
+                onClick={() => setAddAnotherOpen(false)}
+                style={{
+                  marginTop: 10,
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  fontFamily: 'var(--font-dm-sans)',
+                  fontSize: 11,
+                  color: '#A89880',
+                  textDecoration: 'underline',
+                  textUnderlineOffset: 2,
+                  alignSelf: 'flex-start',
+                }}
+              >
+                Cancel — don&apos;t add another
+              </button>
+            )}
+            </>
             )}
           </div>
         </div>

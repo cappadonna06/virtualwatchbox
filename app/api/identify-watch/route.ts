@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { identifyWatchWithVision, type WatchIdentification } from '@/lib/watchVision'
+import { identifyWatchWithVision, type DialBbox, type WatchIdentification } from '@/lib/watchVision'
+import { lookupReferenceCandidates, type ReferenceCandidate } from '@/lib/referenceLookup'
 import { matchCatalog, type CatalogMatchMethod } from '@/lib/catalogMatch'
 import { watches } from '@/lib/watches'
 
@@ -19,9 +20,15 @@ type AiResult = {
 }
 
 type IdentifyResponse = {
+  subject: 'watch' | 'not_watch'
+  subjectLabel: string
   aiResult: AiResult
   catalogMatches: typeof watches
   matchMethod: CatalogMatchMethod
+  referenceCandidates: ReferenceCandidate[]
+  estimatedValueUsd: number | null
+  estimatedValueSource: string | null
+  dialBbox: DialBbox | null
 }
 
 function confidenceToScore(c: WatchIdentification['confidence']): number {
@@ -33,11 +40,11 @@ function confidenceToScore(c: WatchIdentification['confidence']): number {
   }
 }
 
-function adapt(id: WatchIdentification): AiResult {
+function adapt(id: WatchIdentification, primaryRef: string | null): AiResult {
   return {
     brand: id.brand,
     model: id.model,
-    reference: id.reference ? id.reference : null,
+    reference: primaryRef,
     referenceShort: null,
     dialColor: id.dialColor,
     caseSize: id.caseSizeMm,
@@ -79,16 +86,54 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'identification_unavailable' }, { status: 503 })
   }
 
-  const aiResult = adapt(identification)
+  // Short-circuit when the image isn't a watch — skip the expensive web-search lookup
+  // and return a marker the UI can render the playful "not a watch" panel against.
+  if (identification.subject === 'not_watch') {
+    const body: IdentifyResponse = {
+      subject: 'not_watch',
+      subjectLabel: identification.subjectLabel,
+      aiResult: adapt(identification, null),
+      catalogMatches: [],
+      matchMethod: 'none',
+      referenceCandidates: [],
+      estimatedValueUsd: null,
+      estimatedValueSource: null,
+      dialBbox: null,
+    }
+    return NextResponse.json(body)
+  }
+
+  let referenceCandidates: ReferenceCandidate[] = []
+  let estimatedValueUsd: number | null = null
+  let estimatedValueSource: string | null = null
+  try {
+    const lookup = await lookupReferenceCandidates(identification)
+    referenceCandidates = lookup.candidates
+    estimatedValueUsd = lookup.estimatedValueUsd
+    estimatedValueSource = lookup.estimatedValueSource ?? null
+  } catch (err) {
+    console.warn('[identify-watch] reference lookup failed (non-fatal):', err)
+  }
+
+  const candidateRefs = referenceCandidates.map(c => c.reference)
+  const primaryRef = candidateRefs[0] ?? null
+
+  const aiResult = adapt(identification, primaryRef)
   const { matches, method } = matchCatalog(
-    { brand: identification.brand, model: identification.model, reference: identification.reference },
+    { brand: identification.brand, model: identification.model, references: candidateRefs },
     watches,
   )
 
   const body: IdentifyResponse = {
+    subject: 'watch',
+    subjectLabel: '',
     aiResult,
     catalogMatches: matches,
     matchMethod: method,
+    referenceCandidates,
+    estimatedValueUsd,
+    estimatedValueSource,
+    dialBbox: identification.dialBbox,
   }
 
   return NextResponse.json(body)
