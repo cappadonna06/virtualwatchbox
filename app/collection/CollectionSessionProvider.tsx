@@ -333,8 +333,11 @@ type DbWatchboxConfig = {
 async function syncWatchAdd(watch: OwnedWatch, catalogWatch: CatalogWatch, userId: string, sortOrder: number) {
   try {
     const supabase = createClient()
+    // Always pass watch.id explicitly so the upsert is idempotent on the client-
+    // generated UUID. This means a strict-mode double-invoke (dev) or a transient
+    // duplicate trigger updates the same row instead of inserting two rows.
     const { error } = await supabase.from('watches').upsert({
-      id: watch.id.startsWith('owned-') ? undefined : watch.id,
+      id: watch.id,
       user_id: userId,
       catalog_id: watch.watchId,
       brand: catalogWatch.brand,
@@ -999,6 +1002,17 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     })
   }, [collectionWatches.length])
 
+  // Persist the auto-grown slot count so it survives page reload. Without this,
+  // adding a 7th watch grows the local slot count to 8 but the DB stays at 6;
+  // a refresh reads 6 back, the auto-grow re-fires, and the user sees the box
+  // appear to "shrink" then "grow" again. Side effect lives outside the state
+  // updater above (strict-mode purity).
+  useEffect(() => {
+    if (!hydrated || !user) return
+    void trackedSync(syncWatchboxConfig(watchboxConfig, user.id))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchboxConfig.slotCount])
+
   useEffect(() => {
     return () => {
       if (showTimer.current) clearTimeout(showTimer.current)
@@ -1203,7 +1217,12 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     const wasTarget = nextTargets.some(target => target.watchId === watch.id)
     const wasGrail = grailWatchId === watch.id
     const newWatch: OwnedWatch = {
-      id: `owned-${crypto.randomUUID()}`,
+      // Real UUID (no 'owned-' prefix) so it's a valid value for the watches.id
+      // uuid column. The client-generated id is used unchanged in the server
+      // upsert, which makes the write idempotent — a stray double-invoke (eg
+      // React strict mode in dev) updates the same row instead of inserting
+      // a duplicate.
+      id: crypto.randomUUID(),
       watchId: watch.id,
       condition,
       ownershipStatus: 'Owned',
@@ -1213,21 +1232,25 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       photoUrl: purchaseDetails?.photoUrl,
     }
 
-    setCollectionEntries(prev => {
-      const next = [...prev, newWatch]
-      if (user) void trackedSync(syncWatchAdd(newWatch, watch, user.id, next.length - 1))
-      return next
-    })
-    setNextTargets(prev => {
-      const next = prev.filter(target => target.watchId !== watch.id)
-      if (user && wasTarget) void trackedSync(syncWatchState(watch.id, 'target', false, {}, user.id))
-      return next
-    })
-    setGrailWatchId(prev => {
-      const next = prev === watch.id ? null : prev
-      if (user && wasGrail) void trackedSync(syncWatchState(watch.id, 'grail', false, {}, user.id))
-      return next
-    })
+    // Compute next entries from the current closure value — avoids putting a
+    // side effect inside a state updater (which strict-mode double-invokes).
+    const nextEntries = [...collectionEntries, newWatch]
+    setCollectionEntries(nextEntries)
+    if (user) {
+      void trackedSync(syncWatchAdd(newWatch, watch, user.id, nextEntries.length - 1))
+    }
+
+    setNextTargets(prev => prev.filter(target => target.watchId !== watch.id))
+    if (user && wasTarget) {
+      void trackedSync(syncWatchState(watch.id, 'target', false, {}, user.id))
+    }
+    if (grailWatchId === watch.id) {
+      setGrailWatchId(null)
+      if (user && wasGrail) {
+        void trackedSync(syncWatchState(watch.id, 'grail', false, {}, user.id))
+      }
+    }
+
     setSelectedWatchId(newWatch.id)
     showToast(
       wasTarget || wasGrail

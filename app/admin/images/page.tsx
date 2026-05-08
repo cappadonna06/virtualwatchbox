@@ -50,6 +50,61 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, '')
 }
 
+// Sharp/libheif on the server can't decode every AVIF/HEIC bitstream variant
+// (some hardware-encoded files trip "Bitstream not supported by this decoder").
+// The browser CAN decode them, so we transcode client-side via canvas → JPEG
+// before upload. The server never sees the original AVIF/HEIC.
+async function transcodeForServerIfNeeded(file: File): Promise<File> {
+  const lowerName = (file.name ?? '').toLowerCase()
+  const looksAvif = file.type === 'image/avif' || lowerName.endsWith('.avif')
+  const looksHeic =
+    file.type === 'image/heic'
+    || file.type === 'image/heif'
+    || lowerName.endsWith('.heic')
+    || lowerName.endsWith('.heif')
+  if (!looksAvif && !looksHeic) return file
+
+  try {
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '')
+      reader.onerror = () => reject(reader.error ?? new Error('FileReader failed'))
+      reader.readAsDataURL(file)
+    })
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const i = new Image()
+      i.onload = () => resolve(i)
+      i.onerror = () => reject(new Error('browser cannot decode this image'))
+      i.src = dataUrl
+    })
+
+    // Cap at 2400px on the long edge — uploads ride a server-side resize at
+    // 1600px anyway, but we want to avoid moving 30MP buffers through canvas.
+    const maxSide = 2400
+    const scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight))
+    const w = Math.max(1, Math.round(img.naturalWidth * scale))
+    const h = Math.max(1, Math.round(img.naturalHeight * scale))
+
+    const canvas = document.createElement('canvas')
+    canvas.width = w
+    canvas.height = h
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return file
+    ctx.drawImage(img, 0, 0, w, h)
+
+    const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.92))
+    if (!blob) return file
+
+    const newName = file.name.replace(/\.(avif|heic|heif)$/i, '.jpg')
+    return new File([blob], newName, { type: 'image/jpeg', lastModified: file.lastModified })
+  } catch (err) {
+    // Fall through with the original file — the server will surface a clear
+    // error if its decoder also can't handle it.
+    console.warn('[admin/images] client transcode failed, sending original:', err)
+    return file
+  }
+}
+
 function autoWatchId(identification: WatchIdentification | undefined, reference: string): string {
   if (!identification) return ''
   const brand = slugify(identification.brand)
@@ -162,6 +217,124 @@ function FieldRow({ label, value, editing, onChange }: { label: string; value: s
   )
 }
 
+function CurrentlyReplacingBanner({
+  watchId,
+  onClear,
+}: {
+  watchId: string
+  onClear: () => void
+}) {
+  const { allWatches } = useCatalog()
+  const { getImageUrl } = useWatchImages()
+  const watch = allWatches.find(w => w.id === watchId)
+  const currentImage = getImageUrl(watchId) ?? watch?.imageUrl ?? null
+
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 16,
+      padding: '14px 16px',
+      borderRadius: brand.radius.lg,
+      background: brand.colors.goldWash,
+      border: `1px solid ${brand.colors.goldLine}`,
+      marginBottom: 18,
+    }}>
+      <div style={{
+        width: 72, height: 72, flexShrink: 0,
+        borderRadius: brand.radius.sm,
+        background: brand.colors.bg,
+        border: `1px solid ${brand.colors.border}`,
+        overflow: 'hidden',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        {currentImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={currentImage} alt="Current photo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        ) : (
+          <span style={{ fontFamily: brand.font.sans, fontSize: 9, color: brand.colors.muted, padding: 8, textAlign: 'center', lineHeight: 1.3 }}>
+            No current photo
+          </span>
+        )}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 4 }}>
+          Replacing photo for
+        </div>
+        {watch ? (
+          <>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 2 }}>
+              {watch.brand}
+            </div>
+            <div style={{ fontFamily: brand.font.serif, fontSize: 18, color: brand.colors.ink, lineHeight: 1.1 }}>
+              {watch.model}
+            </div>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginTop: 2, letterSpacing: '0.02em' }}>
+              Ref. {watch.reference || '—'} · <code style={{ fontSize: 10 }}>{watchId}</code>
+            </div>
+          </>
+        ) : (
+          <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink, lineHeight: 1.4 }}>
+            <span style={{ fontWeight: 500 }}>{watchId}</span>
+            <div style={{ fontSize: 11, color: brand.colors.muted, marginTop: 2 }}>
+              We couldn&apos;t find this row in the loaded catalog — it may be a pending submission visible only to its submitter without service-role access.
+            </div>
+          </div>
+        )}
+      </div>
+      <button
+        type="button"
+        onClick={onClear}
+        style={{
+          background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+          fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted,
+          textDecoration: 'underline', textUnderlineOffset: 2,
+          alignSelf: 'flex-start',
+        }}
+      >
+        Clear
+      </button>
+    </div>
+  )
+}
+
+function BeforeAfterTile({ label, url, highlight = false }: { label: string; url: string | null; highlight?: boolean }) {
+  return (
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{
+        fontFamily: brand.font.sans,
+        fontSize: 9,
+        fontWeight: 600,
+        letterSpacing: '0.12em',
+        textTransform: 'uppercase',
+        color: highlight ? brand.colors.gold : brand.colors.muted,
+        marginBottom: 6,
+      }}>
+        {label}
+      </div>
+      <div style={{
+        width: '100%',
+        aspectRatio: '1 / 1',
+        maxHeight: 96,
+        background: brand.colors.bg,
+        border: `1px solid ${highlight ? brand.colors.goldLine : brand.colors.border}`,
+        borderRadius: brand.radius.sm,
+        overflow: 'hidden',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        {url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={url} alt={label} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        ) : (
+          <span style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted, fontStyle: 'italic' }}>
+            No current image
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function VerifyBadge({ verification }: { verification: WatchVerification }) {
   const ok = verification.matches
   const colors = ok
@@ -201,8 +374,41 @@ function VerifyBody({
 }) {
   const expected = item.expected
   const verification = item.verification
+  const { getImageUrl } = useWatchImages()
+  const { allWatches } = useCatalog()
+  // Same fallback chain as the CurrentlyReplacingBanner: prefer the
+  // admin-curated watch_images entry, then fall back to the catalog row's
+  // own image_url (set by the user-photo submission flow), then null.
+  const catalogRow = allWatches.find(w => w.id === item.watchId)
+  const currentImageUrl = getImageUrl(item.watchId) ?? catalogRow?.imageUrl ?? null
   return (
     <>
+      {/* Before / After strip — admin sees the existing curated photo (or
+          a "no current image" placeholder) next to the pending upload so
+          replacements are unambiguous. */}
+      <div style={{
+        display: 'flex',
+        gap: 12,
+        alignItems: 'stretch',
+        marginBottom: 14,
+        padding: '10px 12px',
+        background: brand.colors.slot,
+        border: `1px solid ${brand.colors.borderLight}`,
+        borderRadius: brand.radius.md,
+      }}>
+        <BeforeAfterTile label="Current" url={currentImageUrl} />
+        <div style={{
+          alignSelf: 'center',
+          fontFamily: brand.font.sans,
+          fontSize: 18,
+          color: brand.colors.muted,
+          padding: '0 4px',
+        }}>
+          →
+        </div>
+        <BeforeAfterTile label="New upload" url={item.pngDataUrl ?? item.previewDataUrl} highlight />
+      </div>
+
       <div style={{ marginBottom: 12 }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'baseline', marginBottom: 10 }}>
           <span style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, letterSpacing: '0.04em', minWidth: 72, textTransform: 'uppercase' }}>
@@ -631,9 +837,19 @@ function AdminImagesPageInner() {
   const [pendingWatchId, setPendingWatchId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Mirror pendingWatchId into a ref so the file handlers (which are
+  // memoized with [] deps and would otherwise capture a stale `null` from
+  // first render before the URL effect fires) can always read the latest
+  // value at call-time.
+  const pendingWatchIdRef = useRef<string | null>(null)
+  useEffect(() => { pendingWatchIdRef.current = pendingWatchId }, [pendingWatchId])
+
   useEffect(() => {
     const param = searchParams.get('watchId')
-    if (param) setPendingWatchId(param)
+    if (param) {
+      setPendingWatchId(param)
+      pendingWatchIdRef.current = param
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -657,9 +873,11 @@ function AdminImagesPageInner() {
       reader.readAsDataURL(file)
     })
 
-    // Verify mode kicks in only when the pending watchId actually matches a real catalog row.
-    // Unknown watchIds fall through to intake.
-    const verifyMode = !!pendingWatchId && catalogIds.has(pendingWatchId)
+    // Read the latest pendingWatchId from the ref so we don't get burned by
+    // a stale closure (handleFiles is memoized with [] deps; without the ref
+    // we'd see the first-render null and skip verify mode entirely).
+    const currentPendingWatchId = pendingWatchIdRef.current
+    const verifyMode = !!currentPendingWatchId
     const initialMode: ItemMode = verifyMode ? 'verify' : 'intake'
 
     setQueue(prev => [...prev, {
@@ -668,7 +886,7 @@ function AdminImagesPageInner() {
       filename: file.name,
       status: 'processing',
       previewDataUrl,
-      watchId: verifyMode ? pendingWatchId! : '',
+      watchId: verifyMode ? currentPendingWatchId! : '',
       reference: '',
       referenceCandidates: [],
       editing: false,
@@ -676,7 +894,7 @@ function AdminImagesPageInner() {
 
     const formData = new FormData()
     formData.append('image', file)
-    if (verifyMode) formData.append('expectedWatchId', pendingWatchId!)
+    if (verifyMode) formData.append('expectedWatchId', currentPendingWatchId!)
 
     try {
       const res = await fetch('/api/admin/process-image', { method: 'POST', body: formData })
@@ -709,13 +927,16 @@ function AdminImagesPageInner() {
           expected: data.expected,
           verification: data.verification ?? null,
         })
-        if (pendingWatchId) setPendingWatchId(null)
+        if (pendingWatchIdRef.current) {
+          setPendingWatchId(null)
+          pendingWatchIdRef.current = null
+        }
         return
       }
       const candidates = data.referenceCandidates ?? []
       const reference = candidates[0]?.reference ?? ''
       const inferredId = autoWatchId(data.identification ?? undefined, reference)
-      const watchId = pendingWatchId ?? inferredId
+      const watchId = currentPendingWatchId ?? inferredId
       updateItem(itemId, {
         mode: 'intake',
         status: 'ready',
@@ -731,7 +952,10 @@ function AdminImagesPageInner() {
         reference,
         watchId,
       })
-      if (pendingWatchId) setPendingWatchId(null)
+      if (pendingWatchIdRef.current) {
+        setPendingWatchId(null)
+        pendingWatchIdRef.current = null
+      }
     } catch (err) {
       updateItem(itemId, {
         status: 'error',
@@ -742,7 +966,10 @@ function AdminImagesPageInner() {
 
   const handleFiles = useCallback((files: FileList | File[]) => {
     const list = Array.from(files).filter(f => f.type.startsWith('image/'))
-    list.forEach(f => void processFile(f))
+    list.forEach(async f => {
+      const transcoded = await transcodeForServerIfNeeded(f)
+      void processFile(transcoded)
+    })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -950,33 +1177,10 @@ function AdminImagesPageInner() {
         </div>
 
         {pendingWatchId && (
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
-            padding: '12px 16px',
-            borderRadius: brand.radius.lg,
-            background: brand.colors.goldWash,
-            border: `1px solid ${brand.colors.goldLine}`,
-            marginBottom: 18,
-          }}>
-            <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink }}>
-              Next upload will use Watch ID:{' '}
-              <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.gold, fontWeight: 600 }}>
-                {pendingWatchId}
-              </span>
-            </span>
-            <button
-              type="button"
-              onClick={() => setPendingWatchId(null)}
-              style={{
-                marginLeft: 'auto',
-                background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-                fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted,
-                textDecoration: 'underline', textUnderlineOffset: 2,
-              }}
-            >
-              Clear
-            </button>
-          </div>
+          <CurrentlyReplacingBanner
+            watchId={pendingWatchId}
+            onClear={() => { setPendingWatchId(null); pendingWatchIdRef.current = null }}
+          />
         )}
 
         {/* Drop zone */}

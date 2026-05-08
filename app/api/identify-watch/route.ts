@@ -107,7 +107,9 @@ export async function POST(request: NextRequest) {
   let estimatedValueUsd: number | null = null
   let estimatedValueSource: string | null = null
   try {
-    const lookup = await lookupReferenceCandidates(identification)
+    // Pass the original upload filename so the lookup can mine it for SKU
+    // tokens (curators often name files after the manufacturer reference).
+    const lookup = await lookupReferenceCandidates(identification, file.name || undefined)
     referenceCandidates = lookup.candidates
     estimatedValueUsd = lookup.estimatedValueUsd
     estimatedValueSource = lookup.estimatedValueSource ?? null

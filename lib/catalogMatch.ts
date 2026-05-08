@@ -44,6 +44,14 @@ function scoreOne(watch: CatalogWatch, ai: AiIdentity): ScoredWatch {
   const watchBrand = watch.brand.trim().toLowerCase()
   const catRefNorm = normalizeRef(watch.reference)
 
+  // Only count exact normalized equality as a reference-tier match.
+  //
+  // We previously also matched on substring inclusion either direction,
+  // but for watch SKUs that's a real source of false positives — e.g. Sinn
+  // 556.0106 (RS variant) would be treated as a match for 556.010 (base)
+  // because the base normalized ref (556010) is a substring of the variant
+  // (5560106). They are distinct watches with distinct retail prices.
+  // A reference is either the same SKU or it isn't.
   let bestRefScore = 0
   if (catRefNorm) {
     for (const ref of ai.references) {
@@ -51,8 +59,6 @@ function scoreOne(watch: CatalogWatch, ai: AiIdentity): ScoredWatch {
       if (!aiRefNorm) continue
       if (aiRefNorm === catRefNorm) {
         bestRefScore = Math.max(bestRefScore, 1.0)
-      } else if (aiRefNorm.includes(catRefNorm) || catRefNorm.includes(aiRefNorm)) {
-        bestRefScore = Math.max(bestRefScore, 0.85)
       }
     }
   }

@@ -55,6 +55,7 @@ export default function AddWatchConfirmPage() {
   const [condition, setCondition] = useState<WatchCondition | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [addAnotherOpen, setAddAnotherOpen] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [purchasePrice, setPurchasePrice] = useState('')
   const [purchaseDate, setPurchaseDate] = useState('')
   const [notes, setNotes] = useState('')
@@ -127,6 +128,8 @@ export default function AddWatchConfirmPage() {
 
   async function commitCollectionAdd() {
     if (!condition) return
+    if (submitting) return  // guard against double-click re-entry
+    setSubmitting(true)
 
     // If the user arrived from the photo-search flow, PhotoSearch stashed
     // their uploaded photo URL keyed by this watch's id. Use it as the
@@ -644,14 +647,16 @@ export default function AddWatchConfirmPage() {
 
             {choice === 'owned' ? (
               <button
-                disabled={!condition}
+                disabled={!condition || submitting}
                 onClick={() => {
-                  if (!condition) return
-                  commitCollectionAdd()
+                  if (!condition || submitting) return
+                  void commitCollectionAdd()
                 }}
-                style={primaryButtonStyle(!condition)}
+                style={primaryButtonStyle(!condition || submitting)}
               >
-                {alreadyInCollection ? 'Add another to My Collection' : 'Add to My Collection'}
+                {submitting
+                  ? 'Adding…'
+                  : alreadyInCollection ? 'Add another to My Collection' : 'Add to My Collection'}
               </button>
             ) : (
               <button

@@ -73,10 +73,16 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => { void load() }, [load])
 
-  const staticIds = new Set(watches.map(w => w.id))
+  // Dynamic catalog rows (loaded from Supabase) win over the static seed
+  // (`lib/watches.ts`) when ids collide. This makes admin edits effective:
+  // PATCHing a row that started life as a seed entry creates a dynamic
+  // override row, and the dynamic version replaces the static one in every
+  // read site that uses `allWatches`. Pristine static rows still show when
+  // there's no dynamic override.
+  const dynamicIds = new Set(dynamicWatches.map(dw => dw.id))
   const allWatches = [
-    ...watches,
-    ...dynamicWatches.filter(dw => !staticIds.has(dw.id)),
+    ...dynamicWatches,
+    ...watches.filter(w => !dynamicIds.has(w.id)),
   ]
 
   return (

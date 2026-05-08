@@ -10,6 +10,7 @@ import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import { brandTier, heatScore } from '@/lib/heatScore'
 import type { CatalogWatch, WatchType } from '@/types/watch'
+import CatalogWatchModal from '@/components/admin/CatalogWatchModal'
 
 export const dynamic = 'force-dynamic'
 
@@ -172,6 +173,8 @@ function AdminCatalogPageInner() {
   const [search, setSearch] = useState('')
   const [form, setForm] = useState({ ...BLANK_FORM })
   const [editId, setEditId] = useState<string | null>(null)
+  const [modalWatch, setModalWatch] = useState<CatalogWatch | null>(null)
+  const [modalInitialMode, setModalInitialMode] = useState<'view' | 'edit'>('view')
   const [formBusy, setFormBusy] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
@@ -683,7 +686,23 @@ function AdminCatalogPageInner() {
               const heat = heatScore(w)
               const tier = brandTier(w.brand)
               return (
-                <tr key={w.id} style={{ borderBottom: `1px solid ${brand.colors.borderLight}` }}>
+                <tr
+                  key={w.id}
+                  onClick={e => {
+                    // Don't open the modal when the click originated from an
+                    // action button or link in the rightmost cell.
+                    const target = e.target as HTMLElement
+                    if (target.closest('button, a')) return
+                    setModalWatch(w)
+                    setModalInitialMode('view')
+                  }}
+                  style={{
+                    borderBottom: `1px solid ${brand.colors.borderLight}`,
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = brand.colors.slot }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+                >
                   <td style={{ padding: '10px 14px' }}>
                     <div style={{ fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 2 }}>{w.brand}</div>
                     <div style={{ fontFamily: brand.font.serif, fontSize: 17, color: brand.colors.ink, lineHeight: 1.1 }}>{w.model}</div>
@@ -722,23 +741,22 @@ function AdminCatalogPageInner() {
                   </td>
                   <td style={{ padding: '10px 14px' }}>
                     <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                      <button
+                        type="button"
+                        onClick={() => { setModalWatch(w); setModalInitialMode('edit') }}
+                        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, letterSpacing: '0.02em' }}
+                      >
+                        Edit
+                      </button>
                       {!isBuiltin && (
-                        <>
-                          <button
-                            onClick={() => openEdit(w)}
-                            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, letterSpacing: '0.02em' }}
-                          >
-                            Edit
-                          </button>
-                          {deleteConfirm === w.id ? (
-                            <span style={{ display: 'flex', gap: 6 }}>
-                              <button onClick={() => handleDelete(w.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: brand.font.sans, fontSize: 12, color: '#D04040' }}>Confirm</button>
-                              <button onClick={() => setDeleteConfirm(null)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>Cancel</button>
-                            </span>
-                          ) : (
-                            <button onClick={() => setDeleteConfirm(w.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>Delete</button>
-                          )}
-                        </>
+                        deleteConfirm === w.id ? (
+                          <span style={{ display: 'flex', gap: 6 }}>
+                            <button onClick={() => handleDelete(w.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: brand.font.sans, fontSize: 12, color: '#D04040' }}>Confirm</button>
+                            <button onClick={() => setDeleteConfirm(null)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>Cancel</button>
+                          </span>
+                        ) : (
+                          <button onClick={() => setDeleteConfirm(w.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>Delete</button>
+                        )
                       )}
                       <Link
                         href={`/admin/images?watchId=${w.id}`}
@@ -761,6 +779,21 @@ function AdminCatalogPageInner() {
           </tbody>
         </table>
       </div>
+
+      {modalWatch && (
+        <CatalogWatchModal
+          watch={modalWatch}
+          initialMode={modalInitialMode}
+          onClose={() => setModalWatch(null)}
+          onSaved={async () => {
+            // Pull the canonical row from Supabase so the modal + table both
+            // reflect the upserted state. Refresh closes the read-uncommitted
+            // gap if any other admins are editing.
+            await refresh()
+            setModalWatch(null)
+          }}
+        />
+      )}
     </div>
   )
 }

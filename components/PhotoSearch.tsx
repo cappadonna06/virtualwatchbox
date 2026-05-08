@@ -465,19 +465,31 @@ function ConciergeChip() {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 6,
-      padding: '4px 10px',
+      padding: '5px 11px',
       borderRadius: brand.radius.pill,
-      border: `1px solid ${brand.colors.goldLine}`,
-      background: brand.colors.goldWash,
-      color: brand.colors.ink,
+      // Deep ink background reads cleanly on any surface — light cream cards,
+      // dark photos, sweaters, scenery, etc. Gold mark + cream text keep the
+      // luxury voice without losing contrast on the user's uploaded photo.
+      border: `1px solid rgba(255,255,255,0.12)`,
+      background: 'rgba(26, 20, 16, 0.92)',
+      color: brand.colors.bg,
       fontFamily: brand.font.sans,
       fontSize: 10,
       fontWeight: 500,
       letterSpacing: '0.12em',
       textTransform: 'uppercase',
+      boxShadow: '0 4px 14px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.15)',
+      backdropFilter: 'blur(4px)',
     }}>
       <span style={{ color: brand.colors.gold, fontSize: 11, lineHeight: 1 }}>✦</span>
-      <span style={{ fontFamily: brand.font.serif, fontSize: 12, letterSpacing: '0.04em', textTransform: 'none', fontWeight: 400 }}>
+      <span style={{
+        fontFamily: brand.font.serif,
+        fontSize: 12,
+        letterSpacing: '0.04em',
+        textTransform: 'none',
+        fontWeight: 400,
+        color: brand.colors.bg,
+      }}>
         Watchbox Concierge
       </span>
     </span>

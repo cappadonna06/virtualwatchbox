@@ -53,7 +53,7 @@ export default function Footer() {
           <Link href="/terms" style={linkStyle}>Terms</Link>
           <Link href="/settings" style={linkStyle}>Settings</Link>
           {showAdmin && (
-            <Link href="/admin/catalog" style={{ ...linkStyle, color: brand.colors.muted }}>
+            <Link href="/admin" style={{ ...linkStyle, color: brand.colors.muted }}>
               Admin
             </Link>
           )}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useLayoutEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import { getOverflowSummary, getWatchboxOverflow } from '@/lib/watchboxOverflow'
 import type { ResolvedOwnedWatch } from '@/types/watch'
@@ -308,6 +308,26 @@ export default function CollectionWatchboxSurface({
   } = useCollectionSession()
 
   const [customizerOpen, setCustomizerOpen] = useState(false)
+  const customizerRef = useRef<HTMLDivElement | null>(null)
+
+  // Close the customize popover when the user clicks anywhere outside it
+  // (keeps the button-toggle behavior, just adds the dismiss-on-outside).
+  useEffect(() => {
+    if (!customizerOpen) return
+    function onPointerDown(e: MouseEvent) {
+      const node = customizerRef.current
+      if (node && e.target instanceof Node && !node.contains(e.target)) {
+        setCustomizerOpen(false)
+      }
+    }
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') setCustomizerOpen(false) }
+    document.addEventListener('mousedown', onPointerDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [customizerOpen])
   const [configOpen, setConfigOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<ResolvedOwnedWatch | null>(null)
   const [editTarget, setEditTarget] = useState<ResolvedOwnedWatch | null>(null)
@@ -502,7 +522,7 @@ export default function CollectionWatchboxSurface({
               slotWidth={watchboxSlotWidth}
             />
 
-            <div className="configurator-wrap" style={{ marginTop: 10, position: 'relative' }}>
+            <div ref={customizerRef} className="configurator-wrap" style={{ marginTop: 10, position: 'relative' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
                 <span style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted }}>
                   {frame.label} · {lining.label} · {slotConfig.n} slots
