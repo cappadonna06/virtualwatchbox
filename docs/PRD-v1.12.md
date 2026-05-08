@@ -1,8 +1,8 @@
-# Virtual Watchbox PRD — v1.11
+# Virtual Watchbox PRD — v1.12
 
 **Site:** virtualwatchbox.com  
 **Tagline:** *Showcase Your Timepieces. Discover What's Next.*  
-**Updated:** May 2026 — v1.11
+**Updated:** May 2026 — v1.12
 
 | Version | Change |
 |---|---|
@@ -18,6 +18,7 @@
 | v1.9 | Added current implementation status snapshot and Feature 2A third view: Real Watchbox Photo for My Collection. |
 | v1.10 | Added Collection Jewel, tightened ownership rules for Target/Grail/Jewel intent states, and added profile hero selection between Grail and Jewel. |
 | v1.11 | Added Feature 6 — Settings & Account Controls, including account deletion/data controls, privacy/sharing controls, and legal transparency surfaces. |
+| v1.12 | Shipped Feature 9 — AI Photo Identification ("Watchbox Concierge") end-to-end with verify vs intake split, market-value capture, and dial-bbox cropping. Added Feature 2D — Per-Watch Photo Gallery (sidebar + owned-watch detail page + lightbox + drag-reorder). Added Feature 2E — Owned Watch Detail Page (`/collection/watch/[id]`). Updated Feature 3 with duplicate-aware add page and add-from-photo for not-in-catalog watches. Added Feature 13 — Admin Catalog & Submissions Tooling. Documented `/news` (Feature 11) and `/discover` (new Feature 14) which were already shipped but listed as pending in v1.11. **Intent fix:** Grail no longer has a planned `/collection` surface — by definition Grail is unowned, so its home is the FeaturedProfileWatch picker on `/profile`. The earlier "Grail surface on /collection" planning was dropped. The `/collection` UI pass now scopes to Next Targets treatment + header / stats / cards / mobile polish. |
 
 ---
 
@@ -80,6 +81,8 @@ The universal UI standard applied across every watch box surface in the product.
 
 **Applies to:** homepage watchbox, `/collection`, `/playground`, shared embedded watchbox surfaces, and future public box pages
 
+The owned-watch detail surface is a **dedicated route** (`/collection/watch/[id]`) layered on top of the sidebar. The sidebar remains the at-a-glance view; the detail page is the focused "manage my watch" surface (Feature 2E).
+
 ---
 
 ## 3. Core Features
@@ -91,12 +94,14 @@ The homepage centerpiece. A high-fidelity grid layout replicating the feel of a 
 **Functional Requirements**
 - Grid with configurable slot count: `4`, `6`, `8`, `10`
 - Box customization: frame material, lining, slot count
-- Box config persisted locally
+- Box config persisted locally and to Supabase when signed in
 - Hover card + click sidebar (Section 2)
 - Empty slot → Add Watch flow (Feature 3)
 - Overflow handling: auto-expand through supported slot counts, then show `+N more` in the final slot
+- Auto-grown slot counts persist to Supabase (no shrink-then-grow flicker on reload)
 - Responsive layout
 - Drag-and-drop slot reordering (P1)
+- Customize popover dismisses on click-outside + Escape
 
 | Feature | Priority |
 |---|---|
@@ -105,6 +110,7 @@ The homepage centerpiece. A high-fidelity grid layout replicating the feel of a 
 | Box customizer (frame, lining, slot count) | P0 |
 | Empty slot Add Watch flow | P0 |
 | Watchbox overflow handling | P0 |
+| Auto-grow slot count synced to cloud | P0 |
 | Drag & drop reorder | P1 |
 
 ---
@@ -115,10 +121,16 @@ Triggered by clicking any watch slot. This is the shared detail surface across o
 
 **Displays:** dial visualization or product image, brand, model, reference, case size, material, dial color, movement, complications, condition/value badges, estimated value, and supporting notes/specs depending on surface.
 
+**Owner-only sidebar additions** (My Collection mode):
+- **Photos section** — horizontal thumbnail strip of the user's per-watch gallery (Feature 2D), with `+ Add` and the gold ★ primary marker.
+- **`View full detail →`** link to the owned-watch detail page (`/collection/watch/[id]`, Feature 2E).
+
 **Quick actions vary by surface:**
 - **Collection:** Find For Sale ↗ / Sell This Watch / Swap Strap / Edit / Delete
 - **Playground:** Find For Sale ↗ / Add to My Collection / Edit / Delete
 - **Public readonly surfaces:** Find For Sale ↗ plus any non-mutating public CTA
+
+The Photos section is hidden in `mode='public'` and `mode='followed'` — the gallery is a personal record, not a public one.
 
 ---
 
@@ -152,9 +164,18 @@ Unsaved changes bar:
 `Save as Playground` is a placeholder for the next phase.
 
 #### Near-Term Expansion
-- Next Targets panel with affiliate CTAs
-- Grail section
-- Mobile `...` overflow should eventually include `Add from Photo` as a lightweight collection entry point
+
+**`/collection` UI pass.** A cohesive visual + structural review of the working surface, scoped to:
+
+- **Next Targets treatment** (max 3) — dedicated panel or strip with intent type, target price, desired condition, optional linked Playground box, and per-target `Track Listings →` affiliate CTA. Data already wired (`nextTargets[]`) — surface is what's missing. This is the single highest-ROI affiliate hook on the page.
+- **Header / value pill / action button** spacing and hierarchy review
+- **Stats section** typography and density pass (portfolio value, dial colors, watch types, complications, brand breakdown)
+- **Cards view** spacing + status badge consistency
+- **Mobile reflow** for sidebar → bottom sheet transitions and overflow behavior
+
+> Grail is intentionally **not** part of the `/collection` surface. By the rules in Feature 2B (Category 5), Grail is unowned by definition; its home is the FeaturedProfileWatch picker on `/profile`. Earlier roadmap drafts had a "Grail surface on /collection" item — that was a category error and is dropped.
+
+**Other near-term:**
 - Save as Playground flow
 - Review Changes drawer
 - Card filters
@@ -162,7 +183,7 @@ Unsaved changes bar:
 
 #### View C — Real Watchbox Photo (camera icon)
 
-A third Collection view that represents the collector’s **actual physical watchbox** as a photo surface, separate from the virtual slot UI and card list.
+A third Collection view that represents the collector's **actual physical watchbox** as a photo surface, separate from the virtual slot UI and card list.
 
 **Entry in view switcher**
 - Third icon in the My Collection view switcher uses a camera metaphor
@@ -190,7 +211,7 @@ A third Collection view that represents the collector’s **actual physical watc
 
 **Persistence**
 - Demo/local mode: local/session storage
-- Account mode (future): cloud object storage
+- Account mode: Supabase Storage `watch-photos` bucket with watchbox config row
 
 **MVP guardrails**
 - Informational visual surface only in v1
@@ -218,9 +239,9 @@ The source of truth. These are watches the user actually owns.
 - Populates the homepage watchbox and `/collection`
 - Homepage and `/collection` watchboxes may show `+N more` overflow
 - Stats are computed only from this category
-- Managed via the Add Watch flow (Feature 3)
+- Managed via the Add Watch flow (Feature 3) or Add From Photo (Feature 9)
 - Full ownership metadata: condition, purchase date, price paid, estimated value, notes
-- Adding a duplicate is allowed; duplicate context is surfaced in the add flow detail step
+- Adding a duplicate is allowed; the catalog detail/add page treats duplicates first-class (Feature 3)
 
 **Data:** `collectionWatches: Watch[]`
 
@@ -291,7 +312,7 @@ Up to 3 followed watches the user plans to acquire next. This is a curated short
 
 #### Category 5 — Grail
 
-Exactly one followed watch designated as the user’s emotional north star.
+Exactly one followed watch designated as the user's emotional north star.
 
 **Rules**
 - Must be a followed watch
@@ -300,8 +321,8 @@ Exactly one followed watch designated as the user’s emotional north star.
 - Special crown-icon treatment and dedicated visual emphasis
 
 **UI**
-- Surfaced prominently in the profile card
-- Also eligible for dedicated future surfacing on `/collection`
+- Surfaced prominently in the profile card via the FeaturedProfileWatch picker (Grail or Jewel)
+- Grail's home is `/profile` — by definition Grail is unowned, so it does not belong on `/collection` (the owned-watches surface)
 - Shows brand, model, reference, and estimated market price
 - CTA: `Find on Market →`
 
@@ -311,7 +332,7 @@ Exactly one followed watch designated as the user’s emotional north star.
 
 #### Category 6 — Collection Jewel
 
-Exactly one owned watch designated as the centerpiece or pride of the user’s actual collection. This is the owned counterpart to Grail.
+Exactly one owned watch designated as the centerpiece or pride of the user's actual collection. This is the owned counterpart to Grail.
 
 **Rules**
 - Must be in My Collection
@@ -338,24 +359,141 @@ Exactly one owned watch designated as the centerpiece or pride of the user’s a
 
 | Category | Max | Page | Metadata | Stats | Actions |
 |---|---|---|---|---|---|
-| In My Collection | Unlimited | Homepage + `/collection` | Full ownership | Yes | Find For Sale, Sell, Swap Strap |
+| In My Collection | Unlimited | Homepage + `/collection` + `/collection/watch/[id]` | Full ownership + photo gallery | Yes | Find For Sale, Sell, Swap Strap, Manage gallery |
 | Playground Watches | Unlimited | `/playground` | Per-box config + optional per-entry overrides | Box-level only | Find For Sale, Add to Collection, Edit, Delete |
 | Followed Watches | Unlimited | Dedicated surface pending; profile section later | None | No | Add to Collection, Promote to Target, Set as Grail |
 | Next Targets | 3 | `/collection` panel | Target metadata on followed watches | No | Track Listings |
-| Grail | 1 | Profile card + future collection section | Special designation on unowned followed watch | No | Find on Market |
+| Grail | 1 | Profile card (FeaturedProfileWatch picker on `/profile`) | Special designation on unowned followed watch | No | Find on Market |
 | Collection Jewel | 1 | Collection watchbox/cards + profile hero | Special designation on owned watch | No | View in Collection, Swap Strap, Service, Insure |
 
 ---
 
 #### Watch Catalog vs. Collection
 
-**The catalog (`lib/watches.ts`) is not the collection.**
+**The catalog is the union of `lib/watches.ts` (static seed) and `public.catalog_watches` (dynamic Supabase rows).**
 
-- Catalog: all available references used in search/add/discovery flows
-- Collection: the user’s owned watches
+- Catalog: all available references used in search/add/discovery flows, filtered by `moderation_status='approved' OR submitted_by=auth.uid()`
+- Collection: the user's owned watches
 - A catalog watch becomes an owned watch only when explicitly added to Collection
+- Dynamic rows take precedence over static seed for the same id, so admin edits to seed watches are effective on every read site
 
 Catalog watches must never show owned status unless the user has actually added that watch to the collection state.
+
+---
+
+### Feature 2D — Per-Watch Photo Gallery
+
+Every owned watch has a personal photo gallery — wrist shots, "received it today", service receipts, anything the collector wants to remember about that specific watch. Replaces the previous single-photo model.
+
+#### Why
+
+When admins curate a higher-quality catalog photo for a watch, the user's personal photos shouldn't disappear. Photos are personal records of ownership; the catalog photo is the canonical product shot.
+
+#### Image Resolution Order
+
+The watchbox slot, cards view, and detail page render the highest-priority image available:
+
+1. **Admin-curated catalog photo** (`watch_images` table)
+2. **Catalog row image** (`catalog_watches.image_url`, set by user-photo submissions)
+3. **Primary user gallery photo** (`user_watch_photos` where `is_primary=true`)
+4. **SVG dial fallback** (rendered with the watch's `dialConfig` colors)
+
+Admin curation upgrades the watchbox slot but never hides user photos — they always remain visible in the gallery.
+
+#### Surfaces
+
+**Sidebar** (Feature 2 owner mode)
+- Horizontal thumbnail strip (56×56 desktop, 64×64 mobile)
+- `+ Add` button
+- Gold ★ overlay on the primary photo
+- Empty state: dashed-border tile with "Add wrist shots" CTA
+- Drag-drop upload directly on the section
+
+**Owned watch detail page** (Feature 2E)
+- Full-width grid below the specs (220px+ tiles, captions visible under each)
+- Same gallery data as sidebar, larger and more browsable
+- Drag-to-reorder via `@dnd-kit`
+
+**Lightbox** (full-screen modal)
+- Photo centered, max `min(90vh, 90vw)`
+- Caption inline-editable below the photo
+- Toolbar: `★ Set as primary · ✎ Caption · ⤓ Open · 🗑 Delete`
+- Photo counter top-right ("3 of 7")
+- Keyboard: `Esc` close · `←` `→` navigate · `Backspace`/`Delete` delete (with confirm) · `P` toggle primary
+- Mobile: swipe to navigate
+
+#### Functional Requirements
+
+- Upload one or many photos at once (file picker `multiple`, drag-drop)
+- "Open camera" link reuses the existing CameraCapture component
+- Captions: optional, single-line, ~140 chars
+- Set-primary (one per watch, atomic flip-others-off)
+- Delete with auto-promote (if the deleted photo was primary, oldest remaining becomes primary)
+- Drag-to-reorder thumbnails (sidebar + grid)
+- AI photo flow lands new uploads in the gallery as primary automatically (Feature 9)
+
+#### Visibility
+
+- Owner-only on collection / playground (when owned)
+- Hidden in `mode='public'` and `mode='followed'`
+
+#### Data
+
+```typescript
+export interface UserWatchPhoto {
+  id: string
+  watchId: string         // owned-watch id
+  photoUrl: string
+  caption: string | null
+  sortOrder: number
+  isPrimary: boolean
+  createdAt: string
+}
+```
+
+Backed by `public.user_watch_photos` with RLS scoped to the owner. Backfilled from the legacy single `watches.photo_url` on migration.
+
+| Feature | Priority |
+|---|---|
+| Sidebar thumbnail strip + lightbox | P0 |
+| Grid variant on owned watch detail page | P0 |
+| Upload (file picker + drag-drop) + camera | P0 |
+| Set-primary + delete + captions | P0 |
+| Drag-to-reorder | P0 |
+| AI photo flow auto-add | P0 |
+| Photo categories (wrist / service / receipt) | P2 |
+| In-app crop for gallery photos | P2 |
+
+---
+
+### Feature 2E — Owned Watch Detail Page (`/collection/watch/[id]`)
+
+Focused, full-page surface for a specific owned watch instance. Distinct from the catalog detail/add page (Feature 3) — that one is for the catalog watch as a product, this one is for the user's specific instance with their condition, notes, photos, and history.
+
+#### Layout
+
+- **Sticky image column** (desktop) using the standard image fallback chain
+- **Specs column** with full grid: brand, model, reference, watch type, est. market value, case size, material, dial color, movement, complications, condition, ownership status, purchase date, price paid, notes
+- **Edit + Delete** icon buttons in the specs header — Edit opens the existing `EditWatchModal`
+- **Bottom gallery section** — Feature 2D in grid variant (large tiles, captions, drag-reorder, lightbox)
+
+Mobile: image and specs stack; gallery becomes 2-up.
+
+#### Entry Points
+
+- "View full detail →" link in the owner-mode sidebar (Feature 2)
+- Direct deeplink (`/collection/watch/{ownedWatchId}` is share-stable for the owner)
+- "Manage your watch →" CTA on the duplicate-aware add page (Feature 3) when the user already owns a catalog watch
+
+The watchbox slot and card view continue to open the sidebar — the detail page is one click deeper, opt-in.
+
+| Feature | Priority |
+|---|---|
+| `/collection/watch/[id]` route | P0 |
+| Edit modal integration | P0 |
+| Delete with confirm | P0 |
+| Bottom gallery section | P0 |
+| Per-instance ownership + sharing visibility (multi-instance owners) | P1 |
 
 ---
 
@@ -365,7 +503,7 @@ The add-watch experience is a dedicated helper route, not a modal and not a refl
 
 #### Routes
 
-- `/collection/add` — search and select a watch
+- `/collection/add` — search and select a watch (with camera icon → photo identification, Feature 9)
 - `/collection/add/[watchId]` — detail + confirm
 
 Both routes maintain the nav bar.
@@ -378,10 +516,10 @@ Both routes maintain the nav bar.
 
 #### Search Page (`/collection/add`)
 
-**On load:** search bar only, no filters, no results.
+**On load:** search bar with a camera icon, no filters, no results.
 
 Helper line:
-> Search by brand, model, or reference number
+> Search by brand, model, or reference number — or tap the camera to identify by photo
 
 **As the user types:**
 - Live results appear
@@ -396,25 +534,38 @@ Helper line:
 - Watch Type chips are intentionally excluded from this flow
 - Already owned watches show `In Collection`
 
+**Camera icon** (right side of the search bar):
+- Opens the camera capture / file picker for AI photo identification (Feature 9)
+- Inline result UI: "Watchbox Concierge" loading → match card or "Discovered by Concierge" panel for not-in-catalog watches
+
 **Clicking a result:**
 - always routes to `/collection/add/[watchId]`
 - preserves relevant context such as `dest`, `boxId`, and future `from`
-- if already owned, duplicate context is surfaced on the detail page rather than as the main search branching interaction
+- if already owned, the duplicate-aware detail page (below) handles it first-class
 
 #### Detail + Confirm Page (`/collection/add/[watchId]`)
 
 The second step is a product-detail screen, not a plain confirm form.
 
 **Surface content:**
-- Large watch image
+- Large watch image (admin-curated → catalog → primary user photo → SVG)
 - Heart/follow action over the image
 - Brand, model, reference
 - Quick spec strip
 - Estimated market value
 - Watch specifications block
-- Duplicate/owned note when applicable
 
-**Primary decision:**
+**Duplicate-aware behavior**
+
+When the user already owns one or more instances of the catalog watch, the page transforms:
+
+- **Single instance:** soft green "✓ You already have one of these — added {date}" panel above the action area
+  - Primary CTA: `Manage your watch →` (links to `/collection/watch/[ownedWatchId]`)
+  - Secondary CTA: `+ Add another` (expands the inline condition + purchase flow)
+- **2+ instances:** list of owned instances above the action area, each with `condition · purchase date · Manage →`
+  - `+ Add another` available below for adding a third copy
+
+**Primary decision (when not already owned, or when "Add another" is expanded):**
 
 `Where does it go?`
 
@@ -424,7 +575,8 @@ The second step is a product-detail screen, not a plain confirm form.
 **Collection path**
 - Condition required
 - Optional purchase details accordion
-- CTA: Add to My Collection
+- CTA: Add to My Collection (or Add another to My Collection)
+- Submit guard prevents double-click duplicates
 - Redirects to `/collection`
 - Success toast shown
 
@@ -466,21 +618,24 @@ These fields remain editable later from Collection surfaces rather than being re
 - Condition is the only required field when adding to Collection
 - Playground add path remains lightweight
 - Add is a committed action, not a draft
+- Duplicate ownership is first-class on the detail page, not a search-results branching condition
 
 | Feature | Priority |
 |---|---|
 | `/collection/add` search route | P0 |
+| Camera icon → AI photo identification entry | P0 |
 | `/collection/add/[watchId]` detail + confirm route | P0 |
+| Duplicate-aware detail page (single + multi-instance) | P0 |
 | SVG dial render in search results | P0 |
 | Progressive filter reveal | P0 |
 | Filter chips with match counts | P0 |
-| `In Collection` badge + duplicate note | P0 |
 | Collection vs Playground intent selector | P0 |
 | Condition required field (Collection path only) | P0 |
 | Inline Playground box picker/creation | P0 |
+| Submit guard against double-click | P0 |
 | Contextual `from` parameter for eyebrow/back link | P0 |
 | Followed watches state | P0 |
-| Ownership metadata editable later | P1 |
+| Ownership metadata editable post-add (EditWatchModal) | P0 (shipped) |
 
 ---
 
@@ -619,6 +774,7 @@ Sharing should feel personal and identity-driven, not like a utility link to a t
 - Clicking a Collection or Playground box preview on the profile page navigates to the public box page
 - No inline expansion of boxes within the profile page
 - Public profile surfaces are readonly
+- Per-watch user photo galleries are NOT exposed on public surfaces (Feature 2D — owner-only)
 
 #### Profile Visibility / Configuration
 
@@ -641,9 +797,9 @@ V1 scope is intentionally narrow:
 #### Share Output / Metadata
 
 Examples:
-- `Marc’s Profile`
-- `Marc’s Collection`
-- `Marc’s Dream Collection`
+- `Marc's Profile`
+- `Marc's Collection`
+- `Marc's Dream Collection`
 
 **Effort split**
 - Clipboard share links for profile and box pages = P0
@@ -661,8 +817,9 @@ Examples:
 | Followed Watches section | P0 |
 | Public readonly box page | P0 |
 | Clipboard share links for profile and box pages | P0 |
+| Unified share modal (profile + Collection box + Playground box) | P0 (shipped) |
+| OG image generation for share cards (`/api/og/box/[slug]`) | P0 (shipped) |
 | Future `/u/[handle]` route model | P1 |
-| OG image generation for share cards | P1 |
 | Full account-backed public identity system | P2 |
 
 ---
@@ -741,13 +898,105 @@ Virtually swap straps with compatibility filtering by lug width. Affiliate-linke
 
 ### Feature 8 — Smart Suggestions Engine
 
-Personalized watch and strap recommendations based on collection, followed watches, search history, and future behavior signals.
+The **personalized engine upgrade path** for the surfaces in Feature 14 (`/discover`). Today those surfaces use rule-based heuristics (gap analysis, brand-family upgrade paths, lug-width strap matches). The Smart Suggestions Engine replaces them with personalized recommendations driven by collection + followed + search history + future behavior signals.
+
+Also feeds the AI weekly digest and any sidebar upsell surfaces that ship later.
 
 ---
 
-### Feature 9 — Upload from Photo & Image Recognition
+### Feature 9 — AI Photo Identification ("Watchbox Concierge")
 
-Upload a watch photo, identify it, and add it to the app.
+Upload a watch photo, identify it, and route it through the right next step — match-and-add, "discovered" not-in-catalog submission, or a tasteful "that's not a watch" panel. Branded as **Watchbox Concierge** in user copy.
+
+#### User-Facing Behavior
+
+**Entry**
+- Camera icon in the `/collection/add` search bar
+- File drop or live camera capture supported (`CameraCapture` component handles fallback to upload on platforms without `getUserMedia`)
+
+**Loading UX**
+- Staged labels: "Examining the dial…" → "Cross-referencing manufacturer catalog…"
+- Animated CSS loupe traverses the user's photo during stage 1, settles on stage 2
+- "✦ Watchbox Concierge" chip top-right of the photo tile (deep-ink background for legibility on any photo)
+- Reduced-motion fallback (loupe stays centered, stage labels still rotate)
+
+**Result paths** (driven by AI subject classification + catalog match tier)
+
+| AI says | Catalog match | UI |
+|---|---|---|
+| `subject: 'watch'` | reference / brand+model match | "✓ Match found" primary card with inline `Add to my watchbox →` linking to `/collection/add/[watchId]` |
+| `subject: 'watch'` | brand-only or no match | "Discovered by Concierge" card with the user's photo, brand/model headline, likely reference candidates, and `Add to my watchbox →` (creates a pending catalog row + adds to collection) |
+| `subject: 'not_watch'` | n/a | "That looks like a {label}" panel — playful but tasteful copy, photo coaching tips, "upload a different photo" CTA. Skips the expensive web-search lookup entirely. |
+
+**"Next best matches" / "Closest in catalog"** section appears below the primary result with rank-numbered tiles for ranked alternates. Brand-only fallback never masquerades as identified.
+
+**Add-from-photo (not-in-catalog flow)**
+- `AddFromPhotoSheet` modal: editable AI-prefilled fields (brand, model, reference, dial color, watch type, case size/material, est. value), condition picker, optional purchase details
+- Submit creates a pending catalog row + uploads the cropped photo to Supabase Storage + adds the watch to the user's collection
+- The watch appears in the user's collection immediately; admin moderation queue (Feature 13) reviews + approves the catalog row
+- Disclosure: "Pending review. Your watch will appear in your collection right away. Our team reviews user-submitted watches before they show up in the public catalog."
+
+#### Pipeline Architecture
+
+The AI work is **two-step** by default; the admin path can short-circuit to a **third "verify" mode** (Feature 13).
+
+**Step 1 — Vision (visual fingerprint)**
+- OpenAI Responses API with `gpt-4.1-mini` (env-overridable)
+- Image only, no tools
+- Returns: subject classification, brand, model line, dial color/details, case material/size/lug width, bracelet, bezel, movement cues, watch type, confidence, optional notes
+- **Returns `dialBbox`** — normalized 0..1 bounding box of the watch face, used to crop wrist shots to a dial-focused square server-side via Sharp before storage
+- Does NOT attempt a manufacturer reference (refs aren't visible on dials; the lookup step handles them)
+
+**Step 2 — Reference lookup (web grounded)**
+- OpenAI Responses API with `gpt-4.1` + the `web_search` tool (env-overridable model)
+- Uses the visual fingerprint to query the brand's official site + reputable dealers
+- Returns up to 5 candidate references with confidence + sourceUrl + rationale
+- Also returns `estimatedValueUsd` + `estimatedValueSource` so user-photo submissions land with a real market value (not $0)
+- Skipped entirely when `subject = 'not_watch'`
+- Filename-aware: SKU-like tokens are extracted from the upload filename (`l3-830-4-92-6`, `126610LN`, `IW327001`, dotted/hyphenated/AP-style) and surfaced to the lookup model as a strong prior. Visible specs still win on contradiction.
+
+**Catalog matching**
+- Strict reference match (exact normalized equality, no substring) → `reference` tier
+- Brand + fuzzy model match → `brand_model` tier
+- Brand-only → `brand_only` tier (UI collapses this into the no-match path)
+- No match → no_match
+
+#### Costs
+
+| Path | Calls | Notes |
+|---|---|---|
+| User flow, watch identified | Vision + Lookup | ~$0.04–$0.06 |
+| User flow, not a watch | Vision only | ~$0.001 (lookup skipped) |
+| Admin verify (known watchId) | Verify only | ~$0.001 (Feature 13) |
+| Admin intake (unknown watch) | Vision + Lookup | ~$0.04–$0.06 |
+
+#### Image Handling
+
+- Server-side dial-bbox crop via Sharp before storage (square output, dial-focused, 10% margin)
+- Falls back to a centered square crop when bbox is missing or invalid (~5% miscrop rate on AI quirks)
+- Caps at 1600px on the long edge
+- AVIF / HEIC inputs are transcoded client-side via canvas before upload (Sharp's libheif doesn't support every bitstream variant)
+- Photo persists on the user's owned watch as the primary gallery entry (Feature 2D)
+
+#### Functional Requirements
+
+| Feature | Priority |
+|---|---|
+| Camera icon entry in `/collection/add` | P0 |
+| Vision call (visual fingerprint, subject classification, dialBbox) | P0 |
+| Reference lookup with web search | P0 |
+| Filename-aware SKU prior in lookup | P0 |
+| Estimated market value capture | P0 |
+| Concierge loading UX (staged labels + loupe) | P0 |
+| Match-found primary card with inline Add | P0 |
+| Discovered (not-in-catalog) card with Add-from-photo | P0 |
+| Not-a-watch panel with photo coaching | P0 |
+| Add-from-photo confirm sheet (editable AI fields) | P0 |
+| Server-side dial-bbox crop via Sharp | P0 |
+| Client-side AVIF/HEIC transcode | P0 |
+| Pending catalog row + admin moderation hook | P0 |
+| Spec-fingerprint cache for repeated lookups | P2 |
+| User-confirmable bbox crop UI | P2 |
 
 ---
 
@@ -757,15 +1006,150 @@ Upload a wrist photo and preview a selected watch at approximate scale.
 
 ---
 
-### Feature 11 — Watch Newsfeed
+### Feature 11 — Watch Newsfeed (`/news`)
 
-RSS-aggregated content from leading watch publications.
+Editorial reading surface aggregating watch publications. The route is live and feature-complete in v1; future passes add personalization and AI-driven digests.
+
+#### Architecture
+
+- **Cloudflare Worker** behind `NEWS_WORKER_URL` polls upstream RSS / API sources, normalizes into the canonical `NewsItem` shape, and returns a single JSON array
+- Next.js API route at `/api/news` proxies the Worker with 15-minute revalidation, applies category filtering, and surfaces a 503 with a friendly client fallback if the Worker is unreachable
+- Worker keeps RSS-fetch logic, brand/reference tagging, and source-specific quirks off the Next.js runtime so the app stays fast at the edge
+
+#### Surfaces
+
+- **Hero featured article** at the top of the page with large image, source pill, headline, excerpt, and read-now affordance
+- **News mode tabs** — Latest / Personalized for You / By Source (when collection signals exist)
+- **Source pills** for filtering by publication (Hodinkee, Worn & Wound, WatchTime, etc.) with a visible "All" reset
+- **Filter bar** with category and brand-of-interest filters
+- **Card grid** with thumbnail, source, headline, excerpt, brand/reference tags
+- **Sponsored slot** stub (currently a Chrono24 placeholder) — first paid surface in the editorial flow
+
+#### Personalization
+
+- When the user has a collection / followed watches, the "For You" mode prioritizes articles tagged with brands the user owns or follows
+- Demo / guest mode falls back to a stable curated rotation derived from the seed catalog so the page never looks empty
+
+#### Functional Requirements
+
+| Feature | Priority |
+|---|---|
+| `/news` route + worker-backed feed | P0 (shipped) |
+| Hero featured article | P0 (shipped) |
+| Source pills + filter bar | P0 (shipped) |
+| Mode tabs (Latest / For You / By Source) | P0 (shipped) |
+| Brand / reference tagging on items | P0 (shipped) |
+| Sponsored slot framework | P0 (shipped) |
+| Personalized digest emails (auth users) | P1 |
+| AI weekly digest based on collection + followed | P1 |
+| Reading-history-driven prioritization | P2 |
 
 ---
 
 ### Feature 12 — Integrated Buying, Selling & Listing
 
 Find For Sale deep-links, pricing suggestions, and listing helpers for key resale surfaces.
+
+---
+
+### Feature 13 — Admin Catalog & Submissions Tooling
+
+Internal admin surfaces that keep the catalog clean, moderate user submissions, and let curators replace photos efficiently. Not user-facing, but a real product surface for the operating team.
+
+#### 13.1 Catalog Manager (`/admin/catalog`)
+
+- Sortable, filterable list of every watch in `lib/watches.ts` (static seed) + `public.catalog_watches` (dynamic)
+- **Click any row** → opens `CatalogWatchModal` in **view mode** (image, full specs, dial color swatches)
+- **`✎ Edit details`** in the modal switches to edit mode in place (every spec editable: brand, model, reference, watch type, est. value, case size/material, dial color, movement, complications, dial/marker/hand hex codes)
+- **Save** upserts via `/api/admin/catalog`. Editing a static seed watch creates a Supabase override row; dynamic rows take precedence in catalog reads, so seed edits are effective everywhere
+- **Replace photo →** routes to `/admin/images?watchId=…` (the verify-mode flow, 13.2)
+- Photo Queue / Heat Score views surface watches that need photos, sorted by demand
+
+#### 13.2 Image Intake (`/admin/images`)
+
+Two modes driven by the URL.
+
+**Verify mode** (`?watchId=…` present)
+- Cheap single AI call (~$0.001), no web search
+- "Currently replacing" banner before upload — shows the existing photo + brand/model/ref so the admin's intent is clear
+- After upload: "Current → New upload" before/after strip + AI ✓/⚠ verification badge with `observed` line
+- Approve uploads to the `watch-images` storage bucket and writes the `watch_images` row tied to the original catalog id
+- Server stays in verify mode unconditionally when `expectedWatchId` is provided (no silent fall-through to intake even if the row can't be located)
+
+**Intake mode** (no `watchId` in URL)
+- Full Concierge pipeline (vision + web-search reference lookup) with chip-based reference candidates
+- Heat-score-aware queue with editable AI-detected fields
+- Approve creates a curated catalog row + uploads the photo
+
+**Image processing**
+- Sharp pipeline: alpha-aware background removal, edge cleanup, padding, resize to 900px output, PNG + WebP outputs
+- Resilient fallback: if the rich pipeline fails, fall back to simple resize+flatten so the upload still succeeds
+- Client-side AVIF/HEIC transcode before upload (Feature 9)
+
+#### 13.3 Submissions Queue (`/admin/submissions`)
+
+User-photo submissions land here for review.
+
+- **Dedupe by signature** (`brand|model|reference`): multiple pending rows of the same watch collapse into a single primary card with a "+N duplicate submissions" indicator and a "Show duplicates" toggle (per-row reject, group-approve)
+- **Approve all (N) →** approves the primary AND every duplicate in the group atomically
+- **✎ Edit fields** opens an inline editor for brand, model, reference, dial color, watch type, case size/material, est. value, movement (PATCH `/api/admin/catalog/[id]`)
+- **⤴ Replace photo** → `/admin/images?watchId={id}` (verify mode)
+
+#### 13.4 Security Boundary
+
+- All admin routes gated by `requireAdmin()` (email allowlist)
+- Admin server routes use a **service-role Supabase client** (`SUPABASE_SECRET_KEY` or legacy `SUPABASE_SERVICE_ROLE_KEY`) to:
+  - Read pending submissions owned by other users (RLS would otherwise scope them)
+  - Bypass storage bucket RLS for curated photo uploads
+- The session client is the fallback when the service role key isn't configured (only approved rows + admin's own pending visible)
+
+| Feature | Priority |
+|---|---|
+| Catalog modal (view + edit) for static + dynamic rows | P0 |
+| Verify-vs-intake split with cost-appropriate AI | P0 |
+| Currently-replacing banner + before/after strip | P0 |
+| Submissions dedupe by signature | P0 |
+| Submissions inline edit + curated photo replacement | P0 |
+| Service-role admin client | P0 |
+| Bulk operations across submissions group | P1 |
+| Submission moderation reasons / audit trail | P2 |
+
+---
+
+### Feature 14 — Discover (`/discover`)
+
+Commerce + editorial hub. Personalized to the user's collection and followed watches when available, with a stable demo experience for guests. Collection-aware suggestions feed an affiliate revenue path.
+
+#### Sections (top to bottom)
+
+- **Box insight cards** — analytical read of the user's collection (gaps, dial-color skew, brand concentration). Designed to surface "what might round out the box"
+- **Next slot recommendations** — watch cards keyed to the user's empty slot count + spend pattern, with `Find on Market →` deep links (Chrono24)
+- **Upgrade suggestions** — for each owned watch, surface plausible upgrade paths within the same brand family (e.g. Tudor Pelagos → Black Bay Pro)
+- **Strap suggestions** — lug-width-aware strap recommendations across the owned collection, with affiliate CTAs
+- **Box upgrade card** — surface physical watchbox affiliate matches sized to the user's slot count (Wolf1834, Rapport, Holme & Hadfield)
+- **Discover Reads strip** — curated editorial pulls (typically the top-tagged articles from the news feed for the user's brands of interest)
+
+#### Personalization
+
+- Real users: pulls from `useCollectionSession()` — their owned + followed + targets feed every section
+- Guests / demo: a stable seed (`DISCOVER_DEMO_COLLECTION_IDS`) produces consistent suggestions so the page is never empty
+- All affiliate CTAs route through `buildChrono24URL` (or strap/box partner equivalents) with the user's brand/spec hints baked in
+
+#### Functional Requirements
+
+| Feature | Priority |
+|---|---|
+| `/discover` route shell | P0 (shipped) |
+| Box insight cards | P0 (shipped) |
+| Next slot recommendations with Chrono24 deep links | P0 (shipped) |
+| Upgrade cards (per-owned-watch upgrade paths) | P0 (shipped) |
+| Strap suggestions (lug-width aware) | P0 (shipped) |
+| Box upgrade affiliate card | P0 (shipped) |
+| Discover Reads strip | P0 (shipped) |
+| UI / spacing / typography polish pass | P1 |
+| Smart Suggestions engine integration (Feature 8) | P1 |
+| Live pricing on recommendations (WatchCharts) | P2 |
+| Personalized digest emails | P2 |
 
 ---
 
@@ -819,6 +1203,7 @@ White-label licensing, insurance partnerships, authentication/service referrals,
   - muted `#A89880`
   - gold `#C9A84C`
   - border `#EAE5DC`
+- Drag interactions: `@dnd-kit/core` + `@dnd-kit/sortable` (used by the photo gallery)
 
 ### Data Model (current + near-term product model)
 
@@ -899,6 +1284,17 @@ export type PublicProfileState = {
   visibility: ProfileVisibilitySettings
 }
 
+// Per-watch user photo (Feature 2D)
+export interface UserWatchPhoto {
+  id: string
+  watchId: string         // owned-watch id
+  photoUrl: string
+  caption: string | null
+  sortOrder: number
+  isPrimary: boolean
+  createdAt: string
+}
+
 export type UserCollectionState = {
   collectionWatches: Watch[]
   followedWatchIds: string[]
@@ -908,6 +1304,7 @@ export type UserCollectionState = {
   playgroundBoxes: PlaygroundBox[]
   selectedWatchId: string | null
   publicProfile: PublicProfileState
+  photosByWatchId: Map<string, UserWatchPhoto[]>
 }
 ```
 
@@ -931,20 +1328,27 @@ Behavior requirements:
 - Removing a Jewel watch from Collection clears `collectionJewelWatchId`.
 - Removing a watch from Followed removes dependent Target/Grail state but does not affect Collection/Jewel state.
 
-### Backend (later phase)
+### Backend
 
-- Supabase (PostgreSQL) for persistence
-- Supabase Auth for accounts
-- Cloudinary for watch photos
-- Redis / edge caching as needed
+- **Supabase** (PostgreSQL) for persistence — auth, user profiles, watches, watch_states, watchbox_config, playground_boxes, catalog_watches, watch_images, user_watch_photos
+- **Supabase Auth** for accounts (Google OAuth + magic link)
+- **Supabase Storage** for all user-uploaded imagery — buckets:
+  - `watch-photos` (user uploads — gallery, profile, watchbox photos, AI flow uploads)
+  - `watch-images` (admin-curated catalog photos via the intake pipeline)
+- **Service-role admin client** for admin routes that need to bypass RLS (read pending submissions across users, write to storage)
+- **Sharp** for server-side image processing (background removal pipeline, dial-bbox cropping, resize)
+
+### AI / Vision
+
+- **OpenAI Responses API** — vision identification + web-search reference lookup
+  - `gpt-4.1-mini` for the vision pass (`OPENAI_VISION_MODEL`)
+  - `gpt-4.1` for the reference lookup with the `web_search` tool (`OPENAI_REFERENCE_LOOKUP_MODEL`)
 
 ### APIs (future)
 
 - WatchBase — watch reference data
 - WatchCharts — market pricing
 - Chrono24 — live listings / deep links
-- Google Vision AI — photo recognition
-- OpenAI — suggestion generation and AI digest surfaces
 
 ---
 
@@ -961,8 +1365,31 @@ Behavior requirements:
 - Add-watch search route plus redesigned detail/confirm page
 - Followed Watches heart interaction + toast
 - `/playground` page with box switching, customization, cards view, stats, share action, delete flow, and per-entry editing
+- Homepage hero carousel with seeded daily shuffle of the heat-score top 15
+- `/news` editorial route + Cloudflare Worker RSS backend
+- `/discover` commerce hub with collection-aware insights + recommendations
+- `/settings` account/privacy controls (P0 scope)
+- Unified share modal + dynamic OG image generation (`/api/og/box/[slug]`) for profile + box share links
+- Edit Watch modal wired to the sidebar pencil for owned-watch metadata
+- Real Watchbox Photo view (Feature 2A View C) — third icon in the ViewSwitcher with upload + camera + crop, persisting to `watchbox_config.watchbox_photo_url`
+- Collection Jewel state — sidebar badge, WatchStateControl picker action for owned watches, FeaturedProfileWatch picker on `/profile` toggling between Grail and Jewel
 
-### Phase 2 — Next Product Surface Work
+### Phase 2 — Shipped
+
+- Supabase auth + user profiles + cloud persistence for collection / states / playground / watchbox config
+- Resend transactional email + branded auth templates + DNS via Cloudflare
+- **AI Photo Identification ("Watchbox Concierge")** — full pipeline (vision + web-search reference lookup), match / discovered / not-a-watch routing, dial-bbox cropping, filename-aware SKU prior, market-value capture
+- **Per-watch user photo gallery** — sidebar + grid + lightbox + drag-to-reorder + captions + set-primary
+- **Owned watch detail page** (`/collection/watch/[id]`) with bottom gallery
+- **Duplicate-aware add page** with single + multi-instance treatments
+- **Add-from-photo for not-in-catalog watches** with pending catalog row + admin moderation
+- **Admin Catalog Manager** with view/edit modal that works for static seed + dynamic rows
+- **Admin Image Intake** with verify-vs-intake split, current-photo banner, before/after strip
+- **Admin Submissions Queue** with dedupe + inline edit + curated photo replacement
+- **`/news`** — Cloudflare Worker–backed RSS feed with hero featured article, source pills, mode tabs, sponsored slot framework
+- **`/discover`** — collection-aware commerce hub with box insights, slot recommendations, upgrade cards, strap suggestions, box upgrade affiliate card, and a curated reads strip
+
+### Phase 3 — Next Product Surface Work
 
 - `/profile` demo page backed by localStorage
 - Public readonly box pages
@@ -973,25 +1400,24 @@ Behavior requirements:
 - Clipboard profile and box share links
 - Save as Playground from Collection drafts
 - Drag-to-reorder in Collection and Playground
+- `/settings` route + privacy/sharing controls
+- `/discover` route (commerce + editorial hub)
+- `/news` RSS aggregation
 
-### Phase 3 — Persistence + Public Identity
+### Phase 4 — Public Identity + Discovery
 
-- Persistent state
-- User accounts
-- `/u/[handle]` public profile routes
+- Account-backed `/u/[handle]` public profile routes
 - Account-backed public box routes
-- Newsfeed (RSS)
-- Physical box affiliate matching
 - Strap customization
+- Physical box affiliate matching
 
-### Phase 4 — Intelligence + Advanced Commerce
+### Phase 5 — Intelligence + Advanced Commerce
 
 - Smart Suggestions engine
-- Photo recognition
 - Virtual Try-On
 - WatchCharts live pricing
-- OG image generation for profile and box share surfaces
 - AI weekly digest
+- Spec-fingerprint caching for the AI lookup pipeline
 
 ---
 
@@ -1000,29 +1426,27 @@ Behavior requirements:
 The items below are intentionally tracked as pending even if placeholders or toasts exist in the UI.
 
 ### Navigation & Surfaces
-- Dedicated `Discover` destination route/surface (beyond search handoff)
-- Dedicated `News` route and RSS-fed reading surface
+*(Both `/news` and `/discover` are shipped; `/settings` is shipped at P0 scope — see open P1/P2 items below.)*
 
 ### Collection
-- Full edit workflow for owned-watch detail metadata from sidebar
+- `/collection` UI pass (Next Targets treatment + header / stats / cards / mobile polish — see Feature 2A "Near-Term Expansion")
 - Save as Playground from Collection drafts
 - Drag-to-reorder parity across all Collection surface modes
-- **Feature 2A View C:** Real Watchbox Photo (camera icon mode)
-- Collection Jewel state, badges, sidebar actions, and profile hero selector
+
+### Settings (`/settings` shipped at P0; remaining items)
+- `Download my data` (currently "Coming soon")
+- Self-serve account deletion + data purge (deletion is currently mailto-backed)
+- Sign out all sessions
+- Notification preferences
 
 ### Profile & Public
 - Account-backed public profile routes (`/u/[handle]`)
 - Account-backed public box routes
-- OG image generation for profile/box share surfaces
-
-### Persistence & Identity
-- User accounts and cloud persistence (beyond local/session demo state)
 
 ### Intelligence & Commerce
-- Newsfeed production integration
-- Physical box affiliate matching
+- Smart Suggestions engine (Feature 8) — `/discover` ships with rule-based recommendations today; the personalized engine is the upgrade path
+- Physical box affiliate matching at scale (the affiliate card on `/discover` is the entry point)
 - Strap customization
-- Photo recognition
 - Virtual try-on
 - WatchCharts live pricing
 
@@ -1034,6 +1458,7 @@ The items below are intentionally tracked as pending even if placeholders or toa
 - Watches added in first session — target: >4
 - Return visit rate — target: >40% within 7 days
 - Profile share opens per active user — track once Feature 5 ships
+- AI photo identifications per active user / month — track once Feature 9 has volume
 
 ### Revenue
 
@@ -1057,8 +1482,9 @@ The items below are intentionally tracked as pending even if placeholders or toa
 | Category system | Collection / Playground / Followed / Targets / Grail / Jewel is a full collector mental model |
 | Profile-first sharing | Makes the product feel personal and identity-driven rather than utility-only |
 | Grail treatment | Emotionally resonant, visually distinct, and highly shareable |
+| AI photo identification ("Watchbox Concierge") | Two-step pipeline with web-grounded reference lookup, market-value capture, and filename-aware priors. Reduces add-friction to a single photo. |
+| Per-watch photo gallery | Personal records (wrist shots, service receipts, "received it today") that survive admin curation. Standard in luxury collector apps; no commodity competitor has it. |
 | Strap compatibility | Wearable suggestions, not just static affiliate links |
-| AI photo recognition | Reduces data-entry friction |
 | Virtual try-on | Rare in watch products |
 | Integrated sell listing support | Simplifies the hardest part of selling |
 | Free entry point | Low friction, trust-first adoption |
@@ -1066,4 +1492,4 @@ The items below are intentionally tracked as pending even if placeholders or toa
 
 ---
 
-*Virtual Watchbox · virtualwatchbox.com · PRD v1.10 · May 2026*
+*Virtual Watchbox · virtualwatchbox.com · PRD v1.12 · May 2026*

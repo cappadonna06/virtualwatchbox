@@ -5,7 +5,7 @@ export type CatalogMatchMethod = 'reference' | 'brand_model' | 'brand_only' | 'n
 export type AiIdentity = {
   brand: string
   model: string
-  reference: string
+  references: string[]
 }
 
 export type CatalogMatchResult = {
@@ -41,19 +41,29 @@ type ScoredWatch = { watch: CatalogWatch; score: number; tier: CatalogMatchMetho
 
 function scoreOne(watch: CatalogWatch, ai: AiIdentity): ScoredWatch {
   const aiBrand = ai.brand.trim().toLowerCase()
-  const aiRef = ai.reference?.trim() ?? ''
   const watchBrand = watch.brand.trim().toLowerCase()
-
-  const aiRefNorm = normalizeRef(aiRef)
   const catRefNorm = normalizeRef(watch.reference)
 
-  if (aiRefNorm && catRefNorm) {
-    if (aiRefNorm === catRefNorm) {
-      return { watch, score: 1.0, tier: 'reference' }
+  // Only count exact normalized equality as a reference-tier match.
+  //
+  // We previously also matched on substring inclusion either direction,
+  // but for watch SKUs that's a real source of false positives — e.g. Sinn
+  // 556.0106 (RS variant) would be treated as a match for 556.010 (base)
+  // because the base normalized ref (556010) is a substring of the variant
+  // (5560106). They are distinct watches with distinct retail prices.
+  // A reference is either the same SKU or it isn't.
+  let bestRefScore = 0
+  if (catRefNorm) {
+    for (const ref of ai.references) {
+      const aiRefNorm = normalizeRef(ref)
+      if (!aiRefNorm) continue
+      if (aiRefNorm === catRefNorm) {
+        bestRefScore = Math.max(bestRefScore, 1.0)
+      }
     }
-    if (aiRefNorm.includes(catRefNorm) || catRefNorm.includes(aiRefNorm)) {
-      return { watch, score: 0.85, tier: 'reference' }
-    }
+  }
+  if (bestRefScore > 0) {
+    return { watch, score: bestRefScore, tier: 'reference' }
   }
 
   if (aiBrand && watchBrand && aiBrand === watchBrand) {

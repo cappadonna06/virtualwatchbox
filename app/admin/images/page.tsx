@@ -8,13 +8,17 @@ import { isAdminEmail } from '@/lib/auth/admin'
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import type { WatchIdentification } from '@/lib/watchVision'
+import type { ReferenceCandidate } from '@/lib/referenceLookup'
+import type { WatchVerification, VerifyExpected } from '@/lib/watchVerify'
 
 export const dynamic = 'force-dynamic'
 
 type ItemStatus = 'processing' | 'ready' | 'approving' | 'approved' | 'rejected' | 'error'
+type ItemMode = 'verify' | 'intake'
 
 type QueueItem = {
   id: string
+  mode: ItemMode
   filename: string
   status: ItemStatus
   previewDataUrl: string
@@ -25,9 +29,16 @@ type QueueItem = {
   processedWidth?: number
   processedHeight?: number
   backgroundRemovalApplied?: boolean
+  // Intake mode fields
   identification?: WatchIdentification
-  watchId: string
+  referenceCandidates: ReferenceCandidate[]
+  reference: string
   editedFields?: Partial<WatchIdentification>
+  // Verify mode fields
+  expected?: VerifyExpected
+  verification?: WatchVerification | null
+  // Common
+  watchId: string
   error?: string
   editing: boolean
 }
@@ -39,11 +50,66 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, '')
 }
 
-function autoWatchId(identification?: WatchIdentification): string {
+// Sharp/libheif on the server can't decode every AVIF/HEIC bitstream variant
+// (some hardware-encoded files trip "Bitstream not supported by this decoder").
+// The browser CAN decode them, so we transcode client-side via canvas → JPEG
+// before upload. The server never sees the original AVIF/HEIC.
+async function transcodeForServerIfNeeded(file: File): Promise<File> {
+  const lowerName = (file.name ?? '').toLowerCase()
+  const looksAvif = file.type === 'image/avif' || lowerName.endsWith('.avif')
+  const looksHeic =
+    file.type === 'image/heic'
+    || file.type === 'image/heif'
+    || lowerName.endsWith('.heic')
+    || lowerName.endsWith('.heif')
+  if (!looksAvif && !looksHeic) return file
+
+  try {
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '')
+      reader.onerror = () => reject(reader.error ?? new Error('FileReader failed'))
+      reader.readAsDataURL(file)
+    })
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const i = new Image()
+      i.onload = () => resolve(i)
+      i.onerror = () => reject(new Error('browser cannot decode this image'))
+      i.src = dataUrl
+    })
+
+    // Cap at 2400px on the long edge — uploads ride a server-side resize at
+    // 1600px anyway, but we want to avoid moving 30MP buffers through canvas.
+    const maxSide = 2400
+    const scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight))
+    const w = Math.max(1, Math.round(img.naturalWidth * scale))
+    const h = Math.max(1, Math.round(img.naturalHeight * scale))
+
+    const canvas = document.createElement('canvas')
+    canvas.width = w
+    canvas.height = h
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return file
+    ctx.drawImage(img, 0, 0, w, h)
+
+    const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.92))
+    if (!blob) return file
+
+    const newName = file.name.replace(/\.(avif|heic|heif)$/i, '.jpg')
+    return new File([blob], newName, { type: 'image/jpeg', lastModified: file.lastModified })
+  } catch (err) {
+    // Fall through with the original file — the server will surface a clear
+    // error if its decoder also can't handle it.
+    console.warn('[admin/images] client transcode failed, sending original:', err)
+    return file
+  }
+}
+
+function autoWatchId(identification: WatchIdentification | undefined, reference: string): string {
   if (!identification) return ''
   const brand = slugify(identification.brand)
   const model = slugify(identification.model)
-  const ref = slugify(identification.reference)
+  const ref = slugify(reference)
   if (ref) return [brand, model, ref].filter(Boolean).join('-')
   const dial = slugify(identification.dialColor)
   return [brand, model, dial].filter(Boolean).join('-')
@@ -151,6 +217,363 @@ function FieldRow({ label, value, editing, onChange }: { label: string; value: s
   )
 }
 
+function CurrentlyReplacingBanner({
+  watchId,
+  onClear,
+}: {
+  watchId: string
+  onClear: () => void
+}) {
+  const { allWatches } = useCatalog()
+  const { getImageUrl } = useWatchImages()
+  const watch = allWatches.find(w => w.id === watchId)
+  const currentImage = getImageUrl(watchId) ?? watch?.imageUrl ?? null
+
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 16,
+      padding: '14px 16px',
+      borderRadius: brand.radius.lg,
+      background: brand.colors.goldWash,
+      border: `1px solid ${brand.colors.goldLine}`,
+      marginBottom: 18,
+    }}>
+      <div style={{
+        width: 72, height: 72, flexShrink: 0,
+        borderRadius: brand.radius.sm,
+        background: brand.colors.bg,
+        border: `1px solid ${brand.colors.border}`,
+        overflow: 'hidden',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        {currentImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={currentImage} alt="Current photo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        ) : (
+          <span style={{ fontFamily: brand.font.sans, fontSize: 9, color: brand.colors.muted, padding: 8, textAlign: 'center', lineHeight: 1.3 }}>
+            No current photo
+          </span>
+        )}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 4 }}>
+          Replacing photo for
+        </div>
+        {watch ? (
+          <>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 2 }}>
+              {watch.brand}
+            </div>
+            <div style={{ fontFamily: brand.font.serif, fontSize: 18, color: brand.colors.ink, lineHeight: 1.1 }}>
+              {watch.model}
+            </div>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginTop: 2, letterSpacing: '0.02em' }}>
+              Ref. {watch.reference || '—'} · <code style={{ fontSize: 10 }}>{watchId}</code>
+            </div>
+          </>
+        ) : (
+          <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink, lineHeight: 1.4 }}>
+            <span style={{ fontWeight: 500 }}>{watchId}</span>
+            <div style={{ fontSize: 11, color: brand.colors.muted, marginTop: 2 }}>
+              We couldn&apos;t find this row in the loaded catalog — it may be a pending submission visible only to its submitter without service-role access.
+            </div>
+          </div>
+        )}
+      </div>
+      <button
+        type="button"
+        onClick={onClear}
+        style={{
+          background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+          fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted,
+          textDecoration: 'underline', textUnderlineOffset: 2,
+          alignSelf: 'flex-start',
+        }}
+      >
+        Clear
+      </button>
+    </div>
+  )
+}
+
+function BeforeAfterTile({ label, url, highlight = false }: { label: string; url: string | null; highlight?: boolean }) {
+  return (
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{
+        fontFamily: brand.font.sans,
+        fontSize: 9,
+        fontWeight: 600,
+        letterSpacing: '0.12em',
+        textTransform: 'uppercase',
+        color: highlight ? brand.colors.gold : brand.colors.muted,
+        marginBottom: 6,
+      }}>
+        {label}
+      </div>
+      <div style={{
+        width: '100%',
+        aspectRatio: '1 / 1',
+        maxHeight: 96,
+        background: brand.colors.bg,
+        border: `1px solid ${highlight ? brand.colors.goldLine : brand.colors.border}`,
+        borderRadius: brand.radius.sm,
+        overflow: 'hidden',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        {url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={url} alt={label} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        ) : (
+          <span style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted, fontStyle: 'italic' }}>
+            No current image
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function VerifyBadge({ verification }: { verification: WatchVerification }) {
+  const ok = verification.matches
+  const colors = ok
+    ? { bg: '#E8F4E8', text: '#2D6A2D' }
+    : { bg: '#FAE8E8', text: '#8A2020' }
+  const label = ok ? `✓ Matches · ${verification.confidence}` : `⚠ Mismatch · ${verification.confidence}`
+  return (
+    <span style={{
+      display: 'inline-block',
+      padding: '2px 8px',
+      borderRadius: brand.radius.pill,
+      background: colors.bg,
+      color: colors.text,
+      fontFamily: brand.font.sans,
+      fontSize: 10,
+      fontWeight: 600,
+      letterSpacing: '0.06em',
+      textTransform: 'uppercase',
+    }}>
+      {label}
+    </span>
+  )
+}
+
+function VerifyBody({
+  item,
+  isApproving,
+  isDone,
+  onApprove,
+  onReject,
+}: {
+  item: QueueItem
+  isApproving: boolean
+  isDone: boolean
+  onApprove: (id: string) => void
+  onReject: (id: string) => void
+}) {
+  const expected = item.expected
+  const verification = item.verification
+  const { getImageUrl } = useWatchImages()
+  const { allWatches } = useCatalog()
+  // Same fallback chain as the CurrentlyReplacingBanner: prefer the
+  // admin-curated watch_images entry, then fall back to the catalog row's
+  // own image_url (set by the user-photo submission flow), then null.
+  const catalogRow = allWatches.find(w => w.id === item.watchId)
+  const currentImageUrl = getImageUrl(item.watchId) ?? catalogRow?.imageUrl ?? null
+  return (
+    <>
+      {/* Before / After strip — admin sees the existing curated photo (or
+          a "no current image" placeholder) next to the pending upload so
+          replacements are unambiguous. */}
+      <div style={{
+        display: 'flex',
+        gap: 12,
+        alignItems: 'stretch',
+        marginBottom: 14,
+        padding: '10px 12px',
+        background: brand.colors.slot,
+        border: `1px solid ${brand.colors.borderLight}`,
+        borderRadius: brand.radius.md,
+      }}>
+        <BeforeAfterTile label="Current" url={currentImageUrl} />
+        <div style={{
+          alignSelf: 'center',
+          fontFamily: brand.font.sans,
+          fontSize: 18,
+          color: brand.colors.muted,
+          padding: '0 4px',
+        }}>
+          →
+        </div>
+        <BeforeAfterTile label="New upload" url={item.pngDataUrl ?? item.previewDataUrl} highlight />
+      </div>
+
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'baseline', marginBottom: 10 }}>
+          <span style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, letterSpacing: '0.04em', minWidth: 72, textTransform: 'uppercase' }}>
+            Watch ID
+          </span>
+          <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.gold, letterSpacing: '0.02em' }}>
+            {item.watchId || '—'}
+          </span>
+        </div>
+        {expected ? (
+          <>
+            <FieldRow label="Brand"     value={expected.brand}                editing={false} onChange={() => {}} />
+            <FieldRow label="Model"     value={expected.model}                editing={false} onChange={() => {}} />
+            <FieldRow label="Reference" value={expected.reference}            editing={false} onChange={() => {}} />
+            <FieldRow label="Dial"      value={expected.dialColor}            editing={false} onChange={() => {}} />
+            {expected.caseSizeMm && (
+              <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginBottom: 2 }}>
+                {expected.caseSizeMm}mm
+                {expected.caseMaterial ? ` · ${expected.caseMaterial}` : ''}
+              </div>
+            )}
+          </>
+        ) : (
+          <p style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, margin: 0 }}>
+            Catalog row not found for this watch ID.
+          </p>
+        )}
+        {verification ? (
+          <div style={{
+            marginTop: 10,
+            padding: '10px 12px',
+            background: verification.matches ? 'rgba(45,106,45,0.06)' : 'rgba(138,32,32,0.06)',
+            border: `1px solid ${verification.matches ? '#C8E6C8' : '#E6C8C8'}`,
+            borderRadius: brand.radius.sm,
+          }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.ink, lineHeight: 1.5 }}>
+              <span style={{ fontWeight: 600 }}>AI saw: </span>
+              {verification.observed || '(no description returned)'}
+            </div>
+            {!verification.matches && verification.conflictReason && (
+              <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: '#8A2020', lineHeight: 1.5, marginTop: 4 }}>
+                <span style={{ fontWeight: 600 }}>Conflict: </span>
+                {verification.conflictReason}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div style={{ marginTop: 10, fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, fontStyle: 'italic' }}>
+            AI verification unavailable — review the image manually before approving.
+          </div>
+        )}
+      </div>
+
+      {!isDone && (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button
+            onClick={() => onApprove(item.id)}
+            disabled={isApproving || !item.watchId || !expected}
+            style={{
+              padding: '8px 18px',
+              background: isApproving ? brand.colors.muted : brand.colors.ink,
+              color: brand.colors.bg,
+              border: 'none',
+              borderRadius: brand.radius.btn,
+              fontFamily: brand.font.sans,
+              fontSize: 12,
+              fontWeight: 500,
+              letterSpacing: '0.04em',
+              cursor: isApproving || !item.watchId || !expected ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {isApproving ? 'Saving...' : (verification?.matches === false ? 'Approve anyway →' : 'Approve →')}
+          </button>
+          <button
+            onClick={() => onReject(item.id)}
+            disabled={isApproving}
+            style={{
+              padding: '8px 14px',
+              background: 'none',
+              color: brand.colors.muted,
+              border: `1px solid ${brand.colors.border}`,
+              borderRadius: brand.radius.btn,
+              fontFamily: brand.font.sans,
+              fontSize: 12,
+              fontWeight: 400,
+              cursor: isApproving ? 'not-allowed' : 'pointer',
+            }}
+          >
+            Reject
+          </button>
+        </div>
+      )}
+      {item.status === 'approved' && (
+        <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: '#2D6A2D' }}>Approved and saved.</span>
+      )}
+      {item.status === 'rejected' && (
+        <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>Rejected.</span>
+      )}
+    </>
+  )
+}
+
+const REF_CONFIDENCE_COLORS: Record<ReferenceCandidate['confidence'], { bg: string; text: string; border: string }> = {
+  high:   { bg: '#E8F4E8', text: '#2D6A2D', border: '#C8E6C8' },
+  medium: { bg: '#FFF8E6', text: '#8A6A10', border: '#EAD9A0' },
+  low:    { bg: '#FDF0E0', text: '#8A5010', border: '#E8CFA8' },
+}
+
+function ReferenceChips({
+  candidates,
+  selected,
+  onPick,
+}: {
+  candidates: ReferenceCandidate[]
+  selected: string
+  onPick: (ref: string) => void
+}) {
+  return (
+    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', marginBottom: 6, flexWrap: 'wrap' }}>
+      <span style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, letterSpacing: '0.04em', minWidth: 72, textTransform: 'uppercase', paddingTop: 4 }}>
+        Likely
+      </span>
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', flex: 1 }}>
+        {candidates.map((c, i) => {
+          const isActive = selected.trim() === c.reference.trim()
+          const colors = REF_CONFIDENCE_COLORS[c.confidence]
+          return (
+            <button
+              key={`${c.reference}-${i}`}
+              type="button"
+              onClick={() => onPick(c.reference)}
+              title={c.rationale + (c.sourceUrl ? `\n${c.sourceUrl}` : '')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '4px 10px',
+                background: isActive ? brand.colors.ink : colors.bg,
+                color: isActive ? brand.colors.bg : colors.text,
+                border: `1px solid ${isActive ? brand.colors.ink : colors.border}`,
+                borderRadius: brand.radius.pill,
+                fontFamily: brand.font.sans,
+                fontSize: 11,
+                cursor: 'pointer',
+                letterSpacing: '0.02em',
+              }}
+            >
+              <span style={{ fontWeight: 500 }}>{c.reference}</span>
+              <span style={{
+                fontSize: 9,
+                fontWeight: 600,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                opacity: isActive ? 0.8 : 0.7,
+              }}>
+                {c.confidence}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 function QueueCard({
   item,
   catalogMatch,
@@ -160,6 +583,7 @@ function QueueCard({
   onToggleEdit,
   onFieldChange,
   onWatchIdChange,
+  onReferenceChange,
   onCreateCatalogRow,
 }: {
   item: QueueItem
@@ -170,6 +594,7 @@ function QueueCard({
   onToggleEdit: (id: string) => void
   onFieldChange: (id: string, field: keyof WatchIdentification, value: string) => void
   onWatchIdChange: (id: string, value: string) => void
+  onReferenceChange: (id: string, value: string) => void
   onCreateCatalogRow: (id: string) => void
 }) {
   const ident = { ...item.identification, ...item.editedFields }
@@ -201,14 +626,17 @@ function QueueCard({
             <span style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, letterSpacing: '0.03em' }}>
               {item.filename}
             </span>
-            {ident.confidence && <ConfidenceBadge confidence={ident.confidence} />}
+            {item.mode === 'intake' && ident.confidence && <ConfidenceBadge confidence={ident.confidence} />}
+            {item.mode === 'verify' && item.verification && (
+              <VerifyBadge verification={item.verification} />
+            )}
             {item.backgroundRemovalApplied && (
               <span style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted, letterSpacing: '0.03em' }}>
                 bg removed
               </span>
             )}
           </div>
-          {!isDone && !isProcessing && (
+          {item.mode === 'intake' && !isDone && !isProcessing && (
             <button
               onClick={() => onToggleEdit(item.id)}
               style={{
@@ -229,10 +657,18 @@ function QueueCard({
 
         {isProcessing ? (
           <p style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, margin: 0 }}>
-            Running image processing and AI identification...
+            {item.mode === 'verify' ? 'Verifying image against catalog...' : 'Running image processing and AI identification...'}
           </p>
         ) : item.status === 'error' ? (
           <p style={{ fontFamily: brand.font.sans, fontSize: 12, color: '#D04040', margin: 0 }}>{item.error}</p>
+        ) : item.mode === 'verify' ? (
+          <VerifyBody
+            item={item}
+            isApproving={isApproving}
+            isDone={isDone}
+            onApprove={onApprove}
+            onReject={onReject}
+          />
         ) : (
           <>
             <div style={{ marginBottom: 12 }}>
@@ -285,7 +721,14 @@ function QueueCard({
               </div>
               <FieldRow label="Brand"    value={ident.brand ?? ''}     editing={item.editing} onChange={v => onFieldChange(item.id, 'brand', v)} />
               <FieldRow label="Model"    value={ident.model ?? ''}     editing={item.editing} onChange={v => onFieldChange(item.id, 'model', v)} />
-              <FieldRow label="Reference" value={ident.reference ?? ''} editing={item.editing} onChange={v => onFieldChange(item.id, 'reference', v)} />
+              <FieldRow label="Reference" value={item.reference} editing={item.editing} onChange={v => onReferenceChange(item.id, v)} />
+              {item.referenceCandidates.length > 0 && (
+                <ReferenceChips
+                  candidates={item.referenceCandidates}
+                  selected={item.reference}
+                  onPick={v => onReferenceChange(item.id, v)}
+                />
+              )}
               <FieldRow label="Dial"     value={ident.dialColor ?? ''} editing={item.editing} onChange={v => onFieldChange(item.id, 'dialColor', v)} />
               <FieldRow label="Type"     value={ident.watchType ?? ''} editing={item.editing} onChange={v => onFieldChange(item.id, 'watchType', v)} />
               {ident.caseSizeMm && (
@@ -321,7 +764,7 @@ function QueueCard({
                 >
                   {isApproving ? 'Saving...' : 'Approve →'}
                 </button>
-                {!catalogMatch && item.watchId && ident.brand && ident.model && ident.reference && (
+                {!catalogMatch && item.watchId && ident.brand && ident.model && item.reference && (
                   <button
                     onClick={() => onCreateCatalogRow(item.id)}
                     disabled={catalogRowBusy || isApproving}
@@ -394,9 +837,19 @@ function AdminImagesPageInner() {
   const [pendingWatchId, setPendingWatchId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Mirror pendingWatchId into a ref so the file handlers (which are
+  // memoized with [] deps and would otherwise capture a stale `null` from
+  // first render before the URL effect fires) can always read the latest
+  // value at call-time.
+  const pendingWatchIdRef = useRef<string | null>(null)
+  useEffect(() => { pendingWatchIdRef.current = pendingWatchId }, [pendingWatchId])
+
   useEffect(() => {
     const param = searchParams.get('watchId')
-    if (param) setPendingWatchId(param)
+    if (param) {
+      setPendingWatchId(param)
+      pendingWatchIdRef.current = param
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -420,22 +873,34 @@ function AdminImagesPageInner() {
       reader.readAsDataURL(file)
     })
 
+    // Read the latest pendingWatchId from the ref so we don't get burned by
+    // a stale closure (handleFiles is memoized with [] deps; without the ref
+    // we'd see the first-render null and skip verify mode entirely).
+    const currentPendingWatchId = pendingWatchIdRef.current
+    const verifyMode = !!currentPendingWatchId
+    const initialMode: ItemMode = verifyMode ? 'verify' : 'intake'
+
     setQueue(prev => [...prev, {
       id: itemId,
+      mode: initialMode,
       filename: file.name,
       status: 'processing',
       previewDataUrl,
-      watchId: '',
+      watchId: verifyMode ? currentPendingWatchId! : '',
+      reference: '',
+      referenceCandidates: [],
       editing: false,
     }])
 
     const formData = new FormData()
     formData.append('image', file)
+    if (verifyMode) formData.append('expectedWatchId', currentPendingWatchId!)
 
     try {
       const res = await fetch('/api/admin/process-image', { method: 'POST', body: formData })
       if (!res.ok) throw new Error(await res.text())
       const data = await res.json() as {
+        mode: ItemMode
         pngDataUrl: string
         webpDataUrl: string
         sourceWidth: number
@@ -443,11 +908,37 @@ function AdminImagesPageInner() {
         processedWidth: number
         processedHeight: number
         backgroundRemovalApplied: boolean
-        identification: WatchIdentification | null
+        identification?: WatchIdentification | null
+        referenceCandidates?: ReferenceCandidate[]
+        expected?: VerifyExpected
+        verification?: WatchVerification | null
       }
-      const inferredId = autoWatchId(data.identification ?? undefined)
-      const watchId = pendingWatchId ?? inferredId
+      if (data.mode === 'verify') {
+        updateItem(itemId, {
+          mode: 'verify',
+          status: 'ready',
+          pngDataUrl: data.pngDataUrl,
+          webpDataUrl: data.webpDataUrl,
+          sourceWidth: data.sourceWidth,
+          sourceHeight: data.sourceHeight,
+          processedWidth: data.processedWidth,
+          processedHeight: data.processedHeight,
+          backgroundRemovalApplied: data.backgroundRemovalApplied,
+          expected: data.expected,
+          verification: data.verification ?? null,
+        })
+        if (pendingWatchIdRef.current) {
+          setPendingWatchId(null)
+          pendingWatchIdRef.current = null
+        }
+        return
+      }
+      const candidates = data.referenceCandidates ?? []
+      const reference = candidates[0]?.reference ?? ''
+      const inferredId = autoWatchId(data.identification ?? undefined, reference)
+      const watchId = currentPendingWatchId ?? inferredId
       updateItem(itemId, {
+        mode: 'intake',
         status: 'ready',
         pngDataUrl: data.pngDataUrl,
         webpDataUrl: data.webpDataUrl,
@@ -457,9 +948,14 @@ function AdminImagesPageInner() {
         processedHeight: data.processedHeight,
         backgroundRemovalApplied: data.backgroundRemovalApplied,
         identification: data.identification ?? undefined,
+        referenceCandidates: candidates,
+        reference,
         watchId,
       })
-      if (pendingWatchId) setPendingWatchId(null)
+      if (pendingWatchIdRef.current) {
+        setPendingWatchId(null)
+        pendingWatchIdRef.current = null
+      }
     } catch (err) {
       updateItem(itemId, {
         status: 'error',
@@ -470,7 +966,10 @@ function AdminImagesPageInner() {
 
   const handleFiles = useCallback((files: FileList | File[]) => {
     const list = Array.from(files).filter(f => f.type.startsWith('image/'))
-    list.forEach(f => void processFile(f))
+    list.forEach(async f => {
+      const transcoded = await transcodeForServerIfNeeded(f)
+      void processFile(transcoded)
+    })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -510,7 +1009,7 @@ function AdminImagesPageInner() {
     const item = queue.find(i => i.id === id)
     if (!item?.identification || !item.watchId) return
     const ident = { ...item.identification, ...item.editedFields }
-    if (!ident.brand || !ident.model || !ident.reference) return
+    if (!ident.brand || !ident.model || !item.reference) return
 
     setBusy(id, true)
     try {
@@ -518,7 +1017,7 @@ function AdminImagesPageInner() {
         id: item.watchId,
         brand: ident.brand,
         model: ident.model,
-        reference: ident.reference,
+        reference: item.reference,
         watch_type: ident.watchType || 'Sport',
         case_size_mm: Number(ident.caseSizeMm ?? 0),
         lug_width_mm: ident.lugWidthMm ?? null,
@@ -565,7 +1064,15 @@ function AdminImagesPageInner() {
       if (item.id !== id) return item
       const editedFields = { ...item.editedFields, [field]: value }
       const merged = { ...item.identification, ...editedFields }
-      return { ...item, editedFields, watchId: autoWatchId(merged as WatchIdentification) }
+      return { ...item, editedFields, watchId: autoWatchId(merged as WatchIdentification, item.reference) }
+    }))
+  }
+
+  function handleReferenceChange(id: string, value: string) {
+    setQueue(prev => prev.map(item => {
+      if (item.id !== id) return item
+      const merged = { ...item.identification, ...item.editedFields }
+      return { ...item, reference: value, watchId: autoWatchId(merged as WatchIdentification, value) }
     }))
   }
 
@@ -670,33 +1177,10 @@ function AdminImagesPageInner() {
         </div>
 
         {pendingWatchId && (
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
-            padding: '12px 16px',
-            borderRadius: brand.radius.lg,
-            background: brand.colors.goldWash,
-            border: `1px solid ${brand.colors.goldLine}`,
-            marginBottom: 18,
-          }}>
-            <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink }}>
-              Next upload will use Watch ID:{' '}
-              <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.gold, fontWeight: 600 }}>
-                {pendingWatchId}
-              </span>
-            </span>
-            <button
-              type="button"
-              onClick={() => setPendingWatchId(null)}
-              style={{
-                marginLeft: 'auto',
-                background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-                fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted,
-                textDecoration: 'underline', textUnderlineOffset: 2,
-              }}
-            >
-              Clear
-            </button>
-          </div>
+          <CurrentlyReplacingBanner
+            watchId={pendingWatchId}
+            onClear={() => { setPendingWatchId(null); pendingWatchIdRef.current = null }}
+          />
         )}
 
         {/* Drop zone */}
@@ -770,6 +1254,7 @@ function AdminImagesPageInner() {
                   onToggleEdit={handleToggleEdit}
                   onFieldChange={handleFieldChange}
                   onWatchIdChange={handleWatchIdChange}
+                  onReferenceChange={handleReferenceChange}
                   onCreateCatalogRow={handleCreateCatalogRow}
                 />
               ))}

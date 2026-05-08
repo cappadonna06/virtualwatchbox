@@ -167,16 +167,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCTURED_DATA) }}
         />
         <AuthProvider>
-          <CollectionSessionProvider>
-            <CatalogProvider>
+          <CatalogProvider>
+            <CollectionSessionProvider>
               <WatchImagesProvider>
                 <NavBar />
 
                 <main className="site-main" style={{ maxWidth: 1280, margin: '0 auto' }}>{children}</main>
                 <Footer />
               </WatchImagesProvider>
-            </CatalogProvider>
-          </CollectionSessionProvider>
+            </CollectionSessionProvider>
+          </CatalogProvider>
         </AuthProvider>
       </body>
     </html>
