@@ -10,6 +10,7 @@ Google uses your **OAuth consent app** metadata in Google Cloud, plus authorized
 
 ### 1) Google Cloud Console (OAuth consent screen)
 - Set **App name** to `Virtual Watchbox`.
+- Upload **App logo**: `public/oauth-logo-120.png` (120×120 PNG, opaque — gold VW mark on ink). Path: APIs & Services → OAuth consent screen → Branding → App logo. After upload, submit for verification unless the app is internal-only or in Testing status.
 - Set a branded **User support email**.
 - Add **Developer contact information**.
 - Add **Authorized domains**:

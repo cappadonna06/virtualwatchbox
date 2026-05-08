@@ -288,13 +288,18 @@ body {
   }
 }
 
+/* ─── Brand lockup: hide wordmark on narrow viewports (mark-only) ──────── */
+@media (max-width: 640px) {
+  .brand-lockup-word { display: none !important; }
+}
+
 /* ─── Mobile overrides (max-width: 767px) ─────────────────────────────── */
 @media (max-width: 767px) {
 
   /* Nav */
   .nav-root      { padding: 0 !important; }
   .nav-shell     { padding: 18px 20px !important; max-width: none !important; width: 100% !important; margin: 0 !important; }
-  .nav-wordmark  { font-size: 18px !important; }
+  .brand-lockup-word { font-size: 18px !important; }
   .nav-links        { display: none !important; }
   .nav-signin       { display: none !important; }
   .nav-account-wrap { display: none !important; }
