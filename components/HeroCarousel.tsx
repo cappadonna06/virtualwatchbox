@@ -165,7 +165,7 @@ export default function HeroCarousel() {
           <p style={{ fontFamily: brand.font.sans, fontSize: 13, lineHeight: 1.8, color: brand.colors.muted, maxWidth: 360, marginBottom: 28 }}>
             Organize what you own, explore what you want,<br />discover what&apos;s next.
           </p>
-          <div className="hero-actions" style={{ display: 'flex', gap: 12 }}>
+          <div className="hero-actions" data-nosnippet="" style={{ display: 'flex', gap: 12 }}>
             <Link
               href="/collection"
               className="hero-action"
@@ -220,6 +220,7 @@ export default function HeroCarousel() {
         {/* Right: dark carousel panel */}
         <div
           className="hero-panel"
+          data-nosnippet=""
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           style={{
