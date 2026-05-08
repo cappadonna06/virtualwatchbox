@@ -502,9 +502,15 @@ async function syncPlaygroundBoxes(boxes: PlaygroundBox[], userId: string) {
 
 async function loadFromSupabase(
   userId: string,
-  catalogIds: string[],
-  catalogIdSet: Set<string>,
 ): Promise<SessionSnapshot | null> {
+  // We deliberately do NOT pre-filter rows by the caller's catalog id set.
+  // The dynamic catalog (CatalogProvider) loads asynchronously, so on first
+  // login this load can fire before user-submitted catalog rows are in the
+  // map. Dropping owned watches/states here would silently truncate state
+  // until the next tab-focus refetch. The render layer (resolveOwnedWatches,
+  // catalogWatchMap.get(...)) already filters unknown ids, and the relevant
+  // useMemos re-run when the catalog finishes loading — so the watch becomes
+  // visible the moment the catalog row arrives.
   try {
     const supabase = createClient()
 
@@ -527,7 +533,6 @@ async function loadFromSupabase(
     const fallbackDate = new Date().toISOString().split('T')[0]
 
     const collectionWatches: OwnedWatch[] = dbWatches
-      .filter(w => catalogIdSet.has(w.catalog_id))
       .map(w => ({
         id: w.id,
         watchId: w.catalog_id,
@@ -547,8 +552,6 @@ async function loadFromSupabase(
     const collectionWatchIdSet = new Set(collectionWatches.map(w => w.watchId))
 
     for (const s of dbStates) {
-      if (!catalogIdSet.has(s.catalog_watch_id)) continue
-
       if (s.state === 'follow') {
         followedWatchIds.push(s.catalog_watch_id)
       } else if (s.state === 'target' && !collectionWatchIdSet.has(s.catalog_watch_id) && nextTargets.length < 3) {
@@ -791,7 +794,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       // Load fresh from Supabase
       setDataLoading(true)
       loadInFlightRef.current = true
-      loadFromSupabase(currentId, catalogIds, catalogIdSet).then(snapshot => {
+      loadFromSupabase(currentId).then(snapshot => {
         loadInFlightRef.current = false
         if (snapshot) applyServerSnapshot(snapshot)
         setDataLoading(false)
@@ -819,7 +822,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       // No local state — load from Supabase directly
       setDataLoading(true)
       loadInFlightRef.current = true
-      loadFromSupabase(currentId, catalogIds, catalogIdSet).then(snapshot => {
+      loadFromSupabase(currentId).then(snapshot => {
         loadInFlightRef.current = false
         if (snapshot) applyServerSnapshot(snapshot)
         setDataLoading(false)
@@ -856,7 +859,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       if (pendingWritesRef.current > 0) return
 
       loadInFlightRef.current = true
-      loadFromSupabase(currentId, catalogIds, catalogIdSet).then(snapshot => {
+      loadFromSupabase(currentId).then(snapshot => {
         loadInFlightRef.current = false
         if (cancelled || !snapshot) return
         if (pendingWritesRef.current > 0) return
@@ -871,7 +874,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       document.removeEventListener('visibilitychange', refetch)
       window.removeEventListener('focus', refetch)
     }
-  }, [user?.id, authLoading, migrationPending, catalogIds, catalogIdSet, applyServerSnapshot])
+  }, [user?.id, authLoading, migrationPending, applyServerSnapshot])
 
   // ── Guest state persistence to sessionStorage / localStorage ────────────
 
@@ -1107,12 +1110,12 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
 
     setDataLoading(true)
     loadInFlightRef.current = true
-    loadFromSupabase(userId, catalogIds, catalogIdSet).then(snapshot => {
+    loadFromSupabase(userId).then(snapshot => {
       loadInFlightRef.current = false
       if (snapshot) applyServerSnapshot(snapshot)
       setDataLoading(false)
     })
-  }, [user, catalogIds, catalogIdSet, applyServerSnapshot])
+  }, [user, applyServerSnapshot])
 
   // ── Toast ────────────────────────────────────────────────────────────────
 

@@ -6,7 +6,14 @@ import type { CatalogWatch, ResolvedWatch } from '@/types/watch'
 import DialSVG from './DialSVG'
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 
-type WatchVisual = Pick<CatalogWatch | ResolvedWatch, 'id' | 'model' | 'imageUrl' | 'dialConfig'>
+type WatchVisual = Pick<CatalogWatch | ResolvedWatch, 'id' | 'model' | 'imageUrl' | 'dialConfig'> & {
+  // Resolved owned watches set `id = ownedWatch.id` (per-instance UUID) and
+  // expose the catalog id as `watchId`. The watch_images lookup is keyed on
+  // the catalog id, so prefer `watchId` when present. Raw CatalogWatch
+  // callers (search results, hover cards) leave `watchId` undefined and
+  // their `id` already is the catalog id, so the fallback is a no-op.
+  watchId?: string
+}
 
 type Props = {
   watch: WatchVisual
@@ -28,7 +35,8 @@ export default function WatchImageOrDial({
   dialSize = 88,
 }: Props) {
   const { getImageUrl } = useWatchImages()
-  const effectiveImageUrl = getImageUrl(watch.id) ?? watch.imageUrl
+  const lookupId = watch.watchId ?? watch.id
+  const effectiveImageUrl = getImageUrl(lookupId) ?? watch.imageUrl
 
   if (effectiveImageUrl) {
     return fill ? (
