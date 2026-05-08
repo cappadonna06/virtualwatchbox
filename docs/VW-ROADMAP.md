@@ -17,6 +17,7 @@ Mark `[x]` when done.
 | May 2026 | Roadmap hygiene: `/news` (VW-13) and `/discover` (VW-14) had already shipped with full feature scope but were still listed as pending. Marked done; PRD v1.12 now documents both as proper feature specs (Feature 11 + Feature 14). Added Discover UI cleanup as a Phase 2 polish item. |
 | May 2026 | Second hygiene pass: VW-12 (`/settings`) had shipped at P0 scope (visibility controls, legal links, mailto deletion, sign-out) — marked done with P1/P2 follow-ups noted. OG image generation also shipped via Next.js edge route at `/api/og/box/[slug]` + unified ShareBoxModal — three stale roadmap/PRD references updated to reflect done state. |
 | May 2026 | Third hygiene pass after a deeper investigation: VW-1 (profile sync) was already fixed in `b3ddab6`; VW-9 (support email) was already done; Collection Jewel state was fully shipped (sidebar badge + state-control picker + profile hero selector); VW-10 (Real Watchbox Photo) was fully shipped. All marked done. **Dropped "Grail surface on /collection"** as a category error — Grail is by definition unowned and lives on `/profile`. **Replaced "Next Targets panel" with broader `/collection` UI pass** that includes the Targets treatment plus header/stats/cards/mobile polish so the working surface gets a cohesive review rather than a one-feature drop. |
+| May 2026 | Bug-backlog sweep: VW-2 (Grail desktop contrast) marked done. VW-3 (watchbox auto-shrink on delete) reviewed against the codebase and dropped — `getEffectiveSlotCount` is grow-only by design so the bug isn't structurally possible. VW-5 (profile watchbox sizing) dropped as no-longer-reproduces. VW-7 (general backlog sweep) dropped — backlog is clean. VW-6 split: the `/collection` half is now folded into the `/collection` UI pass; the `/playground` half remains as VW-6b. VW-4 annotated as a Google Cloud Console-side change (no code). |
 
 ---
 
@@ -24,15 +25,17 @@ Mark `[x]` when done.
 *Ship these before spreading the link.*
 
 - [x] **IF** ~~`VW-1` Fix profile not syncing with Supabase~~ — **Done.** Shipped in `b3ddab6 fix(profile,settings,collection): harden save/hydrate against tab-focus refetch races`. ProfileSurface + Settings both use the change-id + saveInFlight + dirty-aware-refetch pattern (same one we used for the slot-count fix). Supports cross-device edits without overwriting in-flight local changes.
-- [ ] **IF** `VW-4` Set Google auth sender address to virtualwatchbox.com — personal address erodes credibility
+- [ ] **IF** `VW-4` Set Google auth sender address to virtualwatchbox.com — personal address erodes credibility. *Configured in Google Cloud Console (OAuth consent screen) — no code change needed.*
 - [x] **IF** `VW-8` ~~Set up Resend for transactional email~~ — **Done.** Resend live, Supabase SMTP swapped, branded templates deployed, DNS/routing via Cloudflare
 - [x] **IF** ~~`VW-9` Update support email in Terms & Privacy~~ — **Done.** Both `app/terms/page.tsx` and `app/privacy/page.tsx` use `support@virtualwatchbox.com`.
 - [x] **IF** `VW-11` ~~Fix admin flow: watch detail completeness + reference data quality~~ — **Done.** Catalog Manager modal lets admins edit every catalog field (works for both static seed and dynamic rows; static edits create Supabase override). Submissions Queue dedupes pending rows + inline edit + curated photo replacement. Image Intake has verify-vs-intake split and before/after photo preview.
-- [ ] **BUG** `VW-2` Fix Grail contrast issue on desktop
-- [ ] **BUG** `VW-3` Fix watchbox auto-shrinking when deleting a watch — *(slot-count fluctuation on add was fixed in May 2026; the deletion path may still need attention)*
-- [ ] **BUG** `VW-5` Fix watchbox sizing too large on profile page
-- [ ] **BUG** `VW-6` Desktop Playground + Collection UI polish pass — layout/spacing issues making core surfaces feel unfinished
-- [ ] **BUG** `VW-7` Sweep general bug backlog — clear the board before building net-new
+- [x] **BUG** ~~`VW-2` Fix Grail contrast issue on desktop~~ — **Done.**
+- [ ] **BUG** `VW-6b` `/playground` UI polish pass — pair to the `/collection` UI pass in Phase 1. Tighten layout, spacing, and badge consistency on the Playground surface so it doesn't feel like the second-class citizen of the two box pages. *(The `/collection` half of the original VW-6 is folded into the `/collection` UI pass.)*
+
+> **Dropped items (reviewed and not pursued):**
+> - ~~`VW-3` Fix watchbox auto-shrinking when deleting a watch~~ — Not a real bug. `getEffectiveSlotCount` in [lib/watchboxOverflow.ts](lib/watchboxOverflow.ts) is grow-only by design (`if (itemCount <= currentSlotCount) return currentSlotCount`); a delete can't shrink slot count.
+> - ~~`VW-5` Fix watchbox sizing too large on profile page~~ — No longer reproduces. Will refile if it surfaces again.
+> - ~~`VW-7` Sweep general bug backlog~~ — Backlog is clean; no concrete bugs left on the board. Will refile if new ones surface during the next round of testing.
 
 ---
 
