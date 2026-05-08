@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
+import { BrandLockup } from '@/components/BrandLockup'
 
 type NavIconName = 'collection' | 'playground' | 'discover' | 'news' | 'profile' | 'settings'
 type NavLink = { label: string; href: string; coming?: boolean; icon: NavIconName }
@@ -241,14 +242,7 @@ export default function NavBar() {
             padding: '20px 56px',
           }}
         >
-        <Link
-          href="/"
-          className="nav-wordmark"
-          onClick={() => setOpen(false)}
-          style={{ fontFamily: brand.font.serif, fontSize: 20, fontWeight: 500, letterSpacing: '0.03em', color: brand.colors.ink, textDecoration: 'none' }}
-        >
-          Virtual Watchbox
-        </Link>
+        <BrandLockup />
 
         <div className="nav-links" style={{ display: 'flex', gap: 32 }}>
           {LINKS.map(link => {
