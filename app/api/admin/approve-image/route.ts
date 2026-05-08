@@ -80,6 +80,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Database insert failed' }, { status: 500 })
   }
 
+  // Once a curated image lands in `watch_images`, the user-submitted wrist
+  // photo on the catalog row is no longer the right thing to render. The
+  // wrist shot is already preserved in `user_watch_photos` (registered at
+  // submission time), so clearing `catalog_watches.image_url` demotes it to
+  // the per-watch gallery and prevents it from leaking back as a fallback if
+  // the watch_images lookup ever misses (transient RLS/network). Best-effort:
+  // failure here is logged but doesn't fail the request, since the curated
+  // image is already saved.
+  const { error: clearError } = await supabase
+    .from('catalog_watches')
+    .update({ image_url: null })
+    .eq('id', watchId)
+  if (clearError) {
+    console.error('[admin/approve-image] Failed to clear catalog image_url:', clearError)
+  }
+
   return NextResponse.json({
     pngUrl: pngUrlData.publicUrl,
     webpUrl: webpUrlData.publicUrl,
