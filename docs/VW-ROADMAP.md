@@ -16,16 +16,17 @@ Mark `[x]` when done.
 | May 2026 | Round of post-review fixes: duplicate-insert bug (strict-mode side effect in setState updater), watchbox slot-count fluctuation (unsynced auto-grow), client-side AVIF/HEIC transcode, footer admin link, customize-popover click-outside, Concierge chip contrast. |
 | May 2026 | Roadmap hygiene: `/news` (VW-13) and `/discover` (VW-14) had already shipped with full feature scope but were still listed as pending. Marked done; PRD v1.12 now documents both as proper feature specs (Feature 11 + Feature 14). Added Discover UI cleanup as a Phase 2 polish item. |
 | May 2026 | Second hygiene pass: VW-12 (`/settings`) had shipped at P0 scope (visibility controls, legal links, mailto deletion, sign-out) — marked done with P1/P2 follow-ups noted. OG image generation also shipped via Next.js edge route at `/api/og/box/[slug]` + unified ShareBoxModal — three stale roadmap/PRD references updated to reflect done state. |
+| May 2026 | Third hygiene pass after a deeper investigation: VW-1 (profile sync) was already fixed in `b3ddab6`; VW-9 (support email) was already done; Collection Jewel state was fully shipped (sidebar badge + state-control picker + profile hero selector); VW-10 (Real Watchbox Photo) was fully shipped. All marked done. **Dropped "Grail surface on /collection"** as a category error — Grail is by definition unowned and lives on `/profile`. **Replaced "Next Targets panel" with broader `/collection` UI pass** that includes the Targets treatment plus header/stats/cards/mobile polish so the working surface gets a cohesive review rather than a one-feature drop. |
 
 ---
 
 ## Phase 0 — Stability & Trust
 *Ship these before spreading the link.*
 
-- [ ] **IF** `VW-1` Fix profile not syncing with Supabase — auth is live, sync must work before sharing feels trustworthy
+- [x] **IF** ~~`VW-1` Fix profile not syncing with Supabase~~ — **Done.** Shipped in `b3ddab6 fix(profile,settings,collection): harden save/hydrate against tab-focus refetch races`. ProfileSurface + Settings both use the change-id + saveInFlight + dirty-aware-refetch pattern (same one we used for the slot-count fix). Supports cross-device edits without overwriting in-flight local changes.
 - [ ] **IF** `VW-4` Set Google auth sender address to virtualwatchbox.com — personal address erodes credibility
 - [x] **IF** `VW-8` ~~Set up Resend for transactional email~~ — **Done.** Resend live, Supabase SMTP swapped, branded templates deployed, DNS/routing via Cloudflare
-- [ ] **IF** `VW-9` Update support email in Terms & Privacy to official virtualwatchbox address
+- [x] **IF** ~~`VW-9` Update support email in Terms & Privacy~~ — **Done.** Both `app/terms/page.tsx` and `app/privacy/page.tsx` use `support@virtualwatchbox.com`.
 - [x] **IF** `VW-11` ~~Fix admin flow: watch detail completeness + reference data quality~~ — **Done.** Catalog Manager modal lets admins edit every catalog field (works for both static seed and dynamic rows; static edits create Supabase override). Submissions Queue dedupes pending rows + inline edit + curated photo replacement. Image Intake has verify-vs-intake split and before/after photo preview.
 - [ ] **BUG** `VW-2` Fix Grail contrast issue on desktop
 - [ ] **BUG** `VW-3` Fix watchbox auto-shrinking when deleting a watch — *(slot-count fluctuation on add was fixed in May 2026; the deletion path may still need attention)*
@@ -59,16 +60,21 @@ Mark `[x]` when done.
 - [x] **RM** ~~`VW-14` Build `/discover` route — commerce + editorial hub~~ — **Done.** PRD v1.12 Feature 14. Collection-aware insights (gap analysis, dial-color skew), next-slot recommendations with Chrono24 deep links, per-watch upgrade cards, lug-width-aware strap suggestions, box upgrade affiliate card, curated Discover Reads strip. Demo seed for guests so the page is never empty.
 - [x] **RM** ~~`VW-13` Wire up `/news` — RSS-aggregated watch publications~~ — **Done.** PRD v1.12 Feature 11. Cloudflare Worker backend (`NEWS_WORKER_URL`) handles RSS fetch + brand/reference tagging, Next.js API route proxies with 15-min revalidation. Hero featured article, source pills, mode tabs (Latest / For You / By Source), filter bar, sponsored slot framework. Personalization driven by collection + followed signals.
 - [x] **RM** ~~Edit owned watch metadata from sidebar~~ — **Done.** EditWatchModal exists for condition / ownership status / purchase price / purchase date / notes. Available from sidebar pencil icon and the new owned-watch detail page (`/collection/watch/[id]`).
-- [ ] **RM** Collection Jewel state — badges, sidebar actions, profile hero selector. Completes the Grail/Jewel emotional model. PRD v1.10 delta.
-- [ ] **RM** Grail surface on `/collection` — crown-icon treatment, Find on Market CTA. Grail is designated but has no dedicated section on collection.
-- [ ] **RM** Next Targets panel on `/collection` (max 3) — intent type, target price, condition, Track Listings affiliate CTA. Monetization hook.
+- [x] **RM** ~~Collection Jewel state~~ — **Done.** PRD v1.12 Feature 2B Category 6. Sidebar Jewel badge, WatchStateControl picker offers `[followed, jewel]` for owned watches, profile hero selector (FeaturedProfileWatch) toggles between Grail and Jewel. Watch cards show the jewel badge.
+- [ ] **RM** `/collection` UI pass — broader visual / structural polish on the working surface, including:
+  - **Next Targets treatment** (max 3) — dedicated panel or strip with intent type, target price, desired condition, optional linked Playground box, and per-target `Track Listings →` affiliate CTA. Data already wired (`nextTargets[]`); the surface is what's missing. Monetization hook.
+  - **Header / value pill / action button** spacing and hierarchy review
+  - **Stats section** typography and density pass (portfolio value, dial colors, watch types, complications, brands)
+  - **Cards view** spacing + status badge consistency
+  - **Mobile reflow** for sidebar → bottom sheet transitions and overflow behavior
+  - *Note: Grail does NOT belong on `/collection`. By definition Grail is unowned (must not be in My Collection). Grail's home is `/profile` as part of the FeaturedProfileWatch picker. The earlier "Grail surface on /collection" item was a category error and is dropped.*
 
 ---
 
 ## Phase 2 — Collector Delight
 *Features that make people share the app.*
 
-- [ ] **RM** `VW-10` Collection Photo view — upload/take photo of real watchbox (Feature 2A View C). Camera icon in view switcher. Framing guide. Uses Supabase Storage `watch-photos` bucket (already in production for the gallery).
+- [x] **RM** ~~`VW-10` Collection Photo view~~ — **Done.** PRD v1.12 Feature 2A View C. Third icon in the ViewSwitcher, `CollectionPhotoView` (412 lines) handles the photo state, `WatchboxPhotoEditModal` (496 lines) handles upload + camera capture + crop. Persists to Supabase Storage `watch-photos` bucket via the `watchbox_config.watchbox_photo_url` column.
 - [x] **RM** ~~Per-watch user photo gallery~~ — **Done.** PRD v1.12 Feature 2D. Sidebar thumbnail strip + grid view on owned-watch detail page + lightbox + drag-reorder + captions + set-primary. AI photo flow auto-adds new uploads as primary. Backed by `public.user_watch_photos` with RLS.
 - [x] **RM** ~~Owned-watch detail page~~ — **Done.** PRD v1.12 Feature 2E. New route `/collection/watch/[id]` with sticky image, full specs, edit/delete affordances, full-width gallery at the bottom.
 - [x] **RM** ~~Duplicate-aware add page~~ — **Done.** PRD v1.12 Feature 3. Single + multi-instance treatments. "Manage your watch" + "Add another" CTAs.

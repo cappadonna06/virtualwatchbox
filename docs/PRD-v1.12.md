@@ -18,7 +18,7 @@
 | v1.9 | Added current implementation status snapshot and Feature 2A third view: Real Watchbox Photo for My Collection. |
 | v1.10 | Added Collection Jewel, tightened ownership rules for Target/Grail/Jewel intent states, and added profile hero selection between Grail and Jewel. |
 | v1.11 | Added Feature 6 — Settings & Account Controls, including account deletion/data controls, privacy/sharing controls, and legal transparency surfaces. |
-| v1.12 | Shipped Feature 9 — AI Photo Identification ("Watchbox Concierge") end-to-end with verify vs intake split, market-value capture, and dial-bbox cropping. Added Feature 2D — Per-Watch Photo Gallery (sidebar + owned-watch detail page + lightbox + drag-reorder). Added Feature 2E — Owned Watch Detail Page (`/collection/watch/[id]`). Updated Feature 3 with duplicate-aware add page and add-from-photo for not-in-catalog watches. Added Feature 13 — Admin Catalog & Submissions Tooling. Documented `/news` (Feature 11) and `/discover` (new Feature 14) which were already shipped but listed as pending in v1.11. |
+| v1.12 | Shipped Feature 9 — AI Photo Identification ("Watchbox Concierge") end-to-end with verify vs intake split, market-value capture, and dial-bbox cropping. Added Feature 2D — Per-Watch Photo Gallery (sidebar + owned-watch detail page + lightbox + drag-reorder). Added Feature 2E — Owned Watch Detail Page (`/collection/watch/[id]`). Updated Feature 3 with duplicate-aware add page and add-from-photo for not-in-catalog watches. Added Feature 13 — Admin Catalog & Submissions Tooling. Documented `/news` (Feature 11) and `/discover` (new Feature 14) which were already shipped but listed as pending in v1.11. **Intent fix:** Grail no longer has a planned `/collection` surface — by definition Grail is unowned, so its home is the FeaturedProfileWatch picker on `/profile`. The earlier "Grail surface on /collection" planning was dropped. The `/collection` UI pass now scopes to Next Targets treatment + header / stats / cards / mobile polish. |
 
 ---
 
@@ -164,8 +164,18 @@ Unsaved changes bar:
 `Save as Playground` is a placeholder for the next phase.
 
 #### Near-Term Expansion
-- Next Targets panel with affiliate CTAs
-- Grail section
+
+**`/collection` UI pass.** A cohesive visual + structural review of the working surface, scoped to:
+
+- **Next Targets treatment** (max 3) — dedicated panel or strip with intent type, target price, desired condition, optional linked Playground box, and per-target `Track Listings →` affiliate CTA. Data already wired (`nextTargets[]`) — surface is what's missing. This is the single highest-ROI affiliate hook on the page.
+- **Header / value pill / action button** spacing and hierarchy review
+- **Stats section** typography and density pass (portfolio value, dial colors, watch types, complications, brand breakdown)
+- **Cards view** spacing + status badge consistency
+- **Mobile reflow** for sidebar → bottom sheet transitions and overflow behavior
+
+> Grail is intentionally **not** part of the `/collection` surface. By the rules in Feature 2B (Category 5), Grail is unowned by definition; its home is the FeaturedProfileWatch picker on `/profile`. Earlier roadmap drafts had a "Grail surface on /collection" item — that was a category error and is dropped.
+
+**Other near-term:**
 - Save as Playground flow
 - Review Changes drawer
 - Card filters
@@ -311,8 +321,8 @@ Exactly one followed watch designated as the user's emotional north star.
 - Special crown-icon treatment and dedicated visual emphasis
 
 **UI**
-- Surfaced prominently in the profile card
-- Also eligible for dedicated future surfacing on `/collection`
+- Surfaced prominently in the profile card via the FeaturedProfileWatch picker (Grail or Jewel)
+- Grail's home is `/profile` — by definition Grail is unowned, so it does not belong on `/collection` (the owned-watches surface)
 - Shows brand, model, reference, and estimated market price
 - CTA: `Find on Market →`
 
@@ -353,7 +363,7 @@ Exactly one owned watch designated as the centerpiece or pride of the user's act
 | Playground Watches | Unlimited | `/playground` | Per-box config + optional per-entry overrides | Box-level only | Find For Sale, Add to Collection, Edit, Delete |
 | Followed Watches | Unlimited | Dedicated surface pending; profile section later | None | No | Add to Collection, Promote to Target, Set as Grail |
 | Next Targets | 3 | `/collection` panel | Target metadata on followed watches | No | Track Listings |
-| Grail | 1 | Profile card + future collection section | Special designation on unowned followed watch | No | Find on Market |
+| Grail | 1 | Profile card (FeaturedProfileWatch picker on `/profile`) | Special designation on unowned followed watch | No | Find on Market |
 | Collection Jewel | 1 | Collection watchbox/cards + profile hero | Special designation on owned watch | No | View in Collection, Swap Strap, Service, Insure |
 
 ---
@@ -1361,6 +1371,8 @@ Behavior requirements:
 - `/settings` account/privacy controls (P0 scope)
 - Unified share modal + dynamic OG image generation (`/api/og/box/[slug]`) for profile + box share links
 - Edit Watch modal wired to the sidebar pencil for owned-watch metadata
+- Real Watchbox Photo view (Feature 2A View C) — third icon in the ViewSwitcher with upload + camera + crop, persisting to `watchbox_config.watchbox_photo_url`
+- Collection Jewel state — sidebar badge, WatchStateControl picker action for owned watches, FeaturedProfileWatch picker on `/profile` toggling between Grail and Jewel
 
 ### Phase 2 — Shipped
 
@@ -1417,10 +1429,9 @@ The items below are intentionally tracked as pending even if placeholders or toa
 *(Both `/news` and `/discover` are shipped; `/settings` is shipped at P0 scope — see open P1/P2 items below.)*
 
 ### Collection
+- `/collection` UI pass (Next Targets treatment + header / stats / cards / mobile polish — see Feature 2A "Near-Term Expansion")
 - Save as Playground from Collection drafts
 - Drag-to-reorder parity across all Collection surface modes
-- **Feature 2A View C:** Real Watchbox Photo (camera icon mode)
-- Collection Jewel state, badges, sidebar actions, and profile hero selector
 
 ### Settings (`/settings` shipped at P0; remaining items)
 - `Download my data` (currently "Coming soon")
