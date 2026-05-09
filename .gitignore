@@ -19,3 +19,7 @@ out/
 .DS_Store
 *.pem
 npm-debug.log*
+
+# External catalog enrichment inputs (Kaggle / WatchSpecs scraped HTML).
+# These are large, third-party, and re-downloadable — not committed.
+data/external/
