@@ -36,9 +36,9 @@ function IconButton({
     <button
       onClick={onClick}
       style={{
-        width: 24,
-        height: 24,
-        borderRadius: brand.radius.sm,
+        width: brand.controls.iconButton.size,
+        height: brand.controls.iconButton.size,
+        borderRadius: brand.controls.iconButton.radius,
         border: `1px solid ${brand.colors.borderMid}`,
         background: brand.colors.white,
         cursor: 'pointer',
@@ -176,14 +176,14 @@ export default function WatchSidebar({
                   }
                 }}
               >
-                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                   <path d="M1 9.5V11h1.5l4.42-4.42-1.5-1.5L1 9.5zm7.07-5.07c.2-.2.2-.51 0-.71L6.99 2.64a.5.5 0 00-.71 0L5.13 3.79l1.5 1.5 1.44-1.44z" fill="currentColor" />
                 </svg>
               </IconButton>
             )}
             {canDelete && (
               <IconButton label="Delete watch" onClick={() => onRequestDelete?.(watch)}>
-                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                   <path d="M4.5 1.5h3l.3.8H10v1H2v-1h2.2l.3-.8zM3 4h6l-.5 6.2a.8.8 0 01-.8.8H4.3a.8.8 0 01-.8-.8L3 4zm2 1v5h1V5H5zm2 0v5h1V5H7z" fill="currentColor" />
                 </svg>
               </IconButton>
@@ -212,9 +212,22 @@ export default function WatchSidebar({
         {watch.brand.toUpperCase()}
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 3 }}>
-        <h3 style={{ fontFamily: brand.font.serif, fontSize: 26, fontWeight: 400, lineHeight: 1.1, color: brand.colors.ink, margin: 0 }}>
-          {watch.model}
-        </h3>
+        {isOwnedWatch ? (
+          <Link
+            href={`/collection/watch/${watch.id}`}
+            aria-label={`Open full detail for ${watch.brand} ${watch.model}`}
+            style={{ textDecoration: 'none', color: 'inherit', minWidth: 0 }}
+          >
+            <h3 style={{ fontFamily: brand.font.serif, fontSize: 26, fontWeight: 400, lineHeight: 1.1, color: brand.colors.ink, margin: 0 }}>
+              {watch.model}
+              <span style={{ color: brand.colors.muted, fontSize: 16, marginLeft: 6, fontWeight: 400 }}>→</span>
+            </h3>
+          </Link>
+        ) : (
+          <h3 style={{ fontFamily: brand.font.serif, fontSize: 26, fontWeight: 400, lineHeight: 1.1, color: brand.colors.ink, margin: 0 }}>
+            {watch.model}
+          </h3>
+        )}
         {showConditionBadge && (
           <span
             style={{

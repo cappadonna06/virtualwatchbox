@@ -29,7 +29,7 @@ const PICKER_HEIGHT_ESTIMATE = 248
 
 function getButtonMetrics(size: 'sm' | 'md') {
   return size === 'sm'
-    ? { button: 30, icon: 14, inset: 8 }
+    ? { button: 36, icon: 16, inset: 8 }
     : { button: 36, icon: 16, inset: 10 }
 }
 

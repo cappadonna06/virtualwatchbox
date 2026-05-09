@@ -1,4 +1,6 @@
-import type { ReactNode } from 'react'
+'use client'
+
+import { useEffect, type ReactNode } from 'react'
 import { brand } from '@/lib/brand'
 
 interface ResponsiveSidebarSheetProps {
@@ -14,6 +16,12 @@ export default function ResponsiveSidebarSheet({
   top = 84,
   children,
 }: ResponsiveSidebarSheetProps) {
+  useEffect(() => {
+    if (!active) return
+    document.documentElement.classList.add('sheet-lock')
+    return () => document.documentElement.classList.remove('sheet-lock')
+  }, [active])
+
   return (
     <>
       <div
@@ -50,15 +58,20 @@ export default function ResponsiveSidebarSheet({
               style={{
                 display: 'none',
                 position: 'absolute',
-                top: 14,
-                right: 16,
+                top: 10,
+                right: 12,
+                width: brand.controls.iconButton.size,
+                height: brand.controls.iconButton.size,
+                alignItems: 'center',
+                justifyContent: 'center',
                 background: 'none',
                 border: 'none',
+                borderRadius: brand.controls.iconButton.radius,
                 cursor: 'pointer',
                 color: brand.colors.muted,
-                fontSize: 18,
+                fontSize: 22,
                 lineHeight: 1,
-                padding: 4,
+                padding: 0,
               }}
             >
               ✕
