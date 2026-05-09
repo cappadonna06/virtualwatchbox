@@ -12,7 +12,9 @@
     "images:process": "tsx scripts/process-watch-images.ts",
     "images:catalog-candidates": "tsx scripts/export-watch-catalog-candidates.ts",
     "catalog:seed-report": "tsx scripts/catalog-seed-report.ts",
-    "catalog:enrich": "tsx scripts/enrich-catalog.ts"
+    "catalog:enrich": "tsx scripts/enrich-catalog.ts",
+    "catalog:seed": "tsx scripts/seedCatalog.ts",
+    "catalog:migrate-ids": "tsx scripts/migrateCatalogIds.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

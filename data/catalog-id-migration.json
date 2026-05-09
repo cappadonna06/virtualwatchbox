@@ -1,0 +1,611 @@
+{
+  "rolex-submariner-date": {
+    "newId": "rolex-126610ln",
+    "newSlug": "rolex-submariner-date-126610ln",
+    "brand": "Rolex",
+    "model": "Submariner Date",
+    "reference": "126610LN"
+  },
+  "rolex-gmt-master-ii-pepsi": {
+    "newId": "rolex-126710blro",
+    "newSlug": "rolex-gmt-master-ii-126710blro",
+    "brand": "Rolex",
+    "model": "GMT-Master II",
+    "reference": "126710BLRO"
+  },
+  "rolex-daytona-white": {
+    "newId": "rolex-116500ln",
+    "newSlug": "rolex-cosmograph-daytona-116500ln",
+    "brand": "Rolex",
+    "model": "Cosmograph Daytona",
+    "reference": "116500LN"
+  },
+  "rolex-explorer-i": {
+    "newId": "rolex-124270",
+    "newSlug": "rolex-explorer-124270",
+    "brand": "Rolex",
+    "model": "Explorer",
+    "reference": "124270"
+  },
+  "rolex-datejust-blue": {
+    "newId": "rolex-126334",
+    "newSlug": "rolex-datejust-41-126334",
+    "brand": "Rolex",
+    "model": "Datejust 41",
+    "reference": "126334"
+  },
+  "omega-speedmaster-moonwatch": {
+    "newId": "omega-310-30-42-50-01-001",
+    "newSlug": "omega-speedmaster-professional-310-30-42-50-01-001",
+    "brand": "Omega",
+    "model": "Speedmaster Professional",
+    "reference": "310.30.42.50.01.001"
+  },
+  "omega-seamaster-300m-blue": {
+    "newId": "omega-210-30-42-20-03-001",
+    "newSlug": "omega-seamaster-diver-300m-210-30-42-20-03-001",
+    "brand": "Omega",
+    "model": "Seamaster Diver 300M",
+    "reference": "210.30.42.20.03.001"
+  },
+  "omega-aqua-terra-green": {
+    "newId": "omega-220-10-41-21-10-001",
+    "newSlug": "omega-seamaster-aqua-terra-220-10-41-21-10-001",
+    "brand": "Omega",
+    "model": "Seamaster Aqua Terra",
+    "reference": "220.10.41.21.10.001"
+  },
+  "omega-railmaster-grey": {
+    "newId": "omega-220-10-40-20-06-001",
+    "newSlug": "omega-railmaster-220-10-40-20-06-001",
+    "brand": "Omega",
+    "model": "Railmaster",
+    "reference": "220.10.40.20.06.001"
+  },
+  "omega-constellation-silver": {
+    "newId": "omega-130-30-39-21-02-001",
+    "newSlug": "omega-constellation-globemaster-130-30-39-21-02-001",
+    "brand": "Omega",
+    "model": "Constellation Globemaster",
+    "reference": "130.30.39.21.02.001"
+  },
+  "patek-nautilus-blue": {
+    "newId": "patek-philippe-5711-1a-010",
+    "newSlug": "patek-philippe-nautilus-5711-1a-010",
+    "brand": "Patek Philippe",
+    "model": "Nautilus",
+    "reference": "5711/1A-010"
+  },
+  "patek-aquanaut-black": {
+    "newId": "patek-philippe-5167a-001",
+    "newSlug": "patek-philippe-aquanaut-5167a-001",
+    "brand": "Patek Philippe",
+    "model": "Aquanaut",
+    "reference": "5167A-001"
+  },
+  "patek-calatrava-ivory": {
+    "newId": "patek-philippe-6119r-001",
+    "newSlug": "patek-philippe-calatrava-6119r-001",
+    "brand": "Patek Philippe",
+    "model": "Calatrava",
+    "reference": "6119R-001"
+  },
+  "patek-world-time-blue": {
+    "newId": "patek-philippe-5230p-001",
+    "newSlug": "patek-philippe-world-time-5230p-001",
+    "brand": "Patek Philippe",
+    "model": "World Time",
+    "reference": "5230P-001"
+  },
+  "patek-golden-ellipse": {
+    "newId": "patek-philippe-5738r-001",
+    "newSlug": "patek-philippe-golden-ellipse-5738r-001",
+    "brand": "Patek Philippe",
+    "model": "Golden Ellipse",
+    "reference": "5738R-001"
+  },
+  "lange-zeitwerk": {
+    "newId": "a-lange-and-sohne-142-031",
+    "newSlug": "a-lange-and-sohne-zeitwerk-142-031",
+    "brand": "A. Lange & Söhne",
+    "model": "Zeitwerk",
+    "reference": "142.031"
+  },
+  "lange-lange1": {
+    "newId": "a-lange-and-sohne-191-032",
+    "newSlug": "a-lange-and-sohne-lange-1-191-032",
+    "brand": "A. Lange & Söhne",
+    "model": "Lange 1",
+    "reference": "191.032"
+  },
+  "lange-saxonia-thin": {
+    "newId": "a-lange-and-sohne-205-086",
+    "newSlug": "a-lange-and-sohne-saxonia-thin-205-086",
+    "brand": "A. Lange & Söhne",
+    "model": "Saxonia Thin",
+    "reference": "205.086"
+  },
+  "lange-odysseus-grey": {
+    "newId": "a-lange-and-sohne-363-179",
+    "newSlug": "a-lange-and-sohne-odysseus-363-179",
+    "brand": "A. Lange & Söhne",
+    "model": "Odysseus",
+    "reference": "363.179"
+  },
+  "lange-1815-chronograph": {
+    "newId": "a-lange-and-sohne-414-028",
+    "newSlug": "a-lange-and-sohne-1815-chronograph-414-028",
+    "brand": "A. Lange & Söhne",
+    "model": "1815 Chronograph",
+    "reference": "414.028"
+  },
+  "iwc-mark-xx-blue": {
+    "newId": "iwc-iw328203",
+    "newSlug": "iwc-pilot-s-watch-mark-xx-iw328203",
+    "brand": "IWC",
+    "model": "Pilot's Watch Mark XX",
+    "reference": "IW328203"
+  },
+  "iwc-big-pilot": {
+    "newId": "iwc-iw329301",
+    "newSlug": "iwc-big-pilot-s-watch-43-iw329301",
+    "brand": "IWC",
+    "model": "Big Pilot's Watch 43",
+    "reference": "IW329301"
+  },
+  "iwc-portugieser-chrono": {
+    "newId": "iwc-iw371606",
+    "newSlug": "iwc-portugieser-chronograph-iw371606",
+    "brand": "IWC",
+    "model": "Portugieser Chronograph",
+    "reference": "IW371606"
+  },
+  "iwc-ingenieur-aqua": {
+    "newId": "iwc-iw328901",
+    "newSlug": "iwc-ingenieur-automatic-40-iw328901",
+    "brand": "IWC",
+    "model": "Ingenieur Automatic 40",
+    "reference": "IW328901"
+  },
+  "iwc-spitfire-bronze": {
+    "newId": "iwc-iw326805",
+    "newSlug": "iwc-pilot-s-watch-automatic-spitfire-iw326805",
+    "brand": "IWC",
+    "model": "Pilot's Watch Automatic Spitfire",
+    "reference": "IW326805"
+  },
+  "tudor-black-bay-58": {
+    "newId": "tudor-m79030n-0001",
+    "newSlug": "tudor-black-bay-58-m79030n-0001",
+    "brand": "Tudor",
+    "model": "Black Bay 58",
+    "reference": "M79030N-0001"
+  },
+  "tudor-pelagos-39": {
+    "newId": "tudor-m25407n-0001",
+    "newSlug": "tudor-pelagos-39-m25407n-0001",
+    "brand": "Tudor",
+    "model": "Pelagos 39",
+    "reference": "M25407N-0001"
+  },
+  "tudor-black-bay-gmt": {
+    "newId": "tudor-m79830rb-0010",
+    "newSlug": "tudor-black-bay-gmt-m79830rb-0010",
+    "brand": "Tudor",
+    "model": "Black Bay GMT",
+    "reference": "M79830RB-0010"
+  },
+  "tudor-ranger": {
+    "newId": "tudor-m79950-0001",
+    "newSlug": "tudor-ranger-m79950-0001",
+    "brand": "Tudor",
+    "model": "Ranger",
+    "reference": "M79950-0001"
+  },
+  "tudor-royal-blue": {
+    "newId": "tudor-m28600-0005",
+    "newSlug": "tudor-royal-m28600-0005",
+    "brand": "Tudor",
+    "model": "Royal",
+    "reference": "M28600-0005"
+  },
+  "tag-carrera-chrono": {
+    "newId": "tag-heuer-cbn2011-ba0642",
+    "newSlug": "tag-heuer-carrera-chronograph-cbn2011-ba0642",
+    "brand": "TAG Heuer",
+    "model": "Carrera Chronograph",
+    "reference": "CBN2011.BA0642"
+  },
+  "tag-monaco-blue": {
+    "newId": "tag-heuer-caw211p-fc6356",
+    "newSlug": "tag-heuer-monaco-caw211p-fc6356",
+    "brand": "TAG Heuer",
+    "model": "Monaco",
+    "reference": "CAW211P.FC6356"
+  },
+  "tag-aquaracer-green": {
+    "newId": "tag-heuer-wbp201f-ba0632",
+    "newSlug": "tag-heuer-aquaracer-professional-300-wbp201f-ba0632",
+    "brand": "TAG Heuer",
+    "model": "Aquaracer Professional 300",
+    "reference": "WBP201F.BA0632"
+  },
+  "tag-autavia-gmt": {
+    "newId": "tag-heuer-wbe511a-ba0650",
+    "newSlug": "tag-heuer-autavia-gmt-wbe511a-ba0650",
+    "brand": "TAG Heuer",
+    "model": "Autavia GMT",
+    "reference": "WBE511A.BA0650"
+  },
+  "tag-carrera-date-silver": {
+    "newId": "tag-heuer-wbn2111-ba0639",
+    "newSlug": "tag-heuer-carrera-date-wbn2111-ba0639",
+    "brand": "TAG Heuer",
+    "model": "Carrera Date",
+    "reference": "WBN2111.BA0639"
+  },
+  "breitling-navitimer-b01": {
+    "newId": "breitling-ab0138211b1a1",
+    "newSlug": "breitling-navitimer-b01-chronograph-43-ab0138211b1a1",
+    "brand": "Breitling",
+    "model": "Navitimer B01 Chronograph 43",
+    "reference": "AB0138211B1A1"
+  },
+  "breitling-superocean-blue": {
+    "newId": "breitling-a17375e71c1a1",
+    "newSlug": "breitling-superocean-automatic-42-a17375e71c1a1",
+    "brand": "Breitling",
+    "model": "Superocean Automatic 42",
+    "reference": "A17375E71C1A1"
+  },
+  "breitling-avenger-gmt": {
+    "newId": "breitling-a32395101c1a1",
+    "newSlug": "breitling-avenger-automatic-gmt-45-a32395101c1a1",
+    "brand": "Breitling",
+    "model": "Avenger Automatic GMT 45",
+    "reference": "A32395101C1A1"
+  },
+  "breitling-premier-pistachio": {
+    "newId": "breitling-ab0930d31l1p1",
+    "newSlug": "breitling-premier-b09-chronograph-40-ab0930d31l1p1",
+    "brand": "Breitling",
+    "model": "Premier B09 Chronograph 40",
+    "reference": "AB0930D31L1P1"
+  },
+  "breitling-top-time-deus": {
+    "newId": "breitling-a233112a1a1x1",
+    "newSlug": "breitling-top-time-deus-a233112a1a1x1",
+    "brand": "Breitling",
+    "model": "Top Time Deus",
+    "reference": "A233112A1A1X1"
+  },
+  "cartier-santos-medium": {
+    "newId": "cartier-wssa0029",
+    "newSlug": "cartier-santos-de-cartier-wssa0029",
+    "brand": "Cartier",
+    "model": "Santos de Cartier",
+    "reference": "WSSA0029"
+  },
+  "cartier-tank-must-large": {
+    "newId": "cartier-wsta0041",
+    "newSlug": "cartier-tank-must-large-wsta0041",
+    "brand": "Cartier",
+    "model": "Tank Must Large",
+    "reference": "WSTA0041"
+  },
+  "cartier-ballon-bleu": {
+    "newId": "cartier-wsbb0040",
+    "newSlug": "cartier-ballon-bleu-40-wsbb0040",
+    "brand": "Cartier",
+    "model": "Ballon Bleu 40",
+    "reference": "WSBB0040"
+  },
+  "cartier-pasha-41": {
+    "newId": "cartier-wspa0013",
+    "newSlug": "cartier-pasha-de-cartier-wspa0013",
+    "brand": "Cartier",
+    "model": "Pasha de Cartier",
+    "reference": "WSPA0013"
+  },
+  "cartier-santos-dumont": {
+    "newId": "cartier-wssa0032",
+    "newSlug": "cartier-santos-dumont-xl-wssa0032",
+    "brand": "Cartier",
+    "model": "Santos-Dumont XL",
+    "reference": "WSSA0032"
+  },
+  "grandseiko-snowflake": {
+    "newId": "grand-seiko-sbga211",
+    "newSlug": "grand-seiko-heritage-snowflake-sbga211",
+    "brand": "Grand Seiko",
+    "model": "Heritage Snowflake",
+    "reference": "SBGA211"
+  },
+  "grandseiko-shunbun": {
+    "newId": "grand-seiko-sbga413",
+    "newSlug": "grand-seiko-heritage-shunbun-sbga413",
+    "brand": "Grand Seiko",
+    "model": "Heritage Shunbun",
+    "reference": "SBGA413"
+  },
+  "grandseiko-sbgm221": {
+    "newId": "grand-seiko-sbgm221",
+    "newSlug": "grand-seiko-elegance-gmt-sbgm221",
+    "brand": "Grand Seiko",
+    "model": "Elegance GMT",
+    "reference": "SBGM221"
+  },
+  "grandseiko-white-birch": {
+    "newId": "grand-seiko-slgh005",
+    "newSlug": "grand-seiko-evolution-9-white-birch-slgh005",
+    "brand": "Grand Seiko",
+    "model": "Evolution 9 White Birch",
+    "reference": "SLGH005"
+  },
+  "grandseiko-sport-gmt": {
+    "newId": "grand-seiko-sbgn017",
+    "newSlug": "grand-seiko-sport-quartz-gmt-sbgn017",
+    "brand": "Grand Seiko",
+    "model": "Sport Quartz GMT",
+    "reference": "SBGN017"
+  },
+  "oris-big-crown-d-26-286-hb-rag-green": {
+    "newId": "oris-d-26-286",
+    "newSlug": "oris-big-crown-d-26-286-hb-rag-d-26-286",
+    "brand": "Oris",
+    "model": "Big Crown D.26 286 HB-RAG",
+    "reference": "D.26 286"
+  },
+  "omega-seamaster-aqua-terra-blue": {
+    "newId": "omega-231-10-42-21-03-003",
+    "newSlug": "omega-seamaster-aqua-terra-231-10-42-21-03-003",
+    "brand": "Omega",
+    "model": "Seamaster Aqua Terra",
+    "reference": "231.10.42.21.03.003"
+  },
+  "sinn-556-010": {
+    "newId": "sinn-556-010",
+    "newSlug": "sinn-556-010-556-010",
+    "brand": "Sinn",
+    "model": "556.010",
+    "reference": "556.010"
+  },
+  "tudor-black-bay-gmt-m79830rb-0001": {
+    "newId": "tudor-m79830rb-0001",
+    "newSlug": "tudor-black-bay-gmt-m79830rb-0001",
+    "brand": "Tudor",
+    "model": "Black Bay GMT",
+    "reference": "M79830RB-0001"
+  },
+  "iwc-portugieser-chronograph-iw371446": {
+    "newId": "iwc-iw371446",
+    "newSlug": "iwc-portugieser-chronograph-iw371446",
+    "brand": "IWC",
+    "model": "Portugieser Chronograph",
+    "reference": "IW371446"
+  },
+  "tudor-black-bay-gmt-black": {
+    "newId": "tudor-m79830rb",
+    "newSlug": "tudor-black-bay-gmt-m79830rb",
+    "brand": "Tudor",
+    "model": "Black Bay GMT",
+    "reference": "M79830RB"
+  },
+  "grand-seiko-hi-beat-36000-blue": {
+    "newId": "grand-seiko-sbgh267",
+    "newSlug": "grand-seiko-hi-beat-36000-sbgh267",
+    "brand": "Grand Seiko",
+    "model": "Hi-Beat 36000",
+    "reference": "SBGH267"
+  },
+  "a-lange-and-sohne-1815-up-down-white": {
+    "newId": "a-lange-and-sohne-234-026",
+    "newSlug": "a-lange-and-sohne-1815-up-down-234-026",
+    "brand": "A. Lange & Söhne",
+    "model": "1815 Up/Down",
+    "reference": "234.026"
+  },
+  "hamilton-khaki-navy-pioneer-h78719553": {
+    "newId": "hamilton-h78719553",
+    "newSlug": "hamilton-khaki-navy-pioneer-h78719553",
+    "brand": "Hamilton",
+    "model": "Khaki Navy Pioneer",
+    "reference": "H78719553"
+  },
+  "longines-legend-diver-black": {
+    "newId": "longines-l3-764-4-50-0",
+    "newSlug": "longines-legend-diver-l3-764-4-50-0",
+    "brand": "Longines",
+    "model": "Legend Diver",
+    "reference": "L3.764.4.50.0"
+  },
+  "longines-legend-diver-blue": {
+    "newId": "longines-l3-764-4-96-6",
+    "newSlug": "longines-legend-diver-l3-764-4-96-6",
+    "brand": "Longines",
+    "model": "Legend Diver",
+    "reference": "L3.764.4.96.6"
+  },
+  "longines-legend-diver-green": {
+    "newId": "longines-l3-764-4-06-6",
+    "newSlug": "longines-legend-diver-l3-764-4-06-6",
+    "brand": "Longines",
+    "model": "Legend Diver",
+    "reference": "L3.764.4.06.6"
+  },
+  "longines-legend-diver-white": {
+    "newId": "longines-l3-764-4-16-6",
+    "newSlug": "longines-legend-diver-l3-764-4-16-6",
+    "brand": "Longines",
+    "model": "Legend Diver",
+    "reference": "L3.764.4.16.6"
+  },
+  "longines-legend-diver-grey": {
+    "newId": "longines-l3-764-4-99-6",
+    "newSlug": "longines-legend-diver-l3-764-4-99-6",
+    "brand": "Longines",
+    "model": "Legend Diver",
+    "reference": "L3.764.4.99.6"
+  },
+  "tudor-black-bay-41": {
+    "newId": "tudor-m79540-0006",
+    "newSlug": "tudor-black-bay-41-m79540-0006",
+    "brand": "Tudor",
+    "model": "Black Bay 41",
+    "reference": "M79540-0006"
+  },
+  "tudor-black-bay-chrono": {
+    "newId": "tudor-m79360n-0002",
+    "newSlug": "tudor-black-bay-chrono-m79360n-0002",
+    "brand": "Tudor",
+    "model": "Black Bay Chrono",
+    "reference": "M79360N-0002"
+  },
+  "rolex-submariner-no-date": {
+    "newId": "rolex-124060",
+    "newSlug": "rolex-submariner-124060",
+    "brand": "Rolex",
+    "model": "Submariner",
+    "reference": "124060"
+  },
+  "rolex-gmt-master-ii-batman": {
+    "newId": "rolex-126710blnr",
+    "newSlug": "rolex-gmt-master-ii-126710blnr",
+    "brand": "Rolex",
+    "model": "GMT-Master II",
+    "reference": "126710BLNR"
+  },
+  "rolex-explorer-ii": {
+    "newId": "rolex-226570",
+    "newSlug": "rolex-explorer-ii-226570",
+    "brand": "Rolex",
+    "model": "Explorer II",
+    "reference": "226570"
+  },
+  "rolex-oyster-perpetual": {
+    "newId": "rolex-124300",
+    "newSlug": "rolex-oyster-perpetual-41-124300",
+    "brand": "Rolex",
+    "model": "Oyster Perpetual 41",
+    "reference": "124300"
+  },
+  "rolex-sea-dweller": {
+    "newId": "rolex-126600",
+    "newSlug": "rolex-sea-dweller-126600",
+    "brand": "Rolex",
+    "model": "Sea-Dweller",
+    "reference": "126600"
+  },
+  "zenith-chronomaster-original": {
+    "newId": "zenith-03-3200-3600-69-m3200",
+    "newSlug": "zenith-chronomaster-original-03-3200-3600-69-m3200",
+    "brand": "Zenith",
+    "model": "Chronomaster Original",
+    "reference": "03.3200.3600/69.M3200"
+  },
+  "jaeger-lecoultre-reverso-classic": {
+    "newId": "jaeger-lecoultre-q3858522",
+    "newSlug": "jaeger-lecoultre-reverso-classic-large-q3858522",
+    "brand": "Jaeger-LeCoultre",
+    "model": "Reverso Classic Large",
+    "reference": "Q3858522"
+  },
+  "jaeger-lecoultre-master-ultra-thin-moon": {
+    "newId": "jaeger-lecoultre-q1362540",
+    "newSlug": "jaeger-lecoultre-master-ultra-thin-moon-q1362540",
+    "brand": "Jaeger-LeCoultre",
+    "model": "Master Ultra Thin Moon",
+    "reference": "Q1362540"
+  },
+  "longines-spirit": {
+    "newId": "longines-l3-810-4-73-6",
+    "newSlug": "longines-spirit-l3-810-4-73-6",
+    "brand": "Longines",
+    "model": "Spirit",
+    "reference": "L3.810.4.73.6"
+  },
+  "longines-zulu-time": {
+    "newId": "longines-l3-802-4-53-6",
+    "newSlug": "longines-spirit-zulu-time-l3-802-4-53-6",
+    "brand": "Longines",
+    "model": "Spirit Zulu Time",
+    "reference": "L3.802.4.53.6"
+  },
+  "longines-master-collection": {
+    "newId": "longines-l2-793-4-78-3",
+    "newSlug": "longines-master-collection-l2-793-4-78-3",
+    "brand": "Longines",
+    "model": "Master Collection",
+    "reference": "L2.793.4.78.3"
+  },
+  "longines-master-moonphase": {
+    "newId": "longines-l2-909-4-78-3",
+    "newSlug": "longines-master-collection-moonphase-l2-909-4-78-3",
+    "brand": "Longines",
+    "model": "Master Collection Moonphase",
+    "reference": "L2.909.4.78.3"
+  },
+  "grand-seiko-sbgx335": {
+    "newId": "grand-seiko-sbgx335",
+    "newSlug": "grand-seiko-heritage-quartz-sbgx335",
+    "brand": "Grand Seiko",
+    "model": "Heritage Quartz",
+    "reference": "SBGX335"
+  },
+  "hamilton-khaki-field-mechanical": {
+    "newId": "hamilton-h69439931",
+    "newSlug": "hamilton-khaki-field-mechanical-h69439931",
+    "brand": "Hamilton",
+    "model": "Khaki Field Mechanical",
+    "reference": "H69439931"
+  },
+  "hamilton-khaki-aviation-pilot-day-date": {
+    "newId": "hamilton-h64635555",
+    "newSlug": "hamilton-khaki-aviation-pilot-day-date-h64635555",
+    "brand": "Hamilton",
+    "model": "Khaki Aviation Pilot Day Date",
+    "reference": "H64635555"
+  },
+  "seiko-alpinist-spb143": {
+    "newId": "seiko-spb143",
+    "newSlug": "seiko-prospex-alpinist-spb143",
+    "brand": "Seiko",
+    "model": "Prospex Alpinist",
+    "reference": "SPB143"
+  },
+  "seiko-62mas-reissue-spb077": {
+    "newId": "seiko-spb077",
+    "newSlug": "seiko-prospex-1965-diver-reissue-spb077",
+    "brand": "Seiko",
+    "model": "Prospex 1965 Diver Reissue",
+    "reference": "SPB077"
+  },
+  "seiko-5-sports-gmt-ssk001": {
+    "newId": "seiko-ssk001",
+    "newSlug": "seiko-5-sports-gmt-ssk001",
+    "brand": "Seiko",
+    "model": "5 Sports GMT",
+    "reference": "SSK001"
+  },
+  "seiko-skx007": {
+    "newId": "seiko-skx007j1",
+    "newSlug": "seiko-skx007-skx007j1",
+    "brand": "Seiko",
+    "model": "SKX007",
+    "reference": "SKX007J1"
+  },
+  "tissot-prx-powermatic-80": {
+    "newId": "tissot-t137-407-11-041-00",
+    "newSlug": "tissot-prx-powermatic-80-t137-407-11-041-00",
+    "brand": "Tissot",
+    "model": "PRX Powermatic 80",
+    "reference": "T137.407.11.041.00"
+  },
+  "orient-bambino": {
+    "newId": "orient-fac00004w0",
+    "newSlug": "orient-bambino-version-1-fac00004w0",
+    "brand": "Orient",
+    "model": "Bambino Version 1",
+    "reference": "FAC00004W0"
+  }
+}

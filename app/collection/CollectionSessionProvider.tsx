@@ -330,26 +330,20 @@ type DbWatchboxConfig = {
 
 // ── Supabase sync helpers (fire-and-forget) ────────────────────────────────
 
-async function syncWatchAdd(watch: OwnedWatch, catalogWatch: CatalogWatch, userId: string, sortOrder: number) {
+async function syncWatchAdd(watch: OwnedWatch, _catalogWatch: CatalogWatch, userId: string, sortOrder: number) {
   try {
     const supabase = createClient()
-    // Always pass watch.id explicitly so the upsert is idempotent on the client-
-    // generated UUID. This means a strict-mode double-invoke (dev) or a transient
-    // duplicate trigger updates the same row instead of inserting two rows.
+    // Slim payload: catalog facts resolve through catalog_id; only ownership
+    // and instance fields are persisted on the watches row. This requires
+    // migration 017 to have dropped NOT NULL on brand/model.
+    //
+    // watch.id is always passed so the upsert is idempotent on the client-
+    // generated UUID (Strict-mode double-invoke / transient duplicates update
+    // the same row instead of inserting two).
     const { error } = await supabase.from('watches').upsert({
       id: watch.id,
       user_id: userId,
       catalog_id: watch.watchId,
-      brand: catalogWatch.brand,
-      model: catalogWatch.model,
-      reference: catalogWatch.reference,
-      case_size_mm: catalogWatch.caseSizeMm,
-      case_material: catalogWatch.caseMaterial,
-      dial_color: catalogWatch.dialColor,
-      movement: catalogWatch.movement,
-      complications: catalogWatch.complications,
-      watch_type: catalogWatch.watchType,
-      estimated_value: catalogWatch.estimatedValue,
       condition: watch.condition,
       ownership_status: watch.ownershipStatus,
       purchase_price: watch.purchasePrice,
