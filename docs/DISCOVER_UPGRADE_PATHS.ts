@@ -8,51 +8,51 @@ export const UPGRADE_PATHS: Record<string, string[]> = {
 
   // ── DIVERS ──────────────────────────────────────────────────────────
   // Seiko SKX / 5 Sports → Tudor BB58 → Rolex Submariner
-  'seiko-skx007':           ['tudor-black-bay-58', 'rolex-submariner'],
-  'seiko-5-sports':         ['tudor-black-bay-58', 'omega-seamaster-300m'],
+  'seiko-skx007j1':           ['tudor-m79030n-0001', 'rolex-submariner'],
+  'seiko-5-sports':         ['tudor-m79030n-0001', 'omega-seamaster-300m'],
   // Tudor Pelagos → Rolex Submariner → Rolex Sea-Dweller
-  'tudor-pelagos':          ['rolex-submariner', 'rolex-sea-dweller'],
-  'tudor-black-bay-58':     ['rolex-submariner', 'omega-seamaster-300m'],
+  'tudor-pelagos':          ['rolex-submariner', 'rolex-126600'],
+  'tudor-m79030n-0001':     ['rolex-submariner', 'omega-seamaster-300m'],
   // Omega Seamaster → Rolex Submariner
   'omega-seamaster-300m':   ['rolex-submariner'],
 
   // ── FIELD / EXPLORER ────────────────────────────────────────────────
   // Seiko Alpinist → Tudor Ranger → Rolex Explorer
-  'seiko-alpinist':         ['tudor-ranger', 'rolex-explorer'],
-  'hamilton-khaki-field':   ['tudor-ranger', 'iwc-pilot-mark-xx'],
-  'tudor-ranger':           ['rolex-explorer', 'iwc-pilot-mark-xx'],
+  'seiko-alpinist':         ['tudor-m79950-0001', 'rolex-explorer'],
+  'hamilton-khaki-field':   ['tudor-m79950-0001', 'iwc-pilot-mark-xx'],
+  'tudor-m79950-0001':           ['rolex-explorer', 'iwc-pilot-mark-xx'],
   // IWC Pilot Mark XX → IWC Big Pilot
-  'iwc-pilot-mark-xx':      ['iwc-big-pilot', 'rolex-explorer'],
+  'iwc-pilot-mark-xx':      ['iwc-iw329301', 'rolex-explorer'],
 
   // ── GMT / TRAVEL ─────────────────────────────────────────────────────
   // Seiko GMT → Tudor BB GMT → Rolex GMT Master II
-  'seiko-gmt':              ['tudor-black-bay-gmt', 'rolex-gmt-master-ii'],
-  'tudor-black-bay-gmt':    ['rolex-gmt-master-ii', 'iwc-pilot-utc'],
-  'longines-zulu-time':     ['tudor-black-bay-gmt', 'rolex-gmt-master-ii'],
+  'seiko-gmt':              ['tudor-m79830rb-0010', 'rolex-gmt-master-ii'],
+  'tudor-m79830rb-0010':    ['rolex-gmt-master-ii', 'iwc-pilot-utc'],
+  'longines-l3-802-4-53-6':     ['tudor-m79830rb-0010', 'rolex-gmt-master-ii'],
 
   // ── CHRONOGRAPH ──────────────────────────────────────────────────────
   // Seiko Speedtimer → Tudor BB Chrono → Omega Speedmaster Pro
-  'seiko-speedtimer':       ['tudor-black-bay-chrono', 'omega-speedmaster-professional'],
-  'tudor-black-bay-chrono': ['omega-speedmaster-professional', 'zenith-chronomaster'],
-  'omega-speedmaster-professional': ['zenith-chronomaster-original', 'rolex-daytona'],
+  'seiko-speedtimer':       ['tudor-m79360n-0002', 'omega-speedmaster-professional'],
+  'tudor-m79360n-0002': ['omega-speedmaster-professional', 'zenith-chronomaster'],
+  'omega-speedmaster-professional': ['zenith-03-3200-3600-69-m3200', 'rolex-daytona'],
 
   // ── DRESS ────────────────────────────────────────────────────────────
   // Orient Bambino → Longines Master → JLC Reverso
-  'orient-bambino':         ['longines-master-collection', 'cartier-tank-must'],
-  'longines-master-collection': ['jaeger-lecoultre-reverso', 'cartier-santos-dumont'],
+  'orient-fac00004w0':         ['longines-l2-793-4-78-3', 'cartier-tank-must'],
+  'longines-l2-793-4-78-3': ['jaeger-lecoultre-reverso', 'cartier-wssa0032'],
   'longines-flagship':      ['jaeger-lecoultre-master-ultra-thin', 'cartier-tank-must'],
   // Dress moonphase chain
-  'longines-master-moonphase': ['jaeger-lecoultre-master-ultra-thin-moon', 'patek-philippe-annual-calendar'],
+  'longines-l2-909-4-78-3': ['jaeger-lecoultre-q1362540', 'patek-philippe-annual-calendar'],
 
   // ── INTEGRATED BRACELET / DAILY ──────────────────────────────────────
   // Tissot PRX → Tudor Royal → Rolex Datejust
   'tissot-prx':             ['tudor-royal', 'rolex-datejust'],
-  'tudor-royal':            ['rolex-datejust', 'rolex-oyster-perpetual'],
-  'omega-aqua-terra':       ['rolex-datejust', 'rolex-oyster-perpetual'],
+  'tudor-royal':            ['rolex-datejust', 'rolex-124300'],
+  'omega-aqua-terra':       ['rolex-datejust', 'rolex-124300'],
 
   // ── SPORT / VERSATILE ────────────────────────────────────────────────
   // Grand Seiko Sport → Rolex Explorer II
-  'grand-seiko-sbgx335':   ['rolex-explorer-ii'],
+  'grand-seiko-sbgx335':   ['rolex-226570'],
   'grand-seiko-hi-beat':    ['rolex-datejust', 'patek-philippe-5711'],
 
 }

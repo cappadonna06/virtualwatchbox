@@ -29,6 +29,7 @@ import { fileURLToPath } from 'node:url'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
 import { watches } from '../lib/watches'
+import { isValidCatalogId, mintCatalogId } from '../lib/catalogId'
 import processedManifest from '../public/watch-assets/processed/manifest.json'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -95,6 +96,33 @@ async function main() {
       })
 
   const now = new Date().toISOString()
+
+  // Validate every seed entry's id matches the canonical mint rule. This is
+  // the gate that prevents drift: edits to lib/watches.ts that introduce a
+  // non-canonical id are caught at seed time, before they leak into the DB.
+  const idMismatches: Array<{ seedId: string; expected: string; brand: string; reference: string }> = []
+  for (const w of watches) {
+    if (!isValidCatalogId(w.id)) {
+      idMismatches.push({ seedId: w.id, expected: '<malformed>', brand: w.brand, reference: w.reference })
+      continue
+    }
+    const expected = mintCatalogId({
+      brand: w.brand,
+      reference: w.reference,
+      model: w.model,
+      dialColor: w.dialColor,
+    })
+    if (expected !== w.id) {
+      idMismatches.push({ seedId: w.id, expected, brand: w.brand, reference: w.reference })
+    }
+  }
+  if (idMismatches.length) {
+    console.error('[seedCatalog] seed contains non-canonical ids:')
+    for (const m of idMismatches) {
+      console.error(`  ${m.seedId.padEnd(50)} expected=${m.expected}  (${m.brand} / ${m.reference})`)
+    }
+    fail('Run `npm run catalog:migrate-ids` (then APPLY=1) to bring lib/watches.ts in line with lib/catalogId.ts.')
+  }
 
   const rows: CatalogRow[] = watches.map(w => ({
     id: w.id,

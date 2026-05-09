@@ -21,7 +21,7 @@ const processedWatchImages = new Map(
 
 const catalogWatches: CatalogWatch[] = [
   {
-    id: 'rolex-submariner-date',
+    id: 'rolex-126610ln',
     brand: 'Rolex',
     model: 'Submariner Date',
     reference: '126610LN',
@@ -35,7 +35,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Diver',
   },
   {
-    id: 'rolex-gmt-master-ii-pepsi',
+    id: 'rolex-126710blro',
     brand: 'Rolex',
     model: 'GMT-Master II',
     reference: '126710BLRO',
@@ -49,7 +49,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'GMT',
   },
   {
-    id: 'rolex-daytona-white',
+    id: 'rolex-116500ln',
     brand: 'Rolex',
     model: 'Cosmograph Daytona',
     reference: '116500LN',
@@ -63,7 +63,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Chronograph',
   },
   {
-    id: 'rolex-explorer-i',
+    id: 'rolex-124270',
     brand: 'Rolex',
     model: 'Explorer',
     reference: '124270',
@@ -77,7 +77,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Field',
   },
   {
-    id: 'rolex-datejust-blue',
+    id: 'rolex-126334',
     brand: 'Rolex',
     model: 'Datejust 41',
     reference: '126334',
@@ -91,7 +91,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Dress',
   },
   {
-    id: 'omega-speedmaster-moonwatch',
+    id: 'omega-310-30-42-50-01-001',
     brand: 'Omega',
     model: 'Speedmaster Professional',
     reference: '310.30.42.50.01.001',
@@ -105,7 +105,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Chronograph',
   },
   {
-    id: 'omega-seamaster-300m-blue',
+    id: 'omega-210-30-42-20-03-001',
     brand: 'Omega',
     model: 'Seamaster Diver 300M',
     reference: '210.30.42.20.03.001',
@@ -119,7 +119,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Diver',
   },
   {
-    id: 'omega-aqua-terra-green',
+    id: 'omega-220-10-41-21-10-001',
     brand: 'Omega',
     model: 'Seamaster Aqua Terra',
     reference: '220.10.41.21.10.001',
@@ -133,7 +133,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Sport',
   },
   {
-    id: 'omega-railmaster-grey',
+    id: 'omega-220-10-40-20-06-001',
     brand: 'Omega',
     model: 'Railmaster',
     reference: '220.10.40.20.06.001',
@@ -147,7 +147,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Field',
   },
   {
-    id: 'omega-constellation-silver',
+    id: 'omega-130-30-39-21-02-001',
     brand: 'Omega',
     model: 'Constellation Globemaster',
     reference: '130.30.39.21.02.001',
@@ -161,7 +161,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Dress',
   },
   {
-    id: 'patek-nautilus-blue',
+    id: 'patek-philippe-5711-1a-010',
     brand: 'Patek Philippe',
     model: 'Nautilus',
     reference: '5711/1A-010',
@@ -175,7 +175,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Integrated Bracelet',
   },
   {
-    id: 'patek-aquanaut-black',
+    id: 'patek-philippe-5167a-001',
     brand: 'Patek Philippe',
     model: 'Aquanaut',
     reference: '5167A-001',
@@ -189,7 +189,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Sport',
   },
   {
-    id: 'patek-calatrava-ivory',
+    id: 'patek-philippe-6119r-001',
     brand: 'Patek Philippe',
     model: 'Calatrava',
     reference: '6119R-001',
@@ -203,7 +203,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Dress',
   },
   {
-    id: 'patek-world-time-blue',
+    id: 'patek-philippe-5230p-001',
     brand: 'Patek Philippe',
     model: 'World Time',
     reference: '5230P-001',
@@ -217,7 +217,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'GMT',
   },
   {
-    id: 'patek-golden-ellipse',
+    id: 'patek-philippe-5738r-001',
     brand: 'Patek Philippe',
     model: 'Golden Ellipse',
     reference: '5738R-001',
@@ -231,7 +231,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Vintage',
   },
   {
-    id: 'lange-zeitwerk',
+    id: 'a-lange-and-sohne-142-031',
     brand: 'A. Lange & Söhne',
     model: 'Zeitwerk',
     reference: '142.031',
@@ -245,7 +245,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Dress',
   },
   {
-    id: 'lange-lange1',
+    id: 'a-lange-and-sohne-191-032',
     brand: 'A. Lange & Söhne',
     model: 'Lange 1',
     reference: '191.032',
@@ -259,7 +259,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Dress',
   },
   {
-    id: 'lange-saxonia-thin',
+    id: 'a-lange-and-sohne-205-086',
     brand: 'A. Lange & Söhne',
     model: 'Saxonia Thin',
     reference: '205.086',
@@ -273,7 +273,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Dress',
   },
   {
-    id: 'lange-odysseus-grey',
+    id: 'a-lange-and-sohne-363-179',
     brand: 'A. Lange & Söhne',
     model: 'Odysseus',
     reference: '363.179',
@@ -287,7 +287,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Integrated Bracelet',
   },
   {
-    id: 'lange-1815-chronograph',
+    id: 'a-lange-and-sohne-414-028',
     brand: 'A. Lange & Söhne',
     model: '1815 Chronograph',
     reference: '414.028',
@@ -301,7 +301,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Chronograph',
   },
   {
-    id: 'iwc-mark-xx-blue',
+    id: 'iwc-iw328203',
     brand: 'IWC',
     model: 'Pilot\'s Watch Mark XX',
     reference: 'IW328203',
@@ -315,7 +315,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Pilot',
   },
   {
-    id: 'iwc-big-pilot',
+    id: 'iwc-iw329301',
     brand: 'IWC',
     model: 'Big Pilot\'s Watch 43',
     reference: 'IW329301',
@@ -329,7 +329,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Pilot',
   },
   {
-    id: 'iwc-portugieser-chrono',
+    id: 'iwc-iw371606',
     brand: 'IWC',
     model: 'Portugieser Chronograph',
     reference: 'IW371606',
@@ -343,7 +343,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Chronograph',
   },
   {
-    id: 'iwc-ingenieur-aqua',
+    id: 'iwc-iw328901',
     brand: 'IWC',
     model: 'Ingenieur Automatic 40',
     reference: 'IW328901',
@@ -357,7 +357,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Integrated Bracelet',
   },
   {
-    id: 'iwc-spitfire-bronze',
+    id: 'iwc-iw326805',
     brand: 'IWC',
     model: 'Pilot\'s Watch Automatic Spitfire',
     reference: 'IW326805',
@@ -371,7 +371,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Pilot',
   },
   {
-    id: 'tudor-black-bay-58',
+    id: 'tudor-m79030n-0001',
     brand: 'Tudor',
     model: 'Black Bay 58',
     reference: 'M79030N-0001',
@@ -385,7 +385,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Diver',
   },
   {
-    id: 'tudor-pelagos-39',
+    id: 'tudor-m25407n-0001',
     brand: 'Tudor',
     model: 'Pelagos 39',
     reference: 'M25407N-0001',
@@ -399,7 +399,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Diver',
   },
   {
-    id: 'tudor-black-bay-gmt',
+    id: 'tudor-m79830rb-0010',
     brand: 'Tudor',
     model: 'Black Bay GMT',
     reference: 'M79830RB-0010',
@@ -413,7 +413,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'GMT',
   },
   {
-    id: 'tudor-ranger',
+    id: 'tudor-m79950-0001',
     brand: 'Tudor',
     model: 'Ranger',
     reference: 'M79950-0001',
@@ -427,7 +427,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Field',
   },
   {
-    id: 'tudor-royal-blue',
+    id: 'tudor-m28600-0005',
     brand: 'Tudor',
     model: 'Royal',
     reference: 'M28600-0005',
@@ -441,7 +441,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Integrated Bracelet',
   },
   {
-    id: 'tag-carrera-chrono',
+    id: 'tag-heuer-cbn2011-ba0642',
     brand: 'TAG Heuer',
     model: 'Carrera Chronograph',
     reference: 'CBN2011.BA0642',
@@ -455,7 +455,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Chronograph',
   },
   {
-    id: 'tag-monaco-blue',
+    id: 'tag-heuer-caw211p-fc6356',
     brand: 'TAG Heuer',
     model: 'Monaco',
     reference: 'CAW211P.FC6356',
@@ -469,7 +469,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Vintage',
   },
   {
-    id: 'tag-aquaracer-green',
+    id: 'tag-heuer-wbp201f-ba0632',
     brand: 'TAG Heuer',
     model: 'Aquaracer Professional 300',
     reference: 'WBP201F.BA0632',
@@ -483,7 +483,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Diver',
   },
   {
-    id: 'tag-autavia-gmt',
+    id: 'tag-heuer-wbe511a-ba0650',
     brand: 'TAG Heuer',
     model: 'Autavia GMT',
     reference: 'WBE511A.BA0650',
@@ -497,7 +497,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'GMT',
   },
   {
-    id: 'tag-carrera-date-silver',
+    id: 'tag-heuer-wbn2111-ba0639',
     brand: 'TAG Heuer',
     model: 'Carrera Date',
     reference: 'WBN2111.BA0639',
@@ -511,7 +511,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Sport',
   },
   {
-    id: 'breitling-navitimer-b01',
+    id: 'breitling-ab0138211b1a1',
     brand: 'Breitling',
     model: 'Navitimer B01 Chronograph 43',
     reference: 'AB0138211B1A1',
@@ -525,7 +525,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Chronograph',
   },
   {
-    id: 'breitling-superocean-blue',
+    id: 'breitling-a17375e71c1a1',
     brand: 'Breitling',
     model: 'Superocean Automatic 42',
     reference: 'A17375E71C1A1',
@@ -539,7 +539,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Diver',
   },
   {
-    id: 'breitling-avenger-gmt',
+    id: 'breitling-a32395101c1a1',
     brand: 'Breitling',
     model: 'Avenger Automatic GMT 45',
     reference: 'A32395101C1A1',
@@ -553,7 +553,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'GMT',
   },
   {
-    id: 'breitling-premier-pistachio',
+    id: 'breitling-ab0930d31l1p1',
     brand: 'Breitling',
     model: 'Premier B09 Chronograph 40',
     reference: 'AB0930D31L1P1',
@@ -567,7 +567,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Chronograph',
   },
   {
-    id: 'breitling-top-time-deus',
+    id: 'breitling-a233112a1a1x1',
     brand: 'Breitling',
     model: 'Top Time Deus',
     reference: 'A233112A1A1X1',
@@ -581,7 +581,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Vintage',
   },
   {
-    id: 'cartier-santos-medium',
+    id: 'cartier-wssa0029',
     brand: 'Cartier',
     model: 'Santos de Cartier',
     reference: 'WSSA0029',
@@ -595,7 +595,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Integrated Bracelet',
   },
   {
-    id: 'cartier-tank-must-large',
+    id: 'cartier-wsta0041',
     brand: 'Cartier',
     model: 'Tank Must Large',
     reference: 'WSTA0041',
@@ -609,7 +609,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Dress',
   },
   {
-    id: 'cartier-ballon-bleu',
+    id: 'cartier-wsbb0040',
     brand: 'Cartier',
     model: 'Ballon Bleu 40',
     reference: 'WSBB0040',
@@ -623,7 +623,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Dress',
   },
   {
-    id: 'cartier-pasha-41',
+    id: 'cartier-wspa0013',
     brand: 'Cartier',
     model: 'Pasha de Cartier',
     reference: 'WSPA0013',
@@ -637,7 +637,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Sport',
   },
   {
-    id: 'cartier-santos-dumont',
+    id: 'cartier-wssa0032',
     brand: 'Cartier',
     model: 'Santos-Dumont XL',
     reference: 'WSSA0032',
@@ -651,7 +651,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Vintage',
   },
   {
-    id: 'grandseiko-snowflake',
+    id: 'grand-seiko-sbga211',
     brand: 'Grand Seiko',
     model: 'Heritage Snowflake',
     reference: 'SBGA211',
@@ -665,7 +665,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Dress',
   },
   {
-    id: 'grandseiko-shunbun',
+    id: 'grand-seiko-sbga413',
     brand: 'Grand Seiko',
     model: 'Heritage Shunbun',
     reference: 'SBGA413',
@@ -679,7 +679,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Sport',
   },
   {
-    id: 'grandseiko-sbgm221',
+    id: 'grand-seiko-sbgm221',
     brand: 'Grand Seiko',
     model: 'Elegance GMT',
     reference: 'SBGM221',
@@ -693,7 +693,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'GMT',
   },
   {
-    id: 'grandseiko-white-birch',
+    id: 'grand-seiko-slgh005',
     brand: 'Grand Seiko',
     model: 'Evolution 9 White Birch',
     reference: 'SLGH005',
@@ -707,7 +707,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Sport',
   },
   {
-    id: 'grandseiko-sport-gmt',
+    id: 'grand-seiko-sbgn017',
     brand: 'Grand Seiko',
     model: 'Sport Quartz GMT',
     reference: 'SBGN017',
@@ -721,7 +721,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Sport',
   },
   {
-    id: 'oris-big-crown-d-26-286-hb-rag-green',
+    id: 'oris-d-26-286',
     brand: 'Oris',
     model: 'Big Crown D.26 286 HB-RAG',
     reference: 'D.26 286',
@@ -736,7 +736,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Pilot',
   },
   {
-    id: 'omega-seamaster-aqua-terra-blue',
+    id: 'omega-231-10-42-21-03-003',
     brand: 'Omega',
     model: 'Seamaster Aqua Terra',
     reference: '231.10.42.21.03.003',
@@ -766,7 +766,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Sport',
   },
   {
-    id: 'tudor-black-bay-gmt-m79830rb-0001',
+    id: 'tudor-m79830rb-0001',
     brand: 'Tudor',
     model: 'Black Bay GMT',
     reference: 'M79830RB-0001',
@@ -781,7 +781,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'GMT',
   },
   {
-    id: 'iwc-portugieser-chronograph-iw371446',
+    id: 'iwc-iw371446',
     brand: 'IWC',
     model: 'Portugieser Chronograph',
     reference: 'IW371446',
@@ -796,7 +796,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Chronograph',
   },
   {
-    id: 'tudor-black-bay-gmt-black',
+    id: 'tudor-m79830rb',
     brand: 'Tudor',
     model: 'Black Bay GMT',
     reference: 'M79830RB',
@@ -811,7 +811,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'GMT',
   },
   {
-    id: 'grand-seiko-hi-beat-36000-blue',
+    id: 'grand-seiko-sbgh267',
     brand: 'Grand Seiko',
     model: 'Hi-Beat 36000',
     reference: 'SBGH267',
@@ -826,7 +826,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Dress',
   },
   {
-    id: 'a-lange-and-sohne-1815-up-down-white',
+    id: 'a-lange-and-sohne-234-026',
     brand: 'A. Lange & Söhne',
     model: '1815 Up/Down',
     reference: '234.026',
@@ -841,7 +841,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Dress',
   },
   {
-    id: 'hamilton-khaki-navy-pioneer-h78719553',
+    id: 'hamilton-h78719553',
     brand: 'Hamilton',
     model: 'Khaki Navy Pioneer',
     reference: 'H78719553',
@@ -856,7 +856,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Dress',
   },
   {
-    id: 'longines-legend-diver-black',
+    id: 'longines-l3-764-4-50-0',
     brand: 'Longines',
     model: 'Legend Diver',
     reference: 'L3.764.4.50.0',
@@ -871,7 +871,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Diver',
   },
   {
-    id: 'longines-legend-diver-blue',
+    id: 'longines-l3-764-4-96-6',
     brand: 'Longines',
     model: 'Legend Diver',
     reference: 'L3.764.4.96.6',
@@ -886,7 +886,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Diver',
   },
   {
-    id: 'longines-legend-diver-green',
+    id: 'longines-l3-764-4-06-6',
     brand: 'Longines',
     model: 'Legend Diver',
     reference: 'L3.764.4.06.6',
@@ -901,7 +901,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Diver',
   },
   {
-    id: 'longines-legend-diver-white',
+    id: 'longines-l3-764-4-16-6',
     brand: 'Longines',
     model: 'Legend Diver',
     reference: 'L3.764.4.16.6',
@@ -916,7 +916,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Diver',
   },
   {
-    id: 'longines-legend-diver-grey',
+    id: 'longines-l3-764-4-99-6',
     brand: 'Longines',
     model: 'Legend Diver',
     reference: 'L3.764.4.99.6',
@@ -932,7 +932,7 @@ const catalogWatches: CatalogWatch[] = [
   },
   // ── Discover catalog hydration ─────────────────────────────────────────────
   {
-    id: 'tudor-black-bay-41',
+    id: 'tudor-m79540-0006',
     brand: 'Tudor',
     model: 'Black Bay 41',
     reference: 'M79540-0006',
@@ -947,7 +947,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Diver',
   },
   {
-    id: 'tudor-black-bay-chrono',
+    id: 'tudor-m79360n-0002',
     brand: 'Tudor',
     model: 'Black Bay Chrono',
     reference: 'M79360N-0002',
@@ -962,7 +962,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Chronograph',
   },
   {
-    id: 'rolex-submariner-no-date',
+    id: 'rolex-124060',
     brand: 'Rolex',
     model: 'Submariner',
     reference: '124060',
@@ -977,7 +977,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Diver',
   },
   {
-    id: 'rolex-gmt-master-ii-batman',
+    id: 'rolex-126710blnr',
     brand: 'Rolex',
     model: 'GMT-Master II',
     reference: '126710BLNR',
@@ -992,7 +992,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'GMT',
   },
   {
-    id: 'rolex-explorer-ii',
+    id: 'rolex-226570',
     brand: 'Rolex',
     model: 'Explorer II',
     reference: '226570',
@@ -1007,7 +1007,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'GMT',
   },
   {
-    id: 'rolex-oyster-perpetual',
+    id: 'rolex-124300',
     brand: 'Rolex',
     model: 'Oyster Perpetual 41',
     reference: '124300',
@@ -1022,7 +1022,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Sport',
   },
   {
-    id: 'rolex-sea-dweller',
+    id: 'rolex-126600',
     brand: 'Rolex',
     model: 'Sea-Dweller',
     reference: '126600',
@@ -1037,7 +1037,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Diver',
   },
   {
-    id: 'zenith-chronomaster-original',
+    id: 'zenith-03-3200-3600-69-m3200',
     brand: 'Zenith',
     model: 'Chronomaster Original',
     reference: '03.3200.3600/69.M3200',
@@ -1052,7 +1052,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Chronograph',
   },
   {
-    id: 'jaeger-lecoultre-reverso-classic',
+    id: 'jaeger-lecoultre-q3858522',
     brand: 'Jaeger-LeCoultre',
     model: 'Reverso Classic Large',
     reference: 'Q3858522',
@@ -1067,7 +1067,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Dress',
   },
   {
-    id: 'jaeger-lecoultre-master-ultra-thin-moon',
+    id: 'jaeger-lecoultre-q1362540',
     brand: 'Jaeger-LeCoultre',
     model: 'Master Ultra Thin Moon',
     reference: 'Q1362540',
@@ -1082,7 +1082,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Dress',
   },
   {
-    id: 'longines-spirit',
+    id: 'longines-l3-810-4-73-6',
     brand: 'Longines',
     model: 'Spirit',
     reference: 'L3.810.4.73.6',
@@ -1097,7 +1097,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Field',
   },
   {
-    id: 'longines-zulu-time',
+    id: 'longines-l3-802-4-53-6',
     brand: 'Longines',
     model: 'Spirit Zulu Time',
     reference: 'L3.802.4.53.6',
@@ -1112,7 +1112,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'GMT',
   },
   {
-    id: 'longines-master-collection',
+    id: 'longines-l2-793-4-78-3',
     brand: 'Longines',
     model: 'Master Collection',
     reference: 'L2.793.4.78.3',
@@ -1127,7 +1127,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Dress',
   },
   {
-    id: 'longines-master-moonphase',
+    id: 'longines-l2-909-4-78-3',
     brand: 'Longines',
     model: 'Master Collection Moonphase',
     reference: 'L2.909.4.78.3',
@@ -1157,7 +1157,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Sport',
   },
   {
-    id: 'hamilton-khaki-field-mechanical',
+    id: 'hamilton-h69439931',
     brand: 'Hamilton',
     model: 'Khaki Field Mechanical',
     reference: 'H69439931',
@@ -1172,7 +1172,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Field',
   },
   {
-    id: 'hamilton-khaki-aviation-pilot-day-date',
+    id: 'hamilton-h64635555',
     brand: 'Hamilton',
     model: 'Khaki Aviation Pilot Day Date',
     reference: 'H64635555',
@@ -1187,7 +1187,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Pilot',
   },
   {
-    id: 'seiko-alpinist-spb143',
+    id: 'seiko-spb143',
     brand: 'Seiko',
     model: 'Prospex Alpinist',
     reference: 'SPB143',
@@ -1202,7 +1202,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Field',
   },
   {
-    id: 'seiko-62mas-reissue-spb077',
+    id: 'seiko-spb077',
     brand: 'Seiko',
     model: 'Prospex 1965 Diver Reissue',
     reference: 'SPB077',
@@ -1217,7 +1217,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Diver',
   },
   {
-    id: 'seiko-5-sports-gmt-ssk001',
+    id: 'seiko-ssk001',
     brand: 'Seiko',
     model: '5 Sports GMT',
     reference: 'SSK001',
@@ -1232,7 +1232,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'GMT',
   },
   {
-    id: 'seiko-skx007',
+    id: 'seiko-skx007j1',
     brand: 'Seiko',
     model: 'SKX007',
     reference: 'SKX007J1',
@@ -1247,7 +1247,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Diver',
   },
   {
-    id: 'tissot-prx-powermatic-80',
+    id: 'tissot-t137-407-11-041-00',
     brand: 'Tissot',
     model: 'PRX Powermatic 80',
     reference: 'T137.407.11.041.00',
@@ -1261,7 +1261,7 @@ const catalogWatches: CatalogWatch[] = [
     watchType: 'Integrated Bracelet',
   },
   {
-    id: 'orient-bambino',
+    id: 'orient-fac00004w0',
     brand: 'Orient',
     model: 'Bambino Version 1',
     reference: 'FAC00004W0',
