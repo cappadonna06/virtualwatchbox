@@ -116,5 +116,10 @@ export const brand = {
       menuPadding: 6,
       optionMinHeight: 36,
     },
+    iconButton: {
+      size: 36,
+      svgSize: 16,
+      radius: 6,
+    },
   },
 } as const

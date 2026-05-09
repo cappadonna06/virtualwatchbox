@@ -321,8 +321,13 @@ export default function NavBar() {
                   border: 'none',
                   cursor: 'pointer',
                   color: brand.colors.muted,
+                  width: 28,
+                  height: 28,
                   display: 'inline-flex',
-                  padding: 2,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: 0,
+                  borderRadius: brand.radius.sm,
                 }}
               >
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
@@ -370,8 +375,8 @@ export default function NavBar() {
               aria-label={`Account menu for ${user.email ?? 'you'}`}
               title={user.email ?? undefined}
               style={{
-                width: 34,
-                height: 34,
+                width: 36,
+                height: 36,
                 borderRadius: brand.radius.circle,
                 background: brand.colors.ink,
                 color: brand.colors.bg,
