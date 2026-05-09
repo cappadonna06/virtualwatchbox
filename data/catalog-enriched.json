@@ -1,0 +1,3846 @@
+{
+  "generatedAt": "2026-05-09T00:53:33.106Z",
+  "sources": {
+    "seed": "data/catalog-seed-200.csv",
+    "kaggle": null,
+    "watchspecsCacheDir": "data/external/watchspecs-cache"
+  },
+  "coverage": {
+    "seedRows": 200,
+    "kaggleListings": 0,
+    "kaggleMatched": 0,
+    "watchspecsCacheHits": 0,
+    "fieldFill": {
+      "caseSizeMm": {
+        "filled": 0,
+        "pct": 0
+      },
+      "lugWidthMm": {
+        "filled": 0,
+        "pct": 0
+      },
+      "caseMaterial": {
+        "filled": 0,
+        "pct": 0
+      },
+      "dialColor": {
+        "filled": 200,
+        "pct": 100
+      },
+      "movement": {
+        "filled": 0,
+        "pct": 0
+      },
+      "estimatedValue": {
+        "filled": 0,
+        "pct": 0
+      },
+      "watchType": {
+        "filled": 200,
+        "pct": 100
+      }
+    }
+  },
+  "records": [
+    {
+      "id": "rolex-submariner-date-126610ln",
+      "brand": "Rolex",
+      "model": "Submariner Date",
+      "reference": "126610LN",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.rolex.com/en-us/watches/submariner/m126610ln-0001",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "rolex-submariner-no-date-124060",
+      "brand": "Rolex",
+      "model": "Submariner",
+      "reference": "124060",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.rolex.com/en-us/watches/submariner",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "rolex-gmt-master-ii-pepsi-126710blro",
+      "brand": "Rolex",
+      "model": "GMT-Master II",
+      "reference": "126710BLRO",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "GMT",
+      "sourceUrl": "https://www.rolex.com/en-us/watches/gmt-master-ii",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "rolex-gmt-master-ii-batman-126710blnr",
+      "brand": "Rolex",
+      "model": "GMT-Master II",
+      "reference": "126710BLNR",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "GMT",
+      "sourceUrl": "https://www.rolex.com/en-us/watches/gmt-master-ii",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "rolex-daytona-white-126500ln",
+      "brand": "Rolex",
+      "model": "Cosmograph Daytona",
+      "reference": "126500LN",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.rolex.com/en-us/watches/cosmograph-daytona",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "rolex-daytona-black-126500ln",
+      "brand": "Rolex",
+      "model": "Cosmograph Daytona",
+      "reference": "126500LN",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.rolex.com/en-us/watches/cosmograph-daytona",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "rolex-explorer-124270",
+      "brand": "Rolex",
+      "model": "Explorer",
+      "reference": "124270",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Field",
+      "sourceUrl": "https://www.rolex.com/en-us/watches/explorer",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "rolex-explorer-ii-polar-226570",
+      "brand": "Rolex",
+      "model": "Explorer II",
+      "reference": "226570",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "GMT",
+      "sourceUrl": "https://www.rolex.com/en-us/watches/explorer",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "rolex-datejust-blue-126334",
+      "brand": "Rolex",
+      "model": "Datejust 41",
+      "reference": "126334",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.rolex.com/en-us/watches/datejust",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "rolex-datejust-silver-126300",
+      "brand": "Rolex",
+      "model": "Datejust 41",
+      "reference": "126300",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.rolex.com/en-us/watches/datejust",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "rolex-oyster-perpetual-green-124300",
+      "brand": "Rolex",
+      "model": "Oyster Perpetual 41",
+      "reference": "124300",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Green",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.rolex.com/en-us/watches/oyster-perpetual",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "rolex-yacht-master-126622",
+      "brand": "Rolex",
+      "model": "Yacht-Master 40",
+      "reference": "126622",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Slate",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.rolex.com/en-us/watches/yacht-master",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "rolex-sea-dweller-126600",
+      "brand": "Rolex",
+      "model": "Sea-Dweller",
+      "reference": "126600",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.rolex.com/en-us/watches/sea-dweller",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "rolex-milgauss-z-blue-116400gv",
+      "brand": "Rolex",
+      "model": "Milgauss",
+      "reference": "116400GV",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.rolex.com/en-us/watches",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "rolex-day-date-olive-228235",
+      "brand": "Rolex",
+      "model": "Day-Date 40",
+      "reference": "228235",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Olive",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.rolex.com/en-us/watches/day-date",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "omega-speedmaster-moonwatch-31030425001001",
+      "brand": "Omega",
+      "model": "Speedmaster Professional Moonwatch",
+      "reference": "310.30.42.50.01.001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.omegawatches.com/watches/speedmaster/moonwatch-professional",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "omega-speedmaster-sapphire-31030425001002",
+      "brand": "Omega",
+      "model": "Speedmaster Professional Moonwatch",
+      "reference": "310.30.42.50.01.002",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.omegawatches.com/watches/speedmaster/moonwatch-professional",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "omega-seamaster-diver-blue-21030422003001",
+      "brand": "Omega",
+      "model": "Seamaster Diver 300M",
+      "reference": "210.30.42.20.03.001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.omegawatches.com/watches/seamaster/diver-300-m",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "omega-seamaster-diver-black-21030422001001",
+      "brand": "Omega",
+      "model": "Seamaster Diver 300M",
+      "reference": "210.30.42.20.01.001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.omegawatches.com/watches/seamaster/diver-300-m",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "omega-aqua-terra-blue-22010412103004",
+      "brand": "Omega",
+      "model": "Seamaster Aqua Terra",
+      "reference": "220.10.41.21.03.004",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.omegawatches.com/watches/seamaster/aqua-terra-150m",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "omega-aqua-terra-green-22010412110001",
+      "brand": "Omega",
+      "model": "Seamaster Aqua Terra",
+      "reference": "220.10.41.21.10.001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Green",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.omegawatches.com/watches/seamaster/aqua-terra-150m",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "omega-planet-ocean-21530442101001",
+      "brand": "Omega",
+      "model": "Seamaster Planet Ocean 600M",
+      "reference": "215.30.44.21.01.001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.omegawatches.com/watches/seamaster/planet-ocean-600m",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "omega-railmaster-22010402001001",
+      "brand": "Omega",
+      "model": "Railmaster",
+      "reference": "220.10.40.20.01.001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Field",
+      "sourceUrl": "https://www.omegawatches.com/watches/seamaster/railmaster",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "omega-constellation-globemaster-13030392102001",
+      "brand": "Omega",
+      "model": "Constellation Globemaster",
+      "reference": "130.30.39.21.02.001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.omegawatches.com/watches/constellation/globemaster",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "omega-de-ville-tresor-43513402103001",
+      "brand": "Omega",
+      "model": "De Ville Tresor",
+      "reference": "435.13.40.21.03.001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.omegawatches.com/watches/de-ville/tresor",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "omega-speedmaster-racing-32930445101002",
+      "brand": "Omega",
+      "model": "Speedmaster Racing",
+      "reference": "329.30.44.51.01.002",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.omegawatches.com/watches/speedmaster",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "omega-seamaster-heritage-23430412101001",
+      "brand": "Omega",
+      "model": "Seamaster 300",
+      "reference": "234.30.41.21.01.001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.omegawatches.com/watches/seamaster/seamaster-300",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "omega-speedmaster-57-blue-33210415103001",
+      "brand": "Omega",
+      "model": "Speedmaster 57",
+      "reference": "332.10.41.51.03.001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.omegawatches.com/watches/speedmaster",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "omega-ploprof-22790552104001",
+      "brand": "Omega",
+      "model": "Seamaster Ploprof",
+      "reference": "227.90.55.21.04.001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.omegawatches.com/watches/seamaster",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tudor-black-bay-58-m79030n",
+      "brand": "Tudor",
+      "model": "Black Bay 58",
+      "reference": "M79030N-0001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.tudorwatch.com/en/watches/black-bay-58",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tudor-black-bay-54-m79000n",
+      "brand": "Tudor",
+      "model": "Black Bay 54",
+      "reference": "M79000N-0001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.tudorwatch.com/en/watches/black-bay-54",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tudor-pelagos-39-m25407n",
+      "brand": "Tudor",
+      "model": "Pelagos 39",
+      "reference": "M25407N-0001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.tudorwatch.com/en/watches/pelagos-39",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tudor-pelagos-fxd-m25707b",
+      "brand": "Tudor",
+      "model": "Pelagos FXD",
+      "reference": "M25707B/23-0001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.tudorwatch.com/en/watches/pelagos-fxd",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tudor-black-bay-gmt-m79830rb",
+      "brand": "Tudor",
+      "model": "Black Bay GMT",
+      "reference": "M79830RB-0001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "GMT",
+      "sourceUrl": "https://www.tudorwatch.com/en/watches/black-bay-gmt/m79830rb-0001",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tudor-black-bay-pro-m79470",
+      "brand": "Tudor",
+      "model": "Black Bay Pro",
+      "reference": "M79470-0001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "GMT",
+      "sourceUrl": "https://www.tudorwatch.com/en/watches/black-bay-pro",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tudor-ranger-m79950",
+      "brand": "Tudor",
+      "model": "Ranger",
+      "reference": "M79950-0001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Field",
+      "sourceUrl": "https://www.tudorwatch.com/en/watches/ranger",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tudor-royal-blue-m28600",
+      "brand": "Tudor",
+      "model": "Royal",
+      "reference": "M28600-0005",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Integrated Bracelet",
+      "sourceUrl": "https://www.tudorwatch.com/en/watches/tudor-royal",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tudor-prince-chrono-79280",
+      "brand": "Tudor",
+      "model": "Prince Date Chronograph",
+      "reference": "79280",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.tudorwatch.com/en/tudor-mag/tudor-history",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tudor-north-flag-91210n",
+      "brand": "Tudor",
+      "model": "North Flag",
+      "reference": "91210N",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.tudorwatch.com/en/tudor-mag/tudor-history",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "cartier-tank-must-large-wsta0041",
+      "brand": "Cartier",
+      "model": "Tank Must Large",
+      "reference": "WSTA0041",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.cartier.com/en-us/watches/collections/tank",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "cartier-tank-louis-wgta0011",
+      "brand": "Cartier",
+      "model": "Tank Louis Cartier",
+      "reference": "WGTA0011",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.cartier.com/en-us/watches/collections/tank",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "cartier-santos-medium-wssa0029",
+      "brand": "Cartier",
+      "model": "Santos de Cartier Medium",
+      "reference": "WSSA0029",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.cartier.com/en-us/watches/collections/santos-de-cartier",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "cartier-santos-large-wssa0018",
+      "brand": "Cartier",
+      "model": "Santos de Cartier Large",
+      "reference": "WSSA0018",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.cartier.com/en-us/watches/collections/santos-de-cartier",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "cartier-santos-dumont-wssa0022",
+      "brand": "Cartier",
+      "model": "Santos-Dumont",
+      "reference": "WSSA0022",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.cartier.com/en-us/watches/collections/santos-dumont",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "cartier-ballon-bleu-w69012z4",
+      "brand": "Cartier",
+      "model": "Ballon Bleu de Cartier",
+      "reference": "W69012Z4",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.cartier.com/en-us/watches/collections/ballon-bleu-de-cartier",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "cartier-panthere-wspn0006",
+      "brand": "Cartier",
+      "model": "Panthere de Cartier",
+      "reference": "WSPN0006",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.cartier.com/en-us/watches/collections/panthere-de-cartier",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "cartier-pasha-wspa0010",
+      "brand": "Cartier",
+      "model": "Pasha de Cartier",
+      "reference": "WSPA0010",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.cartier.com/en-us/watches/collections/pasha-de-cartier",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "cartier-tank-francaise-wsta0065",
+      "brand": "Cartier",
+      "model": "Tank Francaise",
+      "reference": "WSTA0065",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.cartier.com/en-us/watches/collections/tank",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "cartier-drive-de-cartier-wsnm0004",
+      "brand": "Cartier",
+      "model": "Drive de Cartier",
+      "reference": "WSNM0004",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.cartier.com/en-us/watches",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "grand-seiko-snowflake-sbga211",
+      "brand": "Grand Seiko",
+      "model": "Heritage Snowflake",
+      "reference": "SBGA211",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.grand-seiko.com/us-en/collections/sbga211g",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "grand-seiko-shunbun-sbga413",
+      "brand": "Grand Seiko",
+      "model": "Heritage Shunbun",
+      "reference": "SBGA413",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Pink",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.grand-seiko.com/us-en/collections/sbga413g",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "grand-seiko-white-birch-slgh005",
+      "brand": "Grand Seiko",
+      "model": "Evolution 9 White Birch",
+      "reference": "SLGH005",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.grand-seiko.com/us-en/collections/slgh005g",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "grand-seiko-lake-suwa-slga021",
+      "brand": "Grand Seiko",
+      "model": "Evolution 9 Lake Suwa",
+      "reference": "SLGA021",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.grand-seiko.com/us-en/collections/slga021g",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "grand-seiko-tentagraph-slgc001",
+      "brand": "Grand Seiko",
+      "model": "Tentagraph",
+      "reference": "SLGC001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.grand-seiko.com/us-en/collections/slgc001g",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "grand-seiko-sbgm221",
+      "brand": "Grand Seiko",
+      "model": "Elegance GMT",
+      "reference": "SBGM221",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Ivory",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "GMT",
+      "sourceUrl": "https://www.grand-seiko.com/us-en/collections/sbgm221g",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "grand-seiko-sbgx261",
+      "brand": "Grand Seiko",
+      "model": "Heritage 9F Quartz",
+      "reference": "SBGX261",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.grand-seiko.com/us-en/collections/sbgx261g",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "grand-seiko-sbgr261",
+      "brand": "Grand Seiko",
+      "model": "Heritage Automatic",
+      "reference": "SBGR261",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Cream",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.grand-seiko.com/us-en/collections/sbgr261g",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "grand-seiko-sbga375",
+      "brand": "Grand Seiko",
+      "model": "Heritage Spring Drive",
+      "reference": "SBGA375",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.grand-seiko.com/us-en/collections/sbga375g",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "grand-seiko-sbga469",
+      "brand": "Grand Seiko",
+      "model": "Heritage Katsuiro",
+      "reference": "SBGA469",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.grand-seiko.com/us-en/collections",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "grand-seiko-sbgp005",
+      "brand": "Grand Seiko",
+      "model": "Heritage Quartz",
+      "reference": "SBGP005",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.grand-seiko.com/us-en/collections",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "grand-seiko-sbgj237",
+      "brand": "Grand Seiko",
+      "model": "Sport GMT",
+      "reference": "SBGJ237",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "GMT",
+      "sourceUrl": "https://www.grand-seiko.com/us-en/collections/sbgj237g",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "grand-seiko-sbgw231",
+      "brand": "Grand Seiko",
+      "model": "Elegance Manual Wind",
+      "reference": "SBGW231",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Cream",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.grand-seiko.com/us-en/collections/sbgw231g",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "grand-seiko-sbgw301",
+      "brand": "Grand Seiko",
+      "model": "Elegance Manual Wind",
+      "reference": "SBGW301",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.grand-seiko.com/us-en/collections",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "grand-seiko-sbgn017",
+      "brand": "Grand Seiko",
+      "model": "Sport Quartz GMT",
+      "reference": "SBGN017",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "GMT",
+      "sourceUrl": "https://www.grand-seiko.com/us-en/collections/sbgn017g",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "seiko-skx007",
+      "brand": "Seiko",
+      "model": "SKX007",
+      "reference": "SKX007",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.seikowatches.com/us-en",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "seiko-skx009",
+      "brand": "Seiko",
+      "model": "SKX009",
+      "reference": "SKX009",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.seikowatches.com/us-en",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "seiko-spb143",
+      "brand": "Seiko",
+      "model": "Prospex 1965 Diver Re-interpretation",
+      "reference": "SPB143",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Grey",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.seikowatches.com/us-en/products/prospex",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "seiko-spb151-captain-willard",
+      "brand": "Seiko",
+      "model": "Prospex Captain Willard",
+      "reference": "SPB151",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.seikowatches.com/us-en/products/prospex",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "seiko-spb153-captain-willard",
+      "brand": "Seiko",
+      "model": "Prospex Captain Willard",
+      "reference": "SPB153",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Green",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.seikowatches.com/us-en/products/prospex",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "seiko-spb155-baby-alpinist",
+      "brand": "Seiko",
+      "model": "Prospex Baby Alpinist",
+      "reference": "SPB155",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Green",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Field",
+      "sourceUrl": "https://www.seikowatches.com/us-en/products/prospex",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "seiko-sarb033",
+      "brand": "Seiko",
+      "model": "SARB033",
+      "reference": "SARB033",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.seikowatches.com/us-en",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "seiko-sarb035",
+      "brand": "Seiko",
+      "model": "SARB035",
+      "reference": "SARB035",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Cream",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.seikowatches.com/us-en",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "seiko-srpe93-turtle",
+      "brand": "Seiko",
+      "model": "Prospex Turtle",
+      "reference": "SRPE93",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.seikowatches.com/us-en/products/prospex",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "seiko-srpb41-cocktail-time",
+      "brand": "Seiko",
+      "model": "Presage Cocktail Time",
+      "reference": "SRPB41",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.seikowatches.com/us-en/products/presage",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "seiko-srpe41-cocktail-time",
+      "brand": "Seiko",
+      "model": "Presage Cocktail Time",
+      "reference": "SRPE41",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Red",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.seikowatches.com/us-en/products/presage",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "seiko-srpg35",
+      "brand": "Seiko",
+      "model": "Seiko 5 Sports Field",
+      "reference": "SRPG35",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Field",
+      "sourceUrl": "https://www.seikowatches.com/us-en/products/5sports",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "seiko-srpd55",
+      "brand": "Seiko",
+      "model": "Seiko 5 Sports",
+      "reference": "SRPD55",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.seikowatches.com/us-en/products/5sports",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "seiko-ssc813-speedtimer",
+      "brand": "Seiko",
+      "model": "Prospex Speedtimer",
+      "reference": "SSC813",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.seikowatches.com/us-en/products/prospex",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "seiko-sla043",
+      "brand": "Seiko",
+      "model": "Prospex 62MAS Re-creation",
+      "reference": "SLA043",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.seikowatches.com/us-en/products/prospex",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "sinn-556i",
+      "brand": "Sinn",
+      "model": "556 I",
+      "reference": "556.010",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Field",
+      "sourceUrl": "https://www.sinn.de/en/watches/series/556.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "sinn-556a",
+      "brand": "Sinn",
+      "model": "556 A",
+      "reference": "556.014",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Field",
+      "sourceUrl": "https://www.sinn.de/en/watches/series/556.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "sinn-104-white",
+      "brand": "Sinn",
+      "model": "104 St Sa I",
+      "reference": "104.012",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Pilot",
+      "sourceUrl": "https://www.sinn.de/en/watches/series/104.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "sinn-104-black",
+      "brand": "Sinn",
+      "model": "104 St Sa I",
+      "reference": "104.010",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Pilot",
+      "sourceUrl": "https://www.sinn.de/en/watches/series/104.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "sinn-356-sa",
+      "brand": "Sinn",
+      "model": "356 Sa",
+      "reference": "356.072",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.sinn.de/en/watches/series/356.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "sinn-903-st",
+      "brand": "Sinn",
+      "model": "903 St",
+      "reference": "903.041",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.sinn.de/en/watches/series/903.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "sinn-u50",
+      "brand": "Sinn",
+      "model": "U50",
+      "reference": "U50.010",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.sinn.de/en/watches/series/u50.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "sinn-u1",
+      "brand": "Sinn",
+      "model": "U1",
+      "reference": "U1.101",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.sinn.de/en/watches/series/u1.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "sinn-857-utc",
+      "brand": "Sinn",
+      "model": "857 UTC",
+      "reference": "857.011",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "GMT",
+      "sourceUrl": "https://www.sinn.de/en/watches/series/857.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "sinn-103-st",
+      "brand": "Sinn",
+      "model": "103 St",
+      "reference": "103.031",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.sinn.de/en/watches/series/103.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "nomos-tangente-38",
+      "brand": "NOMOS",
+      "model": "Tangente 38",
+      "reference": "164",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://nomos-glashuette.com/en/tangente",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "nomos-tangente-neomatik-41-update",
+      "brand": "NOMOS",
+      "model": "Tangente Neomatik 41 Update",
+      "reference": "180",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://nomos-glashuette.com/en/tangente",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "nomos-club-campus-38",
+      "brand": "NOMOS",
+      "model": "Club Campus 38",
+      "reference": "737",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Field",
+      "sourceUrl": "https://nomos-glashuette.com/en/club",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "nomos-club-753",
+      "brand": "NOMOS",
+      "model": "Club",
+      "reference": "753",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Field",
+      "sourceUrl": "https://nomos-glashuette.com/en/club",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "nomos-orion-38",
+      "brand": "NOMOS",
+      "model": "Orion 38",
+      "reference": "384",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://nomos-glashuette.com/en/orion",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "nomos-orion-duo-33",
+      "brand": "NOMOS",
+      "model": "Orion Duo",
+      "reference": "319",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://nomos-glashuette.com/en/orion",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "nomos-metro-neomatik",
+      "brand": "NOMOS",
+      "model": "Metro Neomatik",
+      "reference": "1113",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://nomos-glashuette.com/en/metro",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "nomos-ahoi-atlantic",
+      "brand": "NOMOS",
+      "model": "Ahoi Neomatik Atlantic",
+      "reference": "561",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://nomos-glashuette.com/en/ahoi",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "nomos-zurich-world-time",
+      "brand": "NOMOS",
+      "model": "Zurich World Time",
+      "reference": "805",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "GMT",
+      "sourceUrl": "https://nomos-glashuette.com/en/zurich",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "nomos-ludwig-38",
+      "brand": "NOMOS",
+      "model": "Ludwig 38",
+      "reference": "234",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://nomos-glashuette.com/en/ludwig",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "hamilton-khaki-field-mechanical-h69439931",
+      "brand": "Hamilton",
+      "model": "Khaki Field Mechanical",
+      "reference": "H69439931",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Field",
+      "sourceUrl": "https://www.hamiltonwatch.com/en-us/collection/khaki-field.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "hamilton-khaki-field-auto-h70455533",
+      "brand": "Hamilton",
+      "model": "Khaki Field Auto",
+      "reference": "H70455533",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Field",
+      "sourceUrl": "https://www.hamiltonwatch.com/en-us/collection/khaki-field.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "hamilton-khaki-aviation-pilot-pioneer-h76419931",
+      "brand": "Hamilton",
+      "model": "Khaki Aviation Pilot Pioneer",
+      "reference": "H76419931",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Pilot",
+      "sourceUrl": "https://www.hamiltonwatch.com/en-us/collection/khaki-aviation.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "hamilton-intra-matic-auto-chrono-h38416711",
+      "brand": "Hamilton",
+      "model": "Intra-Matic Auto Chrono",
+      "reference": "H38416711",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.hamiltonwatch.com/en-us/collection/american-classic.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "hamilton-khaki-navy-pioneer-h78719553",
+      "brand": "Hamilton",
+      "model": "Khaki Navy Pioneer",
+      "reference": "H78719553",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.hamiltonwatch.com/en-us/collection/khaki-navy.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "hamilton-ventura-h24411732",
+      "brand": "Hamilton",
+      "model": "Ventura",
+      "reference": "H24411732",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Vintage",
+      "sourceUrl": "https://www.hamiltonwatch.com/en-us/collection/ventura.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "hamilton-murph-38-h70405730",
+      "brand": "Hamilton",
+      "model": "Khaki Field Murph 38",
+      "reference": "H70405730",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Field",
+      "sourceUrl": "https://www.hamiltonwatch.com/en-us/collection/khaki-field.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "hamilton-psr-h52414130",
+      "brand": "Hamilton",
+      "model": "PSR Digital Quartz",
+      "reference": "H52414130",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Vintage",
+      "sourceUrl": "https://www.hamiltonwatch.com/en-us/collection/american-classic.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "longines-legend-diver-white-l37644166",
+      "brand": "Longines",
+      "model": "Legend Diver",
+      "reference": "L3.764.4.16.6",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.longines.com/en-us/p/watch-longines-legend-diver-l3-764-4-16-6",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "longines-legend-diver-blue-l37644966",
+      "brand": "Longines",
+      "model": "Legend Diver",
+      "reference": "L3.764.4.96.6",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.longines.com/en-us/collection/longines-legend-diver",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "longines-legend-diver-green-l37644066",
+      "brand": "Longines",
+      "model": "Legend Diver",
+      "reference": "L3.764.4.06.6",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Green",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.longines.com/en-us/collection/longines-legend-diver",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "longines-legend-diver-black-l37644500",
+      "brand": "Longines",
+      "model": "Legend Diver",
+      "reference": "L3.764.4.50.0",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.longines.com/en-us/collection/longines-legend-diver",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "longines-spirit-zulu-time-l38124632",
+      "brand": "Longines",
+      "model": "Spirit Zulu Time",
+      "reference": "L3.812.4.63.2",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "GMT",
+      "sourceUrl": "https://www.longines.com/en-us/collection/longines-spirit",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "longines-spirit-37-blue-l38024936",
+      "brand": "Longines",
+      "model": "Spirit 37",
+      "reference": "L3.802.4.93.6",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Pilot",
+      "sourceUrl": "https://www.longines.com/en-us/collection/longines-spirit",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "longines-hydroconquest-blue-l37814966",
+      "brand": "Longines",
+      "model": "HydroConquest",
+      "reference": "L3.781.4.96.6",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.longines.com/en-us/collection/hydroconquest",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "longines-conquest-green-l38304026",
+      "brand": "Longines",
+      "model": "Conquest",
+      "reference": "L3.830.4.02.6",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Green",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.longines.com/en-us/collection/conquest",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "longines-master-moonphase-l29094783",
+      "brand": "Longines",
+      "model": "Master Collection Moonphase",
+      "reference": "L2.909.4.78.3",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.longines.com/en-us/collection/the-longines-master-collection",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "longines-ultra-chron-l28364526",
+      "brand": "Longines",
+      "model": "Ultra-Chron",
+      "reference": "L2.836.4.52.6",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.longines.com/en-us/collection/ultra-chron",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "oris-big-crown-d26-286-hb-rag",
+      "brand": "Oris",
+      "model": "Big Crown D.26 286 HB-RAG",
+      "reference": "D.26 286 HB-RAG",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Green",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Pilot",
+      "sourceUrl": "https://www.oris.ch/en-US",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "oris-big-crown-pointer-date-green",
+      "brand": "Oris",
+      "model": "Big Crown Pointer Date",
+      "reference": "",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Green",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Pilot",
+      "sourceUrl": "https://www.oris.ch/en-US/collection/big-crown",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "oris-divers-sixty-five-blue",
+      "brand": "Oris",
+      "model": "Divers Sixty-Five",
+      "reference": "",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.oris.ch/en-US/collection/divers",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "oris-aquis-date-green",
+      "brand": "Oris",
+      "model": "Aquis Date",
+      "reference": "",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Green",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.oris.ch/en-US/collection/aquis",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "oris-propilot-x-calibre-400",
+      "brand": "Oris",
+      "model": "ProPilot X Calibre 400",
+      "reference": "",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Grey",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Pilot",
+      "sourceUrl": "https://www.oris.ch/en-US/collection/propilot",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "oris-cotton-candy-bronze",
+      "brand": "Oris",
+      "model": "Divers Sixty-Five Cotton Candy",
+      "reference": "",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.oris.ch/en-US/collection/divers",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "oris-big-crown-bronze-pointer-date",
+      "brand": "Oris",
+      "model": "Big Crown Bronze Pointer Date",
+      "reference": "",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Green",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Pilot",
+      "sourceUrl": "https://www.oris.ch/en-US/collection/big-crown",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "oris-calibre-473",
+      "brand": "Oris",
+      "model": "Big Crown Calibre 473",
+      "reference": "",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Pilot",
+      "sourceUrl": "https://www.oris.ch/en-US/collection/big-crown",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tag-carrera-chrono-cbn2011",
+      "brand": "Tag Heuer",
+      "model": "Carrera Chronograph",
+      "reference": "CBN2011.BA0642",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-carrera/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tag-carrera-date-wbn2111",
+      "brand": "Tag Heuer",
+      "model": "Carrera Date",
+      "reference": "WBN2111.BA0639",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-carrera/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tag-monaco-caw211p",
+      "brand": "Tag Heuer",
+      "model": "Monaco",
+      "reference": "CAW211P.FC6356",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Vintage",
+      "sourceUrl": "https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-monaco/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tag-aquaracer-green-wbp201f",
+      "brand": "Tag Heuer",
+      "model": "Aquaracer Professional 300",
+      "reference": "WBP201F.BA0632",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Green",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-aquaracer/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tag-aquaracer-night-diver",
+      "brand": "Tag Heuer",
+      "model": "Aquaracer Professional 300 Night Diver",
+      "reference": "",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-aquaracer/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tag-autavia-gmt-wbe511a",
+      "brand": "Tag Heuer",
+      "model": "Autavia GMT",
+      "reference": "WBE511A.BA0650",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "GMT",
+      "sourceUrl": "https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-autavia/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tag-formula-1-waz1110",
+      "brand": "Tag Heuer",
+      "model": "Formula 1",
+      "reference": "WAZ1110.BA0875",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-formula-1/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tag-skipper-cbs2213",
+      "brand": "Tag Heuer",
+      "model": "Carrera Skipper",
+      "reference": "CBS2213.FN6002",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-carrera/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "breitling-navitimer-b01-ab0138",
+      "brand": "Breitling",
+      "model": "Navitimer B01 Chronograph 43",
+      "reference": "AB0138211B1A1",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.breitling.com/us-en/watches/navitimer/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "breitling-superocean-blue-a17375",
+      "brand": "Breitling",
+      "model": "Superocean Automatic 42",
+      "reference": "A17375E71C1A1",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.breitling.com/us-en/watches/superocean/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "breitling-chronomat-b01-ab0134",
+      "brand": "Breitling",
+      "model": "Chronomat B01 42",
+      "reference": "AB0134101B1A1",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.breitling.com/us-en/watches/chronomat/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "breitling-avenger-b01-ab0147",
+      "brand": "Breitling",
+      "model": "Avenger B01 Chronograph 44",
+      "reference": "AB0147101B1A1",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.breitling.com/us-en/watches/avenger/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "breitling-premier-b01-ab0145",
+      "brand": "Breitling",
+      "model": "Premier B01 Chronograph 42",
+      "reference": "AB0145221B1P1",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.breitling.com/us-en/watches/premier/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "breitling-top-time-deus-a233101a1a1x1",
+      "brand": "Breitling",
+      "model": "Top Time Deus",
+      "reference": "A233101A1A1X1",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.breitling.com/us-en/watches/top-time/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "breitling-endurance-pro-x82310",
+      "brand": "Breitling",
+      "model": "Endurance Pro",
+      "reference": "X82310A71B1S1",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.breitling.com/us-en/watches/professional/endurance-pro/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "breitling-aerospace-e79363",
+      "brand": "Breitling",
+      "model": "Aerospace Evo",
+      "reference": "E79363101B1E1",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Pilot",
+      "sourceUrl": "https://www.breitling.com/us-en/watches/professional/aerospace/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "iwc-mark-xx-blue-iw328203",
+      "brand": "IWC",
+      "model": "Pilot's Watch Mark XX",
+      "reference": "IW328203",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Pilot",
+      "sourceUrl": "https://www.iwc.com/us/en/watch-collections/pilot-watches.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "iwc-big-pilot-43-iw329301",
+      "brand": "IWC",
+      "model": "Big Pilot's Watch 43",
+      "reference": "IW329301",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Pilot",
+      "sourceUrl": "https://www.iwc.com/us/en/watch-collections/pilot-watches.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "iwc-portugieser-chrono-iw371606",
+      "brand": "IWC",
+      "model": "Portugieser Chronograph",
+      "reference": "IW371606",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.iwc.com/us/en/watch-collections/portugieser.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "iwc-portugieser-chrono-iw371446",
+      "brand": "IWC",
+      "model": "Portugieser Chronograph",
+      "reference": "IW371446",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.iwc.com/us/en/watch-collections/portugieser.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "iwc-ingenieur-aqua-iw328901",
+      "brand": "IWC",
+      "model": "Ingenieur Automatic 40",
+      "reference": "IW328901",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Aqua Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Integrated Bracelet",
+      "sourceUrl": "https://www.iwc.com/us/en/watch-collections/ingenieur.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "iwc-pilot-spitfire-bronze-iw326805",
+      "brand": "IWC",
+      "model": "Pilot's Watch Automatic Spitfire",
+      "reference": "IW326805",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Brown",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Pilot",
+      "sourceUrl": "https://www.iwc.com/us/en/watch-collections/pilot-watches.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "iwc-aquatimer-iw328801",
+      "brand": "IWC",
+      "model": "Aquatimer Automatic",
+      "reference": "IW328801",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.iwc.com/us/en/watch-collections/aquatimer.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "iwc-pilot-chronograph-41-iw388101",
+      "brand": "IWC",
+      "model": "Pilot's Watch Chronograph 41",
+      "reference": "IW388101",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.iwc.com/us/en/watch-collections/pilot-watches.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "patek-nautilus-5711-blue",
+      "brand": "Patek Philippe",
+      "model": "Nautilus",
+      "reference": "5711/1A-010",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Integrated Bracelet",
+      "sourceUrl": "https://www.patek.com/en/collection/nautilus",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "patek-nautilus-5811-blue",
+      "brand": "Patek Philippe",
+      "model": "Nautilus",
+      "reference": "5811/1G-001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Integrated Bracelet",
+      "sourceUrl": "https://www.patek.com/en/collection/nautilus",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "patek-aquanaut-5167a",
+      "brand": "Patek Philippe",
+      "model": "Aquanaut",
+      "reference": "5167A-001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.patek.com/en/collection/aquanaut",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "patek-calatrava-6119r",
+      "brand": "Patek Philippe",
+      "model": "Calatrava",
+      "reference": "6119R-001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.patek.com/en/collection/calatrava",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "patek-world-time-5230p",
+      "brand": "Patek Philippe",
+      "model": "World Time",
+      "reference": "5230P-001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "GMT",
+      "sourceUrl": "https://www.patek.com/en/collection/complications",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "patek-golden-ellipse-5738r",
+      "brand": "Patek Philippe",
+      "model": "Golden Ellipse",
+      "reference": "5738R-001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Vintage",
+      "sourceUrl": "https://www.patek.com/en/collection/golden-ellipse",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "patek-annual-calendar-5396g",
+      "brand": "Patek Philippe",
+      "model": "Annual Calendar",
+      "reference": "5396G-017",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.patek.com/en/collection/complications",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "patek-chronograph-5172g",
+      "brand": "Patek Philippe",
+      "model": "Chronograph",
+      "reference": "5172G-001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.patek.com/en/collection/complications",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "ap-royal-oak-15500st",
+      "brand": "Audemars Piguet",
+      "model": "Royal Oak Selfwinding",
+      "reference": "15500ST.OO.1220ST.01",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Integrated Bracelet",
+      "sourceUrl": "https://www.audemarspiguet.com/com/en/watch-collection/royal-oak.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "ap-royal-oak-15510st",
+      "brand": "Audemars Piguet",
+      "model": "Royal Oak Selfwinding",
+      "reference": "15510ST.OO.1320ST.06",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Integrated Bracelet",
+      "sourceUrl": "https://www.audemarspiguet.com/com/en/watch-collection/royal-oak.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "ap-royal-oak-chrono-26240st",
+      "brand": "Audemars Piguet",
+      "model": "Royal Oak Chronograph",
+      "reference": "26240ST.OO.1320ST.05",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.audemarspiguet.com/com/en/watch-collection/royal-oak.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "ap-royal-oak-offshore-diver-15720st",
+      "brand": "Audemars Piguet",
+      "model": "Royal Oak Offshore Diver",
+      "reference": "15720ST.OO.A027CA.01",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.audemarspiguet.com/com/en/watch-collection/royal-oak-offshore.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "ap-code-1159-15210st",
+      "brand": "Audemars Piguet",
+      "model": "Code 11.59 Selfwinding",
+      "reference": "15210ST.OO.A348KB.01",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.audemarspiguet.com/com/en/watch-collection/code-1159.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "ap-jumbo-16202st",
+      "brand": "Audemars Piguet",
+      "model": "Royal Oak Jumbo Extra-Thin",
+      "reference": "16202ST.OO.1240ST.02",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Integrated Bracelet",
+      "sourceUrl": "https://www.audemarspiguet.com/com/en/watch-collection/royal-oak.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "vacheron-overseas-blue-4500v",
+      "brand": "Vacheron Constantin",
+      "model": "Overseas",
+      "reference": "4500V/110A-B128",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Integrated Bracelet",
+      "sourceUrl": "https://www.vacheron-constantin.com/us/en/collections/overseas.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "vacheron-overseas-dual-time-7900v",
+      "brand": "Vacheron Constantin",
+      "model": "Overseas Dual Time",
+      "reference": "7900V/110A-B333",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "GMT",
+      "sourceUrl": "https://www.vacheron-constantin.com/us/en/collections/overseas.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "vacheron-fiftysix-4600e",
+      "brand": "Vacheron Constantin",
+      "model": "Fiftysix Self-Winding",
+      "reference": "4600E/000A-B442",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.vacheron-constantin.com/us/en/collections/fiftysix.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "vacheron-historiques-american-1921",
+      "brand": "Vacheron Constantin",
+      "model": "Historiques American 1921",
+      "reference": "82035/000R-9359",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Vintage",
+      "sourceUrl": "https://www.vacheron-constantin.com/us/en/collections/historiques.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "vacheron-patrimony-85180",
+      "brand": "Vacheron Constantin",
+      "model": "Patrimony Self-Winding",
+      "reference": "85180/000R-9166",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.vacheron-constantin.com/us/en/collections/patrimony.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "vacheron-traditionnelle-82172",
+      "brand": "Vacheron Constantin",
+      "model": "Traditionnelle Manual-Winding",
+      "reference": "82172/000R-9382",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.vacheron-constantin.com/us/en/collections/traditionnelle.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "lange-zeitwerk-142031",
+      "brand": "A. Lange & Sohne",
+      "model": "Zeitwerk",
+      "reference": "142.031",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.alange-soehne.com/us-en/timepieces/zeitwerk",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "lange-lange-1-191032",
+      "brand": "A. Lange & Sohne",
+      "model": "Lange 1",
+      "reference": "191.032",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.alange-soehne.com/us-en/timepieces/lange-1",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "lange-saxonia-thin-205086",
+      "brand": "A. Lange & Sohne",
+      "model": "Saxonia Thin",
+      "reference": "205.086",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.alange-soehne.com/us-en/timepieces/saxonia",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "lange-odysseus-363179",
+      "brand": "A. Lange & Sohne",
+      "model": "Odysseus",
+      "reference": "363.179",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Grey",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Integrated Bracelet",
+      "sourceUrl": "https://www.alange-soehne.com/us-en/timepieces/odysseus",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "lange-1815-chrono-414028",
+      "brand": "A. Lange & Sohne",
+      "model": "1815 Chronograph",
+      "reference": "414.028",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.alange-soehne.com/us-en/timepieces/1815",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "lange-1815-up-down",
+      "brand": "A. Lange & Sohne",
+      "model": "1815 Up/Down",
+      "reference": "",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.alange-soehne.com/us-en/timepieces/1815",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "jlc-reverso-tribute-q3978480",
+      "brand": "Jaeger-LeCoultre",
+      "model": "Reverso Tribute Small Seconds",
+      "reference": "Q3978480",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.jaeger-lecoultre.com/us-en/watches/reverso",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "jlc-reverso-classic-q3848422",
+      "brand": "Jaeger-LeCoultre",
+      "model": "Reverso Classic Medium Thin",
+      "reference": "Q3848422",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.jaeger-lecoultre.com/us-en/watches/reverso",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "jlc-master-control-date-q4018420",
+      "brand": "Jaeger-LeCoultre",
+      "model": "Master Control Date",
+      "reference": "Q4018420",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.jaeger-lecoultre.com/us-en/watches/master-control",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "jlc-master-ultra-thin-moon-q1368420",
+      "brand": "Jaeger-LeCoultre",
+      "model": "Master Ultra Thin Moon",
+      "reference": "Q1368420",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.jaeger-lecoultre.com/us-en/watches/master-ultra-thin",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "jlc-polaris-date-q9068670",
+      "brand": "Jaeger-LeCoultre",
+      "model": "Polaris Date",
+      "reference": "Q9068670",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.jaeger-lecoultre.com/us-en/watches/polaris",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "jlc-geophysic-true-second-q8018420",
+      "brand": "Jaeger-LeCoultre",
+      "model": "Geophysic True Second",
+      "reference": "Q8018420",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.jaeger-lecoultre.com/us-en/watches",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "zenith-chronomaster-sport-033100360021m3100",
+      "brand": "Zenith",
+      "model": "Chronomaster Sport",
+      "reference": "03.3100.3600/21.M3100",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "White",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.zenith-watches.com/en_us/collection/chronomaster",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "zenith-el-primero-original-033200360021c903",
+      "brand": "Zenith",
+      "model": "Chronomaster Original",
+      "reference": "03.3200.3600/21.C903",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Chronograph",
+      "sourceUrl": "https://www.zenith-watches.com/en_us/collection/chronomaster",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "zenith-defy-skyline-036300362001m",
+      "brand": "Zenith",
+      "model": "Defy Skyline",
+      "reference": "03.6300.3620/01.M",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Integrated Bracelet",
+      "sourceUrl": "https://www.zenith-watches.com/en_us/collection/defy",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "zenith-pilot-big-date-flyback-034000365221i001",
+      "brand": "Zenith",
+      "model": "Pilot Big Date Flyback",
+      "reference": "03.4000.3652/21.I001",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Pilot",
+      "sourceUrl": "https://www.zenith-watches.com/en_us/collection/pilot",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "zenith-defy-classic-95867067021m",
+      "brand": "Zenith",
+      "model": "Defy Classic",
+      "reference": "95.9000.670/21.M9000",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Integrated Bracelet",
+      "sourceUrl": "https://www.zenith-watches.com/en_us/collection/defy",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "panerai-luminor-pam01312",
+      "brand": "Panerai",
+      "model": "Luminor Marina",
+      "reference": "PAM01312",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.panerai.com/us/en/collections/watch-collection/luminor.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "panerai-radiomir-pam01334",
+      "brand": "Panerai",
+      "model": "Radiomir Quaranta",
+      "reference": "PAM01334",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Vintage",
+      "sourceUrl": "https://www.panerai.com/us/en/collections/watch-collection/radiomir.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "panerai-submersible-pam01229",
+      "brand": "Panerai",
+      "model": "Submersible QuarantaQuattro",
+      "reference": "PAM01229",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.panerai.com/us/en/collections/watch-collection/submersible.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "doxa-sub-300-professional",
+      "brand": "Doxa",
+      "model": "Sub 300 Professional",
+      "reference": "",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Orange",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://doxawatches.com/collections/sub-300",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "doxa-sub-300t-caribbean",
+      "brand": "Doxa",
+      "model": "Sub 300T Caribbean",
+      "reference": "",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://doxawatches.com/collections/sub-300t",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "doxa-sub-200",
+      "brand": "Doxa",
+      "model": "Sub 200",
+      "reference": "",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Yellow",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://doxawatches.com/collections/sub-200",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tissot-prx-powermatic-blue",
+      "brand": "Tissot",
+      "model": "PRX Powermatic 80",
+      "reference": "T137.407.11.041.00",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Integrated Bracelet",
+      "sourceUrl": "https://www.tissotwatches.com/en-us/collection/all-our-watches/t-classic/tissot-prx.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tissot-seastar-1000",
+      "brand": "Tissot",
+      "model": "Seastar 1000 Powermatic 80",
+      "reference": "T120.407.11.041.03",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.tissotwatches.com/en-us/collection/all-our-watches/t-sport/seastar-1000.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "tissot-gentleman-powermatic-blue",
+      "brand": "Tissot",
+      "model": "Gentleman Powermatic 80",
+      "reference": "T127.407.11.041.00",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.tissotwatches.com/en-us/collection/all-our-watches/t-classic/tissot-gentleman.html",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "casio-g-shock-gmw-b5000",
+      "brand": "Casio",
+      "model": "G-Shock Full Metal",
+      "reference": "GMW-B5000D-1",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.casio.com/us/watches/gshock/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "casio-g-shock-gw-m5610",
+      "brand": "Casio",
+      "model": "G-Shock Square",
+      "reference": "GW-M5610U-1",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Sport",
+      "sourceUrl": "https://www.casio.com/us/watches/gshock/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "citizen-tsuyosa-nj0150",
+      "brand": "Citizen",
+      "model": "Tsuyosa",
+      "reference": "NJ0150-56L",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Blue",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Integrated Bracelet",
+      "sourceUrl": "https://www.citizenwatch.com/us/en/collection/mens-tsuyosa-automatics/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "citizen-promaster-ny0040",
+      "brand": "Citizen",
+      "model": "Promaster Diver",
+      "reference": "NY0040-09E",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Black",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Diver",
+      "sourceUrl": "https://www.citizenwatch.com/us/en/collection/promaster/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    },
+    {
+      "id": "junghans-max-bill-automatic",
+      "brand": "Junghans",
+      "model": "Max Bill Automatic",
+      "reference": "",
+      "caseSizeMm": null,
+      "lugWidthMm": null,
+      "caseMaterial": null,
+      "dialColor": "Silver",
+      "movement": null,
+      "complications": [],
+      "estimatedValue": null,
+      "watchType": "Dress",
+      "sourceUrl": "https://www.junghans.de/en/collection/watches/junghans-max-bill/",
+      "provenance": {
+        "dialColor": "seed",
+        "watchType": "seed"
+      }
+    }
+  ]
+}
