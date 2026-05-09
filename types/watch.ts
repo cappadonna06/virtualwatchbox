@@ -31,6 +31,48 @@ export interface DialConfig {
   handColor: string
 }
 
+// Optional movement classification — populated by ingestion as data arrives.
+export type MovementType = 'automatic' | 'manual' | 'quartz' | 'mecaquartz' | 'solar' | 'spring-drive'
+export type BraceletType = 'bracelet' | 'strap' | 'integrated'
+export type ProductionStatus = 'current' | 'discontinued' | 'limited' | 'one-off' | 'prototype'
+export type GenderTarget = 'unisex' | 'mens' | 'womens'
+export type CatalogSource = 'manual' | 'seed' | 'ingestion' | 'user_submission' | 'partner_feed'
+export type ModerationStatus = 'approved' | 'pending' | 'rejected'
+export type VerificationStatus = 'verified' | 'unverified' | 'community'
+
+// Market layer: data that changes over time. Read from catalog_watch_market.
+// All fields optional because a catalog row may not have a market snapshot
+// yet (pre-pricing-job, freshly ingested watches, etc.). UI surfaces should
+// always treat market as nullable.
+export interface CatalogWatchMarket {
+  marketValueUsd?: number
+  marketValueLowUsd?: number
+  marketValueHighUsd?: number
+  currency?: string
+  valueSource?: string
+  valueConfidence?: 'low' | 'medium' | 'high'
+  trend30dPct?: number
+  trend90dPct?: number
+  lastPricedAt?: string
+  heatScore?: number
+  popularityRank?: number
+  followCount?: number
+  targetCount?: number
+  grailCount?: number
+  ownedCount?: number
+}
+
+// CatalogWatch is the runtime shape served to UI. Required fields preserve
+// the existing surface; optional fields are populated by ingestion as data
+// is captured, and may be null for older catalog rows.
+//
+// estimatedValue is DERIVED at the resolver/provider boundary:
+//   market.marketValueUsd  (if present)
+//   ↳ msrpAtLaunchUsd      (if present)
+//   ↳ legacy estimated_value column (transitional fallback)
+//   ↳ 0
+// Callsites can keep reading watch.estimatedValue without knowing which
+// layer the value came from.
 export interface CatalogWatch {
   id: string
   brand: string
@@ -48,6 +90,64 @@ export interface CatalogWatch {
   imageSourceUrl?: string
   dialConfig: DialConfig
   watchType: WatchType
+
+  // ── Expanded facts (optional; populated by ingestion) ─────────────────
+  // Identity
+  modelFamily?: string
+  nickname?: string
+  slug?: string
+
+  // Case
+  lugToLugMm?: number
+  thicknessMm?: number
+  caseFinish?: string
+  bezelMaterial?: string
+  bezelType?: string
+  crystalMaterial?: string
+  waterResistanceM?: number
+  weightG?: number
+
+  // Dial
+  dialFinish?: string
+  markerType?: string
+  lumeColor?: string
+
+  // Movement
+  caliber?: string
+  movementType?: MovementType
+  powerReserveHours?: number
+  frequencyVph?: number
+  jewelCount?: number
+
+  // Strap / bracelet
+  braceletType?: BraceletType
+  claspType?: string
+
+  // Production
+  yearIntroduced?: number
+  yearDiscontinued?: number
+  productionStatus?: ProductionStatus
+  limitedEditionCount?: number
+  msrpAtLaunchUsd?: number
+  countryOfOrigin?: string
+
+  // Categorization
+  styleTags?: string[]
+  genderTarget?: GenderTarget
+
+  // Lineage
+  replacesReference?: string
+  replacedByReference?: string
+
+  // Curation
+  source?: CatalogSource
+  moderationStatus?: ModerationStatus
+  verificationStatus?: VerificationStatus
+  contentVersion?: number
+
+  // Market data attached for convenience. Optional; null/undefined when no
+  // snapshot exists yet for this catalog id.
+  market?: CatalogWatchMarket
 }
 
 export interface OwnedWatch {
@@ -62,6 +162,19 @@ export interface OwnedWatch {
   // New writes go to user_watch_photos; reads prefer the primary photo from
   // there and fall back to this field when present.
   photoUrl?: string
+
+  // ── Expanded ownership facts (optional; landing in app over time) ─────
+  acquisitionMethod?: 'new' | 'pre-owned' | 'gift' | 'inherited' | 'trade' | 'auction'
+  purchaseCurrency?: string
+  purchaseLocation?: string
+  hasBox?: boolean
+  hasPapers?: boolean
+  warrantyExpiresAt?: string
+  lastServicedAt?: string
+  serviceNotes?: string
+  insuranceValueUsd?: number
+  askingPrice?: number
+  tags?: string[]
 }
 
 export interface UserWatchPhoto {
@@ -72,6 +185,9 @@ export interface UserWatchPhoto {
   sortOrder: number
   isPrimary: boolean
   createdAt: string
+  // Optional metadata; populated as the gallery UI gets the controls.
+  photoType?: 'wrist_shot' | 'box_papers' | 'macro' | 'lifestyle' | 'dial' | 'case_back' | 'other'
+  takenAt?: string
 }
 
 export interface WatchTarget {
@@ -105,6 +221,7 @@ export interface ResolvedWatch {
   watchType: WatchType
   condition: WatchCondition
   notes: string
+  market?: CatalogWatchMarket
 }
 
 export interface ResolvedOwnedWatch extends ResolvedWatch {

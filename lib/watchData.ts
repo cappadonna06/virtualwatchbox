@@ -6,9 +6,22 @@ export function createCatalogWatchMap(catalog: CatalogWatch[]) {
   return new Map(catalog.map(watch => [watch.id, watch]))
 }
 
+// Centralized value resolution. Reads market.marketValueUsd when present,
+// then falls back to msrpAtLaunchUsd, then the legacy estimatedValue field.
+// Used by stat tiles and any callsite that doesn't already do its own join.
+export function resolveCatalogValue(watch: CatalogWatch): number {
+  const market = watch.market?.marketValueUsd
+  if (typeof market === 'number' && market > 0) return market
+  const msrp = watch.msrpAtLaunchUsd
+  if (typeof msrp === 'number' && msrp > 0) return msrp
+  return typeof watch.estimatedValue === 'number' ? watch.estimatedValue : 0
+}
+
 export function createCatalogDisplayWatch(watch: CatalogWatch): ResolvedWatch {
   return {
     ...watch,
+    estimatedValue: resolveCatalogValue(watch),
+    market: watch.market,
     id: watch.id,
     watchId: watch.id,
     condition: DEFAULT_RESOLVED_WATCH_CONDITION,
@@ -37,6 +50,8 @@ export function resolveOwnedWatch(
 
   return {
     ...sourceWatch,
+    estimatedValue: resolveCatalogValue(sourceWatch),
+    market: sourceWatch.market,
     imageUrl,
     id: ownedWatch.id,
     watchId: sourceWatch.id,
