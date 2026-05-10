@@ -1104,6 +1104,21 @@ function WatchboxView({
           ...(watchboxMaxW !== undefined ? { maxWidth: watchboxMaxW, width: '100%', margin: '0 auto' } : {}),
         }}
       >
+        {watches.length === 0 && (
+          <div
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 11,
+              letterSpacing: '0.06em',
+              color: brand.colors.muted,
+              textAlign: 'center',
+              marginBottom: 14,
+              lineHeight: 1.5,
+            }}
+          >
+            This box is empty. Tap any slot to add your first watch.
+          </div>
+        )}
         <WatchBox
           watches={watches}
           activeSlot={activeSlot}
