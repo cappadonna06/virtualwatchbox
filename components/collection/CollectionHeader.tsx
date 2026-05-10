@@ -114,46 +114,60 @@ export default function CollectionHeader({
           Add Watch
         </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-            <span style={metaLabel}>Watches</span>
-            <span style={metaValue}>{watchCount}</span>
-          </div>
-          <span style={chipDivider} />
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-            <span style={metaLabel}>Est. Value</span>
-            <span style={metaValue}>{fmt(totalEstValue)}</span>
-          </div>
-          <span style={chipDivider} />
-          <a
-            href="#collection-stats"
-            onClick={event => {
-              event.preventDefault()
-              onJumpStats()
-            }}
-            onMouseEnter={event => {
-              event.currentTarget.style.color = brand.colors.ink
-            }}
-            onMouseLeave={event => {
-              event.currentTarget.style.color = brand.colors.muted
-            }}
+        {watchCount === 0 ? (
+          <span
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 5,
-              ...metaLabel,
-              textDecoration: 'none',
-              cursor: 'pointer',
-              transition: 'color 0.15s',
+              fontFamily: brand.font.sans,
+              fontSize: 13,
+              color: brand.colors.muted,
+              letterSpacing: '0.02em',
+              lineHeight: 1.5,
             }}
           >
-            Stats
-            <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <line x1="7" y1="2" x2="7" y2="11" />
-              <polyline points="3.5,7.5 7,11 10.5,7.5" />
-            </svg>
-          </a>
-        </div>
+            A virtual home for what you wear, what you want, and what&rsquo;s next.
+          </span>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <span style={metaLabel}>Watches</span>
+              <span style={metaValue}>{watchCount}</span>
+            </div>
+            <span style={chipDivider} />
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <span style={metaLabel}>Est. Value</span>
+              <span style={metaValue}>{fmt(totalEstValue)}</span>
+            </div>
+            <span style={chipDivider} />
+            <a
+              href="#collection-stats"
+              onClick={event => {
+                event.preventDefault()
+                onJumpStats()
+              }}
+              onMouseEnter={event => {
+                event.currentTarget.style.color = brand.colors.ink
+              }}
+              onMouseLeave={event => {
+                event.currentTarget.style.color = brand.colors.muted
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                ...metaLabel,
+                textDecoration: 'none',
+                cursor: 'pointer',
+                transition: 'color 0.15s',
+              }}
+            >
+              Stats
+              <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <line x1="7" y1="2" x2="7" y2="11" />
+                <polyline points="3.5,7.5 7,11 10.5,7.5" />
+              </svg>
+            </a>
+          </div>
+        )}
 
         {pendingChangesCount > 0 && (
           <span

@@ -32,7 +32,7 @@ function calcSlotPx(
   return Math.max(16, Math.min(slotFromWidth, slotFromHeight))
 }
 
-function WatchboxPreview({
+export function WatchboxPreview({
   frameId,
   liningId,
   slotCount,
@@ -520,6 +520,7 @@ export default function CollectionWatchboxSurface({
               lining={watchboxConfig.lining}
               slotCount={watchboxConfig.slotCount}
               slotWidth={watchboxSlotWidth}
+              showFirstSlotLabel={watches.length === 0}
             />
 
             <div ref={customizerRef} className="configurator-wrap" style={{ marginTop: 10, position: 'relative' }}>

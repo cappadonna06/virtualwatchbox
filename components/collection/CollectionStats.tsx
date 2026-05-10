@@ -80,6 +80,49 @@ interface Props {
 export default function CollectionStats({ watches, mode = 'collection' }: Props) {
   const [view, setView] = useState<'overview' | 'graphical'>('overview')
 
+  if (watches.length === 0 && mode === 'collection') {
+    return (
+      <section style={{ scrollMarginTop: 80 }}>
+        <div
+          style={{
+            background: brand.colors.slot,
+            border: `1px solid ${brand.colors.border}`,
+            borderRadius: brand.radius.xl,
+            padding: '36px 28px',
+            textAlign: 'center',
+          }}
+        >
+          <h2
+            style={{
+              fontFamily: brand.font.serif,
+              fontSize: 26,
+              fontWeight: 400,
+              lineHeight: 1.15,
+              color: brand.colors.ink,
+              margin: '0 0 8px',
+            }}
+          >
+            Stats unlock with your first watch.
+          </h2>
+          <p
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 11,
+              color: brand.colors.muted,
+              margin: 0,
+              lineHeight: 1.55,
+              maxWidth: 460,
+              marginLeft: 'auto',
+              marginRight: 'auto',
+            }}
+          >
+            Portfolio value, dial colors, types, complications, and brand breakdown will populate as you build.
+          </p>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section
       style={{

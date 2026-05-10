@@ -1249,11 +1249,26 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     }
 
     setSelectedWatchId(newWatch.id)
-    showToast(
-      wasTarget || wasGrail
-        ? 'Aspirational notes cleared now that it is in your collection.'
-        : `${watch.brand} ${watch.model} added to your collection`,
-    )
+
+    const isFirstEverAdd =
+      nextEntries.length === 1 &&
+      typeof window !== 'undefined' &&
+      !localStorage.getItem('vwb:firstWatchToastShown')
+
+    if (isFirstEverAdd) {
+      try {
+        localStorage.setItem('vwb:firstWatchToastShown', '1')
+      } catch {
+        // localStorage may be unavailable in private/embedded contexts
+      }
+      showToast('Your watchbox is open.')
+    } else {
+      showToast(
+        wasTarget || wasGrail
+          ? 'Aspirational notes cleared now that it is in your collection.'
+          : `${watch.brand} ${watch.model} added to your collection`,
+      )
+    }
     return newWatch.id
   }
 
@@ -1748,18 +1763,34 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
             justifyContent: 'space-between',
             gap: 16,
             boxShadow: brand.shadow.xl,
+            flexWrap: 'wrap',
           }}
         >
-          <p
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 13,
-              margin: 0,
-              letterSpacing: '0.02em',
-            }}
-          >
-            You have {localWatchCount} {localWatchCount === 1 ? 'watch' : 'watches'} saved locally. Import them to your account?
-          </p>
+          <div style={{ minWidth: 0, flex: '1 1 auto' }}>
+            <p
+              style={{
+                fontFamily: brand.font.serif,
+                fontSize: 18,
+                fontWeight: 400,
+                margin: '0 0 4px',
+                letterSpacing: '0.01em',
+              }}
+            >
+              Welcome.
+            </p>
+            <p
+              style={{
+                fontFamily: brand.font.sans,
+                fontSize: 13,
+                margin: 0,
+                letterSpacing: '0.02em',
+                color: 'rgba(250,248,244,0.78)',
+                lineHeight: 1.5,
+              }}
+            >
+              You added {localWatchCount} {localWatchCount === 1 ? 'watch' : 'watches'} as a guest. Import to sync across devices, or start fresh.
+            </p>
+          </div>
           <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
             <button
               onClick={() => void acceptMigration()}
@@ -1776,7 +1807,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
                 cursor: 'pointer',
               }}
             >
-              Import →
+              Save to my account →
             </button>
             <button
               onClick={dismissMigration}
