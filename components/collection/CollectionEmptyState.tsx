@@ -1,18 +1,35 @@
 'use client'
 
-import { useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { brand } from '@/lib/brand'
-import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
+import { SLOT_COUNTS } from '@/lib/frameConfig'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { useIsMobile } from './useResponsiveState'
+import WatchBox from './WatchBox'
 
 interface Props {
   variant: 'home' | 'collection'
 }
 
-const PREVIEW_GAP = 5
+const WATCHBOX_WIDTH_PADDING = 64
+const WATCHBOX_HEIGHT_PADDING = 72
+const WATCHBOX_GAP = 6
+const ROWS = 2
+
+function calcSlotPx(
+  containerWidth: number,
+  maxHeight: number,
+  columns: number,
+  widthPadding: number,
+  heightPadding: number,
+  gap: number,
+) {
+  const slotFromWidth = (containerWidth - widthPadding - (columns - 1) * gap) / columns
+  const slotFromHeight = ((maxHeight - heightPadding) * 3) / (4 * ROWS)
+  return Math.max(16, Math.min(slotFromWidth, slotFromHeight))
+}
 
 export default function CollectionEmptyState({ variant }: Props) {
   if (variant === 'home') {
@@ -25,13 +42,26 @@ function HomeEmptyState() {
   const router = useRouter()
   const isMobile = useIsMobile()
   const { watchboxConfig } = useCollectionSession()
-  const [hovered, setHovered] = useState(false)
+  const [screenWidth, setScreenWidth] = useState(0)
+
+  useLayoutEffect(() => {
+    const update = () => setScreenWidth(window.innerWidth)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
 
   const slotConfig = SLOT_COUNTS.find(s => s.n === watchboxConfig.slotCount) ?? SLOT_COUNTS[1]
-  const frame = FRAMES.find(item => item.id === watchboxConfig.frame) ?? FRAMES[0]
-  const lining = LININGS.find(item => item.id === watchboxConfig.lining) ?? LININGS[0]
-  const slotWidth = isMobile ? 64 : 120
-  const slotHeight = Math.round((slotWidth * 4) / 3)
+  const containerWidth = isMobile
+    ? Math.max(200, screenWidth - 40)
+    : Math.max(200, screenWidth - 444)
+  const maxHeight = isMobile ? 300 : 480
+  const slotWidth = screenWidth > 0
+    ? Math.floor(calcSlotPx(containerWidth, maxHeight, slotConfig.cols, WATCHBOX_WIDTH_PADDING, WATCHBOX_HEIGHT_PADDING, WATCHBOX_GAP))
+    : undefined
+  const boxWidth = slotWidth !== undefined
+    ? WATCHBOX_WIDTH_PADDING + (slotConfig.cols - 1) * WATCHBOX_GAP + slotConfig.cols * slotWidth
+    : undefined
 
   function handleAdd() {
     router.push('/collection/add')
@@ -47,106 +77,25 @@ function HomeEmptyState() {
         padding: '8px 16px 0',
       }}
     >
-      <button
-        type="button"
-        aria-label="Add your first watch"
-        onClick={handleAdd}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        onFocus={() => setHovered(true)}
-        onBlur={() => setHovered(false)}
+      <div
         style={{
-          background: 'transparent',
-          border: 'none',
-          padding: 0,
-          cursor: 'pointer',
+          width: '100%',
+          maxWidth: boxWidth,
           marginBottom: isMobile ? 24 : 36,
-          transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
-          transition: `transform ${brand.transition.base}`,
         }}
       >
-        <div
-          style={{
-            borderRadius: brand.radius.lg,
-            padding: '12px 12px 14px',
-            background: frame.css,
-            boxShadow: hovered
-              ? '0 14px 40px rgba(26,20,16,0.18), 0 2px 6px rgba(26,20,16,0.08)'
-              : frame.shadow,
-            transition: `box-shadow ${brand.transition.base}`,
-          }}
-        >
-          <div
-            style={{
-              background: lining.color,
-              borderRadius: 5,
-              padding: 7,
-              boxShadow: 'inset 0 4px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04)',
-            }}
-          >
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: `repeat(${slotConfig.cols}, ${slotWidth}px)`,
-                gap: PREVIEW_GAP,
-              }}
-            >
-              {Array.from({ length: slotConfig.n }).map((_, index) => (
-                <div
-                  key={index}
-                  style={{
-                    width: slotWidth,
-                    height: slotHeight,
-                    borderRadius: 3,
-                    background: lining.slotBg,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {index === 0 && (
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: isMobile ? 4 : 6,
-                        color: hovered ? 'rgba(250,248,244,0.92)' : 'rgba(250,248,244,0.6)',
-                        transition: `color ${brand.transition.base}`,
-                      }}
-                    >
-                      <svg
-                        width={isMobile ? 16 : 22}
-                        height={isMobile ? 16 : 22}
-                        viewBox="0 0 14 14"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.4"
-                        strokeLinecap="round"
-                        aria-hidden="true"
-                      >
-                        <line x1="7" y1="3" x2="7" y2="11" />
-                        <line x1="3" y1="7" x2="11" y2="7" />
-                      </svg>
-                      <span
-                        style={{
-                          fontFamily: brand.font.sans,
-                          fontSize: isMobile ? 7.5 : 9,
-                          fontWeight: 600,
-                          letterSpacing: '0.12em',
-                          textTransform: 'uppercase',
-                        }}
-                      >
-                        Add
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </button>
+        <WatchBox
+          watches={[]}
+          activeSlot={null}
+          onSlotClick={handleAdd}
+          onEmptySlotClick={handleAdd}
+          frame={watchboxConfig.frame}
+          lining={watchboxConfig.lining}
+          slotCount={watchboxConfig.slotCount}
+          slotWidth={slotWidth}
+          showFirstSlotLabel
+        />
+      </div>
 
       <h3
         style={{
