@@ -176,13 +176,18 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
       if (!supabaseRef.current) supabaseRef.current = createClient()
       const supabase = supabaseRef.current
 
-      const [catalogRes, marketRes] = await Promise.all([
+      const [catalogRes, marketRes, imagesRes] = await Promise.all([
         supabase.from('catalog_watches').select('*').order('brand'),
         supabase.from('catalog_watch_market').select('*'),
+        supabase
+          .from('watch_images')
+          .select('catalog_watch_id, webp_url, png_url')
+          .eq('variant', 'primary'),
       ])
 
       const catalogRows = (catalogRes.data ?? []) as Array<Record<string, unknown>>
       const marketRows = (marketRes.data ?? []) as Array<Record<string, unknown>>
+      const imageRows = (imagesRes.data ?? []) as Array<Record<string, unknown>>
 
       if (catalogRows.length === 0) {
         // DB hasn't been seeded yet (or env missing). Fall back to the
@@ -205,10 +210,36 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
         marketByCatalogId.set(id, rowToMarket(row))
       }
 
+      // Catalog images live in their own table now (variant='primary' is the
+      // hero shot). The seeder writes here, not into catalog_watches.image_url,
+      // so the merge below has to consult watch_images or every watch ships
+      // imageUrl=undefined and the UI falls back to the SVG dial.
+      const imagesByCatalogId = new Map<string, { webpUrl?: string; pngUrl?: string }>()
+      for (const row of imageRows) {
+        const id = typeof row.catalog_watch_id === 'string' ? row.catalog_watch_id : null
+        if (!id) continue
+        imagesByCatalogId.set(id, {
+          webpUrl: typeof row.webp_url === 'string' && row.webp_url ? row.webp_url : undefined,
+          pngUrl: typeof row.png_url === 'string' && row.png_url ? row.png_url : undefined,
+        })
+      }
+
       const merged = catalogRows.map(row => {
         const watch = rowToWatch(row)
         const market = marketByCatalogId.get(watch.id)
-        return market ? { ...watch, market } : watch
+        const img = imagesByCatalogId.get(watch.id)
+        // Resolution order for the catalog hero image:
+        //   watch_images.webp_url (variant='primary')   ← canonical
+        //   catalog_watches.image_url (legacy column)   ← deprecated, retained for transition
+        //   undefined                                    ← UI falls back to SVG dial
+        const imageUrl = img?.webpUrl ?? watch.imageUrl
+        const imageTransparentUrl = img?.pngUrl ?? watch.imageTransparentUrl
+        return {
+          ...watch,
+          imageUrl,
+          imageTransparentUrl,
+          ...(market ? { market } : {}),
+        }
       })
 
       setDynamicWatches(merged)
