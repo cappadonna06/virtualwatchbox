@@ -1786,7 +1786,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
                 lineHeight: 1.5,
               }}
             >
-              You added {localWatchCount} {localWatchCount === 1 ? 'watch' : 'watches'} as a guest. Import to sync across devices, or start fresh.
+              You added {localWatchCount} {localWatchCount === 1 ? 'watch' : 'watches'} as a guest. Import to sync them across devices.
             </p>
           </div>
           <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
@@ -1822,7 +1822,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
                 cursor: 'pointer',
               }}
             >
-              Start fresh
+              Skip
             </button>
           </div>
         </div>
