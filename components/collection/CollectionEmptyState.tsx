@@ -3,12 +3,17 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { brand } from '@/lib/brand'
+import { SLOT_COUNTS } from '@/lib/frameConfig'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { WatchboxPreview } from './CollectionWatchboxSurface'
 
 interface Props {
   variant: 'home' | 'collection'
 }
+
+const PREVIEW_PADDING = 38
+const PREVIEW_GAP = 5
+const PREVIEW_SLOT_WIDTH = 56
 
 export default function CollectionEmptyState({ variant }: Props) {
   if (variant === 'home') {
@@ -20,6 +25,8 @@ export default function CollectionEmptyState({ variant }: Props) {
 function HomeEmptyState() {
   const router = useRouter()
   const { watchboxConfig } = useCollectionSession()
+  const slotConfig = SLOT_COUNTS.find(s => s.n === watchboxConfig.slotCount) ?? SLOT_COUNTS[1]
+  const previewWidth = PREVIEW_PADDING + (slotConfig.cols - 1) * PREVIEW_GAP + slotConfig.cols * PREVIEW_SLOT_WIDTH
 
   return (
     <div
@@ -35,7 +42,7 @@ function HomeEmptyState() {
         aria-hidden="true"
         style={{
           width: '100%',
-          maxWidth: 360,
+          maxWidth: previewWidth,
           marginBottom: 28,
           opacity: 0.92,
           pointerEvents: 'none',
@@ -45,7 +52,7 @@ function HomeEmptyState() {
           frameId={watchboxConfig.frame}
           liningId={watchboxConfig.lining}
           slotCount={watchboxConfig.slotCount}
-          slotWidth={64}
+          slotWidth={PREVIEW_SLOT_WIDTH}
         />
       </div>
 

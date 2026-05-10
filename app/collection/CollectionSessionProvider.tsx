@@ -1248,8 +1248,6 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       }
     }
 
-    setSelectedWatchId(newWatch.id)
-
     const isFirstEverAdd =
       nextEntries.length === 1 &&
       typeof window !== 'undefined' &&

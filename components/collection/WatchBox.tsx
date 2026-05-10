@@ -293,9 +293,8 @@ export default function WatchBox({
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: 4,
                         cursor: readonly ? 'default' : 'pointer',
-                        opacity: useHighContrastSlotText ? 0.88 : 0.4,
+                        opacity: useHighContrastSlotText ? 0.88 : 0.55,
                         background: ln.slotBg,
                       }}
                     >
@@ -303,45 +302,22 @@ export default function WatchBox({
                         <span style={{ fontFamily: brand.font.sans, fontSize: 8, letterSpacing: '0.1em', color: emptyPrimaryColor }}>
                           EMPTY
                         </span>
-                      ) : (
-                        <>
-                          <svg
-                            width="22"
-                            height="26"
-                            viewBox="0 0 22 26"
-                            fill="none"
-                            stroke={emptyPrimaryColor}
-                            strokeWidth="1.1"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            aria-hidden="true"
-                          >
-                            <path d="M6.5 7 V4.5 H9 V7" />
-                            <path d="M13 7 V4.5 H15.5 V7" />
-                            <path d="M6.5 19 V21.5 H9 V19" />
-                            <path d="M13 19 V21.5 H15.5 V19" />
-                            <rect x="4.5" y="7" width="13" height="12" rx="1.8" />
-                            <circle cx="11" cy="13" r="3.2" />
-                            <path d="M17.5 12.5 H19 V13.5 H17.5" />
-                          </svg>
-                          {showFirstSlotLabel && isFirstSlot ? (
-                            <span
-                              style={{
-                                fontFamily: brand.font.sans,
-                                fontSize: 9,
-                                fontWeight: 500,
-                                letterSpacing: '0.06em',
-                                color: emptyPrimaryColor,
-                                textAlign: 'center',
-                                padding: '0 4px',
-                                lineHeight: 1.15,
-                              }}
-                            >
-                              Add your first watch
-                            </span>
-                          ) : null}
-                        </>
-                      )}
+                      ) : showFirstSlotLabel && isFirstSlot ? (
+                        <span
+                          style={{
+                            fontFamily: brand.font.sans,
+                            fontSize: 9,
+                            fontWeight: 500,
+                            letterSpacing: '0.06em',
+                            color: emptyPrimaryColor,
+                            textAlign: 'center',
+                            padding: '0 6px',
+                            lineHeight: 1.2,
+                          }}
+                        >
+                          Add your first watch
+                        </span>
+                      ) : null}
                     </div>
                   </div>
                 )

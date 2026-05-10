@@ -213,7 +213,7 @@ function AuthPageInner() {
                 style={{
                   listStyle: 'none',
                   padding: 0,
-                  margin: '0 0 22px',
+                  margin: '0 0 26px',
                   textAlign: 'center',
                   fontFamily: brand.font.sans,
                   fontSize: 12,
@@ -224,22 +224,7 @@ function AuthPageInner() {
               >
                 <li>Every watch on every device.</li>
                 <li>A public profile, a featured timepiece.</li>
-                <li>A cover, a bio, a story behind the box.</li>
               </ul>
-
-              <p
-                style={{
-                  fontFamily: brand.font.sans,
-                  fontSize: 11,
-                  color: brand.colors.muted,
-                  margin: '0 0 24px',
-                  textAlign: 'center',
-                  lineHeight: 1.55,
-                  opacity: 0.85,
-                }}
-              >
-                Optional. Your watchbox already works without an account.
-              </p>
 
               {/* Google button */}
               <p
