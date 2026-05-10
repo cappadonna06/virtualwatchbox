@@ -194,11 +194,15 @@ security definer
 set search_path = public
 as $$
   select round(
-    -- Engagement: log-scaled to dampen fat-tail bias
-    coalesce(ln(follow_count_denorm + 1) * 5.0, 0)
-      + coalesce(ln(target_count_denorm + 1) * 8.0, 0)
-      + coalesce(ln(grail_count_denorm  + 1) * 12.0, 0)
-      + coalesce(ln(owned_count_denorm  + 1) * 3.0, 0)
+    -- Engagement: log-scaled to dampen fat-tail bias.
+    -- Cast to numeric: ln() returns double precision and Postgres only
+    -- defines round(numeric, integer), not round(double precision, integer).
+    (
+      coalesce(ln(follow_count_denorm + 1) * 5.0, 0)
+        + coalesce(ln(target_count_denorm + 1) * 8.0, 0)
+        + coalesce(ln(grail_count_denorm  + 1) * 12.0, 0)
+        + coalesce(ln(owned_count_denorm  + 1) * 3.0, 0)
+    )::numeric
   , 2)
   from public.catalog_watch_market
   where catalog_watch_id = p_catalog_watch_id;
