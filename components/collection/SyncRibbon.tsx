@@ -6,30 +6,44 @@ import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 
-const STORAGE_KEY = 'vwb:syncRibbonDismissed'
+const DEFAULT_DISMISS_KEY = 'vwb:syncRibbonDismissed'
 
-export default function SyncRibbon() {
+interface SyncRibbonProps {
+  watchCount?: number
+  dest?: string
+  dismissKey?: string
+  label?: string
+}
+
+export default function SyncRibbon({
+  watchCount,
+  dest = '/collection',
+  dismissKey = DEFAULT_DISMISS_KEY,
+  label = 'You’re collecting locally.',
+}: SyncRibbonProps = {}) {
   const { user } = useAuth()
   const { collectionWatches } = useCollectionSession()
   const [hydrated, setHydrated] = useState(false)
   const [dismissed, setDismissed] = useState(false)
 
+  const effectiveCount = watchCount ?? collectionWatches.length
+
   useEffect(() => {
     setHydrated(true)
     try {
-      setDismissed(sessionStorage.getItem(STORAGE_KEY) === '1')
+      setDismissed(sessionStorage.getItem(dismissKey) === '1')
     } catch {
       // ignore
     }
-  }, [])
+  }, [dismissKey])
 
-  if (!hydrated || user || collectionWatches.length === 0 || dismissed) {
+  if (!hydrated || user || effectiveCount === 0 || dismissed) {
     return null
   }
 
   function handleDismiss() {
     try {
-      sessionStorage.setItem(STORAGE_KEY, '1')
+      sessionStorage.setItem(dismissKey, '1')
     } catch {
       // ignore
     }
@@ -69,10 +83,10 @@ export default function SyncRibbon() {
           letterSpacing: '0.01em',
         }}
       >
-        You&rsquo;re collecting locally.
+        {label}
       </span>
       <Link
-        href="/auth?next=/collection"
+        href={`/auth?next=${encodeURIComponent(dest)}`}
         style={{
           fontFamily: brand.font.sans,
           fontSize: 12,

@@ -25,6 +25,7 @@ import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import CollectionStats from '@/components/collection/CollectionStats'
 import ShareBoxModal, { type ShareFlags } from '@/components/collection/ShareBoxModal'
+import SyncRibbon from '@/components/collection/SyncRibbon'
 import WatchboxHeader from '@/components/collection/WatchboxHeader'
 import { brand } from '@/lib/brand'
 
@@ -657,6 +658,13 @@ function PlaygroundPageInner() {
             </div>
           </div>
         ) : null}
+
+        <SyncRibbon
+          watchCount={boxes.reduce((sum, box) => sum + box.entries.length, 0)}
+          dest="/playground"
+          dismissKey="vwb:playgroundSyncRibbonDismissed"
+          label="Saved on this device only."
+        />
 
         <div
           className="collection-grid"
