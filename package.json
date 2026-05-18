@@ -9,11 +9,13 @@
     "lint": "next lint",
     "images:intake": "tsx scripts/intake-watch-images.ts",
     "images:apply-intake": "tsx scripts/apply-watch-image-intake.ts",
+    "images:generate": "tsx scripts/generate-watch-images.ts",
     "images:process": "tsx scripts/process-watch-images.ts",
     "images:catalog-candidates": "tsx scripts/export-watch-catalog-candidates.ts",
     "catalog:seed-report": "tsx scripts/catalog-seed-report.ts"
   },
   "dependencies": {
+    "@fal-ai/client": "^1.10.1",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.105.1",
     "next": "14.2.35",
