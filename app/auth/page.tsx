@@ -201,13 +201,30 @@ function AuthPageInner() {
                   fontFamily: brand.font.sans,
                   fontSize: 13,
                   color: brand.colors.muted,
-                  margin: '0 0 28px',
+                  margin: '0 0 18px',
                   textAlign: 'center',
                   lineHeight: 1.5,
                 }}
               >
-                Save your collection and access it anywhere
+                Save your collection across devices.
               </p>
+
+              <ul
+                style={{
+                  listStyle: 'none',
+                  padding: 0,
+                  margin: '0 0 26px',
+                  textAlign: 'center',
+                  fontFamily: brand.font.sans,
+                  fontSize: 12,
+                  color: brand.colors.muted,
+                  lineHeight: 1.7,
+                  letterSpacing: '0.01em',
+                }}
+              >
+                <li>Every watch on every device.</li>
+                <li>A public profile, a featured timepiece.</li>
+              </ul>
 
               {/* Google button */}
               <p

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
+import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { BrandLockup } from '@/components/BrandLockup'
 
 type NavIconName = 'collection' | 'playground' | 'discover' | 'news' | 'profile' | 'settings'
@@ -94,6 +95,8 @@ export default function NavBar() {
   const pathname = usePathname()
   const router = useRouter()
   const { user, signOut } = useAuth()
+  const { collectionWatches } = useCollectionSession()
+  const hasGuestWatches = !user && collectionWatches.length > 0
 
   useEffect(() => {
     if (!searchOpen) return
@@ -452,16 +455,18 @@ export default function NavBar() {
           </div>
         ) : (
           <Link
-            href="/auth"
+            href={hasGuestWatches ? '/auth?next=/collection' : '/auth'}
             className="nav-link-button nav-signin"
             style={{
               ...desktopLinkStyle(false),
               padding: '7px 14px',
-              border: `1px solid ${brand.colors.borderLight}`,
+              border: `1px solid ${hasGuestWatches ? brand.colors.goldLine : brand.colors.borderLight}`,
               borderRadius: brand.radius.btn,
+              color: hasGuestWatches ? brand.colors.ink : brand.colors.muted,
+              background: hasGuestWatches ? brand.colors.goldWash : 'transparent',
             }}
           >
-            Sign in
+            {hasGuestWatches ? 'Sync collection →' : 'Sign in'}
           </Link>
         )}
         </div>
@@ -776,7 +781,7 @@ export default function NavBar() {
           </>
         ) : (
           <Link
-            href="/auth"
+            href={hasGuestWatches ? '/auth?next=/collection' : '/auth'}
             onClick={() => setOpen(false)}
             className="nav-mobile-row"
             style={{
@@ -788,7 +793,7 @@ export default function NavBar() {
               <span className="nav-mobile-row-icon">
                 <NavIcon name="profile" />
               </span>
-              <span>Sign in</span>
+              <span>{hasGuestWatches ? 'Sync collection →' : 'Sign in'}</span>
             </span>
           </Link>
         )}

@@ -5,12 +5,15 @@ import { useRouter } from 'next/navigation'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { useIsMobile } from './useResponsiveState'
 import CollectionWatchboxSurface from './CollectionWatchboxSurface'
+import CollectionEmptyState from './CollectionEmptyState'
+import SyncRibbon from './SyncRibbon'
 import { brand } from '@/lib/brand'
 
 export default function CollectionSection() {
   const router = useRouter()
   const isMobile = useIsMobile()
   const { collectionWatches, reorderCollectionWatches } = useCollectionSession()
+  const isEmpty = collectionWatches.length === 0
 
   function handleReorder(from: number, to: number) {
     const next = [...collectionWatches]
@@ -39,7 +42,7 @@ export default function CollectionSection() {
               marginBottom: 12,
             }}
           >
-            Your Collection →
+            {isEmpty ? 'Start your watchbox →' : 'Your Collection →'}
           </div>
           <h2
             style={{
@@ -57,11 +60,18 @@ export default function CollectionSection() {
         </Link>
       </div>
 
-      <CollectionWatchboxSurface
-        watches={collectionWatches}
-        onEmptySlotClick={() => router.push('/collection/add')}
-        onReorder={handleReorder}
-      />
+      {isEmpty ? (
+        <CollectionEmptyState variant="home" />
+      ) : (
+        <>
+          <SyncRibbon />
+          <CollectionWatchboxSurface
+            watches={collectionWatches}
+            onEmptySlotClick={() => router.push('/collection/add')}
+            onReorder={handleReorder}
+          />
+        </>
+      )}
     </section>
   )
 }

@@ -249,7 +249,7 @@ export default function AddWatchConfirmPage() {
               <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: isCompact ? 38 : 44, fontWeight: 400, lineHeight: 0.95, color: '#1A1410' }}>
                 {resolvedWatch.model}
               </div>
-              {alreadyInCollection && (
+              {alreadyInCollection && !submitting && (
                 <span
                   style={{
                     display: 'inline-block',
@@ -340,7 +340,7 @@ export default function AddWatchConfirmPage() {
 
             <div style={{ height: 1, background: '#EAE5DC', marginBottom: 20 }} />
 
-            {alreadyInCollection && !addAnotherOpen && (
+            {alreadyInCollection && !addAnotherOpen && !submitting && (
               <div style={{
                 padding: '14px 16px',
                 background: 'rgba(232,244,232,0.6)',
@@ -436,7 +436,7 @@ export default function AddWatchConfirmPage() {
               </div>
             )}
 
-            {(!alreadyInCollection || addAnotherOpen) && (
+            {(!alreadyInCollection || addAnotherOpen || submitting) && (
             <>
             <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
               {alreadyInCollection ? 'Add another copy — where does it go?' : 'Where does it go?'}

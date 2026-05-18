@@ -25,6 +25,7 @@ import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import CollectionStats from '@/components/collection/CollectionStats'
 import ShareBoxModal, { type ShareFlags } from '@/components/collection/ShareBoxModal'
+import SyncRibbon from '@/components/collection/SyncRibbon'
 import WatchboxHeader from '@/components/collection/WatchboxHeader'
 import { brand } from '@/lib/brand'
 
@@ -658,6 +659,13 @@ function PlaygroundPageInner() {
           </div>
         ) : null}
 
+        <SyncRibbon
+          watchCount={boxes.reduce((sum, box) => sum + box.entries.length, 0)}
+          dest="/playground"
+          dismissKey="vwb:playgroundSyncRibbonDismissed"
+          label="Saved on this device only."
+        />
+
         <div
           className="collection-grid"
           style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}
@@ -1104,6 +1112,21 @@ function WatchboxView({
           ...(watchboxMaxW !== undefined ? { maxWidth: watchboxMaxW, width: '100%', margin: '0 auto' } : {}),
         }}
       >
+        {watches.length === 0 && (
+          <div
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 11,
+              letterSpacing: '0.06em',
+              color: brand.colors.muted,
+              textAlign: 'center',
+              marginBottom: 14,
+              lineHeight: 1.5,
+            }}
+          >
+            This box is empty. Tap any slot to add your first watch.
+          </div>
+        )}
         <WatchBox
           watches={watches}
           activeSlot={activeSlot}

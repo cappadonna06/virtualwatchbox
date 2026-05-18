@@ -7,7 +7,9 @@ import CollectionHeader from '@/components/collection/CollectionHeader'
 import CollectionStats from '@/components/collection/CollectionStats'
 import SortDropdown from '@/components/collection/SortDropdown'
 import CollectionPhotoView from '@/components/collection/CollectionPhotoView'
+import CollectionEmptyState from '@/components/collection/CollectionEmptyState'
 import CollectionWatchboxSurface from '@/components/collection/CollectionWatchboxSurface'
+import SyncRibbon from '@/components/collection/SyncRibbon'
 import EditWatchModal from '@/components/collection/EditWatchModal'
 import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarSheet'
 import ShareBoxModal, { type ShareFlags } from '@/components/collection/ShareBoxModal'
@@ -140,7 +142,11 @@ export default function CollectionPage() {
           <WatchboxHeader
             title="My Collection"
             subtitle="Your collection, wherever you go."
-            summary={`${collectionWatches.length} ${collectionWatches.length === 1 ? 'watch' : 'watches'} · ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(totalEstimatedValue)} est. value`}
+            summary={
+              collectionWatches.length === 0
+                ? 'A virtual home for what you wear, what you want, and what’s next.'
+                : `${collectionWatches.length} ${collectionWatches.length === 1 ? 'watch' : 'watches'} · ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(totalEstimatedValue)} est. value`
+            }
             primaryAction={{
               label: 'Add Watch',
               onClick: () => router.push('/collection/add'),
@@ -227,11 +233,17 @@ export default function CollectionPage() {
 
       <div style={{ padding: `0 ${isMobile ? 20 : 56}px` }}>
         {activeView === 'watchbox' ? (
-          <CollectionWatchboxSurface
-            watches={collectionWatches}
-            onEmptySlotClick={() => router.push('/collection/add')}
-            onReorder={handleReorder}
-          />
+          <>
+            <SyncRibbon />
+            <CollectionWatchboxSurface
+              watches={collectionWatches}
+              onEmptySlotClick={() => router.push('/collection/add')}
+              onReorder={handleReorder}
+            />
+            {collectionWatches.length === 0 ? (
+              <CollectionEmptyState variant="collection" />
+            ) : null}
+          </>
         ) : activeView === 'photo' ? (
           <CollectionPhotoView
             photoUrl={watchboxPhotoUrl}

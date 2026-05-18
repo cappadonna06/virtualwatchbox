@@ -23,6 +23,7 @@ interface Props {
   mode?: 'collection' | 'playground'
   readonly?: boolean
   jewelWatchIds?: string[]
+  showFirstSlotLabel?: boolean
 }
 
 function OverflowListItem({
@@ -171,6 +172,7 @@ export default function WatchBox({
   mode = 'collection',
   readonly = false,
   jewelWatchIds,
+  showFirstSlotLabel = false,
 }: Props) {
   const { isWatchJewel } = useCollectionSession()
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null)
@@ -278,6 +280,7 @@ export default function WatchBox({
               const isActive = activeSlot === i || (slot.type === 'overflow' && overflowSlotActive)
 
               if (slot.type === 'empty') {
+                const isFirstSlot = i === 0
                 return (
                   <div key={i} style={{ aspectRatio: '3/4', borderRadius: 3, position: 'relative' }}>
                     <div
@@ -290,9 +293,8 @@ export default function WatchBox({
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: 5,
                         cursor: readonly ? 'default' : 'pointer',
-                        opacity: useHighContrastSlotText ? 0.88 : 0.4,
+                        opacity: useHighContrastSlotText ? 0.88 : 0.55,
                         background: ln.slotBg,
                       }}
                     >
@@ -300,12 +302,22 @@ export default function WatchBox({
                         <span style={{ fontFamily: brand.font.sans, fontSize: 8, letterSpacing: '0.1em', color: emptyPrimaryColor }}>
                           EMPTY
                         </span>
-                      ) : (
-                        <>
-                          <span style={{ fontSize: 18, color: emptyPrimaryColor }}>+</span>
-                          <span style={{ fontFamily: brand.font.sans, fontSize: 8, letterSpacing: '0.1em', color: emptyPrimaryColor }}>ADD</span>
-                        </>
-                      )}
+                      ) : showFirstSlotLabel && isFirstSlot ? (
+                        <span
+                          style={{
+                            fontFamily: brand.font.sans,
+                            fontSize: 9,
+                            fontWeight: 500,
+                            letterSpacing: '0.06em',
+                            color: emptyPrimaryColor,
+                            textAlign: 'center',
+                            padding: '0 6px',
+                            lineHeight: 1.2,
+                          }}
+                        >
+                          Add your first watch
+                        </span>
+                      ) : null}
                     </div>
                   </div>
                 )
