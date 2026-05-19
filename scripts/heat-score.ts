@@ -5,13 +5,22 @@
  * for hero ranking, news scoring, suggest-watch algos, and the
  * catalog_watch_market.heat_score column.
  *
- * Composition (sums to max 1000):
+ * Composition (sums to max 1000, can be reduced by penalty):
  *
- *   brandTier            0-350    Editorial brand prestige bracket
- *   marketActivity       0-300    chrono24-big listing count (log scaled)
- *   curationSignal       0-200    communitySignal from seed CSV
- *   sourceCorroboration  0-100    Number of independent sources for this ref
- *   nicknameBonus        0-50     Match against an iconic-model nickname list
+ *   brandTier              0-250    Editorial brand prestige bracket
+ *   marketActivity         0-450    Listing count across chrono24 / luxury163k (log scaled)
+ *   curationSignal         0-200    communitySignal from seed CSV
+ *   sourceCorroboration    0-100    Number of independent sources for this ref
+ *   nicknameBonus          0-50     Match against an iconic-model nickname list
+ *   obscurePremiumPenalty -200-0   Penalty for high-MSRP refs with no market activity
+ *
+ * Reweighted 2026-05 to:
+ *   - reduce brandTier dominance (350→250) so accessible-but-popular refs
+ *     (Speedmaster, Black Bay, SARB033) can rank competitively with luxury
+ *   - raise marketActivity ceiling (300→450) — actual demand should matter
+ *     more than editorial brand prestige
+ *   - add a penalty for "obscure premium" refs (>$50k AND <~3-5 listings)
+ *     so seven-figure paperweights don't crowd out things people actually buy
  *
  * Signals NOT used (yet):
  *   - Reddit mentions       (would need a scrape job; future enhancement)
@@ -32,6 +41,8 @@ export type HeatSignals = {
   chrono24ListingCount?: number
   /** Number of luxury163k listings for this (brand, ref). */
   luxury163kListingCount?: number
+  /** Estimated market value in USD — used by the obscure-premium penalty. */
+  estimatedValueUsd?: number | null
 }
 
 type BrandTier = 'S' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F'
@@ -51,13 +62,13 @@ const BRAND_TIERS: Record<BrandTier, string[]> = {
 }
 
 const TIER_POINTS: Record<BrandTier, number> = {
-  S: 350,
-  A: 290,
-  B: 220,
-  C: 160,
-  D: 100,
-  E: 60,
-  F: 30,
+  S: 250,
+  A: 210,
+  B: 170,
+  C: 130,
+  D: 90,
+  E: 55,
+  F: 25,
 }
 
 function normalizeBrand(value: string): string {
@@ -162,9 +173,28 @@ function marketActivityPoints(chrono24Count: number | undefined, luxury163kCount
   // barely registers; a flooded 200+ listing market caps out.
   const n = Math.max(chrono24Count ?? 0, luxury163kCount ?? 0)
   if (n <= 0) return 0
-  // 1 → 50, 5 → 130, 20 → 200, 50 → 245, 100 → 275, 200 → 300, 500+ → 300
-  const score = Math.round(50 + 150 * Math.log10(Math.max(1, n)))
-  return Math.min(300, score)
+  // 1 → 75, 5 → 215, 20 → 335, 50 → 415, 100 → 450, 200+ → 450
+  const score = Math.round(75 + 200 * Math.log10(Math.max(1, n)))
+  return Math.min(450, score)
+}
+
+function obscurePremiumPenalty(
+  estimatedValueUsd: number | null | undefined,
+  marketActivityPts: number,
+): number {
+  // Penalize refs that are expensive AND barely trade — typical pattern for
+  // seven-figure indy paperweights and over-puffed limited editions.
+  if (estimatedValueUsd == null || estimatedValueUsd < 50_000) return 0
+  // Only fires when listings are weak. marketActivityPts of 100 corresponds
+  // to ~1-2 listings on the bigger of the two markets; above that we assume
+  // there's enough collector activity to justify the price.
+  if (marketActivityPts >= 100) return 0
+  // Price factor: log-scaled from $50k (0) to $500k+ (1).
+  // $50k → 0, $100k → 0.30, $250k → 0.70, $500k+ → 1.0
+  const priceFactor = Math.min(1, Math.log10(Math.max(1, estimatedValueUsd / 50_000)))
+  // Obscurity factor: 1.0 at zero listings, 0 once marketActivityPts hits 100.
+  const obscurityFactor = (100 - marketActivityPts) / 100
+  return -Math.round(200 * priceFactor * obscurityFactor)
 }
 
 function sourceCorroborationPoints(sourceCount: number): number {
@@ -191,6 +221,7 @@ export function computeHeatScore(signals: HeatSignals): {
     curationSignal: number
     sourceCorroboration: number
     nicknameBonus: number
+    obscurePremiumPenalty: number
   }
 } {
   const tier = brandTierFor(signals.brand)
@@ -199,8 +230,10 @@ export function computeHeatScore(signals: HeatSignals): {
   const curation = curationPoints(signals.communitySignal)
   const corroboration = sourceCorroborationPoints(signals.sourceCount)
   const nickname = nicknameBonus(signals.model, signals.modelFamily ?? null)
+  const penalty = obscurePremiumPenalty(signals.estimatedValueUsd, market)
 
-  const total = Math.min(1000, brandPoints + market + curation + corroboration + nickname)
+  const raw = brandPoints + market + curation + corroboration + nickname + penalty
+  const total = Math.max(0, Math.min(1000, raw))
 
   return {
     heatScore: total,
@@ -210,6 +243,7 @@ export function computeHeatScore(signals: HeatSignals): {
       curationSignal: curation,
       sourceCorroboration: corroboration,
       nicknameBonus: nickname,
+      obscurePremiumPenalty: penalty,
     },
   }
 }

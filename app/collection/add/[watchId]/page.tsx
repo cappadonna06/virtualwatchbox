@@ -2,9 +2,9 @@
 
 import type { CSSProperties } from 'react'
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import type { PlaygroundBox, WatchCondition } from '@/types/watch'
+import type { CatalogWatch, PlaygroundBox, WatchCondition } from '@/types/watch'
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { addWatchToPlaygroundBox, createPlaygroundBox, createPlaygroundEntry, normalizePlaygroundBoxes } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
@@ -36,8 +36,36 @@ export default function AddWatchConfirmPage() {
   const searchParams = useSearchParams()
   const { addToCollection, followWatch, isInCollection, collectionWatches } = useCollectionSession()
 
-  const { allWatches } = useCatalog()
-  const watch = useMemo(() => allWatches.find(w => w.id === params.watchId), [allWatches, params.watchId])
+  const { allWatches, fetchById } = useCatalog()
+  // The in-memory catalog only holds the top-2000 by heat. The other ~33k
+  // refs are accessible via Add Watch search but won't appear here unless
+  // we hydrate on demand.
+  const localWatch = useMemo(
+    () => allWatches.find(w => w.id === params.watchId),
+    [allWatches, params.watchId],
+  )
+  const [remoteWatch, setRemoteWatch] = useState<CatalogWatch | null>(null)
+  const [remoteResolved, setRemoteResolved] = useState(false)
+  const watch = localWatch ?? remoteWatch
+
+  useEffect(() => {
+    if (localWatch || !params.watchId) {
+      setRemoteResolved(true)
+      return
+    }
+    let cancelled = false
+    setRemoteResolved(false)
+    fetchById(params.watchId).then(found => {
+      if (cancelled) return
+      setRemoteWatch(found)
+      setRemoteResolved(true)
+    }).catch(() => {
+      if (cancelled) return
+      setRemoteWatch(null)
+      setRemoteResolved(true)
+    })
+    return () => { cancelled = true }
+  }, [params.watchId, localWatch, fetchById])
 
   // Owned instances of this catalog watch — for the duplicate-aware UX. One user
   // can own multiple of the same model (a vintage and a current production, etc.).
@@ -53,6 +81,8 @@ export default function AddWatchConfirmPage() {
 
   const [choice, setChoice] = useState<OwnershipChoice>(isPlaygroundContext ? 'playground' : 'owned')
   const [condition, setCondition] = useState<WatchCondition | null>(null)
+  const [conditionNudge, setConditionNudge] = useState(false)
+  const conditionRef = useRef<HTMLDivElement | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [addAnotherOpen, setAddAnotherOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -87,6 +117,22 @@ export default function AddWatchConfirmPage() {
   }, [])
 
   if (!watch) {
+    if (!remoteResolved) {
+      // Wait for fetchById to resolve before deciding to redirect.
+      return (
+        <div
+          style={{
+            padding: '120px 40px',
+            textAlign: 'center',
+            fontFamily: brand.font.sans,
+            fontSize: 13,
+            color: brand.colors.muted,
+          }}
+        >
+          Loading watch…
+        </div>
+      )
+    }
     router.replace('/collection/add')
     return null
   }
@@ -474,9 +520,41 @@ export default function AddWatchConfirmPage() {
             </div>
 
             {choice === 'owned' ? (
-              <div style={{ marginBottom: 24 }}>
-                <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
-                  Condition
+              <div ref={conditionRef} style={{ marginBottom: 24 }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    gap: 10,
+                    marginBottom: 10,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-dm-sans)',
+                      fontSize: 9,
+                      fontWeight: 600,
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase',
+                      color: conditionNudge ? '#8A6A10' : '#A89880',
+                      transition: 'color 0.2s',
+                    }}
+                  >
+                    Condition
+                  </div>
+                  {!condition && (
+                    <div
+                      style={{
+                        fontFamily: 'var(--font-dm-sans)',
+                        fontSize: 10.5,
+                        color: conditionNudge ? '#8A6A10' : '#A89880',
+                        fontStyle: 'italic',
+                        transition: 'color 0.2s',
+                      }}
+                    >
+                      Choose one to continue
+                    </div>
+                  )}
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
                   {CONDITIONS.map(option => {
@@ -484,7 +562,10 @@ export default function AddWatchConfirmPage() {
                     return (
                       <button
                         key={option}
-                        onClick={() => setCondition(option)}
+                        onClick={() => {
+                          setCondition(option)
+                          setConditionNudge(false)
+                        }}
                         style={{
                           padding: '8px 14px',
                           borderRadius: 20,
@@ -647,12 +728,24 @@ export default function AddWatchConfirmPage() {
 
             {choice === 'owned' ? (
               <button
-                disabled={!condition || submitting}
+                disabled={submitting}
+                aria-disabled={!condition}
                 onClick={() => {
-                  if (!condition || submitting) return
+                  if (submitting) return
+                  if (!condition) {
+                    setConditionNudge(true)
+                    conditionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                    window.setTimeout(() => setConditionNudge(false), 1400)
+                    return
+                  }
                   void commitCollectionAdd()
                 }}
-                style={primaryButtonStyle(!condition || submitting)}
+                style={{
+                  ...primaryButtonStyle(!condition || submitting),
+                  // Stay interactive when condition is missing — the click triggers
+                  // the nudge. Only the in-flight submit gets the not-allowed cursor.
+                  cursor: submitting ? 'not-allowed' : 'pointer',
+                }}
               >
                 {submitting
                   ? 'Adding…'

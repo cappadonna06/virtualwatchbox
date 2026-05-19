@@ -22,6 +22,10 @@ import type {
 const INITIAL_LOAD_LIMIT = 2000
 // Supabase REST default max_rows per response. We page-fetch through it.
 const PG_PAGE = 1000
+// Max ids per `.in(...)` query. PostgREST/Supabase returns HTTP 400 when the
+// query string overflows (~14 KB), and our catalog ids average ~40 chars, so
+// 1000 ids per IN clause silently fails. 200 keeps the URL comfortably small.
+const PG_IN_CHUNK = 200
 
 export type CatalogSearchParams = {
   q?: string
@@ -198,8 +202,8 @@ async function fetchChunkedByIds(
   ids: string[],
 ): Promise<Array<Record<string, unknown>>> {
   const out: Array<Record<string, unknown>> = []
-  for (let i = 0; i < ids.length; i += PG_PAGE) {
-    const slice = ids.slice(i, i + PG_PAGE)
+  for (let i = 0; i < ids.length; i += PG_IN_CHUNK) {
+    const slice = ids.slice(i, i + PG_IN_CHUNK)
     const { data, error } = await supabase.from(table).select(select).in('id', slice)
     if (error) throw new Error(`${table} fetch failed: ${error.message}`)
     if (data) out.push(...(data as unknown as Array<Record<string, unknown>>))
@@ -212,8 +216,8 @@ async function fetchImagesByIds(
   ids: string[],
 ): Promise<Array<Record<string, unknown>>> {
   const out: Array<Record<string, unknown>> = []
-  for (let i = 0; i < ids.length; i += PG_PAGE) {
-    const slice = ids.slice(i, i + PG_PAGE)
+  for (let i = 0; i < ids.length; i += PG_IN_CHUNK) {
+    const slice = ids.slice(i, i + PG_IN_CHUNK)
     const { data, error } = await supabase
       .from('watch_images')
       .select('catalog_watch_id, webp_url, png_url')
@@ -317,8 +321,8 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
         fetchImagesByIds(supabase, topIds),
         (async () => {
           const out: Array<Record<string, unknown>> = []
-          for (let i = 0; i < topIds.length; i += PG_PAGE) {
-            const slice = topIds.slice(i, i + PG_PAGE)
+          for (let i = 0; i < topIds.length; i += PG_IN_CHUNK) {
+            const slice = topIds.slice(i, i + PG_IN_CHUNK)
             const { data, error } = await supabase
               .from('catalog_watch_market')
               .select('*')
@@ -331,46 +335,21 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
       ])
       const merged = mergeRows(catalogRows, marketRowsRes, imageRows)
 
-      // 3) build a brand index from the loaded set. We fetch brand counts
-      //    over the FULL catalog (not just the top 2000) via a tiny
-      //    aggregation query so the brand filter in Add Watch reflects
-      //    everything available.
-      void (async () => {
-        try {
-          // distinct-brand query — limit to a sane number for the chip list.
-          // Supabase doesn't expose distinct() directly; we sort by brand
-          // and walk through unique values.
-          const seen = new Map<string, number>()
-          let cursor = ''
-          // We don't have direct count-by-brand; approximate using top-heat
-          // catalog rows. Cheap and matches what users typically search.
-          for (let offset = 0; offset < 2000; offset += PG_PAGE) {
-            const upper = Math.min(offset + PG_PAGE - 1, 1999)
-            const { data } = await supabase
-              .from('catalog_watches')
-              .select('brand')
-              .order('brand')
-              .range(offset, upper)
-            if (!data || data.length === 0) break
-            for (const r of data) {
-              const b = (r as { brand?: string }).brand
-              if (typeof b === 'string' && b.trim()) {
-                seen.set(b, (seen.get(b) ?? 0) + 1)
-              }
-            }
-            if (data.length < PG_PAGE) break
-            // ignore cursor; we just walk linearly
-            cursor = ''
-          }
-          void cursor
-          const entries = [...seen.entries()]
-            .map(([brand, count]) => ({ brand, count }))
-            .sort((a, b) => b.count - a.count)
-          setBrandIndex(entries)
-        } catch (err) {
-          console.warn('[CatalogProvider] brand index fetch failed', err)
+      // Build the brand index from the loaded top-heat set. The counts here
+      // are "how many top-2000-heat refs each brand has" — a good proxy for
+      // brand popularity and the right thing to surface as chip ordering.
+      // (A previous round-trip query alphabetically over catalog_watches was
+      //  unreliable and added latency; this is synchronous and deterministic.)
+      const brandSeen = new Map<string, number>()
+      for (const w of merged) {
+        if (w.brand && w.brand.trim()) {
+          brandSeen.set(w.brand, (brandSeen.get(w.brand) ?? 0) + 1)
         }
-      })()
+      }
+      const brandEntries = [...brandSeen.entries()]
+        .map(([brand, count]) => ({ brand, count }))
+        .sort((a, b) => b.count - a.count || a.brand.localeCompare(b.brand))
+      setBrandIndex(brandEntries)
 
       setDynamicWatches(merged)
       setUsingStaticFallback(false)
@@ -435,18 +414,42 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
     // This avoids passing a 1,452-id IN list through the URL.
     // The select string MUST be a literal for Supabase's type parser, so we
     // branch at the call site.
+    // We always inner-join catalog_watch_market so we can order by its
+    // popularity_rank for heat sorts. Every catalog_watches row has a paired
+    // market row (per seed-from-enriched.ts), so the inner join is safe.
     let q = params.onlyWithImages
       ? supabase
           .from('catalog_watches')
-          .select('*, watch_images!inner(catalog_watch_id, variant)', { count: 'exact' })
+          .select(
+            '*, catalog_watch_market!inner(popularity_rank, heat_score), watch_images!inner(catalog_watch_id, variant)',
+            { count: 'exact' },
+          )
           .eq('watch_images.variant', 'primary')
-      : supabase.from('catalog_watches').select('*', { count: 'exact' })
+      : supabase
+          .from('catalog_watches')
+          .select(
+            '*, catalog_watch_market!inner(popularity_rank, heat_score)',
+            { count: 'exact' },
+          )
 
     if (params.q && params.q.trim()) {
-      const needle = params.q.trim().replace(/[%_]/g, '\\$&')
-      q = q.or(
-        `brand.ilike.%${needle}%,model.ilike.%${needle}%,reference.ilike.%${needle}%,model_family.ilike.%${needle}%,nickname.ilike.%${needle}%`,
-      )
+      // Tokenize on whitespace and AND-match each token across the column
+      // union. Multiple .or() clauses compose with AND in PostgREST, so
+      // "omega aqua" becomes:
+      //   (brand|model|reference|model_family|nickname ilike '%omega%')
+      //   AND (brand|model|reference|model_family|nickname ilike '%aqua%')
+      // catching Omega Seamaster Aqua Terra rows that no single ilike could.
+      // Future upgrade: Postgres tsvector + GIN for stemming and ranking.
+      const tokens = params.q
+        .trim()
+        .split(/\s+/)
+        .map(t => t.replace(/[%_,()]/g, '\\$&'))
+        .filter(t => t.length >= 2)
+      for (const token of tokens) {
+        q = q.or(
+          `brand.ilike.%${token}%,model.ilike.%${token}%,reference.ilike.%${token}%,model_family.ilike.%${token}%,nickname.ilike.%${token}%`,
+        )
+      }
     }
     if (params.brand) q = q.eq('brand', params.brand)
     if (params.brands && params.brands.length > 0) q = q.in('brand', params.brands)
@@ -457,15 +460,24 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
     else if (params.caseSizeBucket === '39-41') q = q.gte('case_size_mm', 39).lte('case_size_mm', 41)
     else if (params.caseSizeBucket === '>=42') q = q.gte('case_size_mm', 42)
 
-    // Sort. estimated_value DESC is a great proxy for "popular" — iconic
-    // refs (Daytonas, Submariners, Royal Oaks) bubble up and they're the
-    // ones most likely to have images + that users want to see first.
+    // Sort. Heat sort uses the joined catalog_watch_market.popularity_rank
+    // (1 = highest heat). Earlier this column ordered by estimated_value as
+    // a proxy — that worked when heat correlated with price, but since the
+    // 2026 reweight (which penalizes obscure-expensive refs) we must order
+    // by the actual heat column or the page leads with seven-figure
+    // paperweights instead of icons.
     if (params.sortBy === 'price_asc') q = q.order('estimated_value', { ascending: true, nullsFirst: false })
     else if (params.sortBy === 'price_desc') q = q.order('estimated_value', { ascending: false, nullsFirst: false })
     else if (params.sortBy === 'brand') q = q.order('brand').order('reference')
     else {
-      // default = 'heat' approximation
-      q = q.order('estimated_value', { ascending: false, nullsFirst: false }).order('reference')
+      // default = heat: lowest popularity_rank first (= highest heat).
+      // Note: the `referencedTable(column)` syntax orders the *parent* rows
+      // by the embedded resource's column. Using `{ foreignTable }` would
+      // instead order rows *within* the embed (a no-op for one-to-one),
+      // which silently produced near-random order before this fix.
+      q = q
+        .order('catalog_watch_market(popularity_rank)', { ascending: true, nullsFirst: false })
+        .order('reference')
     }
 
     q = q.range(offset, offset + limit - 1)
@@ -480,8 +492,8 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
     const [marketRows, imageRows] = await Promise.all([
       (async () => {
         const out: Array<Record<string, unknown>> = []
-        for (let i = 0; i < ids.length; i += PG_PAGE) {
-          const slice = ids.slice(i, i + PG_PAGE)
+        for (let i = 0; i < ids.length; i += PG_IN_CHUNK) {
+          const slice = ids.slice(i, i + PG_IN_CHUNK)
           const { data: d } = await supabase
             .from('catalog_watch_market')
             .select('*')
@@ -493,17 +505,21 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
       fetchImagesByIds(supabase, ids),
     ])
 
-    let rows = mergeRows(catalogRows, marketRows, imageRows)
+    const rows = mergeRows(catalogRows, marketRows, imageRows)
 
     // Re-sort by actual heat score now that we have market data attached —
     // this beats the estimated_value proxy when market.heatScore is present.
-    rows.sort((a, b) => {
-      const ha = a.market?.heatScore ?? -1
-      const hb = b.market?.heatScore ?? -1
-      if (hb !== ha) return hb - ha
-      // tiebreak by reference for determinism
-      return (a.reference ?? '').localeCompare(b.reference ?? '')
-    })
+    // ONLY runs for heat-sorted requests; other sort modes (price/brand)
+    // must preserve the server-side .order() result.
+    if (!params.sortBy || params.sortBy === 'heat') {
+      rows.sort((a, b) => {
+        const ha = a.market?.heatScore ?? -1
+        const hb = b.market?.heatScore ?? -1
+        if (hb !== ha) return hb - ha
+        // tiebreak by reference for determinism
+        return (a.reference ?? '').localeCompare(b.reference ?? '')
+      })
+    }
 
     return { rows, total: count ?? rows.length }
   }, [])

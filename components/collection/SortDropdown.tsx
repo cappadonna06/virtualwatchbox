@@ -13,6 +13,8 @@ interface Props {
   options: SortOption[]
   onChange: (value: string) => void
   label?: string
+  /** Compact trigger: narrower min-width and no eyebrow label. For mobile. */
+  compact?: boolean
 }
 
 export default function SortDropdown({
@@ -20,7 +22,10 @@ export default function SortDropdown({
   options,
   onChange,
   label = 'Order',
+  compact = false,
 }: Props) {
+  const triggerMinWidth = compact ? 132 : brand.controls.dropdown.minWidth
+  const menuMinWidth = compact ? 168 : brand.controls.dropdown.minWidth
   const [open, setOpen] = useState(false)
   const [hoveredValue, setHoveredValue] = useState<string | null>(null)
   const rootRef = useRef<HTMLDivElement | null>(null)
@@ -72,9 +77,9 @@ export default function SortDropdown({
           }
         }}
         style={{
-          minWidth: brand.controls.dropdown.minWidth,
+          minWidth: triggerMinWidth,
           height: brand.controls.dropdown.triggerHeight,
-          padding: '0 12px 0 14px',
+          padding: compact ? '0 10px 0 12px' : '0 12px 0 14px',
           borderRadius: brand.radius.md,
           border: `1px solid ${open ? brand.colors.goldLine : brand.colors.borderLight}`,
           background: brand.colors.white,
@@ -96,31 +101,35 @@ export default function SortDropdown({
             minWidth: 0,
           }}
         >
+          {!compact && (
+            <>
+              <span
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 9,
+                  fontWeight: 600,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  color: brand.colors.muted,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {label}
+              </span>
+              <span
+                aria-hidden="true"
+                style={{
+                  width: 1,
+                  alignSelf: 'stretch',
+                  background: brand.colors.border,
+                }}
+              />
+            </>
+          )}
           <span
             style={{
               fontFamily: brand.font.sans,
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: brand.colors.muted,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {label}
-          </span>
-          <span
-            aria-hidden="true"
-            style={{
-              width: 1,
-              alignSelf: 'stretch',
-              background: brand.colors.border,
-            }}
-          />
-          <span
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 12,
+              fontSize: compact ? 11.5 : 12,
               fontWeight: 500,
               letterSpacing: '0.02em',
               color: brand.colors.ink,
@@ -155,7 +164,7 @@ export default function SortDropdown({
           position: 'absolute',
           top: `calc(100% + ${brand.controls.dropdown.menuOffset}px)`,
           right: 0,
-          minWidth: brand.controls.dropdown.minWidth,
+          minWidth: menuMinWidth,
           padding: brand.controls.dropdown.menuPadding,
           borderRadius: brand.radius.lg,
           border: `1px solid ${brand.colors.borderMid}`,

@@ -1376,6 +1376,7 @@ function enrichRow(seed: SeedRow, idx: SourceIndex): EnrichedRecord {
     sourceCount,
     chrono24ListingCount: c24bigListings.length,
     luxury163kListingCount: lux163Listings.length,
+    estimatedValueUsd: estimatedValue,
   })
 
   return {
