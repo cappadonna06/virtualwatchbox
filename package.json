@@ -14,7 +14,20 @@
     "catalog:seed-report": "tsx scripts/catalog-seed-report.ts",
     "catalog:enrich": "tsx scripts/enrich-catalog.ts",
     "catalog:seed": "tsx scripts/seedCatalog.ts",
-    "catalog:migrate-ids": "tsx scripts/migrateCatalogIds.ts"
+    "catalog:seed-full": "tsx scripts/seed-from-enriched.ts",
+    "catalog:migrate-ids": "tsx scripts/migrateCatalogIds.ts",
+    "catalog:expand-list": "tsx scripts/expand-seed-list.ts",
+    "catalog:expand-from-watchdb": "tsx scripts/expand-from-watchdb.ts",
+    "catalog:fetch-thewatchapi": "tsx scripts/fetch-thewatchapi.ts",
+    "catalog:scrape-watchbase": "tsx scripts/scrape-watchbase.ts",
+    "catalog:reparse-watchbase": "tsx scripts/reparse-watchbase-cache.ts",
+    "catalog:scrape-chrono24": "tsx scripts/scrape-chrono24.ts",
+    "catalog:llm-extract": "tsx scripts/llm-extract-specs.ts",
+    "images:download": "tsx scripts/download-watch-images.ts",
+    "images:acquire": "tsx scripts/acquire-watch-images.ts",
+    "images:upload-storage": "tsx scripts/upload-images-to-storage.ts",
+    "images:cleanup-png": "tsx scripts/cleanup-png-storage.ts",
+    "prices:predict": "python3 scripts/predict-prices.py"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

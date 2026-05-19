@@ -5,6 +5,7 @@ import path from 'node:path'
 import { promisify } from 'node:util'
 import { watches } from '../lib/watches'
 import { processWatchImageBuffer } from '../lib/imageProcessing'
+import { repoRoot } from './watch-image-pipeline'
 import {
   ensureWatchAssetDirs,
   isSupportedImage,
@@ -27,7 +28,21 @@ type ManifestEntry = {
   backgroundRemovalApplied: boolean
 }
 
-const watchIds = new Set(watches.map(watch => watch.id))
+// Build watchIds from BOTH the legacy lib/watches.ts seed AND the enriched
+// catalog JSON (if present). Lets process-watch-images work on the bigger
+// 35k catalog without warning on every row.
+const enrichedJsonPath = path.join(repoRoot, 'data', 'catalog-enriched-full.json')
+const watchIds = new Set<string>(watches.map(watch => watch.id))
+try {
+  if (require('node:fs').existsSync(enrichedJsonPath)) {
+    const enriched = JSON.parse(require('node:fs').readFileSync(enrichedJsonPath, 'utf8'))
+    for (const r of enriched.records ?? []) {
+      if (typeof r?.id === 'string') watchIds.add(r.id)
+    }
+  }
+} catch (err) {
+  console.warn(`[process] could not read enriched catalog: ${(err as Error).message}`)
+}
 const execFileAsync = promisify(execFile)
 
 async function fileExists(filePath: string) {
