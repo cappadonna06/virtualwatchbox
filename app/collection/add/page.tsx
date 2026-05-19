@@ -173,6 +173,13 @@ interface FilterBodyProps {
   counts: FilterCounts
   showAllZeros: boolean
   setShowAllZeros: (next: boolean) => void
+  // Brand picker — only rendered inside the sheet on mobile; desktop uses the
+  // separate chip strip above the filter row.
+  showBrandInBody?: boolean
+  brandFilter?: string | null
+  setBrandFilter?: (next: string | null) => void
+  brandOptions?: string[]
+  brandCounts?: Record<string, number>
 }
 
 interface MobileFilterSheetProps extends FilterBodyProps {
@@ -338,10 +345,27 @@ function FilterSheetBody({
   counts,
   showAllZeros,
   setShowAllZeros,
+  showBrandInBody,
+  brandFilter,
+  setBrandFilter,
+  brandOptions,
+  brandCounts,
 }: FilterBodyProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
       <PhotosToggleRow checked={hasPhotos} onChange={onTogglePhotos} bordered />
+      {showBrandInBody && brandOptions && brandOptions.length > 0 && setBrandFilter ? (
+        <FacetGroup
+          label="Brand"
+          facetKey="brand"
+          options={brandOptions}
+          selected={brandFilter ?? null}
+          onSelect={value => setBrandFilter(brandFilter === value ? null : value)}
+          countsByOption={brandCounts ?? {}}
+          showAllZeros={showAllZeros}
+          setShowAllZeros={setShowAllZeros}
+        />
+      ) : null}
       <FacetGroup
         label="Case Material"
         facetKey="material"
@@ -950,7 +974,7 @@ function AddWatchSearchInner() {
       />
 
       {/* Brand chips — visible whenever the page is active (no search needed). */}
-      {!photoActive && BRAND_OPTIONS.length > 0 && (
+      {!photoActive && !isMobile && BRAND_OPTIONS.length > 0 && (
         <div
           style={{
             display: 'flex',
@@ -1230,6 +1254,7 @@ function AddWatchSearchInner() {
                       value={sortBy}
                       options={SORT_OPTIONS}
                       onChange={v => setSortBy(v as SortMode)}
+                      compact={isMobile}
                     />
                   </div>
                 </div>
@@ -1270,6 +1295,11 @@ function AddWatchSearchInner() {
                     counts={counts}
                     showAllZeros={showAllZeros}
                     setShowAllZeros={setShowAllZeros}
+                    showBrandInBody
+                    brandFilter={brandFilter}
+                    setBrandFilter={setBrandFilter}
+                    brandOptions={ALL_BRAND_OPTIONS}
+                    brandCounts={globalBrandCounts}
                   />
                 ) : null}
               </div>

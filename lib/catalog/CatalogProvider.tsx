@@ -433,10 +433,23 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
           )
 
     if (params.q && params.q.trim()) {
-      const needle = params.q.trim().replace(/[%_]/g, '\\$&')
-      q = q.or(
-        `brand.ilike.%${needle}%,model.ilike.%${needle}%,reference.ilike.%${needle}%,model_family.ilike.%${needle}%,nickname.ilike.%${needle}%`,
-      )
+      // Tokenize on whitespace and AND-match each token across the column
+      // union. Multiple .or() clauses compose with AND in PostgREST, so
+      // "omega aqua" becomes:
+      //   (brand|model|reference|model_family|nickname ilike '%omega%')
+      //   AND (brand|model|reference|model_family|nickname ilike '%aqua%')
+      // catching Omega Seamaster Aqua Terra rows that no single ilike could.
+      // Future upgrade: Postgres tsvector + GIN for stemming and ranking.
+      const tokens = params.q
+        .trim()
+        .split(/\s+/)
+        .map(t => t.replace(/[%_,()]/g, '\\$&'))
+        .filter(t => t.length >= 2)
+      for (const token of tokens) {
+        q = q.or(
+          `brand.ilike.%${token}%,model.ilike.%${token}%,reference.ilike.%${token}%,model_family.ilike.%${token}%,nickname.ilike.%${token}%`,
+        )
+      }
     }
     if (params.brand) q = q.eq('brand', params.brand)
     if (params.brands && params.brands.length > 0) q = q.in('brand', params.brands)
