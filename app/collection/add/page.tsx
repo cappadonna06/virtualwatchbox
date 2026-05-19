@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { CatalogWatch, PlaygroundBox } from '@/types/watch'
 import { useCatalog, type CatalogSearchParams } from '@/lib/catalog/CatalogProvider'
@@ -10,6 +10,16 @@ import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import { brand } from '@/lib/brand'
 import AddSearchWatchCard from '@/components/collection/AddSearchWatchCard'
 import PhotoSearch, { type PhotoSearchHandle } from '@/components/PhotoSearch'
+import SortDropdown from '@/components/collection/SortDropdown'
+
+type SortMode = 'heat' | 'price_desc' | 'price_asc' | 'brand'
+
+const SORT_OPTIONS: { value: SortMode; label: string }[] = [
+  { value: 'heat',       label: 'Popularity' },
+  { value: 'price_desc', label: 'Price: High to Low' },
+  { value: 'price_asc',  label: 'Price: Low to High' },
+  { value: 'brand',      label: 'Brand (A–Z)' },
+]
 
 const MATERIAL_OPTIONS = ['Stainless Steel', 'Yellow Gold', 'Rose Gold', 'White Gold', 'Titanium', 'Ceramic', 'Bronze']
 const COLOR_OPTIONS = ['Black', 'White', 'Blue', 'Green', 'Grey', 'Silver', 'Champagne', 'Brown', 'Red', 'Salmon']
@@ -610,11 +620,11 @@ export default function AddWatchSearchPage() {
   )
 }
 
-// How many results we ask Supabase for per search keystroke. Anything beyond
-// this becomes a "load more" UX in a future pass. 200 covers >99% of search
-// queries comfortably (you'd have to type something incredibly broad like
-// "watch" to overflow).
-const SEARCH_PAGE_LIMIT = 200
+// Server-side page size for the catalog grid. Default state, search, and
+// brand-filter all fetch in pages of this size sorted by heat. Additional
+// pages are fetched on demand via the "Load more" control.
+const PAGE_SIZE = 24
+const BRAND_CHIP_INITIAL = 20
 const SEARCH_DEBOUNCE_MS = 220
 
 function AddWatchSearchInner() {
@@ -640,15 +650,19 @@ function AddWatchSearchInner() {
   const [showAll, setShowAll] = useState(false)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [showAllZeros, setShowAllZeros] = useState(false)
+  const [showAllBrands, setShowAllBrands] = useState(false)
+  const [sortBy, setSortBy] = useState<SortMode>('heat')
   const [screenWidth, setScreenWidth] = useState(0)
 
   // ── Server-side search state ─────────────────────────────────────────
   // We can't filter the entire 35k catalog client-side anymore — only the
-  // top 2000 by heat sit in memory. So search/brand-filter both round-trip
-  // to Supabase, debounced, with the active facets as constraints.
+  // top 2000 by heat sit in memory. The grid always fetches from Supabase:
+  // default state (no query) shows the top PAGE_SIZE by heat; typing or
+  // brand-clicking re-runs the query; "Load more" appends the next page.
   const [serverResults, setServerResults] = useState<CatalogWatch[]>([])
   const [serverTotal, setServerTotal] = useState(0)
   const [searchLoading, setSearchLoading] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
   const searchAbortRef = useRef<number>(0)
   const hasPhotos = !showAll
   const isMobile = screenWidth > 0 && screenWidth < 768
@@ -681,29 +695,28 @@ function AddWatchSearchInner() {
   }, [isPlaygroundContext, boxId])
 
   // Server-side search: re-fetch when search term, brand, or photos-only
-  // toggle changes. Debounced so typing doesn't hammer Supabase.
+  // toggle changes. Debounced so typing doesn't hammer Supabase. With no
+  // term and no brand we still fetch a page — the top PAGE_SIZE by heat —
+  // so the page has browse-fodder instead of a blank canvas.
   // When photos-only is on we restrict the query to imaged refs server-side
-  // — otherwise the 200-row REST window fills with vintage refs that don't
+  // — otherwise the response window fills with vintage refs that don't
   // pass the client photo filter and we'd show 1 result out of thousands.
   useEffect(() => {
     const term = searchTerm.trim()
-    if (!term && !brandFilter) {
-      setServerResults([])
-      setServerTotal(0)
-      setSearchLoading(false)
-      return
-    }
     const myToken = ++searchAbortRef.current
     setSearchLoading(true)
     const handle = window.setTimeout(async () => {
       try {
+        // Note: when sortBy='price_asc', ~138 refs have estimated_value=0
+        // (no market data yet). They'll pile at the top of price_asc. If it
+        // looks bad in QA, gate the server query with gt('estimated_value', 0).
         const params: CatalogSearchParams = {
           q: term || undefined,
           brand: brandFilter || undefined,
-          onlyWithImages: !showAll, // showAll=false → photos-only ON
-          limit: SEARCH_PAGE_LIMIT,
+          onlyWithImages: !showAll,
+          limit: PAGE_SIZE,
           offset: 0,
-          sortBy: 'heat',
+          sortBy,
         }
         const { rows, total } = await searchCatalog(params)
         if (myToken !== searchAbortRef.current) return
@@ -720,13 +733,34 @@ function AddWatchSearchInner() {
       }
     }, SEARCH_DEBOUNCE_MS)
     return () => window.clearTimeout(handle)
-  }, [searchTerm, brandFilter, showAll, searchCatalog])
+  }, [searchTerm, brandFilter, showAll, sortBy, searchCatalog])
 
-  // All term matches regardless of photo status — used for toggle count + "All" mode
-  const allTermResults = useMemo(() => {
-    if (!searchTerm.trim() && !brandFilter) return []
-    return serverResults
-  }, [serverResults, searchTerm, brandFilter])
+  const loadMore = useCallback(async () => {
+    const term = searchTerm.trim()
+    const myToken = ++searchAbortRef.current
+    setLoadingMore(true)
+    try {
+      const { rows, total } = await searchCatalog({
+        q: term || undefined,
+        brand: brandFilter || undefined,
+        onlyWithImages: !showAll,
+        limit: PAGE_SIZE,
+        offset: serverResults.length,
+        sortBy,
+      })
+      if (myToken !== searchAbortRef.current) return
+      setServerResults(prev => [...prev, ...rows])
+      setServerTotal(total)
+    } catch (err) {
+      console.warn('[Add Watch] loadMore failed', err)
+    } finally {
+      if (myToken === searchAbortRef.current) setLoadingMore(false)
+    }
+  }, [searchTerm, brandFilter, showAll, sortBy, serverResults.length, searchCatalog])
+
+  // Term/brand matches regardless of photo status. Always reflects the
+  // current server page — in default state this is the top heat slice.
+  const allTermResults = serverResults
 
   void catalogWatches // satisfy linter — kept for fallback parity in other flows
 
@@ -746,15 +780,43 @@ function AddWatchSearchInner() {
     })
   }, [baseResults, colorFilter, materialFilter, sizeFilter])
 
-  // ── Brand filter options (top 20 by count from the brand index) ──────
-  // brandIndex comes from CatalogProvider's initial load — top brands by
-  // catalog presence. We show them as a facet group alongside material/dial.
-  const BRAND_OPTIONS = useMemo(() => brandIndex.slice(0, 20).map(b => b.brand), [brandIndex])
-  const brandCounts: Record<string, number> = useMemo(() => {
+  // ── Brand filter options ─────────────────────────────────────────────
+  // Two modes:
+  //   • search active (and no brand filter yet) → derive chips from the
+  //     current serverResults so the user sees the brands that actually
+  //     match their query and can narrow with one click.
+  //   • otherwise (default state, or brand already locked in) → fall back
+  //     to the global popularity list so the user can switch brands.
+  const ALL_BRAND_OPTIONS = useMemo(() => brandIndex.map(b => b.brand), [brandIndex])
+  const globalBrandCounts: Record<string, number> = useMemo(() => {
     const out: Record<string, number> = {}
     for (const b of brandIndex) out[b.brand] = b.count
     return out
   }, [brandIndex])
+
+  const useResultBrands = !!searchTerm.trim() && !brandFilter
+  const resultBrandEntries = useMemo(() => {
+    if (!useResultBrands) return []
+    const counts = new Map<string, number>()
+    for (const w of serverResults) {
+      if (w.brand && w.brand.trim()) counts.set(w.brand, (counts.get(w.brand) ?? 0) + 1)
+    }
+    return [...counts.entries()]
+      .map(([brand, count]) => ({ brand, count }))
+      .sort((a, b) => b.count - a.count || a.brand.localeCompare(b.brand))
+  }, [useResultBrands, serverResults])
+
+  const BRAND_OPTIONS = useMemo(() => {
+    if (useResultBrands) return resultBrandEntries.map(e => e.brand)
+    return showAllBrands ? ALL_BRAND_OPTIONS : ALL_BRAND_OPTIONS.slice(0, BRAND_CHIP_INITIAL)
+  }, [useResultBrands, resultBrandEntries, ALL_BRAND_OPTIONS, showAllBrands])
+
+  const brandCounts: Record<string, number> = useMemo(() => {
+    if (!useResultBrands) return globalBrandCounts
+    const out: Record<string, number> = {}
+    for (const e of resultBrandEntries) out[e.brand] = e.count
+    return out
+  }, [useResultBrands, resultBrandEntries, globalBrandCounts])
 
   const counts = useMemo(() => {
     const materialCounts: Record<string, number> = {}
@@ -812,7 +874,7 @@ function AddWatchSearchInner() {
   const pageSubtitle = isPlaygroundContext
     ? 'Search the catalog, then choose Collection or Playground on the watch detail page'
     : isExploreContext
-    ? 'Browse over 200 watches from the world\'s finest makers'
+    ? 'Browse thousands of watches from the world\'s finest makers'
     : 'Search by brand, model, or reference number'
 
   return (
@@ -893,6 +955,7 @@ function AddWatchSearchInner() {
           style={{
             display: 'flex',
             flexWrap: 'wrap',
+            alignItems: 'center',
             gap: 6,
             marginBottom: 14,
             paddingBottom: 14,
@@ -923,10 +986,32 @@ function AddWatchSearchInner() {
               size="sm"
             />
           ))}
+          {!useResultBrands && ALL_BRAND_OPTIONS.length > BRAND_CHIP_INITIAL && (
+            <button
+              type="button"
+              onClick={() => setShowAllBrands(v => !v)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: brand.font.sans,
+                fontSize: 11,
+                color: brand.colors.muted,
+                textDecoration: 'underline',
+                textUnderlineOffset: 2,
+                padding: '4px 6px',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {showAllBrands
+                ? 'Show fewer'
+                : `+ ${ALL_BRAND_OPTIONS.length - BRAND_CHIP_INITIAL} more`}
+            </button>
+          )}
         </div>
       )}
 
-      {!photoActive && (searchTerm.length > 0 || brandFilter) && (
+      {!photoActive && (
         <>
           {(() => {
             const activeCount =
@@ -1138,6 +1223,15 @@ function AddWatchSearchInner() {
                       </button>
                     ) : null}
                   </div>
+
+                  <div style={{ flexShrink: 0 }}>
+                    <SortDropdown
+                      label="Sort"
+                      value={sortBy}
+                      options={SORT_OPTIONS}
+                      onChange={v => setSortBy(v as SortMode)}
+                    />
+                  </div>
                 </div>
 
                 {/* Desktop popover */}
@@ -1182,27 +1276,79 @@ function AddWatchSearchInner() {
             )
           })()}
 
-          {filteredResults.length === 0 && (
+          {filteredResults.length === 0 && !searchLoading && (
             <div style={{ textAlign: 'center', color: '#A89880', fontFamily: 'var(--font-dm-sans)', fontSize: 12, padding: '28px 12px' }}>
               No watches found. Try a different search or adjust filters.
             </div>
           )}
 
-          {filteredResults.length > 0 && (
-            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#1A1410', marginBottom: 12 }}>
-              {filteredResults.length} shown
-              {searchLoading ? ' — searching…' : null}
-              {serverTotal > serverResults.length
-                ? ` of ${serverTotal.toLocaleString()} matching`
-                : null}
-            </div>
-          )}
+          {(filteredResults.length > 0 || searchLoading) && (() => {
+            const isDefaultState = !searchTerm.trim() && !brandFilter
+            const noun = isDefaultState ? 'watches' : 'matches'
+            const singular = isDefaultState ? 'watch' : 'match'
+            return (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  justifyContent: 'space-between',
+                  gap: 12,
+                  fontFamily: 'var(--font-dm-sans)',
+                  fontSize: 12,
+                  color: '#1A1410',
+                  marginBottom: 12,
+                }}
+              >
+                <span>
+                  {searchLoading && filteredResults.length === 0
+                    ? 'Searching…'
+                    : serverTotal > filteredResults.length
+                    ? `Showing ${filteredResults.length.toLocaleString()} of ${serverTotal.toLocaleString()} ${noun}`
+                    : `Showing ${filteredResults.length.toLocaleString()} ${filteredResults.length === 1 ? singular : noun}`}
+                </span>
+                {isDefaultState && filteredResults.length > 0 ? (
+                  <span style={{ color: brand.colors.muted, fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                    Trending
+                  </span>
+                ) : null}
+              </div>
+            )
+          })()}
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 360px))', gap: 16, justifyContent: 'start' }}>
             {filteredResults.map(watch => (
               <AddSearchWatchCard key={watch.id} watch={watch} dest={dest} boxId={boxId} />
             ))}
           </div>
+
+          {serverResults.length < serverTotal && !searchLoading && (
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 28 }}>
+              <button
+                type="button"
+                onClick={loadMore}
+                disabled={loadingMore}
+                style={{
+                  padding: '12px 24px',
+                  borderRadius: brand.radius.md,
+                  background: brand.colors.ink,
+                  color: brand.colors.bg,
+                  border: 'none',
+                  fontFamily: brand.font.sans,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  cursor: loadingMore ? 'wait' : 'pointer',
+                  opacity: loadingMore ? 0.6 : 1,
+                  transition: 'opacity 0.15s',
+                }}
+              >
+                {loadingMore
+                  ? 'Loading…'
+                  : `Load more (${(serverTotal - serverResults.length).toLocaleString()} more)`}
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>

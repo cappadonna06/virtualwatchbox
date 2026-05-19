@@ -302,22 +302,48 @@ export default function WatchBox({
                         <span style={{ fontFamily: brand.font.sans, fontSize: 8, letterSpacing: '0.1em', color: emptyPrimaryColor }}>
                           EMPTY
                         </span>
-                      ) : showFirstSlotLabel && isFirstSlot ? (
-                        <span
-                          style={{
-                            fontFamily: brand.font.sans,
-                            fontSize: 9,
-                            fontWeight: 500,
-                            letterSpacing: '0.06em',
-                            color: emptyPrimaryColor,
-                            textAlign: 'center',
-                            padding: '0 6px',
-                            lineHeight: 1.2,
-                          }}
-                        >
-                          Add your first watch
-                        </span>
-                      ) : null}
+                      ) : showFirstSlotLabel ? (
+                        // Empty collection: keep the PR #47 restrained behavior —
+                        // first slot carries the onboarding label, others stay blank.
+                        isFirstSlot ? (
+                          <span
+                            style={{
+                              fontFamily: brand.font.sans,
+                              fontSize: 9,
+                              fontWeight: 500,
+                              letterSpacing: '0.06em',
+                              color: emptyPrimaryColor,
+                              textAlign: 'center',
+                              padding: '0 6px',
+                              lineHeight: 1.2,
+                            }}
+                          >
+                            Add your first watch
+                          </span>
+                        ) : null
+                      ) : (
+                        // Collection has ≥1 watch — restore the canonical
+                        // "+ / ADD WATCH" affordance so empty slots read as
+                        // clickable. Matches docs/design-system preview spec.
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+                          <span
+                            aria-hidden="true"
+                            style={{ fontSize: 20, lineHeight: 1, color: emptyPrimaryColor }}
+                          >
+                            +
+                          </span>
+                          <span
+                            style={{
+                              fontFamily: brand.font.sans,
+                              fontSize: 7.5,
+                              letterSpacing: '0.08em',
+                              color: emptyPrimaryColor,
+                            }}
+                          >
+                            ADD WATCH
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )
