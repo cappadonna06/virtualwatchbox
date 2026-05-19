@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { CatalogWatch, PlaygroundBox } from '@/types/watch'
-import { useCatalog } from '@/lib/catalog/CatalogProvider'
+import { useCatalog, type CatalogSearchParams } from '@/lib/catalog/CatalogProvider'
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import { normalizePlaygroundBoxes } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
@@ -610,10 +610,17 @@ export default function AddWatchSearchPage() {
   )
 }
 
+// How many results we ask Supabase for per search keystroke. Anything beyond
+// this becomes a "load more" UX in a future pass. 200 covers >99% of search
+// queries comfortably (you'd have to type something incredibly broad like
+// "watch" to overflow).
+const SEARCH_PAGE_LIMIT = 200
+const SEARCH_DEBOUNCE_MS = 220
+
 function AddWatchSearchInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { allWatches: catalogWatches } = useCatalog()
+  const { allWatches: catalogWatches, searchCatalog, brandIndex } = useCatalog()
   const { getImageUrl } = useWatchImages()
 
   const dest = searchParams.get('dest')
@@ -625,6 +632,7 @@ function AddWatchSearchInner() {
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') ?? '')
   const [photoActive, setPhotoActive] = useState(false)
   const photoSearchRef = useRef<PhotoSearchHandle>(null)
+  const [brandFilter, setBrandFilter] = useState<string | null>(null)
   const [materialFilter, setMaterialFilter] = useState<string | null>(null)
   const [colorFilter, setColorFilter] = useState<string | null>(null)
   const [sizeFilter, setSizeFilter] = useState<SizeFilter>(null)
@@ -633,6 +641,15 @@ function AddWatchSearchInner() {
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [showAllZeros, setShowAllZeros] = useState(false)
   const [screenWidth, setScreenWidth] = useState(0)
+
+  // ── Server-side search state ─────────────────────────────────────────
+  // We can't filter the entire 35k catalog client-side anymore — only the
+  // top 2000 by heat sit in memory. So search/brand-filter both round-trip
+  // to Supabase, debounced, with the active facets as constraints.
+  const [serverResults, setServerResults] = useState<CatalogWatch[]>([])
+  const [serverTotal, setServerTotal] = useState(0)
+  const [searchLoading, setSearchLoading] = useState(false)
+  const searchAbortRef = useRef<number>(0)
   const hasPhotos = !showAll
   const isMobile = screenWidth > 0 && screenWidth < 768
 
@@ -663,12 +680,55 @@ function AddWatchSearchInner() {
     if (box) setPlaygroundBoxName(box.name)
   }, [isPlaygroundContext, boxId])
 
+  // Server-side search: re-fetch when search term, brand, or photos-only
+  // toggle changes. Debounced so typing doesn't hammer Supabase.
+  // When photos-only is on we restrict the query to imaged refs server-side
+  // — otherwise the 200-row REST window fills with vintage refs that don't
+  // pass the client photo filter and we'd show 1 result out of thousands.
+  useEffect(() => {
+    const term = searchTerm.trim()
+    if (!term && !brandFilter) {
+      setServerResults([])
+      setServerTotal(0)
+      setSearchLoading(false)
+      return
+    }
+    const myToken = ++searchAbortRef.current
+    setSearchLoading(true)
+    const handle = window.setTimeout(async () => {
+      try {
+        const params: CatalogSearchParams = {
+          q: term || undefined,
+          brand: brandFilter || undefined,
+          onlyWithImages: !showAll, // showAll=false → photos-only ON
+          limit: SEARCH_PAGE_LIMIT,
+          offset: 0,
+          sortBy: 'heat',
+        }
+        const { rows, total } = await searchCatalog(params)
+        if (myToken !== searchAbortRef.current) return
+        setServerResults(rows)
+        setServerTotal(total)
+      } catch (err) {
+        console.warn('[Add Watch] searchCatalog failed', err)
+        if (myToken === searchAbortRef.current) {
+          setServerResults([])
+          setServerTotal(0)
+        }
+      } finally {
+        if (myToken === searchAbortRef.current) setSearchLoading(false)
+      }
+    }, SEARCH_DEBOUNCE_MS)
+    return () => window.clearTimeout(handle)
+  }, [searchTerm, brandFilter, showAll, searchCatalog])
+
   // All term matches regardless of photo status — used for toggle count + "All" mode
   const allTermResults = useMemo(() => {
-    const term = searchTerm.trim().toLowerCase()
-    if (!term) return []
-    return catalogWatches.filter(w => [w.brand, w.model, w.reference].some(v => v.toLowerCase().includes(term)))
-  }, [searchTerm, catalogWatches])
+    if (!searchTerm.trim() && !brandFilter) return []
+    return serverResults
+  }, [serverResults, searchTerm, brandFilter])
+
+  void catalogWatches // satisfy linter — kept for fallback parity in other flows
 
   // Filtered by photo availability based on toggle
   const baseResults = useMemo(() => {
@@ -685,6 +745,16 @@ function AddWatchSearchInner() {
       return materialMatch && colorMatch && sizeMatch
     })
   }, [baseResults, colorFilter, materialFilter, sizeFilter])
+
+  // ── Brand filter options (top 20 by count from the brand index) ──────
+  // brandIndex comes from CatalogProvider's initial load — top brands by
+  // catalog presence. We show them as a facet group alongside material/dial.
+  const BRAND_OPTIONS = useMemo(() => brandIndex.slice(0, 20).map(b => b.brand), [brandIndex])
+  const brandCounts: Record<string, number> = useMemo(() => {
+    const out: Record<string, number> = {}
+    for (const b of brandIndex) out[b.brand] = b.count
+    return out
+  }, [brandIndex])
 
   const counts = useMemo(() => {
     const materialCounts: Record<string, number> = {}
@@ -817,20 +887,62 @@ function AddWatchSearchInner() {
         onActiveChange={setPhotoActive}
       />
 
-      {!photoActive && searchTerm.length > 0 && (
+      {/* Brand chips — visible whenever the page is active (no search needed). */}
+      {!photoActive && BRAND_OPTIONS.length > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 6,
+            marginBottom: 14,
+            paddingBottom: 14,
+            borderBottom: `1px solid ${brand.colors.borderLight}`,
+          }}
+        >
+          <div
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 9.5,
+              fontWeight: 600,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: brand.colors.muted,
+              alignSelf: 'center',
+              marginRight: 6,
+            }}
+          >
+            Brand
+          </div>
+          {BRAND_OPTIONS.map(b => (
+            <FacetChip
+              key={`brand-${b}`}
+              label={b}
+              count={brandCounts[b] ?? 0}
+              active={brandFilter === b}
+              onClick={() => setBrandFilter(brandFilter === b ? null : b)}
+              size="sm"
+            />
+          ))}
+        </div>
+      )}
+
+      {!photoActive && (searchTerm.length > 0 || brandFilter) && (
         <>
           {(() => {
             const activeCount =
+              (brandFilter ? 1 : 0) +
               (materialFilter ? 1 : 0) +
               (colorFilter ? 1 : 0) +
               (sizeFilter ? 1 : 0) +
               (hasPhotos === false ? 1 : 0)
             const facetChips: Array<{ key: string; label: string; clear: () => void }> = []
+            if (brandFilter) facetChips.push({ key: 'brand', label: brandFilter, clear: () => setBrandFilter(null) })
             if (materialFilter) facetChips.push({ key: 'material', label: materialFilter, clear: () => setMaterialFilter(null) })
             if (colorFilter) facetChips.push({ key: 'color', label: colorFilter, clear: () => setColorFilter(null) })
             if (sizeFilter) facetChips.push({ key: 'size', label: sizeFilter, clear: () => setSizeFilter(null) })
             const showResetLink = facetChips.length > 0 || hasPhotos === false
             const resetAll = () => {
+              setBrandFilter(null)
               setMaterialFilter(null)
               setColorFilter(null)
               setSizeFilter(null)
@@ -1078,7 +1190,11 @@ function AddWatchSearchInner() {
 
           {filteredResults.length > 0 && (
             <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#1A1410', marginBottom: 12 }}>
-              {filteredResults.length} results
+              {filteredResults.length} shown
+              {searchLoading ? ' — searching…' : null}
+              {serverTotal > serverResults.length
+                ? ` of ${serverTotal.toLocaleString()} matching`
+                : null}
             </div>
           )}
 
