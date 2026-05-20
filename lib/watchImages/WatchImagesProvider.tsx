@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
+import { withVersion } from './cacheBust'
 
 type ImageEntry = {
   imageUrl: string
@@ -35,7 +36,7 @@ export function WatchImagesProvider({ children }: { children: React.ReactNode })
       setImageMap(new Map(
         data.map((row: { watch_id: string; webp_url: string; png_url: string }) => [
           row.watch_id,
-          { imageUrl: row.webp_url, imageTransparentUrl: row.png_url },
+          { imageUrl: withVersion(row.webp_url) ?? '', imageTransparentUrl: withVersion(row.png_url) ?? '' },
         ])
       ))
     } catch {
