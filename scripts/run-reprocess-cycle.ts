@@ -66,15 +66,26 @@ type ManifestEntry = {
 }
 
 async function getFlaggedIds(supabase: SupabaseClient): Promise<string[]> {
-  const { data, error } = await supabase
-    .from('watch_image_reviews')
-    .select('catalog_watch_id, status, created_at')
-    .eq('variant', 'primary')
-    .order('created_at', { ascending: false })
-  if (error) throw new Error(`watch_image_reviews query: ${error.message}`)
+  // Page through; the 1,000-row response cap silently truncates older
+  // reviews and would miss watches whose latest status is 'needs_reprocess'
+  // if the recency pile is dominated by approvals.
+  const PAGE = 1000
+  const rows: Array<Record<string, unknown>> = []
+  for (let off = 0; ; off += PAGE) {
+    const { data, error } = await supabase
+      .from('watch_image_reviews')
+      .select('catalog_watch_id, status, created_at')
+      .eq('variant', 'primary')
+      .order('created_at', { ascending: false })
+      .range(off, off + PAGE - 1)
+    if (error) throw new Error(`watch_image_reviews query: ${error.message}`)
+    if (!data || data.length === 0) break
+    rows.push(...(data as Array<Record<string, unknown>>))
+    if (data.length < PAGE) break
+  }
 
   const latest = new Map<string, string>()
-  for (const r of data ?? []) {
+  for (const r of rows) {
     if (!latest.has(r.catalog_watch_id as string)) {
       latest.set(r.catalog_watch_id as string, r.status as string)
     }
