@@ -1,0 +1,55 @@
+{
+  "description": "Catalog watch ids whose processed image must NOT render in the UI or seed into watch_images. Source of truth synced from watch_image_reviews.status='deleted' via scripts/sync-image-deletions.ts. Hand-edits are also fine — committed so production builds see them.",
+  "ids": [
+    {
+      "id": "audemars-piguet-15701st-oo-d002ca-02",
+      "reason": "flagged 'wrong watch' in admin tool",
+      "flaggedAt": "2026-05-20"
+    },
+    {
+      "id": "audemars-piguet-15701st-oo-d002ca-03",
+      "reason": "flagged 'wrong watch' in admin tool",
+      "flaggedAt": "2026-05-20"
+    },
+    {
+      "id": "audemars-piguet-25940sk-oo-d002ca-02",
+      "reason": "flagged 'wrong watch' in admin tool",
+      "flaggedAt": "2026-05-20"
+    },
+    {
+      "id": "audemars-piguet-26030io-oo-d001in-01",
+      "reason": "flagged 'wrong watch' in admin tool",
+      "flaggedAt": "2026-05-20"
+    },
+    {
+      "id": "audemars-piguet-26061or-oo-d002cr-01",
+      "reason": "flagged 'wrong watch' in admin tool",
+      "flaggedAt": "2026-05-20"
+    },
+    {
+      "id": "audemars-piguet-26062or-oo-a002ca-01",
+      "reason": "flagged 'wrong watch' in admin tool",
+      "flaggedAt": "2026-05-20"
+    },
+    {
+      "id": "audemars-piguet-26158or-oo-a801cr-01",
+      "reason": "flagged 'wrong watch' in admin tool",
+      "flaggedAt": "2026-05-20"
+    },
+    {
+      "id": "audemars-piguet-26191-bc-zz-d002-cr-01",
+      "reason": "flagged 'wrong watch' in admin tool",
+      "flaggedAt": "2026-05-20"
+    },
+    {
+      "id": "audemars-piguet-26240bc-gg-1324bc-01",
+      "reason": "flagged 'wrong watch' in admin tool",
+      "flaggedAt": "2026-05-20"
+    },
+    {
+      "id": "audemars-piguet-26278ik-gg-d002ca-01",
+      "reason": "flagged 'wrong watch' in admin tool",
+      "flaggedAt": "2026-05-20"
+    }
+  ]
+}
