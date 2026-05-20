@@ -156,6 +156,22 @@ Manual fallback if you don't want the auto-approve flip:
 npm run images:reprocess-cycle -- --no-approve
 ```
 
+### Bulk-approve everything currently flagged
+
+When you ran `--only-flagged` manually (not via the cycle wrapper),
+eyeballed the new outputs in `/admin/image-review`, and want to clear
+the queue without 30 button clicks:
+
+```bash
+npm run images:bulk-approve -- --dry-run    # preview first
+npm run images:bulk-approve                  # flip them all to approved
+```
+
+Or for a specific subset:
+```bash
+npm run images:bulk-approve -- --ids=rolex-126710blro,rolex-16713
+```
+
 ---
 
 ## Delete an image (image is wrong / two-watches-in-one / hangtag visible)

@@ -31,6 +31,7 @@
     "images:cleanup-png": "tsx scripts/cleanup-png-storage.ts",
     "images:sync-deletions": "tsx scripts/sync-image-deletions.ts",
     "images:reprocess-cycle": "tsx scripts/run-reprocess-cycle.ts",
+    "images:bulk-approve": "tsx scripts/bulk-approve-reprocessed.ts",
     "prices:predict": "python3 scripts/predict-prices.py"
   },
   "dependencies": {
