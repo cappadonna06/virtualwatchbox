@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
+import { withVersion } from '@/lib/watchImages/cacheBust'
 import { watches as staticSeedWatches } from '@/lib/watches'
 import type {
   BraceletType,
@@ -244,8 +245,8 @@ function mergeRows(
     const id = typeof row.catalog_watch_id === 'string' ? row.catalog_watch_id : null
     if (!id) continue
     imagesById.set(id, {
-      webpUrl: typeof row.webp_url === 'string' && row.webp_url ? row.webp_url : undefined,
-      pngUrl: typeof row.png_url === 'string' && row.png_url ? row.png_url : undefined,
+      webpUrl: withVersion(typeof row.webp_url === 'string' && row.webp_url ? row.webp_url : undefined),
+      pngUrl: withVersion(typeof row.png_url === 'string' && row.png_url ? row.png_url : undefined),
     })
   }
   return catalogRows.map(row => {

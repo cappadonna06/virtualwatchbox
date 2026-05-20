@@ -116,6 +116,12 @@ export default function AdminDashboardPage() {
           href="/admin/submissions"
           cta="Review submissions →"
         />
+        <Tile
+          title="Image Review"
+          description="Side-by-side audit of processed catalog images vs. originals. Flag bad cutouts for re-processing."
+          href="/admin/image-review"
+          cta="Open image review →"
+        />
       </div>
     </div>
   )
