@@ -83,21 +83,32 @@ async function main() {
   })
 
   console.log('[sync-image-deletions] querying watch_image_reviews…')
-  const { data, error } = await supabase
-    .from('watch_image_reviews')
-    .select('catalog_watch_id, status, notes, created_at')
-    .eq('variant', 'primary')
-    .order('created_at', { ascending: false })
 
-  if (error) {
-    console.error(`[sync-image-deletions] query failed: ${error.message}`)
-    process.exit(1)
+  // PostgREST caps a single response at 1,000 rows, so page through.
+  // With ~3,000 catalog watches and multiple reviews per watch over time,
+  // a one-shot query silently truncates the older 'deleted' entries.
+  const PAGE = 1000
+  const rows: Array<Record<string, unknown>> = []
+  for (let off = 0; ; off += PAGE) {
+    const { data, error } = await supabase
+      .from('watch_image_reviews')
+      .select('catalog_watch_id, status, notes, created_at')
+      .eq('variant', 'primary')
+      .order('created_at', { ascending: false })
+      .range(off, off + PAGE - 1)
+    if (error) {
+      console.error(`[sync-image-deletions] query failed: ${error.message}`)
+      process.exit(1)
+    }
+    if (!data || data.length === 0) break
+    rows.push(...(data as Array<Record<string, unknown>>))
+    if (data.length < PAGE) break
   }
 
   // Pick latest review per watch (the query is already sorted desc).
   type Latest = { status: string; notes: string | null; created_at: string }
   const latestByWatch = new Map<string, Latest>()
-  for (const row of data ?? []) {
+  for (const row of rows) {
     if (!latestByWatch.has(row.catalog_watch_id as string)) {
       latestByWatch.set(row.catalog_watch_id as string, {
         status: row.status as string,

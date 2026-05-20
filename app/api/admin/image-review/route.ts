@@ -78,24 +78,37 @@ export async function GET(request: NextRequest) {
   }
   const imagesQ = { data: allImageRows } as { data: Array<Record<string, unknown>> }
 
-  const reviewsQ = await supabase
-    .from('watch_image_reviews')
-    .select('catalog_watch_id, variant, status, notes, tags, created_at, reviewer_id')
-    .eq('variant', 'primary')
-    .order('created_at', { ascending: false })
-  if (reviewsQ.error) {
-    console.error('[admin/image-review] watch_image_reviews query failed:', reviewsQ.error)
-    return NextResponse.json({ error: reviewsQ.error.message }, { status: 500 })
+  // Same pagination story as watch_images: with multiple reviews per watch
+  // over time, total review-row count quickly exceeds the 1,000 single-
+  // response cap. Page through so 'latest review per watch' is accurate
+  // for every watch — not just the 1,000 most-recently-reviewed.
+  const allReviewRows: Array<Record<string, unknown>> = []
+  for (let offset = 0; ; offset += PAGE) {
+    const { data, error } = await supabase
+      .from('watch_image_reviews')
+      .select('catalog_watch_id, variant, status, notes, tags, created_at, reviewer_id')
+      .eq('variant', 'primary')
+      .order('created_at', { ascending: false })
+      .range(offset, offset + PAGE - 1)
+    if (error) {
+      console.error('[admin/image-review] watch_image_reviews query failed:', error)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+    if (!data || data.length === 0) break
+    allReviewRows.push(...(data as Array<Record<string, unknown>>))
+    if (data.length < PAGE) break
   }
+  const reviewsQ = { data: allReviewRows } as { data: Array<Record<string, unknown>> }
 
   const latestByWatch = new Map<string, { status: ReviewStatus; notes: string | null; tags: string[]; created_at: string }>()
   for (const r of reviewsQ.data ?? []) {
-    if (!latestByWatch.has(r.catalog_watch_id)) {
-      latestByWatch.set(r.catalog_watch_id, {
+    const id = r.catalog_watch_id as string
+    if (!latestByWatch.has(id)) {
+      latestByWatch.set(id, {
         status: r.status as ReviewStatus,
-        notes: r.notes,
+        notes: (r.notes as string | null) ?? null,
         tags: Array.isArray(r.tags) ? (r.tags as string[]) : [],
-        created_at: r.created_at,
+        created_at: r.created_at as string,
       })
     }
   }
