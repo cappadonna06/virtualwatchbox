@@ -47,6 +47,12 @@ export async function GET(request: NextRequest) {
     : 'all'
   const page = Math.max(1, Number(url.searchParams.get('page') ?? '1') || 1)
   const pageSize = Math.min(200, Math.max(10, Number(url.searchParams.get('pageSize') ?? '50') || 50))
+  // Free-text search across brand / model / reference / catalog_watch_id.
+  // Whitespace tokens AND-match so "rolex sub" requires both. Counts on
+  // the status tabs remain across the full set so tab switching stays
+  // useful while a search is active.
+  const qRaw = (url.searchParams.get('q') ?? '').trim().toLowerCase()
+  const qTokens = qRaw ? qRaw.split(/\s+/).filter(t => t.length >= 1) : []
 
   // Base set: every watch with a primary image. ~1.5k rows today — cheap to
   // pull, filter in memory, then paginate. Avoids a server-side "latest review
@@ -133,7 +139,16 @@ export async function GET(request: NextRequest) {
   }
   for (const row of all) counts[row.status] += 1
 
-  const filtered = status === 'all' ? all : all.filter(r => r.status === status)
+  let filtered = status === 'all' ? all : all.filter(r => r.status === status)
+  if (qTokens.length > 0) {
+    filtered = filtered.filter(r => {
+      const hay = [r.brand, r.model, r.reference, r.catalog_watch_id]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase()
+      return qTokens.every(t => hay.includes(t))
+    })
+  }
   filtered.sort((a, b) => {
     // Unreviewed (pending) first, then most-recently-reviewed first within
     // the rest. Inside pending, alphabetical by id is stable across pages.

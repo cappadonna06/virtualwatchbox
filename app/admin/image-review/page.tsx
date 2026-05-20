@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { isAdminEmail } from '@/lib/auth/admin'
+import { withVersion } from '@/lib/watchImages/cacheBust'
 
 export const dynamic = 'force-dynamic'
 
@@ -87,7 +88,19 @@ export default function AdminImageReviewPage() {
 
   const [status, setStatus] = useState<'all' | ReviewStatus>('pending')
   const [page, setPage] = useState(1)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
   const pageSize = 24
+
+  // Debounce the search input so typing doesn't fire a request per keystroke.
+  useEffect(() => {
+    const handle = window.setTimeout(() => setDebouncedSearch(searchTerm.trim()), 250)
+    return () => window.clearTimeout(handle)
+  }, [searchTerm])
+
+  // Reset to page 1 when the search or status changes — otherwise you can
+  // land on an empty page 4 of a narrow result set.
+  useEffect(() => { setPage(1) }, [debouncedSearch, status])
   const [data, setData] = useState<ApiResponse | null>(null)
   const [fetching, setFetching] = useState(false)
   const [fetchError, setFetchError] = useState<string | null>(null)
@@ -109,7 +122,13 @@ export default function AdminImageReviewPage() {
     setFetching(true)
     setFetchError(null)
     try {
-      const res = await fetch(`/api/admin/image-review?status=${status}&page=${page}&pageSize=${pageSize}`, {
+      const params = new URLSearchParams({
+        status,
+        page: String(page),
+        pageSize: String(pageSize),
+      })
+      if (debouncedSearch) params.set('q', debouncedSearch)
+      const res = await fetch(`/api/admin/image-review?${params.toString()}`, {
         cache: 'no-store',
       })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -120,7 +139,7 @@ export default function AdminImageReviewPage() {
     } finally {
       setFetching(false)
     }
-  }, [status, page])
+  }, [status, page, debouncedSearch])
 
   useEffect(() => {
     if (user && isAdminEmail(user.email)) void load()
@@ -217,6 +236,45 @@ export default function AdminImageReviewPage() {
       <p style={{ margin: '6px 0 24px', fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, maxWidth: 720 }}>
         Side-by-side check of the catalog&apos;s processed primary image vs. the original. Flag bad rows for re-processing; the batch script can re-run them with bumped quality settings.
       </p>
+
+      {/* Search */}
+      <div style={{ marginBottom: 16, position: 'relative', maxWidth: 480 }}>
+        <input
+          type="search"
+          placeholder="Search brand, model, reference, or id…"
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          style={{
+            width: '100%',
+            padding: '10px 14px 10px 38px',
+            border: `1px solid ${brand.colors.border}`,
+            borderRadius: brand.radius.md,
+            fontFamily: brand.font.sans, fontSize: 13,
+            background: '#FFFFFF',
+            color: brand.colors.ink,
+            outline: 'none',
+            boxSizing: 'border-box',
+          }}
+        />
+        <span style={{
+          position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
+          color: brand.colors.muted, fontSize: 14, pointerEvents: 'none',
+        }}>⌕</span>
+        {searchTerm && (
+          <button
+            type="button"
+            onClick={() => setSearchTerm('')}
+            style={{
+              position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+              background: 'none', border: 'none', color: brand.colors.muted,
+              fontSize: 14, cursor: 'pointer', padding: '4px 8px',
+            }}
+            aria-label="Clear search"
+          >
+            ✕
+          </button>
+        )}
+      </div>
 
       {/* Status tabs */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
@@ -321,7 +379,7 @@ export default function AdminImageReviewPage() {
 
               {/* Side-by-side */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: brand.colors.borderLight }}>
-                <ImagePane label="Processed (WebP)" src={row.webp_url} />
+                <ImagePane label="Processed (WebP)" src={withVersion(row.webp_url) ?? row.webp_url} />
                 <ImagePane label="Raw original" src={row.raw_url} fallbackHint="raw not on disk" />
               </div>
 
