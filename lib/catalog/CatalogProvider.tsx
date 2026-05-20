@@ -55,6 +55,14 @@ type CatalogContextValue = {
   fetchById: (id: string) => Promise<CatalogWatch | null>
   searchCatalog: (params: CatalogSearchParams) => Promise<CatalogSearchResult>
   brandIndex: BrandIndexEntry[]
+  // Returns brand → match-count for the given filters. Used by the brand
+  // chips on the Add Watch page so the chip number reflects the user's
+  // current filters (e.g. "Photos only", watchType) instead of the static
+  // top-2000-by-heat baseline.
+  fetchBrandCounts: (
+    params: Omit<CatalogSearchParams, 'brand' | 'brands' | 'sortBy' | 'limit' | 'offset'>,
+    brands: string[],
+  ) => Promise<Map<string, number>>
 }
 
 type BrandIndexEntry = { brand: string; count: number }
@@ -67,6 +75,7 @@ const CatalogContext = createContext<CatalogContextValue>({
   fetchById: async () => null,
   searchCatalog: async () => ({ rows: [], total: 0 }),
   brandIndex: [],
+  fetchBrandCounts: async () => new Map(),
 })
 
 const VALID_WATCH_TYPES: WatchType[] = [
@@ -525,6 +534,67 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
     return { rows, total: count ?? rows.length }
   }, [])
 
+  // ── Brand-aware count under current filters ────────────────────────────
+  // Returns brand → match-count, running the same WHERE clauses as
+  // searchCatalog. One HEAD `count=exact` request per brand, in parallel —
+  // typically ~20 brands shown in the chip strip so a single tick fires
+  // ~20 lightweight queries to Supabase. Cheap and accurate; beats the
+  // static brandIndex which doesn't respond to filter chips.
+  const fetchBrandCounts = useCallback(async (
+    params: Omit<CatalogSearchParams, 'brand' | 'brands' | 'sortBy' | 'limit' | 'offset'>,
+    brands: string[],
+  ): Promise<Map<string, number>> => {
+    if (brands.length === 0) return new Map()
+    if (!supabaseRef.current) supabaseRef.current = createClient()
+    const supabase = supabaseRef.current
+
+    const escapeIlike = (s: string) => s.replace(/[%_,()]/g, '\\$&')
+    const tokens = (params.q ?? '')
+      .trim()
+      .split(/\s+/)
+      .map(t => escapeIlike(t))
+      .filter(t => t.length >= 2)
+
+    async function countOneBrand(brand: string): Promise<number> {
+      // The select shape must match searchCatalog's image-gating pattern so
+      // the count matches what the user actually sees in the result list.
+      let q = params.onlyWithImages
+        ? supabase
+            .from('catalog_watches')
+            .select('id, watch_images!inner(catalog_watch_id, variant)', {
+              count: 'exact',
+              head: true,
+            })
+            .eq('watch_images.variant', 'primary')
+        : supabase.from('catalog_watches').select('id', { count: 'exact', head: true })
+
+      q = q.eq('brand', brand)
+      for (const token of tokens) {
+        q = q.or(
+          `model.ilike.%${token}%,reference.ilike.%${token}%,model_family.ilike.%${token}%,nickname.ilike.%${token}%`,
+        )
+      }
+      if (params.caseMaterial) q = q.eq('case_material', params.caseMaterial)
+      if (params.dialColor) q = q.ilike('dial_color', `%${params.dialColor}%`)
+      if (params.watchType) q = q.eq('watch_type', params.watchType)
+      if (params.caseSizeBucket === '<=38') q = q.lte('case_size_mm', 38)
+      else if (params.caseSizeBucket === '39-41') q = q.gte('case_size_mm', 39).lte('case_size_mm', 41)
+      else if (params.caseSizeBucket === '>=42') q = q.gte('case_size_mm', 42)
+
+      const { count, error } = await q
+      if (error) {
+        console.warn(`[fetchBrandCounts] ${brand}: ${error.message}`)
+        return 0
+      }
+      return count ?? 0
+    }
+
+    const results = await Promise.all(
+      brands.map(async b => [b, await countOneBrand(b)] as const),
+    )
+    return new Map(results)
+  }, [])
+
   const allWatches = usingStaticFallback ? staticSeedWatches : dynamicWatches
 
   return (
@@ -537,6 +607,7 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
         fetchById,
         searchCatalog,
         brandIndex,
+        fetchBrandCounts,
       }}
     >
       {children}

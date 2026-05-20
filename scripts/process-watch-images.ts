@@ -41,6 +41,7 @@ function flag(name: string): string | undefined {
 }
 const ONLY_FLAGGED       = ARGV.includes('--only-flagged')
 const SKIP_APPROVED      = ARGV.includes('--skip-approved')
+const ONLY_NEW           = ARGV.includes('--only-new')
 const NO_TAG_OVERRIDES   = ARGV.includes('--no-tag-overrides')
 const DRY_RUN            = ARGV.includes('--dry-run')
 const LIMIT              = Number(flag('--limit') ?? 0)
@@ -56,6 +57,8 @@ Default: process every raw under public/watch-assets/raw/ into public/watch-asse
 Selection flags (one):
   --only-flagged       Process only watches whose latest watch_image_reviews row is 'needs_reprocess'.
   --skip-approved      Process every raw EXCEPT watches whose latest review is 'approved'.
+  --only-new           Process only raw files whose watchId is NOT yet in the manifest.
+                       For the "I just dropped N new images, don't redo the existing 3K" workflow.
 
 Output:
   --out-suffix=X       Write to public/watch-assets/processed-X/ instead of processed/.
@@ -75,8 +78,9 @@ Common use:
   process.exit(0)
 }
 
-if (ONLY_FLAGGED && SKIP_APPROVED) {
-  console.error('Use either --only-flagged OR --skip-approved, not both.')
+const selectionFlagsUsed = [ONLY_FLAGGED, SKIP_APPROVED, ONLY_NEW].filter(Boolean).length
+if (selectionFlagsUsed > 1) {
+  console.error('Use only one of --only-flagged, --skip-approved, --only-new.')
   process.exit(1)
 }
 
@@ -273,6 +277,18 @@ async function main() {
     rawFiles = allRawFiles.filter(f => reviews!.get(withoutExtension(f))?.status !== 'approved')
     const skipped = allRawFiles.length - rawFiles.length
     console.log(`Skipping ${skipped} approved; processing ${rawFiles.length} of ${allRawFiles.length}.`)
+  } else if (ONLY_NEW) {
+    // Filter to raw files whose watchId isn't already in the live manifest.
+    // The merge step below preserves existing manifest entries.
+    let existingIds = new Set<string>()
+    try {
+      const existing: ManifestEntry[] = JSON.parse(await fs.readFile(manifestPath, 'utf8'))
+      existingIds = new Set(existing.map(e => e.watchId))
+    } catch {
+      // No existing manifest — everything is "new".
+    }
+    rawFiles = allRawFiles.filter(f => !existingIds.has(withoutExtension(f)))
+    console.log(`--only-new: ${rawFiles.length} new of ${allRawFiles.length} raw files (${existingIds.size} already in manifest).`)
   }
 
   if (LIMIT > 0 && rawFiles.length > LIMIT) {
@@ -317,10 +333,10 @@ async function main() {
   }
 
   // Merge with existing manifest when only a subset was processed. Otherwise
-  // --skip-approved / --only-flagged would drop the entries for untouched
-  // watches and break the admin UI's raw-filename lookup.
+  // --skip-approved / --only-flagged / --only-new would drop the entries for
+  // untouched watches and break the admin UI's raw-filename lookup.
   let finalManifest = manifest
-  if (ONLY_FLAGGED || SKIP_APPROVED) {
+  if (ONLY_FLAGGED || SKIP_APPROVED || ONLY_NEW) {
     try {
       const existing: ManifestEntry[] = JSON.parse(await fs.readFile(manifestPath, 'utf8'))
       const touched = new Set(manifest.map(e => e.watchId))
