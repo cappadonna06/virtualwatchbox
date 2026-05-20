@@ -50,6 +50,16 @@
       "id": "audemars-piguet-26278ik-gg-d002ca-01",
       "reason": "flagged 'wrong watch' in admin tool",
       "flaggedAt": "2026-05-20"
+    },
+    {
+      "id": "grand-seiko-sbgw231",
+      "reason": "source image contains two watches side-by-side",
+      "flaggedAt": "2026-05-20"
+    },
+    {
+      "id": "rolex-126710blnr",
+      "reason": "source is a diagonal wrist shot on leather with a dealer hangtag; no clean cutout possible. Replace raw before re-imaging.",
+      "flaggedAt": "2026-05-20"
     }
   ]
 }

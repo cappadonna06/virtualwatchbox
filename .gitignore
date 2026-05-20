@@ -48,7 +48,12 @@ public/watch-assets/processed/webp/
 
 # Generated comparison page (one-off output of scripts/build-preview-compare.ts).
 public/image-review-preview.html
+# Generated tier-batch inspection page (one-off output of scripts/build-tier2-preview.ts).
+public/tier2-preview.html
 public/watch-assets/processed-preview/
+
+# Claude Code agent runtime state.
+.claude/
 
 # CatBoost training scratch (model artifacts, scratch logs).
 catboost_info/
