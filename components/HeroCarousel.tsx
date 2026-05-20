@@ -7,6 +7,7 @@ import WatchStateControl from '@/components/collection/WatchStateControl'
 import DialSVG from '@/components/watchbox/DialSVG'
 import { brand } from '@/lib/brand'
 import { renderableWatches } from '@/lib/renderableWatches'
+import { withVersion } from '@/lib/watchImages/cacheBust'
 import { heatScore } from '@/lib/heatScore'
 import { pickSeeded, todayUTC } from '@/lib/dailyShuffle'
 import { usePrefersReducedMotion } from '@/components/collection/useResponsiveState'
@@ -38,7 +39,7 @@ const CAROUSEL_COUNT = 5
 function toCarouselWatch(watch: typeof renderableWatches[number]): CarouselWatch {
   return {
     id: watch.id,
-    img: watch.imageUrl ?? '',
+    img: withVersion(watch.imageUrl) ?? '',
     brand: watch.brand,
     model: watch.model,
     ref: watch.reference,

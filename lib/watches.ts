@@ -1,5 +1,6 @@
 import type { CatalogWatch } from '@/types/watch'
 import processedManifest from '@/public/watch-assets/processed/manifest.json'
+import { toStorageUrl } from './watchImages/storageUrl'
 
 type ProcessedManifestEntry = {
   watchId: string
@@ -12,8 +13,10 @@ const processedWatchImages = new Map(
   (processedManifest as ProcessedManifestEntry[]).map(entry => [
     entry.watchId,
     {
-      imageUrl: entry.webpPath,
-      imageTransparentUrl: entry.pngPath,
+      // Storage is canonical. Falls back to the local path when
+      // NEXT_PUBLIC_SUPABASE_URL is unset (offline dev / CI).
+      imageUrl: toStorageUrl(entry.webpPath) ?? entry.webpPath,
+      imageTransparentUrl: toStorageUrl(entry.pngPath) ?? entry.pngPath,
       imageSourceUrl: `/watch-assets/raw/${entry.rawFilename}`,
     },
   ])

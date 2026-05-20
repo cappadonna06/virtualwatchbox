@@ -35,8 +35,20 @@ data/catalog-seed-1500.csv
 # Processed watch images. After `npm run images:upload-storage`, the
 # canonical URL points at Supabase Storage — the local PNGs are unused
 # in production and ~908MB on disk. Keep them out of git.
+#
+# manifest.json is the exception: small JSON metadata read by the
+# build-time seed (lib/watches.ts → renderableWatches). Must be tracked
+# so production's hero pool sees the full set of processed watches.
+# Using /* + explicit re-include avoids the "can't re-include after dir
+# ignore" gitignore rule.
 public/watch-assets/raw/
-public/watch-assets/processed/
+public/watch-assets/processed/*
+public/watch-assets/processed/webp/
+!public/watch-assets/processed/manifest.json
+
+# Generated comparison page (one-off output of scripts/build-preview-compare.ts).
+public/image-review-preview.html
+public/watch-assets/processed-preview/
 
 # CatBoost training scratch (model artifacts, scratch logs).
 catboost_info/
