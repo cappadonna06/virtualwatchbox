@@ -39,6 +39,37 @@ If a new user-based field is added in UI state (`ProfileDemoState`, collection s
 3. Supabase save/sync path
 4. Any local snapshot/export logic that mirrors profile data
 
+---
+
+## Watch Image Pipeline (Required reading before touching images)
+
+**Full docs:** [docs/WATCH_IMAGE_PIPELINE.md](docs/WATCH_IMAGE_PIPELINE.md)
+
+Source of truth for processed catalog images is **Supabase Storage**, NOT git. Local `public/watch-assets/processed/*.png` and `*.webp` are gitignored scratch space; production reads from Storage URLs that point at `watch-images/<catalog_watch_id>/primary.{png,webp}`.
+
+The build-time `public/watch-assets/processed/manifest.json` IS committed (it's the only file under `processed/` that is) — `lib/watches.ts` reads it on module-load, rewrites the local paths to Storage URLs via `lib/watchImages/storageUrl.ts`, and the homepage hero pool falls out of that. If a watch isn't in the manifest, it doesn't appear in the hero.
+
+**Rules — do not violate:**
+1. **Never `git add` PNG or WebP files under `public/watch-assets/processed/`.** Upload them to Storage with `npm run images:upload-storage` instead; commit only `manifest.json`.
+2. **Image URLs must go through `withVersion()`** from `lib/watchImages/cacheBust.ts`. Supabase Storage paths are stable across re-uploads, so without the `?v=` query param browsers serve stale bytes from disk cache. Already wired in `CatalogProvider`, `WatchImagesProvider`, and `HeroCarousel` — add it at any new image-render site you introduce.
+3. **After every batch reprocess, bump `IMAGE_VERSION`** in `lib/watchImages/cacheBust.ts` (or set `NEXT_PUBLIC_IMAGE_VERSION` env). This is what makes the cache-bust actually invalidate.
+4. **Don't reimplement the processor's tag → knob mapping inline.** It lives in `overridesForTags()` in `scripts/process-watch-images.ts`. Add new mappings there when adding new processor knobs in `lib/imageProcessing.ts`.
+
+**Standard reprocess workflow** (mirrors what the docs cover):
+```
+# 1. Process — choose ONE selector
+npx tsx scripts/process-watch-images.ts --only-flagged       # just the needs_reprocess set
+npx tsx scripts/process-watch-images.ts --skip-approved      # everything not yet approved
+# 2. Upload to Storage (overwrite the public URLs)
+npm run images:upload-storage -- --overwrite
+# 3. Bump IMAGE_VERSION in lib/watchImages/cacheBust.ts
+# 4. Commit just the manifest + the cache-bust bump
+git add public/watch-assets/processed/manifest.json lib/watchImages/cacheBust.ts
+git commit -m "reprocess: <what was fixed>"
+```
+
+**Admin review tool:** `/admin/image-review` — flag bad cutouts with the 10 failure-mode tags. Tag categories (missing parts / edge quality / background) map to specific pipeline stages; ticking any tag auto-stages "Needs reprocess." Reviews land in `watch_image_reviews` (migrations 021 + 022 required).
+
 ## Tech Stack
 
 - **Framework:** Next.js 14, App Router, TypeScript
