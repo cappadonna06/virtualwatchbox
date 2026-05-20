@@ -654,7 +654,7 @@ const SEARCH_DEBOUNCE_MS = 220
 function AddWatchSearchInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { allWatches: catalogWatches, searchCatalog, brandIndex } = useCatalog()
+  const { allWatches: catalogWatches, searchCatalog, brandIndex, fetchBrandCounts } = useCatalog()
   const { getImageUrl } = useWatchImages()
 
   const dest = searchParams.get('dest')
@@ -812,11 +812,54 @@ function AddWatchSearchInner() {
   //   • otherwise (default state, or brand already locked in) → fall back
   //     to the global popularity list so the user can switch brands.
   const ALL_BRAND_OPTIONS = useMemo(() => brandIndex.map(b => b.brand), [brandIndex])
-  const globalBrandCounts: Record<string, number> = useMemo(() => {
+  const baselineBrandCounts: Record<string, number> = useMemo(() => {
     const out: Record<string, number> = {}
     for (const b of brandIndex) out[b.brand] = b.count
     return out
   }, [brandIndex])
+
+  // Filter-aware brand chip counts. Re-fetched whenever a filter that
+  // affects the result set changes. Falls back to baselineBrandCounts
+  // (the static top-2000-by-heat) before the first fetch completes.
+  const [filterAwareBrandCounts, setFilterAwareBrandCounts] = useState<Record<string, number> | null>(null)
+  const brandCountAbortRef = useRef<number>(0)
+  useEffect(() => {
+    if (ALL_BRAND_OPTIONS.length === 0) return
+    const myToken = ++brandCountAbortRef.current
+    const term = searchTerm.trim()
+    // 220ms matches the debounce on the main search so the chip update
+    // doesn't race ahead of the result list.
+    const handle = window.setTimeout(async () => {
+      try {
+        const counts = await fetchBrandCounts(
+          {
+            q: term || undefined,
+            onlyWithImages: !showAll,
+            caseMaterial: materialFilter || undefined,
+            dialColor: colorFilter || undefined,
+            caseSizeBucket:
+              sizeFilter === '≤38mm' ? '<=38'
+              : sizeFilter === '39–41mm' ? '39-41'
+              : sizeFilter === '≥42mm' ? '>=42'
+              : null,
+          },
+          ALL_BRAND_OPTIONS,
+        )
+        if (myToken !== brandCountAbortRef.current) return
+        const obj: Record<string, number> = {}
+        for (const [k, v] of counts) obj[k] = v
+        setFilterAwareBrandCounts(obj)
+      } catch (err) {
+        if (myToken === brandCountAbortRef.current) {
+          console.warn('[Add Watch] fetchBrandCounts failed', err)
+        }
+      }
+    }, SEARCH_DEBOUNCE_MS)
+    return () => window.clearTimeout(handle)
+  }, [ALL_BRAND_OPTIONS, searchTerm, showAll, materialFilter, colorFilter, sizeFilter, fetchBrandCounts])
+
+  // Use the dynamic counts once available, else the baseline.
+  const globalBrandCounts: Record<string, number> = filterAwareBrandCounts ?? baselineBrandCounts
 
   const useResultBrands = !!searchTerm.trim() && !brandFilter
   const resultBrandEntries = useMemo(() => {

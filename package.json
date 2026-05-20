@@ -29,6 +29,8 @@
     "images:acquire": "tsx scripts/acquire-watch-images.ts",
     "images:upload-storage": "tsx scripts/upload-images-to-storage.ts",
     "images:cleanup-png": "tsx scripts/cleanup-png-storage.ts",
+    "images:sync-deletions": "tsx scripts/sync-image-deletions.ts",
+    "images:reprocess-cycle": "tsx scripts/run-reprocess-cycle.ts",
     "prices:predict": "python3 scripts/predict-prices.py"
   },
   "dependencies": {
