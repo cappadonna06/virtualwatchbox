@@ -1,5 +1,6 @@
 import type { CatalogWatch } from '@/types/watch'
 import processedManifest from '@/public/watch-assets/processed/manifest.json'
+import excludedImagesData from '@/data/excluded-image-ids.json'
 import { toStorageUrl } from './watchImages/storageUrl'
 
 type ProcessedManifestEntry = {
@@ -9,17 +10,27 @@ type ProcessedManifestEntry = {
   webpPath: string
 }
 
+type ExcludedImagesData = {
+  ids: Array<{ id: string; reason: string; flaggedAt: string }>
+}
+
+const excludedIds = new Set(
+  (excludedImagesData as ExcludedImagesData).ids.map(e => e.id),
+)
+
 const processedWatchImages = new Map(
-  (processedManifest as ProcessedManifestEntry[]).map(entry => [
-    entry.watchId,
-    {
-      // Storage is canonical. Falls back to the local path when
-      // NEXT_PUBLIC_SUPABASE_URL is unset (offline dev / CI).
-      imageUrl: toStorageUrl(entry.webpPath) ?? entry.webpPath,
-      imageTransparentUrl: toStorageUrl(entry.pngPath) ?? entry.pngPath,
-      imageSourceUrl: `/watch-assets/raw/${entry.rawFilename}`,
-    },
-  ])
+  (processedManifest as ProcessedManifestEntry[])
+    .filter(entry => !excludedIds.has(entry.watchId))
+    .map(entry => [
+      entry.watchId,
+      {
+        // Storage is canonical. Falls back to the local path when
+        // NEXT_PUBLIC_SUPABASE_URL is unset (offline dev / CI).
+        imageUrl: toStorageUrl(entry.webpPath) ?? entry.webpPath,
+        imageTransparentUrl: toStorageUrl(entry.pngPath) ?? entry.pngPath,
+        imageSourceUrl: `/watch-assets/raw/${entry.rawFilename}`,
+      },
+    ])
 )
 
 const catalogWatches: CatalogWatch[] = [
