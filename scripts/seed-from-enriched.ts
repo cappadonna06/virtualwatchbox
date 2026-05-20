@@ -31,6 +31,7 @@ loadLocalEnv()
 const enrichedPath = path.join(repoRoot, 'data', 'catalog-enriched-full.json')
 const manifestPath = path.join(repoRoot, 'public', 'watch-assets', 'processed', 'manifest.json')
 const llmExtractDir = path.join(repoRoot, 'data', 'external', 'llm-extracts')
+const excludedImagesPath = path.join(repoRoot, 'data', 'excluded-image-ids.json')
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
 const SUPABASE_KEY =
@@ -362,11 +363,23 @@ type ManifestEntry = {
   backgroundRemovalApplied?: boolean
 }
 
+// Storage URL base — written into watch_images.png_url / webp_url so the app
+// reads from Supabase Storage in production. Falls back to the local manifest
+// path only when SUPABASE_URL is unset (offline / CI mode).
+const STORAGE_BASE = SUPABASE_URL
+  ? `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/watch-images`
+  : null
+
+function storageUrlFor(watchId: string, ext: 'png' | 'webp'): string | null {
+  if (!STORAGE_BASE) return null
+  return `${STORAGE_BASE}/${watchId}/primary.${ext}`
+}
+
 function buildImageRow(m: ManifestEntry): Record<string, unknown> {
   return {
     catalog_watch_id: m.watchId,
-    png_url: m.pngPath,
-    webp_url: m.webpPath,
+    png_url: storageUrlFor(m.watchId, 'png') ?? m.pngPath,
+    webp_url: storageUrlFor(m.watchId, 'webp') ?? m.webpPath,
     source_width: m.sourceWidth ?? null,
     source_height: m.sourceHeight ?? null,
     processed_width: m.processedWidth ?? null,
@@ -447,18 +460,30 @@ async function main() {
     marketRows.push(buildMarketRow(r, now))
   }
 
+  // Load excluded-image ids (watches whose processed image must NOT seed)
+  let excludedImageIds = new Set<string>()
+  if (fs.existsSync(excludedImagesPath)) {
+    const raw = JSON.parse(fs.readFileSync(excludedImagesPath, 'utf8')) as {
+      ids: Array<{ id: string }>
+    }
+    excludedImageIds = new Set(raw.ids.map(e => e.id))
+    console.log(`[seed-from-enriched] excluding ${excludedImageIds.size} ids from watch_images`)
+  }
+
   // Load image manifest
   console.log('[seed-from-enriched] loading processed image manifest…')
   let imageRows: Array<Record<string, unknown>> = []
   if (fs.existsSync(manifestPath)) {
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8')) as ManifestEntry[]
     // Filter to entries that correspond to an actual catalog row (avoid FK violation)
+    // AND aren't in the excluded-image list (admin-flagged "wrong watch" etc.).
     const idSet = new Set(records.map(r => r.id))
     imageRows = manifest
-      .filter(m => idSet.has(m.watchId))
+      .filter(m => idSet.has(m.watchId) && !excludedImageIds.has(m.watchId))
       .map(buildImageRow)
+    const excludedCount = manifest.filter(m => excludedImageIds.has(m.watchId)).length
     console.log(
-      `[seed-from-enriched] ${imageRows.length}/${manifest.length} manifest entries match a catalog row`,
+      `[seed-from-enriched] ${imageRows.length}/${manifest.length} manifest entries match a catalog row${excludedCount ? ` (${excludedCount} excluded)` : ''}`,
     )
   } else {
     console.log('[seed-from-enriched] no processed manifest — skipping watch_images')
@@ -514,6 +539,20 @@ async function main() {
     }
   }
   console.log(`[seed-from-enriched] catalog_watch_market: ${marketRows.length} rows upserted`)
+
+  // ── Purge watch_images for excluded ids (admin-flagged "wrong watch") ──
+  if (excludedImageIds.size > 0 && !DRY_RUN) {
+    const excludedArr = [...excludedImageIds]
+    for (let i = 0; i < excludedArr.length; i += CHUNK) {
+      const slice = excludedArr.slice(i, i + CHUNK)
+      const { error } = await supabase
+        .from('watch_images')
+        .delete()
+        .in('catalog_watch_id', slice)
+      if (error) console.warn(`[seed-from-enriched] excluded-image delete warn: ${error.message}`)
+    }
+    console.log(`[seed-from-enriched] purged watch_images for ${excludedImageIds.size} excluded ids`)
+  }
 
   // ── Refresh watch_images primary variant ───────────────────────────────
   if (imageRows.length > 0) {
