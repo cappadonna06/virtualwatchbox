@@ -156,21 +156,46 @@ Manual fallback if you don't want the auto-approve flip:
 npm run images:reprocess-cycle -- --no-approve
 ```
 
-### Bulk-approve everything currently flagged
+### Bulk-approve
 
-When you ran `--only-flagged` manually (not via the cycle wrapper),
-eyeballed the new outputs in `/admin/image-review`, and want to clear
-the queue without 30 button clicks:
+Two modes:
 
 ```bash
-npm run images:bulk-approve -- --dry-run    # preview first
-npm run images:bulk-approve                  # flip them all to approved
+# After a manual --only-flagged run, clear just the needs_reprocess queue:
+npm run images:bulk-approve -- --dry-run
+npm run images:bulk-approve
+
+# After clicking through the full admin catalog and only marking the bad
+# ones (everything else is GTG), approve the entire 'pending' pile too:
+npm run images:bulk-approve -- --include-pending --dry-run
+npm run images:bulk-approve -- --include-pending
 ```
 
-Or for a specific subset:
+Or surgically:
 ```bash
 npm run images:bulk-approve -- --ids=rolex-126710blro,rolex-16713
 ```
+
+## Deleting an image (the "Wrong watch" button)
+
+Clicking **Wrong watch / delete** in `/admin/image-review`:
+
+1. **Immediately deletes the `watch_images` row** (server-side, in the
+   POST handler). The image stops rendering on the catalog within seconds.
+2. **Inserts a `status='deleted'` review row** for the audit trail.
+
+To make the deletion **permanent across deploys** (otherwise the next
+`catalog:seed-full` would recreate the `watch_images` row from
+`manifest.json`):
+
+```bash
+npm run images:sync-deletions    # pulls deleted ids → data/excluded-image-ids.json
+git add data/excluded-image-ids.json
+git commit -m "exclude N bad images"
+```
+
+The JSON is the source of truth that `seed-from-enriched.ts` consults.
+Skip the sync only if you're OK with the deletion being temporary.
 
 ---
 

@@ -1,19 +1,19 @@
 /**
- * Bulk-approve every watch currently in status='needs_reprocess'.
- *
- * Use case: you flagged a batch, ran the processor manually (NOT via
- * run-reprocess-cycle.ts), eyeballed the new outputs in /admin/image-review,
- * and they all look fine. Click-through approving 30 cards is tedious; this
- * inserts a fresh status='approved' review row for each id in one shot.
+ * Bulk-approve watches. Default targets status='needs_reprocess' only —
+ * the "I ran the processor manually, the new outputs look good, clear the
+ * queue" workflow. With --include-pending also flips status='pending' (i.e.
+ * never-reviewed watches), which is the "I went through all 2.9k cards and
+ * everything not explicitly marked bad is GTG" workflow.
  *
  * Required env:
  *   SUPABASE_URL / NEXT_PUBLIC_SUPABASE_URL
  *   SUPABASE_SECRET_KEY / SUPABASE_SERVICE_ROLE_KEY
  *
  * Usage:
- *   npm run images:bulk-approve                     # approve all needs_reprocess
- *   npm run images:bulk-approve -- --dry-run        # list, no write
- *   npm run images:bulk-approve -- --ids=a,b,c      # approve specific ids
+ *   npm run images:bulk-approve                       # approve all needs_reprocess
+ *   npm run images:bulk-approve -- --include-pending  # also approve pending (never-reviewed)
+ *   npm run images:bulk-approve -- --dry-run          # list, no write
+ *   npm run images:bulk-approve -- --ids=a,b,c        # approve specific ids
  */
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
@@ -29,6 +29,7 @@ function arg(name: string): string | undefined {
   return hit.slice(name.length + 1)
 }
 const DRY_RUN = ARGV.includes('--dry-run')
+const INCLUDE_PENDING = ARGV.includes('--include-pending')
 const IDS_ARG = arg('--ids')
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -42,24 +43,57 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
   process.exit(1)
 }
 
-async function getNeedsReprocessIds(supabase: SupabaseClient): Promise<string[]> {
-  const { data, error } = await supabase
-    .from('watch_image_reviews')
-    .select('catalog_watch_id, status, created_at')
-    .eq('variant', 'primary')
-    .order('created_at', { ascending: false })
-  if (error) throw new Error(`query: ${error.message}`)
-
+async function getTargetIds(supabase: SupabaseClient): Promise<string[]> {
+  // Latest review per watch (sorted desc → take first per id).
+  const PAGE = 1000
+  const reviewRows: Array<Record<string, unknown>> = []
+  for (let off = 0; ; off += PAGE) {
+    const { data, error } = await supabase
+      .from('watch_image_reviews')
+      .select('catalog_watch_id, status, created_at')
+      .eq('variant', 'primary')
+      .order('created_at', { ascending: false })
+      .range(off, off + PAGE - 1)
+    if (error) throw new Error(`reviews query: ${error.message}`)
+    if (!data || data.length === 0) break
+    reviewRows.push(...(data as Array<Record<string, unknown>>))
+    if (data.length < PAGE) break
+  }
   const latest = new Map<string, string>()
-  for (const r of data ?? []) {
+  for (const r of reviewRows) {
     if (!latest.has(r.catalog_watch_id as string)) {
       latest.set(r.catalog_watch_id as string, r.status as string)
     }
   }
-  return [...latest.entries()]
+
+  // needs_reprocess is always in scope. pending (no review row at all) only
+  // matters if --include-pending was passed.
+  const needsReprocessIds = [...latest.entries()]
     .filter(([, s]) => s === 'needs_reprocess')
     .map(([id]) => id)
-    .sort()
+
+  if (!INCLUDE_PENDING) return needsReprocessIds.sort()
+
+  // For "pending" we need the catalog of ids that HAVE an image but have no
+  // review row yet (or whose latest is 'pending'). Pull the imaged-ids set
+  // from watch_images.
+  const imagedIds = new Set<string>()
+  for (let off = 0; ; off += PAGE) {
+    const { data, error } = await supabase
+      .from('watch_images')
+      .select('catalog_watch_id')
+      .eq('variant', 'primary')
+      .range(off, off + PAGE - 1)
+    if (error) throw new Error(`watch_images query: ${error.message}`)
+    if (!data || data.length === 0) break
+    for (const r of data) imagedIds.add((r as { catalog_watch_id: string }).catalog_watch_id)
+    if (data.length < PAGE) break
+  }
+  const pendingIds = [...imagedIds].filter(id => {
+    const status = latest.get(id)
+    return status === undefined || status === 'pending'
+  })
+  return [...new Set([...needsReprocessIds, ...pendingIds])].sort()
 }
 
 async function pickReviewerId(supabase: SupabaseClient): Promise<string | null> {
@@ -82,8 +116,9 @@ async function main() {
     ids = IDS_ARG.split(',').map(s => s.trim()).filter(Boolean)
     console.log(`[bulk-approve] explicit ${ids.length} ids passed via --ids`)
   } else {
-    ids = await getNeedsReprocessIds(supabase)
-    console.log(`[bulk-approve] ${ids.length} ids currently in status='needs_reprocess'`)
+    ids = await getTargetIds(supabase)
+    const scope = INCLUDE_PENDING ? "'needs_reprocess' + 'pending' (imaged, never reviewed)" : "'needs_reprocess'"
+    console.log(`[bulk-approve] ${ids.length} ids targeted (${scope})`)
   }
 
   if (ids.length === 0) {
