@@ -9,6 +9,11 @@ export type ProcessOptions = {
   // script passes a sips-based decoder; the admin route relies on sharp's
   // own AVIF support and falls through to its own resize-only safety net.
   decodeFallback?: (input: Buffer) => Promise<Buffer>
+  // Quality knobs. Defaults are tuned for the global catalog. The batch
+  // script bumps these per-watch based on watch_image_reviews tags when
+  // re-processing a flagged row.
+  maskDilationPasses?: number   // ML under-shoot recovery; 0 to disable
+  featherSigma?: number         // alpha-edge softening; 0 to disable
 }
 
 export type ProcessedImage = {
@@ -279,6 +284,124 @@ async function sampleEdgeBackground(input: Buffer): Promise<EdgeBackground | nul
   return null
 }
 
+// ML mask refinement: ML segmentation systematically under-shoots silhouettes
+// by 1–3 pixels at high-frequency edges (leather strap grain, polished case
+// lugs, bracelet link gaps). Reviewer data showed this as the #1 failure mode
+// — `band` (12), `case` (8), `bracelet_bottom` (1) tags all describe ML biting
+// chunks out of the silhouette.
+//
+// Fix: walk every transparent pixel adjacent to an opaque pixel; restore alpha
+// when the transparent pixel's source RGB is much closer to its opaque
+// neighbor's color than to the sampled background. This rescues "ML bit a
+// chunk out" pixels (their RGB still looks like watch) without restoring true
+// background (their RGB looks like background).
+//
+// Run iteratively — each pass dilates the silhouette by 1 pixel where the
+// color test agrees. `passes=2` recovers most ML under-shoot without
+// over-restoring noise; passes=3 trades a touch more edge softness for more
+// rescue on chunky failures (per-watch knob via opts).
+async function refineMaskByColor(
+  input: Buffer,
+  sampled: EdgeBackground | null,
+  passes: number,
+): Promise<Buffer> {
+  if (passes <= 0) return input
+  const bg = sampled?.background ?? { r: 255, g: 255, b: 255 }
+  let current = input
+
+  for (let pass = 0; pass < passes; pass += 1) {
+    const { data, info } = await sharp(current)
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true })
+    const { width, height } = info
+
+    // Snapshot the opaque mask at the START of this pass. Newly-restored
+    // pixels do NOT become seeds within the same pass — otherwise a faint
+    // horizontal shadow next to the watch would feed the chain outward
+    // unboundedly, expanding the silhouette to 3-6× its true width. The pass
+    // bound (default 1) controls how many pixels of dilation are possible.
+    const wasOpaque = new Uint8Array(width * height)
+    for (let i = 0; i < width * height; i += 1) {
+      if (data[i * 4 + 3] > 180) wasOpaque[i] = 1
+    }
+
+    const restore = new Uint8Array(width * height)
+    let restoredCount = 0
+
+    for (let y = 1; y < height - 1; y += 1) {
+      for (let x = 1; x < width - 1; x += 1) {
+        const i = y * width + x
+        const o = i * 4
+        if (data[o + 3] > ALPHA_THRESHOLD) continue
+
+        let nOpaque = 0
+        let sumR = 0
+        let sumG = 0
+        let sumB = 0
+        const ni1 = i - 1;     if (wasOpaque[ni1]) { nOpaque += 1; sumR += data[ni1 * 4]; sumG += data[ni1 * 4 + 1]; sumB += data[ni1 * 4 + 2] }
+        const ni2 = i + 1;     if (wasOpaque[ni2]) { nOpaque += 1; sumR += data[ni2 * 4]; sumG += data[ni2 * 4 + 1]; sumB += data[ni2 * 4 + 2] }
+        const ni3 = i - width; if (wasOpaque[ni3]) { nOpaque += 1; sumR += data[ni3 * 4]; sumG += data[ni3 * 4 + 1]; sumB += data[ni3 * 4 + 2] }
+        const ni4 = i + width; if (wasOpaque[ni4]) { nOpaque += 1; sumR += data[ni4 * 4]; sumG += data[ni4 * 4 + 1]; sumB += data[ni4 * 4 + 2] }
+        if (nOpaque === 0) continue
+
+        const avgR = sumR / nOpaque
+        const avgG = sumG / nOpaque
+        const avgB = sumB / nOpaque
+        const r = data[o]
+        const g = data[o + 1]
+        const b = data[o + 2]
+
+        const dNbr = (r - avgR) ** 2 + (g - avgG) ** 2 + (b - avgB) ** 2
+        const dBg  = (r - bg.r)  ** 2 + (g - bg.g)  ** 2 + (b - bg.b)  ** 2
+
+        // Three-part test:
+        //   (a) very close to neighbour colour                   dNbr  <  35²  (each channel ≤20 off)
+        //   (b) meaningfully different from background           dBg   >  60²  (each channel ≥35 off)
+        //   (c) at least 3× closer to interior than to bg        dNbr·3 < dBg
+        // (a)+(c) gate ML under-shoot rescue; (b) refuses anything that
+        // looks like background no matter how it color-matches a faint
+        // shadow inside the silhouette.
+        if (dNbr < 35 * 35 && dBg > 60 * 60 && dNbr * 3 < dBg) {
+          restore[i] = 1
+          restoredCount += 1
+        }
+      }
+    }
+
+    if (restoredCount === 0) break
+    for (let i = 0; i < width * height; i += 1) {
+      if (restore[i]) data[i * 4 + 3] = 255
+    }
+    current = await sharp(data, { raw: { width, height, channels: 4 } }).png().toBuffer()
+  }
+  return current
+}
+
+// Alpha-feather pass: imgly's segmentation often leaves a 1–2px halo of
+// premultiplied dark fringe at the silhouette boundary, visible against a
+// non-white display background. Blurring ONLY the alpha channel (not RGB)
+// softens the transition without smudging the watch itself.
+async function featherAlpha(input: Buffer, sigma: number): Promise<Buffer> {
+  if (sigma <= 0) return input
+  const { data, info } = await sharp(input).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+  const { width, height } = info
+  const alphaOnly = Buffer.alloc(width * height)
+  for (let i = 0; i < width * height; i += 1) alphaOnly[i] = data[i * 4 + 3]
+  const blurred = await sharp(alphaOnly, { raw: { width, height, channels: 1 } })
+    .blur(sigma)
+    .raw()
+    .toBuffer()
+  const out = Buffer.alloc(data.length)
+  for (let i = 0; i < width * height; i += 1) {
+    out[i * 4] = data[i * 4]
+    out[i * 4 + 1] = data[i * 4 + 1]
+    out[i * 4 + 2] = data[i * 4 + 2]
+    out[i * 4 + 3] = blurred[i]
+  }
+  return sharp(out, { raw: { width, height, channels: 4 } }).png().toBuffer()
+}
+
 async function removeConnectedEdgeBackground(input: Buffer, sampled: EdgeBackground) {
   const { data, info } = await sharp(input)
     .rotate()
@@ -358,24 +481,31 @@ async function dissolveShadowGradient(input: Buffer, sampled: EdgeBackground) {
   // Per-step color budget: a neighbour can shift by ~22 RGB units max.
   // Cast shadow gradients fall well within this; sharp watch edges blow past it.
   const stepBudgetSq = 22 * 22 * 3
+  // Absolute distance from the sampled background — even if the BFS can chain
+  // smoothly into a pixel, refuse if that pixel is too far from background.
+  // Cast shadows max out around 110–130 RGB units below white; anything
+  // darker is foreground (steel, leather, dial elements). This is the single
+  // most important guard against the `edge_eroded` failure mode (7 reviewer
+  // tags): the walker was chaining gradients all the way into the watch body
+  // because each step was small even though the cumulative distance wasn't.
+  const absBudgetSq = 130 * 130 * 3
   // Saturation cap: bracelet steel can hit sat 8-15 due to studio reflections,
-  // so anchor to ≤14 to allow most cast-shadow noise while rejecting tinted
-  // parts of the watch.
-  const saturationCap = 14
+  // but leather strap edges and dial highlights also fall in that range. Drop
+  // to 9 to keep the walker firmly on neutral shadow grey only.
+  const saturationCap = 9
   // Lightening tolerance: cast shadows are monotonically darker as you move
   // away from the lit background, so the BFS only walks into pixels that are
   // darker (or barely lighter, allowing gradient noise). This prevents the
   // BFS from descending the shadow gradient and then climbing back up into
   // bracelet/case parts that are also low-saturation grey.
-  const lightenTolerance = 6
-  // Depth cap: cast shadows beneath a watch are rarely deeper than 60-80
-  // pixels. Dark leather straps interior to the silhouette extend hundreds
-  // of pixels deep, so capping depth keeps the BFS from chaining through
-  // their grain even when local gradients permit it.
-  const maxDepth = 70
-  // Hard area cap: if we're ever about to remove >12% of the image, the
+  const lightenTolerance = 4
+  // Depth cap: cast shadows beneath a watch are rarely deeper than ~30 pixels
+  // from where transparency starts. Lowering from 70 → 32 stops the chain
+  // before it has room to gnaw into the silhouette interior.
+  const maxDepth = 32
+  // Hard area cap: if we're ever about to remove >8% of the image, the
   // detection is wrong (probably a uniformly-grey watch on white), abort.
-  const maxRemoved = Math.round(width * height * 0.12)
+  const maxRemoved = Math.round(width * height * 0.08)
 
   let removed = 0
   let darkRemoved = 0
@@ -421,6 +551,15 @@ async function dissolveShadowGradient(input: Buffer, sampled: EdgeBackground) {
       const db = b - pb
       if (dr * dr + dg * dg + db * db > stepBudgetSq) continue
 
+      // Absolute distance from the original sampled background. Even if the
+      // per-step gradient is smooth, refuse pixels that are too far from the
+      // background colour overall — those are foreground that the walker is
+      // chaining through gradient noise to reach.
+      const abr = r - sampled.background.r
+      const abg = g - sampled.background.g
+      const abb = b - sampled.background.b
+      if (abr * abr + abg * abg + abb * abb > absBudgetSq) continue
+
       // Monotone-darkening: a cast shadow only gets darker as you move into
       // it. If the neighbour is meaningfully lighter than the parent, we're
       // walking back UP the gradient — likely climbing into a watch part —
@@ -448,8 +587,10 @@ async function dissolveShadowGradient(input: Buffer, sampled: EdgeBackground) {
   // descended past mid-grey into dark territory. If everything we removed
   // was just the light fringe of the silhouette (anti-aliased edge pixels
   // with luma > 110), this is edge erosion, not shadow removal: revert to
-  // keep the silhouette anti-aliasing intact.
-  if (darkRemoved < 200) return input
+  // keep the silhouette anti-aliasing intact. Raised from 200 → 450 in
+  // response to 7 `edge_eroded` reviewer flags — too many low-evidence runs
+  // were getting through.
+  if (darkRemoved < 450) return input
 
   return sharp(data, { raw: { width, height, channels: 4 } }).png().toBuffer()
 }
@@ -603,6 +744,14 @@ export async function processWatchImageBuffer(
     // the BFS at watch boundaries while still letting it dissolve true
     // cast-shadow gradients (which are alpha=255 with monotone-gray RGB).
     working = await combineAlphaWithSourceRgb(sourceBuffer, mlBuffer)
+    // Color-guided mask dilation rescues ML's systematic 1–2px under-shoot
+    // at high-frequency edges (leather strap grain, polished case lugs,
+    // bracelet link boundaries). Reviewer flags showed this as the #1
+    // failure mode — `band` and `case` tags combined for 20 of 28 flags.
+    // Default 1 pass = 1 pixel of dilation. The batch script bumps to 2
+    // for watches the reviewer flagged with `band`/`case`/`bracelet_*`.
+    const dilationPasses = opts.maskDilationPasses ?? 1
+    working = await refineMaskByColor(working, sampled, dilationPasses)
     backgroundRemovalApplied = true
   } else if (sampled) {
     const preCropped = await cropToAlphaBounds(sourceBuffer)
@@ -627,7 +776,17 @@ export async function processWatchImageBuffer(
     working = await combineAlphaWithSourceRgb(mlBuffer, working)
   }
 
-  // 5. Standard cleanup + framing — unchanged from the prior pipeline.
+  // 6. Alpha feather softens the 1–2px halo imgly tends to leave at the
+  //    silhouette boundary. Pure alpha-channel blur — RGB stays sharp.
+  //    Default 0 (disabled) — a previous attempt at sigma 0.6 produced
+  //    catastrophic horizontal silhouette inflation on certain inputs,
+  //    likely interacting with the libvips dylib version mismatch between
+  //    sharp and @imgly/background-removal-node. Re-enable only via
+  //    explicit opt-in until the dylib conflict is resolved.
+  const featherSigma = opts.featherSigma ?? 0
+  if (featherSigma > 0) working = await featherAlpha(working, featherSigma)
+
+  // 7. Standard cleanup + framing — unchanged from the prior pipeline.
   working = await removeSmallAlphaComponents(working)
   working = await removeBottomStudioPlatform(working)
   working = await cropToAlphaBounds(working)
