@@ -6,7 +6,8 @@ import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
-import { watches as catalogWatches } from '@/lib/watches'
+import { useCatalog } from '@/lib/catalog/CatalogProvider'
+import { watches as seedCatalogWatches } from '@/lib/watches'
 import {
   DISCOVER_DEMO_COLLECTION_IDS,
   getBoxInsight,
@@ -86,7 +87,19 @@ export default function DiscoverPage() {
   const { user } = useAuth()
   const session = useCollectionSession()
   const { getImageUrl } = useWatchImages()
+  const { allWatches: dynamicCatalogWatches } = useCatalog()
   const isGuest = !user
+
+  // Use the dynamic top-2000-by-heat catalog as the suggestion pool when
+  // it's loaded; fall back to the curated 87-watch static seed so SSR and
+  // first paint aren't empty. Merged-by-id so we don't double-count.
+  const catalogWatches = useMemo(() => {
+    if (dynamicCatalogWatches.length === 0) return seedCatalogWatches
+    const byId = new Map<string, CatalogWatch>()
+    for (const w of seedCatalogWatches) byId.set(w.id, w)
+    for (const w of dynamicCatalogWatches) byId.set(w.id, w)
+    return Array.from(byId.values())
+  }, [dynamicCatalogWatches])
 
   const hasImage = useMemo(
     () => (watch: CatalogWatch) => Boolean(getImageUrl(watch.id) ?? watch.imageUrl),
@@ -99,7 +112,7 @@ export default function DiscoverPage() {
     DISCOVER_DEMO_COLLECTION_IDS
       .map(id => catalogWatches.find(w => w.id === id))
       .filter((w): w is CatalogWatch => Boolean(w))
-  ), [])
+  ), [catalogWatches])
 
   const collection = realCollection.length > 0 ? realCollection : demoCollection
   const personalized = !isGuest && realCollection.length > 0
@@ -108,7 +121,7 @@ export default function DiscoverPage() {
 
   const boxInsight = useMemo(
     () => getBoxInsight(collection, catalogWatches, { hasImage, priceAnchor }),
-    [collection, hasImage, priceAnchor],
+    [collection, catalogWatches, hasImage, priceAnchor],
   )
 
   const upgradeSuggestions = useMemo(
@@ -121,12 +134,12 @@ export default function DiscoverPage() {
       session.nextTargets.map(t => t.watchId),
       { hasImage, priceAnchor },
     ),
-    [collection, session.followedWatchIds, session.collectionJewelWatchId, session.grailWatchId, session.nextTargets, hasImage, priceAnchor],
+    [collection, catalogWatches, session.followedWatchIds, session.collectionJewelWatchId, session.grailWatchId, session.nextTargets, hasImage, priceAnchor],
   )
 
   const nextSlotRecs = useMemo(
     () => getNextSlotRecommendations(collection, session.followedWatchIds, catalogWatches, 3, { hasImage, priceAnchor }),
-    [collection, session.followedWatchIds, hasImage, priceAnchor],
+    [collection, catalogWatches, session.followedWatchIds, hasImage, priceAnchor],
   )
 
   const ownedTypes = useMemo(

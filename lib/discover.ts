@@ -45,10 +45,22 @@ const RATIONALE_TEMPLATES: Record<string, string[]> = {
   ],
 }
 
-export function getUpgradeRationale(watchType: string): string {
+// Deterministic FNV-1a-ish string hash. We use this anywhere a "random"
+// pick would otherwise diverge between SSR and client hydration. Seeding
+// off the watch id (or another stable key) makes the same render twice.
+function stringHash(s: string): number {
+  let h = 2166136261
+  for (let i = 0; i < s.length; i += 1) {
+    h ^= s.charCodeAt(i)
+    h = Math.imul(h, 16777619)
+  }
+  return h >>> 0
+}
+
+export function getUpgradeRationale(watchType: string, seedKey = ''): string {
   const templates = RATIONALE_TEMPLATES[watchType]
     ?? ['Preserves this slot in your box while moving into a higher-tier reference. A natural next step.']
-  return templates[Math.floor(Math.random() * templates.length)]
+  return templates[stringHash(`${watchType}::${seedKey}`) % templates.length]
 }
 
 export const DISCOVER_DEMO_COLLECTION_IDS: string[] = [
@@ -156,15 +168,26 @@ export function getBoxInsight(
     if (anchor) {
       const inBand = candidates.filter(w => w.estimatedValue >= anchor.floor && w.estimatedValue <= anchor.ceiling)
       if (inBand.length > 0) candidates = inBand
-      candidates.sort((a, b) => priceScore(a.estimatedValue, anchor) - priceScore(b.estimatedValue, anchor))
+      // Lower is better. Heat score (0–1) discounts the effective price-distance
+      // by up to ~$1500-worth — keeps the band-anchor honest while letting
+      // popular references win against equally-priced obscure ones.
+      const scoreFor = (w: CatalogWatch) =>
+        priceScore(w.estimatedValue, anchor) - (w.market?.heatScore ?? 0) * 1500
+      candidates.sort((a, b) => scoreFor(a) - scoreFor(b))
     } else {
-      candidates.sort((a, b) => a.estimatedValue - b.estimatedValue)
+      candidates.sort((a, b) => {
+        if (a.estimatedValue !== b.estimatedValue) return a.estimatedValue - b.estimatedValue
+        return (b.market?.heatScore ?? 0) - (a.market?.heatScore ?? 0)
+      })
     }
 
     if (candidates.length === 0) continue
     const suggestion = candidates[0]
     const copies = MISSING_TYPE_COPY[type]
-    const copy = copies[Math.floor(Math.random() * copies.length)]
+    // Deterministic copy choice keyed off the suggestion id so SSR and
+    // hydration agree, but the string still rotates as the suggestion
+    // changes (different missing-type, different watch).
+    const copy = copies[stringHash(`${type}::${suggestion.id}`) % copies.length]
     return { missingType: type, suggestion, copy }
   }
   return null
@@ -236,7 +259,11 @@ function findAlgorithmicUpgrade(
   const differentBrand = pool.filter(w => w.brand.toLowerCase() !== ownedBrandLower)
   const tier = differentBrand.length > 0 ? differentBrand : pool
 
-  tier.sort((a, b) => Math.abs(a.estimatedValue - idealTarget) - Math.abs(b.estimatedValue - idealTarget))
+  // Distance from ideal target dominates; high heat shaves up to ~$1500
+  // from the effective distance so popular references break ties.
+  const scoreFor = (w: CatalogWatch) =>
+    Math.abs(w.estimatedValue - idealTarget) - (w.market?.heatScore ?? 0) * 1500
+  tier.sort((a, b) => scoreFor(a) - scoreFor(b))
   return tier[0]
 }
 
@@ -271,7 +298,7 @@ export function getUpgradeSuggestions(
       ownedWatch: owned,
       upgradeWatch: upgrade,
       headline: `Upgrade your ${owned.watchType}`,
-      balanceNote: getUpgradeRationale(owned.watchType),
+      balanceNote: getUpgradeRationale(owned.watchType, `${owned.id}->${upgrade.id}`),
       isGrail: grailWatchId === upgrade.id,
       isTarget: targetSet.has(upgrade.id),
       isJewel: false,
@@ -319,7 +346,6 @@ export function getNextSlotRecommendations(
   const scored = pool.map(w => {
     const typeCount = typeCounts.get(w.watchType) ?? 0
     // Reward types the user does NOT own. Equal-count types get a smaller bonus.
-    // Previously this was inverted — it rewarded watch types the user already had.
     const underrepBonus = typeCount === 0
       ? 3
       : typeCount === minOwnedCount
@@ -330,9 +356,16 @@ export function getNextSlotRecommendations(
     const priceBonus = anchor
       ? 2 - Math.min(2, priceScore(w.estimatedValue, anchor) / Math.max(anchor.target, 1))
       : 0
+    // Heat score is a 0–1 popularity signal from catalog_watch_market.
+    // Treating it as a real "this watch is having a moment" lift gives us
+    // natural variety without needing a non-deterministic random term.
+    const heatBonus = (w.market?.heatScore ?? 0) * 1.2
+    // Small deterministic jitter keyed off the id — keeps near-tied scores
+    // from grouping by alphabetical id but is identical on SSR + client.
+    const jitter = (stringHash(w.id) % 1000) / 5000
     return {
       watch: w,
-      score: underrepBonus + followedPenalty + tier * 0.3 + priceBonus + Math.random() * 0.3,
+      score: underrepBonus + followedPenalty + tier * 0.3 + priceBonus + heatBonus + jitter,
     }
   })
 

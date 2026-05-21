@@ -72,7 +72,7 @@ function NextSlotCard({
   const addressesLabel = ownedTypes.has(type)
     ? `Deepens your ${type.toLowerCase()}`
     : `Adds a ${type.toLowerCase()} to the rotation`
-  const thesis = getUpgradeRationale(type)
+  const thesis = getUpgradeRationale(type, watch.id)
 
   return (
     <article
