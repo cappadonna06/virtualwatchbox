@@ -68,7 +68,7 @@ export default function HeroMasthead({ personalized, bylineRight, bylineLeft, in
         >
           {personalized ? (
             <>
-              Your box reads <em style={{ fontStyle: 'italic' }}>{insightRead.toLowerCase()}</em>. Recommendations, upgrades, and reads shaped around the holes in it.
+              Your collection reads <em style={{ fontStyle: 'italic' }}>{insightRead.toLowerCase()}</em>. Recommendations, upgrades, and reads shaped around what it&rsquo;s missing.
             </>
           ) : (
             <>Recommendations, upgrades, and reads for any thoughtful collector. Sign in to make these your own.</>

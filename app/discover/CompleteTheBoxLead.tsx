@@ -25,6 +25,7 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
   const { isWatchFollowed, toggleFollowedWatch } = useCollectionSession()
   const followed = isWatchFollowed(watch.id)
   const headlineNoun = gapType ? `${gapType.toLowerCase()} watch` : 'next pick'
+  const headlineTail = headlineTailFor(gapType, personalized)
 
   return (
     <section id="lead" style={{ background: PANEL_BG, color: brand.colors.slot }}>
@@ -58,7 +59,7 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
                 color: brand.colors.slot,
               }}
             >
-              A <em style={{ fontStyle: 'italic' }}>{headlineNoun}</em>, for the {personalized ? 'gap your box is showing' : 'anchor to lead the week'}.
+              A <em style={{ fontStyle: 'italic' }}>{headlineNoun}</em>, {headlineTail}.
             </h2>
 
             <p
@@ -216,6 +217,22 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
       </div>
     </section>
   )
+}
+
+function headlineTailFor(gapType: string | null, personalized: boolean): string {
+  if (!personalized) return 'to lead the week'
+  switch (gapType) {
+    case 'Dress':               return 'the formal anchor your rotation is missing'
+    case 'GMT':                 return 'the travel companion your rotation has yet to claim'
+    case 'Chronograph':         return 'the sport complication your collection has yet to own'
+    case 'Diver':               return 'the tool watch your collection deserves'
+    case 'Field':               return 'a legible daily your rotation can reach for'
+    case 'Pilot':               return 'the cockpit-bred legibility your rotation is missing'
+    case 'Integrated Bracelet': return 'the integrated-bracelet daily your collection has yet to claim'
+    case 'Sport':               return 'a versatile sport piece your rotation can lean on'
+    case 'Vintage':             return 'the heritage chapter your collection has yet to open'
+    default:                    return 'the chapter your collection has yet to open'
+  }
 }
 
 function GoldKicker({ children }: { children: React.ReactNode }) {

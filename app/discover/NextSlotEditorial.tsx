@@ -69,7 +69,9 @@ function NextSlotCard({
 }) {
   const band = priceBandFor(watch)
   const type = (watch.watchType ?? 'Watch') as WatchType
-  const addressesLabel = ownedTypes.has(type) ? `Strengthens your ${type.toLowerCase()}` : `Fills your ${type.toLowerCase()} gap`
+  const addressesLabel = ownedTypes.has(type)
+    ? `Deepens your ${type.toLowerCase()}`
+    : `Adds a ${type.toLowerCase()} to the rotation`
   const thesis = getUpgradeRationale(type)
 
   return (

@@ -17,7 +17,7 @@ const RATIONALE_TEMPLATES: Record<string, string[]> = {
   ],
   'Chronograph': [
     'Preserves your chrono slot while moving into a movement and case that defines the category.',
-    'Keeps the sport complication slot filled while stepping into a reference with genuine heritage.',
+    'Keeps the sport complication slot covered while stepping into a reference with genuine heritage.',
   ],
   'Dress': [
     'Maintains your formal coverage while moving the finishing and complication quality up a tier.',
@@ -72,7 +72,7 @@ const MISSING_TYPE_COPY: Record<WatchType, string[]> = {
     'No GMT in the lineup. Even occasional travelers find it the most-worn complication.',
   ],
   'Chronograph': [
-    'Your box has no chronograph. The sport complication slot is worth filling.',
+    'Your collection has no chronograph. The sport complication slot is worth claiming.',
     'No chrono in the rotation. The category contains some of the most collected references in horology.',
   ],
   'Field': [
@@ -217,20 +217,27 @@ function findAlgorithmicUpgrade(
   const ownedModelNorm = normalizeModel(owned.model)
   const ownedBrandLower = owned.brand.toLowerCase()
 
-  const candidates = allWatches
-    .filter(w => !ownedIds.has(w.id))
-    .filter(w => passesImage(w, hasImage))
-    .filter(w => w.watchType === owned.watchType)
-    .filter(w => w.estimatedValue >= owned.estimatedValue * 1.2)
-    .filter(w => (BRAND_TIERS[w.brand] ?? 1) >= ownedTier)
-    .filter(w => normalizeModel(w.model) !== ownedModelNorm)
+  const idealTarget = owned.estimatedValue * 2
+  const minVal = owned.estimatedValue * 1.3
+  const maxVal = owned.estimatedValue * 4
 
-  if (candidates.length === 0) return null
+  const baseFilter = (w: CatalogWatch) =>
+    !ownedIds.has(w.id) &&
+    passesImage(w, hasImage) &&
+    w.watchType === owned.watchType &&
+    (BRAND_TIERS[w.brand] ?? 1) >= ownedTier &&
+    normalizeModel(w.model) !== ownedModelNorm
 
-  const differentBrand = candidates.filter(w => w.brand.toLowerCase() !== ownedBrandLower)
-  const pool = differentBrand.length > 0 ? differentBrand : candidates
-  pool.sort((a, b) => a.estimatedValue - b.estimatedValue)
-  return pool[0]
+  // Hard cap at 4x — better to show no upgrade card than recommend an 8x stretch
+  // ("upgrade your $4K Aqua Terra to a $36K Patek" is not useful advice).
+  const pool = allWatches.filter(w => baseFilter(w) && w.estimatedValue >= minVal && w.estimatedValue <= maxVal)
+  if (pool.length === 0) return null
+
+  const differentBrand = pool.filter(w => w.brand.toLowerCase() !== ownedBrandLower)
+  const tier = differentBrand.length > 0 ? differentBrand : pool
+
+  tier.sort((a, b) => Math.abs(a.estimatedValue - idealTarget) - Math.abs(b.estimatedValue - idealTarget))
+  return tier[0]
 }
 
 export function getUpgradeSuggestions(
@@ -282,6 +289,9 @@ export function getNextSlotRecommendations(
   options: SelectionOptions = {},
 ): CatalogWatch[] {
   const ownedIds = new Set(collectionWatches.map(w => w.id))
+  const ownedModelKeys = new Set(
+    collectionWatches.map(w => `${w.brand.toLowerCase()}::${normalizeModel(w.model)}`),
+  )
   const followedIds = new Set(followedWatchIds)
   const anchor = options.priceAnchor ?? collectionPriceAnchor(collectionWatches)
 
@@ -289,22 +299,32 @@ export function getNextSlotRecommendations(
   for (const w of collectionWatches) {
     typeCounts.set(w.watchType, (typeCounts.get(w.watchType) ?? 0) + 1)
   }
-  const minCount = collectionWatches.length === 0
+  const minOwnedCount = collectionWatches.length === 0
     ? 0
     : Math.min(...Array.from(typeCounts.values()))
 
+  const notOwned = (w: CatalogWatch) =>
+    !ownedIds.has(w.id) &&
+    !ownedModelKeys.has(`${w.brand.toLowerCase()}::${normalizeModel(w.model)}`)
+
   const eligible = allWatches
-    .filter(w => !ownedIds.has(w.id))
+    .filter(notOwned)
     .filter(w => passesImage(w, options.hasImage))
     .filter(w => !anchor || (w.estimatedValue >= anchor.floor && w.estimatedValue <= anchor.ceiling))
 
   const pool = eligible.length > 0
     ? eligible
-    : allWatches.filter(w => !ownedIds.has(w.id)).filter(w => passesImage(w, options.hasImage))
+    : allWatches.filter(notOwned).filter(w => passesImage(w, options.hasImage))
 
   const scored = pool.map(w => {
     const typeCount = typeCounts.get(w.watchType) ?? 0
-    const underrepBonus = typeCount === minCount ? 2 : typeCount <= minCount + 1 ? 1 : 0
+    // Reward types the user does NOT own. Equal-count types get a smaller bonus.
+    // Previously this was inverted — it rewarded watch types the user already had.
+    const underrepBonus = typeCount === 0
+      ? 3
+      : typeCount === minOwnedCount
+        ? 1
+        : 0
     const followedPenalty = followedIds.has(w.id) ? -1 : 0
     const tier = BRAND_TIERS[w.brand] ?? 1
     const priceBonus = anchor
@@ -317,7 +337,38 @@ export function getNextSlotRecommendations(
   })
 
   scored.sort((a, b) => b.score - a.score)
-  return scored.slice(0, count).map(s => s.watch)
+
+  // Dedupe by normalized model — keep the best-scored variant per model.
+  const seenModels = new Set<string>()
+  const dedupedRanked: { watch: CatalogWatch; score: number }[] = []
+  for (const s of scored) {
+    const key = `${s.watch.brand.toLowerCase()}::${normalizeModel(s.watch.model)}`
+    if (seenModels.has(key)) continue
+    seenModels.add(key)
+    dedupedRanked.push(s)
+  }
+
+  // Type variety pass: first pick the top-scored candidate of each unique
+  // watch type, then fill remaining slots from the next-best regardless of
+  // type. Without this, an underrep-heavy collection collapses into three
+  // GMTs (or three of whatever happens to be missing).
+  const result: CatalogWatch[] = []
+  const seenTypes = new Set<WatchType | 'Other'>()
+  const remainder: CatalogWatch[] = []
+  for (const { watch } of dedupedRanked) {
+    const t: WatchType | 'Other' = watch.watchType ?? 'Other'
+    if (!seenTypes.has(t) && result.length < count) {
+      seenTypes.add(t)
+      result.push(watch)
+    } else {
+      remainder.push(watch)
+    }
+  }
+  for (const w of remainder) {
+    if (result.length >= count) break
+    result.push(w)
+  }
+  return result
 }
 
 // ─── Editorial helpers (new) ─────────────────────────────────────────────
