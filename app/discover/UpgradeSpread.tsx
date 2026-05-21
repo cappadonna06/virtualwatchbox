@@ -1,8 +1,9 @@
 'use client'
 
+import type { CatalogWatch } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import type { UpgradeSuggestion } from '@/lib/discover'
-import { buildChrono24URL, upgradeDeltaFor, isAspirationalUpgrade } from '@/lib/discover'
+import { buildChrono24URL, upgradeDeltaFor } from '@/lib/discover'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import EditorialHeader from './EditorialHeader'
 
@@ -23,7 +24,7 @@ export default function UpgradeSpread({ suggestions }: { suggestions: UpgradeSug
       <EditorialHeader
         kicker="§ 02"
         title="Upgrade this watch."
-        sub="Step-up paths that preserve your box balance. Brand-family logic; two grounded, two stretch."
+        sub="Step-up paths that preserve your box balance. Brand-family logic; grounded and aspirational picks."
       />
       <div
         className="discover-upgrade-grid"
@@ -43,7 +44,6 @@ export default function UpgradeSpread({ suggestions }: { suggestions: UpgradeSug
 
 function UpgradeCard({ suggestion }: { suggestion: UpgradeSuggestion }) {
   const { ownedWatch: from, upgradeWatch: to, balanceNote } = suggestion
-  const aspirational = isAspirationalUpgrade(from, to)
   const delta = upgradeDeltaFor(from, to)
 
   return (
@@ -51,50 +51,27 @@ function UpgradeCard({ suggestion }: { suggestion: UpgradeSuggestion }) {
       style={{
         background: brand.colors.slot,
         border: `1px solid ${brand.colors.border}`,
-        padding: '28px 32px 24px',
+        padding: '32px 36px 28px',
         position: 'relative',
       }}
     >
-      {aspirational && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 24,
-            right: 28,
-            fontFamily: brand.font.sans,
-            fontSize: 9,
-            fontWeight: 600,
-            letterSpacing: '0.16em',
-            textTransform: 'uppercase',
-            color: brand.colors.gold,
-            padding: '4px 10px',
-            border: `1px solid ${brand.colors.gold}`,
-            borderRadius: 20,
-            background: 'rgba(201,168,76,0.06)',
-            zIndex: 2,
-          }}
-        >
-          Stretch
-        </div>
-      )}
-
       <div
         className="discover-upgrade-pair"
         style={{
           display: 'grid',
           gridTemplateColumns: '1fr auto 1fr',
-          gap: 18,
+          gap: 12,
           alignItems: 'center',
-          marginBottom: 22,
+          marginBottom: 18,
         }}
       >
         <UpgradeSide
           watch={from}
           kicker="You own"
           kickerColor={brand.colors.muted}
-          serifItalic={false}
-          imageBoxBorder={brand.colors.border}
-          imageBoxShadow={undefined}
+          modelItalic={false}
+          imageShadow="drop-shadow(0 16px 28px rgba(26,20,16,0.22))"
+          showHalo={false}
         />
 
         <div
@@ -103,35 +80,46 @@ function UpgradeCard({ suggestion }: { suggestion: UpgradeSuggestion }) {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: 8,
+            gap: 6,
+            padding: '0 8px',
           }}
         >
-          <div style={{ fontFamily: brand.font.serif, fontStyle: 'italic', fontSize: 14, color: brand.colors.gold }}>
-            {delta}
-          </div>
-          <GoldArrow />
           <div
             style={{
               fontFamily: brand.font.sans,
               fontSize: 8.5,
               fontWeight: 600,
-              letterSpacing: '0.18em',
+              letterSpacing: '0.22em',
               textTransform: 'uppercase',
               color: brand.colors.muted,
-              marginTop: 4,
+              marginBottom: 2,
             }}
           >
             Step up
           </div>
+          <div
+            style={{
+              fontFamily: brand.font.serif,
+              fontStyle: 'italic',
+              fontSize: 26,
+              fontWeight: 400,
+              lineHeight: 1,
+              color: brand.colors.gold,
+              letterSpacing: '-0.005em',
+            }}
+          >
+            {delta}
+          </div>
+          <GoldArrow size={44} />
         </div>
 
         <UpgradeSide
           watch={to}
           kicker="Consider"
           kickerColor={brand.colors.gold}
-          serifItalic
-          imageBoxBorder={brand.colors.gold}
-          imageBoxShadow="inset 0 0 0 1px rgba(201,168,76,0.2)"
+          modelItalic
+          imageShadow="drop-shadow(0 20px 32px rgba(26,20,16,0.26))"
+          showHalo
         />
       </div>
 
@@ -204,52 +192,73 @@ function UpgradeSide({
   watch,
   kicker,
   kickerColor,
-  serifItalic,
-  imageBoxBorder,
-  imageBoxShadow,
+  modelItalic,
+  imageShadow,
+  showHalo,
 }: {
-  watch: import('@/types/watch').CatalogWatch
+  watch: CatalogWatch
   kicker: string
   kickerColor: string
-  serifItalic: boolean
-  imageBoxBorder: string
-  imageBoxShadow?: string
+  modelItalic: boolean
+  imageShadow: string
+  showHalo: boolean
 }) {
   return (
-    <div style={{ textAlign: 'center' }}>
+    <div style={{ textAlign: 'center', position: 'relative' }}>
       <div
+        className="discover-upgrade-image-well"
         style={{
-          background: brand.colors.paper,
-          aspectRatio: '1',
-          padding: 24,
+          width: '100%',
+          height: 300,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          marginBottom: 14,
-          border: `1px solid ${imageBoxBorder}`,
-          boxShadow: imageBoxShadow,
+          padding: '8px 0',
           position: 'relative',
         }}
       >
-        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        {showHalo && (
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 320,
+              height: 320,
+              background:
+                'radial-gradient(ellipse at center, rgba(201,168,76,0.28) 0%, rgba(201,168,76,0.12) 40%, rgba(201,168,76,0) 72%)',
+              pointerEvents: 'none',
+            }}
+          />
+        )}
+        <div
+          style={{
+            position: 'relative',
+            width: 260,
+            height: 260,
+            zIndex: 1,
+          }}
+        >
           <WatchImageOrDial
             watch={watch}
             fill
-            sizes="(max-width: 768px) 50vw, 240px"
-            imageStyle={{ objectFit: 'contain', filter: 'drop-shadow(0 10px 18px rgba(26,20,16,0.16))' }}
-            dialSize={140}
+            sizes="260px"
+            imageStyle={{ objectFit: 'contain', filter: imageShadow }}
+            dialSize={180}
           />
         </div>
       </div>
       <div
         style={{
           fontFamily: brand.font.sans,
-          fontSize: 9,
+          fontSize: 10,
           fontWeight: 600,
           letterSpacing: '0.18em',
           textTransform: 'uppercase',
           color: kickerColor,
-          marginBottom: 4,
+          marginBottom: 6,
         }}
       >
         {kicker}
@@ -257,8 +266,8 @@ function UpgradeSide({
       <div
         style={{
           fontFamily: brand.font.serif,
-          fontSize: 19,
-          fontStyle: serifItalic ? 'italic' : 'normal',
+          fontSize: 21,
+          fontStyle: modelItalic ? 'italic' : 'normal',
           lineHeight: 1.1,
           color: brand.colors.ink,
         }}
@@ -268,9 +277,9 @@ function UpgradeSide({
       <div
         style={{
           fontFamily: brand.font.sans,
-          fontSize: 11,
+          fontSize: 11.5,
           color: brand.colors.muted,
-          marginTop: 3,
+          marginTop: 4,
           letterSpacing: '0.04em',
         }}
       >
@@ -280,11 +289,11 @@ function UpgradeSide({
   )
 }
 
-function GoldArrow() {
+function GoldArrow({ size = 44 }: { size?: number }) {
   return (
-    <svg width="36" height="10" viewBox="0 0 32 10" fill="none" aria-hidden>
-      <line x1="0" y1="5" x2="28" y2="5" stroke={brand.colors.gold} strokeWidth="1" />
-      <polyline points="23,1 28,5 23,9" fill="none" stroke={brand.colors.gold} strokeWidth="1" />
+    <svg width={size} height="10" viewBox="0 0 44 10" fill="none" aria-hidden>
+      <line x1="0" y1="5" x2="40" y2="5" stroke={brand.colors.gold} strokeWidth="1" />
+      <polyline points="35,1 40,5 35,9" fill="none" stroke={brand.colors.gold} strokeWidth="1" />
     </svg>
   )
 }
