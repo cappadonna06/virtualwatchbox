@@ -181,19 +181,26 @@ export type UpgradeSuggestion = {
 }
 
 function findHardcodedUpgrade(
-  ownedId: string,
+  owned: CatalogWatch,
   ownedIds: Set<string>,
   watchById: Map<string, CatalogWatch>,
   hasImage?: (w: CatalogWatch) => boolean,
 ): CatalogWatch | null {
-  const chain = UPGRADE_PATHS[ownedId]
+  const chain = UPGRADE_PATHS[owned.id]
   if (!chain) return null
+  const ownedModelNorm = normalizeModel(owned.model)
   for (const candidateId of chain) {
     if (ownedIds.has(candidateId)) continue
     const watch = watchById.get(candidateId)
-    if (watch && passesImage(watch, hasImage)) return watch
+    if (!watch || !passesImage(watch, hasImage)) continue
+    if (normalizeModel(watch.model) === ownedModelNorm) continue
+    return watch
   }
   return null
+}
+
+function normalizeModel(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 }
 
 function findAlgorithmicUpgrade(
@@ -207,15 +214,23 @@ function findAlgorithmicUpgrade(
   const sameTypeOwnedCount = collectionWatches.filter(w => w.watchType === owned.watchType).length
   if (sameTypeOwnedCount > 2) return null
 
+  const ownedModelNorm = normalizeModel(owned.model)
+  const ownedBrandLower = owned.brand.toLowerCase()
+
   const candidates = allWatches
     .filter(w => !ownedIds.has(w.id))
     .filter(w => passesImage(w, hasImage))
     .filter(w => w.watchType === owned.watchType)
     .filter(w => w.estimatedValue >= owned.estimatedValue * 1.2)
     .filter(w => (BRAND_TIERS[w.brand] ?? 1) >= ownedTier)
-    .sort((a, b) => a.estimatedValue - b.estimatedValue)
+    .filter(w => normalizeModel(w.model) !== ownedModelNorm)
 
-  return candidates[0] ?? null
+  if (candidates.length === 0) return null
+
+  const differentBrand = candidates.filter(w => w.brand.toLowerCase() !== ownedBrandLower)
+  const pool = differentBrand.length > 0 ? differentBrand : candidates
+  pool.sort((a, b) => a.estimatedValue - b.estimatedValue)
+  return pool[0]
 }
 
 export function getUpgradeSuggestions(
@@ -238,7 +253,7 @@ export function getUpgradeSuggestions(
     if (jewelWatchId && owned.id === jewelWatchId) continue
 
     const upgrade =
-      findHardcodedUpgrade(owned.id, ownedIds, watchById, options.hasImage)
+      findHardcodedUpgrade(owned, ownedIds, watchById, options.hasImage)
       ?? findAlgorithmicUpgrade(owned, ownedIds, collectionWatches, allWatches, options.hasImage)
 
     if (!upgrade) continue

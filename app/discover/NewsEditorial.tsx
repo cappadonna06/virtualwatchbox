@@ -21,23 +21,36 @@ export default function NewsEditorial({ brandFilter }: Props) {
   useEffect(() => {
     const ctrl = new AbortController()
     let alive = true
-    const params = new URLSearchParams({ limit: '4' })
-    if (brandFilter.length > 0) params.set('brands', brandFilter.join(','))
 
-    fetch(`/api/news?${params.toString()}`, { signal: ctrl.signal })
-      .then(async (res) => {
+    async function load() {
+      const fetchJson = async (qs: string) => {
+        const res = await fetch(`/api/news?${qs}`, { signal: ctrl.signal })
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return (await res.json()) as NewsItem[]
-      })
-      .then((data) => {
-        if (!alive) return
-        setItems(Array.isArray(data) ? data.slice(0, 4) : [])
-      })
-      .catch((err) => {
-        if (!alive) return
-        if ((err as { name?: string }).name === 'AbortError') return
-        setFailed(true)
-      })
+      }
+      const branded = brandFilter.length > 0
+        ? await fetchJson(`brands=${encodeURIComponent(brandFilter.join(','))}&limit=4`).catch(() => [])
+        : []
+      let merged: NewsItem[] = Array.isArray(branded) ? branded.slice() : []
+      if (merged.length < 4) {
+        const unfiltered = await fetchJson('limit=8')
+        const seen = new Set(merged.map(i => i.id))
+        for (const item of unfiltered) {
+          if (merged.length >= 4) break
+          if (!seen.has(item.id)) {
+            merged.push(item)
+            seen.add(item.id)
+          }
+        }
+      }
+      if (alive) setItems(merged.slice(0, 4))
+    }
+
+    load().catch((err) => {
+      if (!alive) return
+      if ((err as { name?: string }).name === 'AbortError') return
+      setFailed(true)
+    })
 
     return () => { alive = false; ctrl.abort() }
   }, [brandFilter.join(',')])
