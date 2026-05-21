@@ -220,13 +220,19 @@ function normalizeOwnedWatch(
   fallbackDate: string,
 ): OwnedWatch | null {
   const rawId = typeof rawWatch.id === 'string' ? rawWatch.id : null
+  // Catalog id can come from the modern `watchId` field, or be inferred from
+  // a legacy `id` slug (e.g. `omega-aqua-terra-abc123` → `omega-aqua-terra`).
+  // We DO NOT drop entries whose catalog id isn't in the loaded catalog: the
+  // top-2000-by-heat in-memory set excludes long-tail refs that the user
+  // legitimately owns, and ensureWatches will hydrate them post-mount.
+  // Render-layer null-filter (resolveOwnedWatch) handles truly-missing refs.
   const catalogWatchId = typeof rawWatch.watchId === 'string'
     ? rawWatch.watchId
     : rawId
-      ? resolveCatalogWatchId(rawId, catalogIds)
+      ? (resolveCatalogWatchId(rawId, catalogIds) ?? rawId)
       : null
 
-  if (!rawId || !catalogWatchId || !catalogIds.includes(catalogWatchId)) return null
+  if (!rawId || !catalogWatchId) return null
 
   return {
     id: rawId,
@@ -248,11 +254,14 @@ function normalizeCollectionWatches(rawValue: unknown, catalogIds: string[]) {
     .filter((watch): watch is OwnedWatch => watch !== null)
 }
 
-function normalizeFollowedWatchIds(rawValue: unknown, catalogIds: Set<string>) {
+function normalizeFollowedWatchIds(rawValue: unknown, _catalogIds: Set<string>) {
   if (!Array.isArray(rawValue)) return []
 
+  // No catalog-existence gate here — out-of-top-2000 refs are legitimate and
+  // ensureWatches will hydrate them. The render-layer catalogWatchMap.get()
+  // filter is the single source of truth for "is this catalog ref real?".
   return [...new Set(
-    rawValue.filter((watchId): watchId is string => typeof watchId === 'string' && catalogIds.has(watchId)),
+    rawValue.filter((watchId): watchId is string => typeof watchId === 'string' && watchId.length > 0),
   )]
 }
 
@@ -275,10 +284,12 @@ function normalizeSessionSnapshot(rawValue: unknown, catalogIds: string[], catal
   const collectionWatchIds = new Set(collectionWatches.map(watch => watch.watchId))
 
   const followedFromSnapshot = normalizeFollowedWatchIds(snapshot.followedWatchIds, catalogIdSet)
+  // No catalog-membership gate when union-ing nextTargets/grail into followed —
+  // out-of-top-2000 refs are valid and hydrate on demand.
   const followedWatchIds = [...new Set([
     ...followedFromSnapshot,
-    ...nextTargets.map(target => target.watchId).filter(watchId => catalogIdSet.has(watchId)),
-    ...(grailWatchId && catalogIdSet.has(grailWatchId) ? [grailWatchId] : []),
+    ...nextTargets.map(target => target.watchId).filter((id): id is string => typeof id === 'string' && id.length > 0),
+    ...(grailWatchId ? [grailWatchId] : []),
   ])]
 
   const followedSet = new Set(followedWatchIds)
@@ -614,7 +625,7 @@ async function loadFromSupabase(
 export function CollectionSessionProvider({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth()
 
-  const { allWatches: catalogWatches } = useCatalog()
+  const { allWatches: catalogWatches, ensureWatches, registerWatches } = useCatalog()
   const catalogWatchMap = useMemo(() => createCatalogWatchMap(catalogWatches), [catalogWatches])
   const catalogIds = useMemo(() => catalogWatches.map(watch => watch.id), [catalogWatches])
   const catalogIdSet = useMemo(() => new Set(catalogIds), [catalogIds])
@@ -672,7 +683,23 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     setGrailWatchId(snapshot.grailWatchId)
     setCollectionJewelWatchId(snapshot.collectionJewelWatchId)
     setWatchboxConfig(snapshot.watchboxConfig)
-  }, [])
+
+    // Catalog hydration for refs outside the top-2000-by-heat that the user
+    // owns/follows/targets. Fire-and-forget — the resolve layer picks them up
+    // automatically once dynamicWatches grows. Without this the watches load
+    // into state but render-time catalogWatchMap.get() returns undefined and
+    // they vanish from every surface (watchbox grid, cards, count, etc.).
+    const referencedIds: string[] = [
+      ...snapshot.collectionWatches.map(w => w.watchId),
+      ...snapshot.followedWatchIds,
+      ...snapshot.nextTargets.map(t => t.watchId),
+      ...(snapshot.grailWatchId ? [snapshot.grailWatchId] : []),
+      ...(snapshot.collectionJewelWatchId ? [snapshot.collectionJewelWatchId] : []),
+    ]
+    if (referencedIds.length > 0) {
+      void ensureWatches(referencedIds)
+    }
+  }, [ensureWatches])
 
   const primaryPhotoByOwnedId = useMemo(() => {
     const map = new Map<string, string>()
@@ -734,6 +761,20 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
         setGrailWatchId(normalized.grailWatchId)
         setCollectionJewelWatchId(normalized.collectionJewelWatchId)
         setWatchboxConfig(normalized.watchboxConfig)
+
+        // Mirror of the applyServerSnapshot hydration call — guest sessions
+        // can also reference out-of-top-2000 catalog refs (added via Add
+        // Watch search, persisted to sessionStorage). Resolve those now.
+        const referencedIds: string[] = [
+          ...normalized.collectionWatches.map(w => w.watchId),
+          ...normalized.followedWatchIds,
+          ...normalized.nextTargets.map(t => t.watchId),
+          ...(normalized.grailWatchId ? [normalized.grailWatchId] : []),
+          ...(normalized.collectionJewelWatchId ? [normalized.collectionJewelWatchId] : []),
+        ]
+        if (referencedIds.length > 0) {
+          void ensureWatches(referencedIds)
+        }
       }
     } catch {
       // Ignore malformed session data.
@@ -1133,7 +1174,11 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   }
 
   function getWatchIntentAvailability(watchId: string): WatchIntentAvailability | null {
-    if (!catalogIdSet.has(watchId)) return null
+    // No catalog-membership gate — UI surfaces (watch detail, sidebar) drive
+    // this with watchIds they've successfully loaded via Add Watch search or
+    // fetchById. The catalog map only holds the top-2000-by-heat, but the
+    // user can legitimately interact with any of the ~35k refs.
+    if (typeof watchId !== 'string' || watchId.length === 0) return null
 
     const isOwned = isOwnedWatch(watchId)
     const isFollowed = followedWatchIds.includes(watchId)
@@ -1211,6 +1256,13 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   }
 
   function addToCollection(watch: CatalogWatch, condition: WatchCondition, purchaseDetails?: PurchaseDetails) {
+    // Inject the catalog row into in-memory state BEFORE the optimistic
+    // setCollectionEntries below. Catalog can be the top-2000-by-heat subset;
+    // long-tail refs added via Add Watch search would otherwise miss the
+    // catalogWatchMap join in the very next render and silently drop out of
+    // the watchbox/cards/count — even though the OwnedWatch is in state.
+    registerWatches([watch])
+
     const wasTarget = nextTargets.some(target => target.watchId === watch.id)
     const wasGrail = grailWatchId === watch.id
     const newWatch: OwnedWatch = {
@@ -1271,8 +1323,11 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   }
 
   function followWatch(watchId: string) {
-    if (!catalogIdSet.has(watchId) || followedWatchIds.includes(watchId)) return
+    if (!watchId || followedWatchIds.includes(watchId)) return
     setFollowedWatchIds(prev => [...prev, watchId])
+    // Hydrate the catalog row in case this is an out-of-top-2000 ref — so the
+    // resolve layer (followedWatches memo) can map it to a CatalogWatch.
+    void ensureWatches([watchId])
     if (user) void trackedSync(syncWatchState(watchId, 'follow', true, {}, user.id))
     showToast('Saved to your followed watches.')
   }
@@ -1291,8 +1346,9 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   }
 
   function promoteToNextTarget(watchId: string) {
-    if (!catalogIdSet.has(watchId)) return
+    if (!watchId) return
     if (nextTargets.some(target => target.watchId === watchId)) return
+    void ensureWatches([watchId])
     if (isOwnedWatch(watchId)) {
       showToast('Owned watches can be marked as your Jewel instead.')
       return
@@ -1323,8 +1379,9 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   }
 
   function setGrailWatch(watchId: string) {
-    if (!catalogIdSet.has(watchId)) return
+    if (!watchId) return
     if (grailWatchId === watchId) return
+    void ensureWatches([watchId])
     if (isOwnedWatch(watchId)) {
       showToast('Owned watches can be marked as your Jewel instead.')
       return
@@ -1349,8 +1406,11 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   }
 
   function setCollectionJewelWatch(watchId: string) {
-    if (!catalogIdSet.has(watchId)) return
+    if (!watchId) return
     if (collectionJewelWatchId === watchId) return
+    // No ensureWatches here — jewel is gated on isOwnedWatch below, meaning
+    // the watch is already in collectionEntries, which means addToCollection
+    // already injected it via registerWatches.
     if (!isOwnedWatch(watchId)) {
       showToast('Only watches in your collection can be marked as your Jewel.')
       return
@@ -1374,9 +1434,12 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     state: WatchSavedState,
     _options?: { source?: WatchStateSource },
   ) {
-    if (!catalogIdSet.has(watchId)) {
+    if (!watchId) {
       return { ok: false as const, reason: 'invalid_watch' as const }
     }
+    // Hydrate the catalog row for out-of-top-2000 refs so resolve layers can
+    // map the saved state back to a CatalogWatch for rendering.
+    void ensureWatches([watchId])
 
     if (state === 'followed') {
       setFollowedWatchIds(prev => (prev.includes(watchId) ? prev : [...prev, watchId]))

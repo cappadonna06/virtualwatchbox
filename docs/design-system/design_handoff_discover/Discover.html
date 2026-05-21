@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Discover — Virtual Watchbox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: #f0eee9;
+    color: #1A1410;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  button { font: inherit; }
+  a { text-decoration: none; }
+  img { display: block; }
+
+  /* ── Mobile reflow overrides. Inline styles in JSX win on specificity,
+     so these use !important to override grid columns + key typography
+     when the page tree is wrapped in .vwb-mobile. ── */
+  .vwb-mobile .vwb-section {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    padding-top: 40px !important;
+    padding-bottom: 24px !important;
+  }
+  /* Section headers stack subtitle below */
+  .vwb-mobile .vwb-section-head {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-bottom: 22px !important;
+    padding-bottom: 14px !important;
+  }
+  .vwb-mobile .vwb-section-head > div:nth-child(2) {
+    max-width: none !important;
+    text-align: left !important;
+  }
+  .vwb-mobile .vwb-section-h2 { font-size: 26px !important; }
+
+  /* Hero */
+  .vwb-mobile .vwb-hero-row {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+    align-items: stretch !important;
+  }
+  .vwb-mobile .vwb-hero-h1 { font-size: 44px !important; margin-bottom: 14px !important; }
+  .vwb-mobile .vwb-hero-sub { font-size: 16px !important; }
+  .vwb-mobile .vwb-hero-stats {
+    border-left: none !important;
+    padding-left: 0 !important;
+    padding-top: 20px !important;
+    border-top: 1px solid #EAE5DC;
+    column-gap: 0 !important;
+  }
+
+  /* Complete the Box */
+  .vwb-mobile .vwb-complete-row {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+  .vwb-mobile .vwb-complete-h2 { font-size: 30px !important; margin-bottom: 18px !important; }
+  .vwb-mobile .vwb-complete-specs {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 16px !important;
+  }
+  .vwb-mobile .vwb-complete-actions {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+  .vwb-mobile .vwb-complete-actions > button {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 14px 22px !important;
+  }
+  .vwb-mobile .vwb-complete-actions > span { margin-left: 0 !important; text-align: center; padding-top: 6px; }
+
+  /* Single-column grids on mobile */
+  .vwb-mobile .vwb-upgrade-grid,
+  .vwb-mobile .vwb-nextslot-grid,
+  .vwb-mobile .vwb-box-grid,
+  .vwb-mobile .vwb-news-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .vwb-mobile .vwb-news-grid { gap: 32px !important; }
+
+  /* Strap = 2 columns on mobile */
+  .vwb-mobile .vwb-strap-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* Dark Complete the Box panel — reduce padding */
+  .vwb-mobile .vwb-section[style*="56px"] {
+    padding-top: 40px !important;
+    padding-bottom: 40px !important;
+  }
+
+  /* Section nav — hide "In this issue" label on mobile to free horizontal space,
+     shrink height + gap, hide scrollbar */
+  .vwb-mobile .vwb-section-nav-label { display: none !important; }
+  .vwb-mobile .vwb-section-nav-inner {
+    height: 40px !important;
+    gap: 16px !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+  .vwb-mobile .vwb-section-nav-inner::-webkit-scrollbar { display: none; }
+  /* Fade right edge to indicate horizontal scroll */
+  .vwb-mobile .vwb-section-nav::after {
+    content: ''; position: absolute; top: 0; right: 0; bottom: 1px; width: 36px;
+    background: linear-gradient(90deg, rgba(250,248,244,0) 0%, rgba(250,248,244,0.94) 80%);
+    pointer-events: none;
+  }
+  .vwb-mobile .vwb-section-nav { position: relative; }
+
+  /* Hide the compact masthead byline on mobile (it lives on desktop only) */
+  .vwb-mobile .vwb-masthead { display: none !important; }
+
+  /* Upgrade This Watch — on mobile stack the from→to pair vertically so each
+     watch image gets full width instead of being squeezed to ~140px square. */
+  .vwb-mobile .vwb-upgrade-pair {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+  /* Rotate the arrow column to point DOWN between stacked images */
+  .vwb-mobile .vwb-upgrade-arrow {
+    flex-direction: row !important;
+    justify-content: center !important;
+    gap: 14px !important;
+    padding: 6px 0 !important;
+  }
+  .vwb-mobile .vwb-upgrade-arrow > svg { transform: rotate(90deg); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="discover-data.jsx"></script>
+<script type="text/babel" src="DiscoverEditorial.jsx"></script>
+<script type="text/babel" src="DiscoverRoot.jsx"></script>
+
+<script type="text/babel" data-presets="env,react">
+(function mount() {
+  if (!window.DiscoverRoot || !window.TweaksPanel || !window.DesignCanvas) {
+    return setTimeout(mount, 30);
+  }
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(React.createElement(window.DiscoverRoot));
+})();
+</script>
+</body>
+</html>

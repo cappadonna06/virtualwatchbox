@@ -2,6 +2,7 @@ import type { CatalogWatch } from '@/types/watch'
 import processedManifest from '@/public/watch-assets/processed/manifest.json'
 import excludedImagesData from '@/data/excluded-image-ids.json'
 import { toStorageUrl } from './watchImages/storageUrl'
+import { withVersion } from './watchImages/cacheBust'
 
 type ProcessedManifestEntry = {
   watchId: string
@@ -25,9 +26,13 @@ const processedWatchImages = new Map(
       entry.watchId,
       {
         // Storage is canonical. Falls back to the local path when
-        // NEXT_PUBLIC_SUPABASE_URL is unset (offline dev / CI).
-        imageUrl: toStorageUrl(entry.webpPath) ?? entry.webpPath,
-        imageTransparentUrl: toStorageUrl(entry.pngPath) ?? entry.pngPath,
+        // NEXT_PUBLIC_SUPABASE_URL is unset (offline dev / CI). Wrapped with
+        // withVersion() to match the dynamic URLs from WatchImagesProvider —
+        // without the `?v=N` query, SSR renders a non-versioned URL that the
+        // CDN may serve stale, then hydration swaps to the versioned URL and
+        // the image visibly flashes.
+        imageUrl: withVersion(toStorageUrl(entry.webpPath) ?? entry.webpPath) ?? undefined,
+        imageTransparentUrl: withVersion(toStorageUrl(entry.pngPath) ?? entry.pngPath) ?? undefined,
         imageSourceUrl: `/watch-assets/raw/${entry.rawFilename}`,
       },
     ])

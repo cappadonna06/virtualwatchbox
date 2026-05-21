@@ -63,6 +63,16 @@ type CatalogContextValue = {
     params: Omit<CatalogSearchParams, 'brand' | 'brands' | 'sortBy' | 'limit' | 'offset'>,
     brands: string[],
   ) => Promise<Map<string, number>>
+  // Hydrate any of the given catalog ids that aren't already in dynamicWatches.
+  // Fire from user-data hydration paths so out-of-top-2000-by-heat refs the
+  // user owns/follows/targets actually resolve in catalogWatchMap. Safe to
+  // over-call — already-present ids are skipped, concurrent calls dedupe.
+  ensureWatches: (ids: string[]) => Promise<void>
+  // Synchronous merge of already-fetched catalog watches (no extra round-trip).
+  // Use after fetchById, or in mutations where the caller hands us the full
+  // CatalogWatch object — avoids the brief render gap where ensureWatches
+  // is still in flight.
+  registerWatches: (watches: CatalogWatch[]) => void
 }
 
 type BrandIndexEntry = { brand: string; count: number }
@@ -76,6 +86,8 @@ const CatalogContext = createContext<CatalogContextValue>({
   searchCatalog: async () => ({ rows: [], total: 0 }),
   brandIndex: [],
   fetchBrandCounts: async () => new Map(),
+  ensureWatches: async () => {},
+  registerWatches: () => {},
 })
 
 const VALID_WATCH_TYPES: WatchType[] = [
@@ -397,6 +409,74 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
     return merged[0] ?? null
   }, [])
 
+  // ── On-demand: ensure a set of catalog ids is loaded ──────────────────
+  // Used by CollectionSessionProvider after hydration so user data that
+  // references catalog refs outside the top-2000-by-heat (the initial load
+  // cutoff) actually resolves in catalogWatchMap. Without this, resolveOwnedWatch
+  // returns null for those refs and they vanish from the watchbox grid even
+  // though the underlying row exists in Supabase.
+  //
+  // - Skips ids already in dynamicWatches (no wasted fetch).
+  // - Dedupes against in-flight ids so a render burst doesn't issue N copies
+  //   of the same network request.
+  const inFlightEnsureRef = useRef<Set<string>>(new Set())
+  const ensureWatches = useCallback(async (ids: string[]): Promise<void> => {
+    if (!ids || ids.length === 0) return
+    if (!supabaseRef.current) supabaseRef.current = createClient()
+    const supabase = supabaseRef.current
+
+    const inFlight = inFlightEnsureRef.current
+    const presentIds = new Set(dynamicWatches.map(w => w.id))
+    const missing = [...new Set(ids)].filter(id => id && !presentIds.has(id) && !inFlight.has(id))
+    if (missing.length === 0) return
+
+    for (const id of missing) inFlight.add(id)
+    try {
+      const [catalogRows, imageRows, marketRows] = await Promise.all([
+        fetchChunkedByIds(supabase, 'catalog_watches', '*', missing),
+        fetchImagesByIds(supabase, missing),
+        (async () => {
+          const out: Array<Record<string, unknown>> = []
+          for (let i = 0; i < missing.length; i += PG_IN_CHUNK) {
+            const slice = missing.slice(i, i + PG_IN_CHUNK)
+            const { data, error } = await supabase
+              .from('catalog_watch_market')
+              .select('*')
+              .in('catalog_watch_id', slice)
+            if (error) throw new Error(`catalog_watch_market: ${error.message}`)
+            if (data) out.push(...(data as unknown as Array<Record<string, unknown>>))
+          }
+          return out
+        })(),
+      ])
+      const merged = mergeRows(catalogRows, marketRows, imageRows)
+      if (merged.length === 0) return
+      setDynamicWatches(prev => {
+        const have = new Set(prev.map(w => w.id))
+        const additions = merged.filter(w => !have.has(w.id))
+        return additions.length === 0 ? prev : [...prev, ...additions]
+      })
+    } catch (err) {
+      console.warn('[CatalogProvider] ensureWatches failed', err)
+    } finally {
+      for (const id of missing) inFlight.delete(id)
+    }
+  }, [dynamicWatches])
+
+  // ── Synchronous: inject already-fetched catalog watches ───────────────
+  // Companion to ensureWatches for callers that already hold the full
+  // CatalogWatch object (Add Watch confirm page after fetchById, addToCollection
+  // mutations). Avoids the brief render gap between mutation and the
+  // ensureWatches round-trip resolving.
+  const registerWatches = useCallback((newWatches: CatalogWatch[]): void => {
+    if (!newWatches || newWatches.length === 0) return
+    setDynamicWatches(prev => {
+      const have = new Set(prev.map(w => w.id))
+      const additions = newWatches.filter(w => w && w.id && !have.has(w.id))
+      return additions.length === 0 ? prev : [...prev, ...additions]
+    })
+  }, [])
+
   // ── Server-side search for Add Watch ───────────────────────────────────
   // Key gotcha: ordering across the 35k catalog requires a stable column ON
   // catalog_watches itself (Supabase JS can't order by a foreign-table column
@@ -608,6 +688,8 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
         searchCatalog,
         brandIndex,
         fetchBrandCounts,
+        ensureWatches,
+        registerWatches,
       }}
     >
       {children}

@@ -17,7 +17,7 @@ const RATIONALE_TEMPLATES: Record<string, string[]> = {
   ],
   'Chronograph': [
     'Preserves your chrono slot while moving into a movement and case that defines the category.',
-    'Keeps the sport complication slot filled while stepping into a reference with genuine heritage.',
+    'Keeps the sport complication slot covered while stepping into a reference with genuine heritage.',
   ],
   'Dress': [
     'Maintains your formal coverage while moving the finishing and complication quality up a tier.',
@@ -45,10 +45,22 @@ const RATIONALE_TEMPLATES: Record<string, string[]> = {
   ],
 }
 
-export function getUpgradeRationale(watchType: string): string {
+// Deterministic FNV-1a-ish string hash. We use this anywhere a "random"
+// pick would otherwise diverge between SSR and client hydration. Seeding
+// off the watch id (or another stable key) makes the same render twice.
+function stringHash(s: string): number {
+  let h = 2166136261
+  for (let i = 0; i < s.length; i += 1) {
+    h ^= s.charCodeAt(i)
+    h = Math.imul(h, 16777619)
+  }
+  return h >>> 0
+}
+
+export function getUpgradeRationale(watchType: string, seedKey = ''): string {
   const templates = RATIONALE_TEMPLATES[watchType]
     ?? ['Preserves this slot in your box while moving into a higher-tier reference. A natural next step.']
-  return templates[Math.floor(Math.random() * templates.length)]
+  return templates[stringHash(`${watchType}::${seedKey}`) % templates.length]
 }
 
 export const DISCOVER_DEMO_COLLECTION_IDS: string[] = [
@@ -57,6 +69,45 @@ export const DISCOVER_DEMO_COLLECTION_IDS: string[] = [
   'tissot-prx-powermatic-80',
   'orient-bambino',
 ]
+
+// Heat-driven demo collection. When the user is signed out or has an empty
+// box, /discover needs *something* to anchor the algorithms — the lead pick
+// needs a missing gap, the upgrade row needs a from-watch, etc. Previously
+// this looked up the four hard-coded DISCOVER_DEMO_COLLECTION_IDS in the
+// static 87-watch seed; this version draws from whatever catalog the caller
+// supplies (the dynamic Supabase top-2000 in production) and prefers
+// type-diverse, high-heat watches that also have a resolvable image. Result
+// feels like a real collector's starter box without depending on the seed.
+export function pickDemoCollection(
+  allWatches: CatalogWatch[],
+  options: { hasImage?: (w: CatalogWatch) => boolean; count?: number } = {},
+): CatalogWatch[] {
+  const count = options.count ?? 4
+  const ranked = [...allWatches]
+    .filter(w => Boolean(w.watchType))
+    .filter(w => options.hasImage ? options.hasImage(w) : Boolean(w.imageUrl))
+    .sort((a, b) => (b.market?.heatScore ?? 0) - (a.market?.heatScore ?? 0))
+
+  if (ranked.length === 0) return []
+
+  // Type-diverse pass: take the top-heat watch of each unique type first.
+  const picked: CatalogWatch[] = []
+  const seenTypes = new Set<WatchType>()
+  for (const w of ranked) {
+    if (picked.length >= count) break
+    const t = w.watchType as WatchType
+    if (seenTypes.has(t)) continue
+    seenTypes.add(t)
+    picked.push(w)
+  }
+  // Fill any remaining slots with the next-best regardless of type.
+  for (const w of ranked) {
+    if (picked.length >= count) break
+    if (picked.find(p => p.id === w.id)) continue
+    picked.push(w)
+  }
+  return picked
+}
 
 const MISSING_TYPE_PRIORITY: WatchType[] = [
   'Dress', 'GMT', 'Chronograph', 'Field', 'Diver', 'Pilot',
@@ -72,7 +123,7 @@ const MISSING_TYPE_COPY: Record<WatchType, string[]> = {
     'No GMT in the lineup. Even occasional travelers find it the most-worn complication.',
   ],
   'Chronograph': [
-    'Your box has no chronograph. The sport complication slot is worth filling.',
+    'Your collection has no chronograph. The sport complication slot is worth claiming.',
     'No chrono in the rotation. The category contains some of the most collected references in horology.',
   ],
   'Field': [
@@ -101,20 +152,81 @@ const MISSING_TYPE_COPY: Record<WatchType, string[]> = {
   ],
 }
 
+export type PriceAnchor = {
+  median: number
+  target: number
+  floor: number
+  ceiling: number
+}
+
+export function collectionPriceAnchor(collection: CatalogWatch[]): PriceAnchor | null {
+  const values = collection
+    .map(w => w.estimatedValue)
+    .filter(v => typeof v === 'number' && v > 0)
+    .sort((a, b) => a - b)
+  if (values.length === 0) return null
+  const median = values[Math.floor(values.length / 2)]
+  return {
+    median,
+    target: Math.round(median * 1.15),
+    floor: Math.max(Math.round(median * 0.5), 200),
+    ceiling: Math.round(median * 5),
+  }
+}
+
+function priceScore(value: number, anchor: PriceAnchor): number {
+  const dist = Math.abs(value - anchor.target)
+  return value < anchor.target ? dist * 1.2 : dist
+}
+
+export type SelectionOptions = {
+  hasImage?: (watch: CatalogWatch) => boolean
+  priceAnchor?: PriceAnchor | null
+}
+
+function passesImage(watch: CatalogWatch, hasImage?: (w: CatalogWatch) => boolean): boolean {
+  if (hasImage) return hasImage(watch)
+  return Boolean(watch.imageUrl)
+}
+
 export function getBoxInsight(
   collectionWatches: CatalogWatch[],
   allWatches: CatalogWatch[],
+  options: SelectionOptions = {},
 ): { missingType: WatchType; suggestion: CatalogWatch; copy: string } | null {
   const ownedTypes = new Set(collectionWatches.map(w => w.watchType))
+  const anchor = options.priceAnchor ?? collectionPriceAnchor(collectionWatches)
+
   for (const type of MISSING_TYPE_PRIORITY) {
     if (ownedTypes.has(type)) continue
-    const candidates = allWatches
+
+    let candidates = allWatches
       .filter(w => w.watchType === type)
-      .sort((a, b) => a.estimatedValue - b.estimatedValue)
+      .filter(w => passesImage(w, options.hasImage))
+
+    if (anchor) {
+      const inBand = candidates.filter(w => w.estimatedValue >= anchor.floor && w.estimatedValue <= anchor.ceiling)
+      if (inBand.length > 0) candidates = inBand
+      // Lower is better. Heat score (0–1) discounts the effective price-distance
+      // by up to ~$1500-worth — keeps the band-anchor honest while letting
+      // popular references win against equally-priced obscure ones.
+      const scoreFor = (w: CatalogWatch) =>
+        priceScore(w.estimatedValue, anchor) - (w.market?.heatScore ?? 0) * 1500
+      candidates.sort((a, b) => scoreFor(a) - scoreFor(b))
+    } else {
+      candidates.sort((a, b) => {
+        if (a.estimatedValue !== b.estimatedValue) return a.estimatedValue - b.estimatedValue
+        return (b.market?.heatScore ?? 0) - (a.market?.heatScore ?? 0)
+      })
+    }
+
     if (candidates.length === 0) continue
     const suggestion = candidates[0]
     const copies = MISSING_TYPE_COPY[type]
-    const copy = copies[Math.floor(Math.random() * copies.length)]
+    // Deterministic copy choice keyed off the suggestion id so SSR and
+    // hydration agree, but the string still rotates as the suggestion
+    // changes (different missing-type, different watch).
+    const copy = copies[stringHash(`${type}::${suggestion.id}`) % copies.length]
     return { missingType: type, suggestion, copy }
   }
   return null
@@ -131,18 +243,26 @@ export type UpgradeSuggestion = {
 }
 
 function findHardcodedUpgrade(
-  ownedId: string,
+  owned: CatalogWatch,
   ownedIds: Set<string>,
   watchById: Map<string, CatalogWatch>,
+  hasImage?: (w: CatalogWatch) => boolean,
 ): CatalogWatch | null {
-  const chain = UPGRADE_PATHS[ownedId]
+  const chain = UPGRADE_PATHS[owned.id]
   if (!chain) return null
+  const ownedModelNorm = normalizeModel(owned.model)
   for (const candidateId of chain) {
     if (ownedIds.has(candidateId)) continue
     const watch = watchById.get(candidateId)
-    if (watch) return watch
+    if (!watch || !passesImage(watch, hasImage)) continue
+    if (normalizeModel(watch.model) === ownedModelNorm) continue
+    return watch
   }
   return null
+}
+
+function normalizeModel(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 }
 
 function findAlgorithmicUpgrade(
@@ -150,19 +270,40 @@ function findAlgorithmicUpgrade(
   ownedIds: Set<string>,
   collectionWatches: CatalogWatch[],
   allWatches: CatalogWatch[],
+  hasImage?: (w: CatalogWatch) => boolean,
 ): CatalogWatch | null {
   const ownedTier = BRAND_TIERS[owned.brand] ?? 1
   const sameTypeOwnedCount = collectionWatches.filter(w => w.watchType === owned.watchType).length
   if (sameTypeOwnedCount > 2) return null
 
-  const candidates = allWatches
-    .filter(w => !ownedIds.has(w.id))
-    .filter(w => w.watchType === owned.watchType)
-    .filter(w => w.estimatedValue >= owned.estimatedValue * 1.2)
-    .filter(w => (BRAND_TIERS[w.brand] ?? 1) >= ownedTier)
-    .sort((a, b) => a.estimatedValue - b.estimatedValue)
+  const ownedModelNorm = normalizeModel(owned.model)
+  const ownedBrandLower = owned.brand.toLowerCase()
 
-  return candidates[0] ?? null
+  const idealTarget = owned.estimatedValue * 2
+  const minVal = owned.estimatedValue * 1.3
+  const maxVal = owned.estimatedValue * 4
+
+  const baseFilter = (w: CatalogWatch) =>
+    !ownedIds.has(w.id) &&
+    passesImage(w, hasImage) &&
+    w.watchType === owned.watchType &&
+    (BRAND_TIERS[w.brand] ?? 1) >= ownedTier &&
+    normalizeModel(w.model) !== ownedModelNorm
+
+  // Hard cap at 4x — better to show no upgrade card than recommend an 8x stretch
+  // ("upgrade your $4K Aqua Terra to a $36K Patek" is not useful advice).
+  const pool = allWatches.filter(w => baseFilter(w) && w.estimatedValue >= minVal && w.estimatedValue <= maxVal)
+  if (pool.length === 0) return null
+
+  const differentBrand = pool.filter(w => w.brand.toLowerCase() !== ownedBrandLower)
+  const tier = differentBrand.length > 0 ? differentBrand : pool
+
+  // Distance from ideal target dominates; high heat shaves up to ~$1500
+  // from the effective distance so popular references break ties.
+  const scoreFor = (w: CatalogWatch) =>
+    Math.abs(w.estimatedValue - idealTarget) - (w.market?.heatScore ?? 0) * 1500
+  tier.sort((a, b) => scoreFor(a) - scoreFor(b))
+  return tier[0]
 }
 
 export function getUpgradeSuggestions(
@@ -172,6 +313,7 @@ export function getUpgradeSuggestions(
   jewelWatchId: string | null,
   grailWatchId: string | null,
   targetWatchIds: string[],
+  options: SelectionOptions = {},
 ): UpgradeSuggestion[] {
   const ownedIds = new Set(collectionWatches.map(w => w.id))
   const watchById = new Map(allWatches.map(w => [w.id, w] as const))
@@ -184,8 +326,8 @@ export function getUpgradeSuggestions(
     if (jewelWatchId && owned.id === jewelWatchId) continue
 
     const upgrade =
-      findHardcodedUpgrade(owned.id, ownedIds, watchById)
-      ?? findAlgorithmicUpgrade(owned, ownedIds, collectionWatches, allWatches)
+      findHardcodedUpgrade(owned, ownedIds, watchById, options.hasImage)
+      ?? findAlgorithmicUpgrade(owned, ownedIds, collectionWatches, allWatches, options.hasImage)
 
     if (!upgrade) continue
     if (usedUpgradeIds.has(upgrade.id)) continue
@@ -195,7 +337,7 @@ export function getUpgradeSuggestions(
       ownedWatch: owned,
       upgradeWatch: upgrade,
       headline: `Upgrade your ${owned.watchType}`,
-      balanceNote: getUpgradeRationale(owned.watchType),
+      balanceNote: getUpgradeRationale(owned.watchType, `${owned.id}->${upgrade.id}`),
       isGrail: grailWatchId === upgrade.id,
       isTarget: targetSet.has(upgrade.id),
       isJewel: false,
@@ -210,33 +352,262 @@ export function getNextSlotRecommendations(
   followedWatchIds: string[],
   allWatches: CatalogWatch[],
   count = 6,
+  options: SelectionOptions = {},
 ): CatalogWatch[] {
   const ownedIds = new Set(collectionWatches.map(w => w.id))
+  const ownedModelKeys = new Set(
+    collectionWatches.map(w => `${w.brand.toLowerCase()}::${normalizeModel(w.model)}`),
+  )
   const followedIds = new Set(followedWatchIds)
+  const anchor = options.priceAnchor ?? collectionPriceAnchor(collectionWatches)
 
   const typeCounts = new Map<WatchType, number>()
   for (const w of collectionWatches) {
     typeCounts.set(w.watchType, (typeCounts.get(w.watchType) ?? 0) + 1)
   }
-  const minCount = collectionWatches.length === 0
+  const minOwnedCount = collectionWatches.length === 0
     ? 0
     : Math.min(...Array.from(typeCounts.values()))
 
-  const eligible = allWatches.filter(w => !ownedIds.has(w.id))
+  const notOwned = (w: CatalogWatch) =>
+    !ownedIds.has(w.id) &&
+    !ownedModelKeys.has(`${w.brand.toLowerCase()}::${normalizeModel(w.model)}`)
 
-  const scored = eligible.map(w => {
+  const eligible = allWatches
+    .filter(notOwned)
+    .filter(w => passesImage(w, options.hasImage))
+    .filter(w => !anchor || (w.estimatedValue >= anchor.floor && w.estimatedValue <= anchor.ceiling))
+
+  const pool = eligible.length > 0
+    ? eligible
+    : allWatches.filter(notOwned).filter(w => passesImage(w, options.hasImage))
+
+  const scored = pool.map(w => {
     const typeCount = typeCounts.get(w.watchType) ?? 0
-    const underrepBonus = typeCount === minCount ? 2 : typeCount <= minCount + 1 ? 1 : 0
+    // Reward types the user does NOT own. Equal-count types get a smaller bonus.
+    const underrepBonus = typeCount === 0
+      ? 3
+      : typeCount === minOwnedCount
+        ? 1
+        : 0
     const followedPenalty = followedIds.has(w.id) ? -1 : 0
     const tier = BRAND_TIERS[w.brand] ?? 1
+    const priceBonus = anchor
+      ? 2 - Math.min(2, priceScore(w.estimatedValue, anchor) / Math.max(anchor.target, 1))
+      : 0
+    // Heat score is a 0–1 popularity signal from catalog_watch_market.
+    // Treating it as a real "this watch is having a moment" lift gives us
+    // natural variety without needing a non-deterministic random term.
+    const heatBonus = (w.market?.heatScore ?? 0) * 1.2
+    // Small deterministic jitter keyed off the id — keeps near-tied scores
+    // from grouping by alphabetical id but is identical on SSR + client.
+    const jitter = (stringHash(w.id) % 1000) / 5000
     return {
       watch: w,
-      score: underrepBonus + followedPenalty + tier * 0.3 + Math.random() * 0.5,
+      score: underrepBonus + followedPenalty + tier * 0.3 + priceBonus + heatBonus + jitter,
     }
   })
 
   scored.sort((a, b) => b.score - a.score)
-  return scored.slice(0, count).map(s => s.watch)
+
+  // Dedupe by normalized model — keep the best-scored variant per model.
+  const seenModels = new Set<string>()
+  const dedupedRanked: { watch: CatalogWatch; score: number }[] = []
+  for (const s of scored) {
+    const key = `${s.watch.brand.toLowerCase()}::${normalizeModel(s.watch.model)}`
+    if (seenModels.has(key)) continue
+    seenModels.add(key)
+    dedupedRanked.push(s)
+  }
+
+  // Type variety pass: first pick the top-scored candidate of each unique
+  // watch type, then fill remaining slots from the next-best regardless of
+  // type. Without this, an underrep-heavy collection collapses into three
+  // GMTs (or three of whatever happens to be missing).
+  const result: CatalogWatch[] = []
+  const seenTypes = new Set<WatchType | 'Other'>()
+  const remainder: CatalogWatch[] = []
+  for (const { watch } of dedupedRanked) {
+    const t: WatchType | 'Other' = watch.watchType ?? 'Other'
+    if (!seenTypes.has(t) && result.length < count) {
+      seenTypes.add(t)
+      result.push(watch)
+    } else {
+      remainder.push(watch)
+    }
+  }
+  for (const w of remainder) {
+    if (result.length >= count) break
+    result.push(w)
+  }
+  return result
+}
+
+// ─── Editorial helpers (new) ─────────────────────────────────────────────
+
+function modeOf<T extends string>(values: T[]): T | null {
+  if (values.length === 0) return null
+  const counts = new Map<T, number>()
+  for (const v of values) counts.set(v, (counts.get(v) ?? 0) + 1)
+  let best: T | null = null
+  let bestCount = 0
+  for (const [v, c] of counts) {
+    if (c > bestCount) { best = v; bestCount = c }
+  }
+  return best
+}
+
+function priceBand(median: number): string {
+  if (median < 5_000)  return 'sub-$5K'
+  if (median < 10_000) return 'sub-$10K'
+  if (median < 25_000) return '$10K–$25K'
+  return '$25K+'
+}
+
+function normalizeDial(color: string | undefined | null): string {
+  if (!color) return ''
+  const c = color.toLowerCase().trim()
+  if (c.includes('blue'))   return 'blue'
+  if (c.includes('black'))  return 'black'
+  if (c.includes('white'))  return 'white'
+  if (c.includes('silver')) return 'silver'
+  if (c.includes('green'))  return 'green'
+  if (c.includes('grey') || c.includes('gray')) return 'grey'
+  if (c.includes('brown'))  return 'brown'
+  if (c.includes('cream') || c.includes('ivory')) return 'cream'
+  if (c.includes('champagne') || c.includes('gold')) return 'champagne'
+  if (c.includes('salmon') || c.includes('orange') || c.includes('red')) return 'warm'
+  return c.split(/\s+/)[0]
+}
+
+export function computeBoxRead(collection: CatalogWatch[]): string {
+  if (collection.length === 0) return 'Editor’s curation, broad strokes'
+
+  const parts: string[] = []
+
+  const brandCounts = new Map<string, number>()
+  for (const w of collection) brandCounts.set(w.brand, (brandCounts.get(w.brand) ?? 0) + 1)
+  let topBrand: string | null = null
+  let topBrandShare = 0
+  for (const [b, c] of brandCounts) {
+    const share = c / collection.length
+    if (share > topBrandShare) { topBrand = b; topBrandShare = share }
+  }
+  if (topBrand && topBrandShare >= 0.4 && collection.length >= 3) {
+    parts.push(`${topBrand}-anchored`)
+  } else {
+    const typeMode = modeOf(collection.map(w => w.watchType).filter((t): t is WatchType => Boolean(t)))
+    if (typeMode) parts.push(`${typeMode}-led`)
+  }
+
+  const dialColors = collection.map(w => normalizeDial(w.dialColor)).filter(Boolean)
+  const dialCounts = new Map<string, number>()
+  for (const c of dialColors) dialCounts.set(c, (dialCounts.get(c) ?? 0) + 1)
+  const dialRanked = Array.from(dialCounts.entries()).sort((a, b) => b[1] - a[1])
+  if (dialRanked.length === 1 && dialRanked[0][1] >= 2) {
+    parts.push(dialRanked[0][0])
+  } else if (dialRanked.length >= 2 && dialRanked[0][1] + dialRanked[1][1] >= Math.max(2, collection.length * 0.5)) {
+    parts.push(`${dialRanked[0][0]}–${dialRanked[1][0]}`)
+  }
+
+  const values = collection.map(w => w.estimatedValue).filter(v => v > 0).sort((a, b) => a - b)
+  if (values.length > 0) {
+    const median = values[Math.floor(values.length / 2)]
+    parts.push(priceBand(median))
+  }
+
+  return parts.join(', ')
+}
+
+export function computeStrapSummary(collection: CatalogWatch[]): string {
+  const lugs = collection.map(w => w.lugWidthMm).filter((n): n is number => typeof n === 'number')
+  if (lugs.length === 0) return 'Swap-friendly across most boxes — bring your lug widths in by adding watches.'
+
+  const counts = new Map<number, number>()
+  for (const n of lugs) counts.set(n, (counts.get(n) ?? 0) + 1)
+  const ranked = Array.from(counts.entries()).sort((a, b) => b[1] - a[1])
+  const [topLug, topCount] = ranked[0]
+
+  if (topCount === lugs.length) {
+    return `All ${lugs.length} of your watches share ${topLug} mm lugs. Anything in this row will fit.`
+  }
+  return `${topCount} of your ${lugs.length} watches share ${topLug} mm lugs. Swap-friendly across most of your box.`
+}
+
+export function priceBandFor(watch: CatalogWatch): { low: number; high: number; median: number } {
+  const median = watch.estimatedValue
+  return {
+    low: Math.round(median * 0.85),
+    high: Math.round(median * 1.15),
+    median,
+  }
+}
+
+export function upgradeDeltaFor(from: CatalogWatch, to: CatalogWatch): string {
+  const delta = to.estimatedValue - from.estimatedValue
+  const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+  return `${delta >= 0 ? '+' : '−'}${fmt.format(Math.abs(delta))}`
+}
+
+export function isAspirationalUpgrade(from: CatalogWatch, to: CatalogWatch): boolean {
+  if (from.estimatedValue <= 0) return false
+  return to.estimatedValue >= from.estimatedValue * 3
+}
+
+export function brandsOfInterest(collection: CatalogWatch[], topN = 3): string[] {
+  if (collection.length === 0) return []
+  const counts = new Map<string, number>()
+  for (const w of collection) counts.set(w.brand, (counts.get(w.brand) ?? 0) + 1)
+  return Array.from(counts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, topN)
+    .map(([brand]) => brand)
+}
+
+export const PERSONALIZE_VERSION = 1
+
+export function personalizeHash(input: {
+  watchIds: string[]
+  slotCount: number
+  grailWatchId: string | null
+  gapType: string | null
+}): string {
+  const sorted = [...input.watchIds].sort().join('|')
+  return [
+    sorted,
+    String(input.slotCount),
+    input.grailWatchId ?? '',
+    input.gapType ?? '',
+    `v${PERSONALIZE_VERSION}`,
+  ].join('::')
+}
+
+const GENERIC_BYLINES = [
+  'For the refined collector',
+  'For the discerning wrist',
+  'For the studied eye',
+  'For the deliberate collector',
+  'For the considered hand',
+]
+
+export function genericByline(): string {
+  const dayStr = new Date().toDateString()
+  let hash = 0
+  for (let i = 0; i < dayStr.length; i += 1) hash = (hash * 31 + dayStr.charCodeAt(i)) | 0
+  return GENERIC_BYLINES[Math.abs(hash) % GENERIC_BYLINES.length]
+}
+
+export function bestFitBoxIndex(slotCount: number, capacities: number[]): number {
+  let bestIdx = 0
+  let bestDist = Infinity
+  for (let i = 0; i < capacities.length; i += 1) {
+    const dist = Math.abs(capacities[i] - slotCount)
+    if (dist < bestDist || (dist === bestDist && capacities[i] < capacities[bestIdx])) {
+      bestDist = dist
+      bestIdx = i
+    }
+  }
+  return bestIdx
 }
 
 export function getTargetOpportunities(

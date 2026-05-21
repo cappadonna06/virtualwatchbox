@@ -1,405 +1,211 @@
 'use client'
 
 import { useMemo } from 'react'
-import { useRouter } from 'next/navigation'
-import type { CatalogWatch } from '@/types/watch'
+import type { CatalogWatch, WatchType } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
-import { watches as catalogWatches } from '@/lib/watches'
+import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
+import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import {
-  DISCOVER_DEMO_COLLECTION_IDS,
-  buildChrono24URL,
   getBoxInsight,
   getNextSlotRecommendations,
-  getTargetOpportunities,
   getUpgradeSuggestions,
+  computeBoxRead,
+  computeStrapSummary,
+  brandsOfInterest,
+  collectionPriceAnchor,
+  genericByline,
+  pickDemoCollection,
 } from '@/lib/discover'
-import SectionHeader from '@/components/discover/SectionHeader'
-import BoxInsightCard from '@/components/discover/BoxInsightCard'
-import UpgradeCard from '@/components/discover/UpgradeCard'
-import DiscoverWatchCard from '@/components/discover/DiscoverWatchCard'
-import StrapCard from '@/components/discover/StrapCard'
-import BoxUpgradeCard from '@/components/discover/BoxUpgradeCard'
-import DiscoverReadsStrip from '@/app/discover/DiscoverReadsStrip'
+import { getProfileDemoState } from '@/lib/profileDemo'
 
-function fmt(n: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
+import HeroMasthead from './HeroMasthead'
+import SectionNav from './SectionNav'
+import CompleteTheBoxLead from './CompleteTheBoxLead'
+import UpgradeSpread from './UpgradeSpread'
+import NextSlotEditorial from './NextSlotEditorial'
+import StrapEditorial from './StrapEditorial'
+import BoxEditorial from './BoxEditorial'
+import NewsEditorial from './NewsEditorial'
+import { usePersonalizedInsight } from './usePersonalizedInsight'
+import './discover.css'
+
+function ownedToCatalog(owned: ReturnType<typeof useCollectionSession>['collectionWatches']): CatalogWatch[] {
+  return owned.map(w => ({
+    id: w.watchId,
+    brand: w.brand,
+    model: w.model,
+    reference: w.reference,
+    caseSizeMm: w.caseSizeMm,
+    lugWidthMm: w.lugWidthMm,
+    caseMaterial: w.caseMaterial,
+    dialColor: w.dialColor,
+    movement: w.movement,
+    complications: w.complications,
+    estimatedValue: w.estimatedValue,
+    imageUrl: w.imageUrl,
+    imageTransparentUrl: w.imageTransparentUrl,
+    imageSourceUrl: w.imageSourceUrl,
+    dialConfig: w.dialConfig,
+    watchType: w.watchType,
+  }))
 }
 
-const SECTION_GAP = 64
+function todayByline(): string {
+  return new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+function profileDisplayName(): string | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const state = getProfileDemoState()
+    const name = state.displayName?.trim()
+    if (!name || name === 'Private Collector') return null
+    const first = name.split(/\s+/)[0]
+    return first || null
+  } catch {
+    return null
+  }
+}
+
+function lugMode(collection: CatalogWatch[]): number | null {
+  const lugs = collection.map(w => w.lugWidthMm).filter((n): n is number => typeof n === 'number')
+  if (lugs.length === 0) return null
+  const counts = new Map<number, number>()
+  for (const n of lugs) counts.set(n, (counts.get(n) ?? 0) + 1)
+  let best = lugs[0]
+  let bestC = 0
+  for (const [n, c] of counts) {
+    if (c > bestC) { best = n; bestC = c }
+  }
+  return best
+}
 
 export default function DiscoverPage() {
-  const router = useRouter()
   const { user } = useAuth()
   const session = useCollectionSession()
-
+  const { getImageUrl } = useWatchImages()
+  // Supabase-backed catalog. CatalogProvider transparently falls back to
+  // the curated static seed when the Supabase load hasn't completed (SSR,
+  // first paint) or when the load fails, so consumers can treat this as
+  // "always populated."
+  const { allWatches: catalogWatches } = useCatalog()
   const isGuest = !user
-  const realCollection: CatalogWatch[] = useMemo(
-    () => session.collectionWatches.map(w => ({
-      id: w.watchId,
-      brand: w.brand,
-      model: w.model,
-      reference: w.reference,
-      caseSizeMm: w.caseSizeMm,
-      lugWidthMm: w.lugWidthMm,
-      caseMaterial: w.caseMaterial,
-      dialColor: w.dialColor,
-      movement: w.movement,
-      complications: w.complications,
-      estimatedValue: w.estimatedValue,
-      imageUrl: w.imageUrl,
-      imageTransparentUrl: w.imageTransparentUrl,
-      imageSourceUrl: w.imageSourceUrl,
-      dialConfig: w.dialConfig,
-      watchType: w.watchType,
-    })),
-    [session.collectionWatches],
+
+  const hasImage = useMemo(
+    () => (watch: CatalogWatch) => Boolean(getImageUrl(watch.id) ?? watch.imageUrl),
+    [getImageUrl],
   )
 
-  const demoCollection: CatalogWatch[] = useMemo(() => {
-    return DISCOVER_DEMO_COLLECTION_IDS
-      .map(id => catalogWatches.find(w => w.id === id))
-      .filter((w): w is CatalogWatch => Boolean(w))
-  }, [])
+  const realCollection = useMemo(() => ownedToCatalog(session.collectionWatches), [session.collectionWatches])
 
-  const collectionForInsight = realCollection.length > 0 ? realCollection : demoCollection
-  const collectionForUpgrades = realCollection.length > 0 ? realCollection : demoCollection
+  // Demo collection for guest / empty-box sessions: top-heat watches from
+  // the live Supabase catalog, with a type-variety pass so the four picks
+  // span different watch types (Field, GMT, Dress, Chrono, etc.) rather
+  // than landing on four Rolex sport models.
+  const demoCollection: CatalogWatch[] = useMemo(
+    () => pickDemoCollection(catalogWatches, { hasImage, count: 4 }),
+    [catalogWatches, hasImage],
+  )
+
+  const collection = realCollection.length > 0 ? realCollection : demoCollection
+  const personalized = !isGuest && realCollection.length > 0
+
+  const priceAnchor = useMemo(() => collectionPriceAnchor(collection), [collection])
 
   const boxInsight = useMemo(
-    () => getBoxInsight(collectionForInsight, catalogWatches),
-    [collectionForInsight],
+    () => getBoxInsight(collection, catalogWatches, { hasImage, priceAnchor }),
+    [collection, catalogWatches, hasImage, priceAnchor],
   )
 
   const upgradeSuggestions = useMemo(
     () => getUpgradeSuggestions(
-      collectionForUpgrades,
+      collection,
       catalogWatches,
       session.followedWatchIds,
       session.collectionJewelWatchId,
       session.grailWatchId,
       session.nextTargets.map(t => t.watchId),
+      { hasImage, priceAnchor },
     ),
-    [collectionForUpgrades, session.followedWatchIds, session.collectionJewelWatchId, session.grailWatchId, session.nextTargets],
+    [collection, catalogWatches, session.followedWatchIds, session.collectionJewelWatchId, session.grailWatchId, session.nextTargets, hasImage, priceAnchor],
   )
 
-  const nextSlotRecs = useMemo(() => {
-    if (isGuest) {
-      return catalogWatches.slice(0, 6)
-    }
-    return getNextSlotRecommendations(realCollection, session.followedWatchIds, catalogWatches, 6)
-  }, [isGuest, realCollection, session.followedWatchIds])
-
-  const targetOpps = useMemo(
-    () => getTargetOpportunities(session.nextTargets, session.grailWatchId, catalogWatches),
-    [session.nextTargets, session.grailWatchId],
+  const nextSlotRecs = useMemo(
+    () => getNextSlotRecommendations(collection, session.followedWatchIds, catalogWatches, 3, { hasImage, priceAnchor }),
+    [collection, catalogWatches, session.followedWatchIds, hasImage, priceAnchor],
   )
 
-  const showTargets = !isGuest && targetOpps.length > 0
-  const showUpgradesPersonal = !isGuest && upgradeSuggestions.length > 0
-  const showUpgradesDemo = isGuest || (realCollection.length === 0 && upgradeSuggestions.length > 0)
+  const ownedTypes = useMemo(
+    () => new Set(collection.map(w => w.watchType).filter((t): t is WatchType => Boolean(t))),
+    [collection],
+  )
+
+  const fallbackRead = useMemo(() => computeBoxRead(collection), [collection])
+  const strapSummary = useMemo(() => computeStrapSummary(collection), [collection])
+  const lugForDisplay = useMemo(() => lugMode(collection), [collection])
+  const newsBrandFilter = useMemo(
+    () => personalized ? brandsOfInterest(collection, 3) : [],
+    [collection, personalized],
+  )
+
+  const leadWatch = boxInsight?.suggestion ?? null
+  const personalize = usePersonalizedInsight({
+    collection,
+    slotCount: session.watchboxConfig.slotCount,
+    grailWatchId: session.grailWatchId,
+    gapType: boxInsight?.missingType ?? null,
+    gapLabel: boxInsight?.missingType ?? null,
+    leadPick: leadWatch
+      ? { brand: leadWatch.brand, model: leadWatch.model, reference: leadWatch.reference, type: leadWatch.watchType ?? 'Watch', value: leadWatch.estimatedValue }
+      : null,
+    fallbackRead,
+    brandReadHint: fallbackRead,
+    priceTarget: priceAnchor?.target ?? null,
+    enabled: personalized,
+  })
+
+  const insightRead = personalize.read || fallbackRead
+  const leadInsight = personalize.leadInsight || boxInsight?.copy || ''
+
+  const firstName = personalized ? profileDisplayName() : null
+  const bylineLeft = isGuest
+    ? 'Editor’s curation'
+    : (firstName ? `For ${firstName}` : genericByline())
 
   return (
-    <div className="discover-shell" style={{ background: brand.colors.bg, padding: '48px 56px' }}>
-      <header style={{ marginBottom: 48 }}>
-        <div
-          style={{
-            fontFamily: brand.font.sans,
-            fontSize: 10,
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            color: brand.colors.muted,
-            fontWeight: 500,
-          }}
-        >
-          Discover
-        </div>
-        <h1
-          style={{
-            fontFamily: brand.font.serif,
-            fontSize: 42,
-            fontWeight: 500,
-            color: brand.colors.ink,
-            margin: '8px 0 12px',
-            lineHeight: 1.1,
-          }}
-        >
-          Your next move.
-        </h1>
-        <p
-          style={{
-            fontFamily: brand.font.sans,
-            fontSize: 14,
-            color: brand.colors.muted,
-            margin: 0,
-            maxWidth: 560,
-            lineHeight: 1.55,
-          }}
-        >
-          Recommendations, upgrades, and reads shaped around your collection.
-        </p>
-      </header>
+    <div style={{ background: brand.colors.bg, color: brand.colors.ink }}>
+      <HeroMasthead
+        personalized={personalized}
+        bylineLeft={bylineLeft}
+        bylineRight={todayByline()}
+        insightRead={insightRead}
+      />
 
-      {boxInsight && (
-        <section style={{ marginBottom: SECTION_GAP }}>
-          <BoxInsightCard
-            copy={boxInsight.copy}
-            missingType={boxInsight.missingType}
-            suggestion={isGuest ? null : boxInsight.suggestion}
-            isGuest={isGuest}
-          />
-        </section>
+      <SectionNav />
+
+      {leadWatch && (
+        <CompleteTheBoxLead
+          watch={leadWatch}
+          gapLabel={personalized ? (boxInsight?.missingType ?? 'This week') : 'Featured this week'}
+          gapType={boxInsight?.missingType ?? null}
+          insight={leadInsight || `A ${(boxInsight?.missingType ?? 'next pick').toLowerCase()} would round out the box.`}
+          personalized={personalized}
+        />
       )}
 
-      <section style={{ marginBottom: SECTION_GAP, position: 'relative' }}>
-        <SectionHeader
-          label="Upgrade This Watch"
-          subhead="Step-up paths that preserve your box balance"
-        />
-        {showUpgradesPersonal ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {upgradeSuggestions.map(s => (
-              <UpgradeCard key={`${s.ownedWatch.id}-${s.upgradeWatch.id}`} suggestion={s} />
-            ))}
-          </div>
-        ) : showUpgradesDemo && upgradeSuggestions[0] ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ opacity: 0.42, pointerEvents: 'none', userSelect: 'none' }}>
-              <UpgradeCard suggestion={upgradeSuggestions[0]} />
-            </div>
-            {isGuest && (
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 16,
-                  padding: '14px 20px',
-                  background: brand.colors.white,
-                  border: `1px solid ${brand.colors.border}`,
-                  borderRadius: brand.radius.md,
-                }}
-              >
-                <p
-                  style={{
-                    fontFamily: brand.font.sans,
-                    fontSize: 13,
-                    color: brand.colors.muted,
-                    margin: 0,
-                    lineHeight: 1.5,
-                  }}
-                >
-                  This preview uses a sample collection.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => router.push('/auth')}
-                  style={{
-                    fontFamily: brand.font.sans,
-                    fontSize: 12,
-                    fontWeight: 500,
-                    letterSpacing: '0.03em',
-                    padding: '9px 20px',
-                    background: brand.colors.ink,
-                    color: brand.colors.bg,
-                    border: 'none',
-                    borderRadius: brand.radius.btn,
-                    cursor: 'pointer',
-                    flexShrink: 0,
-                  }}
-                >
-                  Sign in for your upgrades
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <p
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 13,
-              color: brand.colors.muted,
-              margin: 0,
-            }}
-          >
-            Add a watch or two to your collection to see personalized upgrades.
-          </p>
-        )}
-      </section>
-
-      {showTargets && (
-        <section id="targets" style={{ marginBottom: SECTION_GAP }}>
-          <SectionHeader
-            label="For Your Targets"
-            subhead="Watches you're tracking"
-          />
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              gap: 16,
-              overflowX: 'auto',
-              paddingBottom: 8,
-            }}
-          >
-            {targetOpps.map(({ watch, isGrail, targetPrice }) => (
-              <div
-                key={watch.id}
-                style={{
-                  background: brand.colors.white,
-                  border: `1px solid ${brand.colors.border}`,
-                  borderRadius: brand.radius.md,
-                  padding: '16px 20px',
-                  minWidth: 240,
-                  flexShrink: 0,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 4,
-                }}
-              >
-                <div
-                  style={{
-                    fontFamily: brand.font.sans,
-                    fontSize: 9,
-                    fontWeight: 600,
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                    color: brand.colors.muted,
-                  }}
-                >
-                  {watch.brand}
-                </div>
-                <div
-                  style={{
-                    fontFamily: brand.font.serif,
-                    fontSize: 18,
-                    color: brand.colors.ink,
-                    lineHeight: 1.2,
-                  }}
-                >
-                  {watch.model}
-                </div>
-                {isGrail && (
-                  <span
-                    style={{
-                      fontFamily: brand.font.sans,
-                      fontSize: 9,
-                      fontWeight: 600,
-                      letterSpacing: '0.1em',
-                      color: brand.colors.gold,
-                      border: `1px solid ${brand.colors.gold}`,
-                      borderRadius: brand.radius.pill,
-                      padding: '2px 8px',
-                      alignSelf: 'flex-start',
-                      marginTop: 4,
-                    }}
-                  >
-                    GRAIL
-                  </span>
-                )}
-                {targetPrice !== undefined && (
-                  <div
-                    style={{
-                      fontFamily: brand.font.sans,
-                      fontSize: 12,
-                      color: brand.colors.muted,
-                      marginTop: 4,
-                    }}
-                  >
-                    Target: {fmt(targetPrice)}
-                  </div>
-                )}
-                <a
-                  href={buildChrono24URL(watch.brand, watch.model)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    fontFamily: brand.font.sans,
-                    fontSize: 11,
-                    color: brand.colors.gold,
-                    textDecoration: 'none',
-                    marginTop: 8,
-                  }}
-                >
-                  Find on Market ↗
-                </a>
-              </div>
-            ))}
-          </div>
-        </section>
+      {personalized && upgradeSuggestions.length > 0 && (
+        <UpgradeSpread suggestions={upgradeSuggestions} />
       )}
 
-      <section id="recommendations" style={{ marginBottom: SECTION_GAP }}>
-        <SectionHeader
-          label="For Your Next Slot"
-          subhead="Watches not yet in your collection"
-        />
-        <div className="discover-grid">
-          {nextSlotRecs.map(watch => (
-            <DiscoverWatchCard key={watch.id} watch={watch} />
-          ))}
-        </div>
-      </section>
+      <NextSlotEditorial watches={nextSlotRecs} ownedTypes={ownedTypes} />
 
-      <section id="straps" style={{ marginBottom: SECTION_GAP }}>
-        <SectionHeader
-          label="Upgrade This Strap"
-          subhead="Improve what you already own"
-        />
-        <div style={{ display: 'flex', flexDirection: 'row', gap: 16, overflowX: 'auto', paddingBottom: 8 }}>
-          <StrapCard name="Black Leather" material="Calfskin · classic" />
-          <StrapCard name="Brown Suede" material="Suede · casual" />
-          <StrapCard name="Rubber Sport" material="FKM rubber · diver" />
-          <StrapCard name="NATO" material="Nylon · military" />
-          <StrapCard name="Sailcloth" material="Technical weave · sport" />
-        </div>
-        <div
-          style={{
-            fontFamily: brand.font.sans,
-            fontSize: 11,
-            color: brand.colors.muted,
-            fontStyle: 'italic',
-            marginTop: 12,
-          }}
-        >
-          Affiliate links coming soon.
-        </div>
-      </section>
+      <StrapEditorial summary={strapSummary} lugMode={lugForDisplay} />
 
-      <section id="boxes" style={{ marginBottom: SECTION_GAP }}>
-        <SectionHeader
-          label="Upgrade This Box"
-          subhead="Physical cases for serious collectors"
-        />
-        <div style={{ display: 'flex', flexDirection: 'row', gap: 16, overflowX: 'auto', paddingBottom: 8 }}>
-          <BoxUpgradeCard name="Travel Roll" descriptor="Soft 3-watch travel companion" />
-          <BoxUpgradeCard name="6-Slot Display Box" descriptor="Glass-top oak display" />
-          <BoxUpgradeCard
-            name="10-Slot Collector Case"
-            descriptor="For larger rotations, lockable"
-            fitsCollection={realCollection.length > 6}
-          />
-        </div>
-        <div
-          style={{
-            fontFamily: brand.font.sans,
-            fontSize: 11,
-            color: brand.colors.muted,
-            fontStyle: 'italic',
-            marginTop: 12,
-          }}
-        >
-          Virtual Watchbox may earn a commission on box purchases.
-        </div>
-      </section>
+      <BoxEditorial userSlotCount={session.watchboxConfig.slotCount} watches={collection} />
 
-      <section id="reads" style={{ marginBottom: SECTION_GAP }}>
-        <SectionHeader
-          label="From the Watch World"
-          subhead="The latest from the publications collectors trust"
-        />
-        <DiscoverReadsStrip />
-      </section>
+      <NewsEditorial brandFilter={newsBrandFilter} />
     </div>
   )
 }

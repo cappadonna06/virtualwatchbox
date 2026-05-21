@@ -36,7 +36,7 @@ export default function AddWatchConfirmPage() {
   const searchParams = useSearchParams()
   const { addToCollection, followWatch, isInCollection, collectionWatches } = useCollectionSession()
 
-  const { allWatches, fetchById } = useCatalog()
+  const { allWatches, fetchById, registerWatches } = useCatalog()
   // The in-memory catalog only holds the top-2000 by heat. The other ~33k
   // refs are accessible via Add Watch search but won't appear here unless
   // we hydrate on demand.
@@ -58,6 +58,11 @@ export default function AddWatchConfirmPage() {
     fetchById(params.watchId).then(found => {
       if (cancelled) return
       setRemoteWatch(found)
+      // Inject into the in-memory catalog so any follow/target/grail action
+      // on this page (or subsequent /collection render after Add) sees the
+      // ref. Without this, the resolve layer drops it as "unknown catalog id"
+      // even though we just successfully fetched it from Supabase.
+      if (found) registerWatches([found])
       setRemoteResolved(true)
     }).catch(() => {
       if (cancelled) return
@@ -65,7 +70,7 @@ export default function AddWatchConfirmPage() {
       setRemoteResolved(true)
     })
     return () => { cancelled = true }
-  }, [params.watchId, localWatch, fetchById])
+  }, [params.watchId, localWatch, fetchById, registerWatches])
 
   // Owned instances of this catalog watch — for the duplicate-aware UX. One user
   // can own multiple of the same model (a vintage and a current production, etc.).

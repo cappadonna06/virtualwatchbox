@@ -8,8 +8,13 @@
   --color-bg:           #FAF8F4;
   --color-slot:         #FFFCF7;
   --color-ink:          #1A1410;
+  --color-ink-soft:     #3F362C;
   --color-muted:        #A89880;
+  --color-muted-dark:   #6F6353;
   --color-gold:         #C9A84C;
+  --color-paper:        #F4EFE6;
+  --color-paper-warm:   #F1ECE2;
+  --color-hero-dark-1:  #1e1b16;
   --color-dark:         #2A2520;
   --color-white:        #FFFFFF;
   --color-border:       #EAE5DC;

@@ -13,8 +13,16 @@ export const brand = {
     slot: '#FFFCF7',
     /** Primary text, dark buttons */
     ink: '#1A1410',
+    /** Body text — slightly softer than ink */
+    inkSoft: '#3F362C',
     /** Secondary text, meta labels */
     muted: '#A89880',
+    /** Subtitle body color — darker than muted */
+    mutedDark: '#6F6353',
+    /** Watch image card backdrop */
+    paper: '#F4EFE6',
+    /** Strap / news thumb backdrop */
+    paperWarm: '#F1ECE2',
     /** Accent: prices, active states, brand labels */
     gold: '#C9A84C',
     /** Soft gold wash for selected luxury controls */

@@ -1,0 +1,46 @@
+/* Discover page — responsive reflow + scrollbar hide */
+
+.discover-section-nav-inner::-webkit-scrollbar { display: none; }
+
+@media (max-width: 767px) {
+  .discover-masthead { display: none !important; }
+  .discover-hero-h1 { font-size: 44px !important; }
+  .discover-section-head { grid-template-columns: 1fr !important; }
+  .discover-section-head > div + div { text-align: left !important; max-width: none !important; }
+  .discover-section-nav-label { display: none !important; }
+  .discover-section-nav-inner { padding: 0 18px !important; gap: 16px !important; height: 40px !important; }
+  .discover-section-nav-inner > a { height: 40px !important; }
+
+  .discover-complete-row { grid-template-columns: 1fr !important; gap: 36px !important; }
+  .discover-complete-h2 { font-size: 30px !important; }
+  .discover-complete-specs { grid-template-columns: repeat(2, auto) !important; }
+  .discover-complete-actions { flex-direction: column !important; align-items: stretch !important; }
+  .discover-complete-actions > a,
+  .discover-complete-actions > button { text-align: center; }
+
+  .discover-upgrade-grid { grid-template-columns: 1fr !important; }
+  .discover-upgrade-pair { grid-template-columns: 1fr !important; gap: 24px !important; }
+  .discover-upgrade-arrow { flex-direction: row !important; gap: 16px !important; }
+  .discover-upgrade-arrow svg { transform: rotate(90deg); }
+
+  .discover-nextslot-grid { grid-template-columns: 1fr !important; }
+  .discover-strap-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .discover-box-grid { grid-template-columns: 1fr !important; }
+  .discover-news-grid { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 767px) {
+  /* Tighter section padding on mobile */
+  section#lead > div,
+  section#upgrade,
+  section#next-slot,
+  section#straps,
+  section#box,
+  section#news,
+  .discover-hero-pad {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    padding-top: 40px !important;
+    padding-bottom: 24px !important;
+  }
+}
