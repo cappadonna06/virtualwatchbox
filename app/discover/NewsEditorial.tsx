@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { brand } from '@/lib/brand'
 import type { NewsItem } from '@/types/news'
 import { formatRelativeDate } from '@/lib/relativeDate'
@@ -115,6 +114,7 @@ function isRecent(publishedAt: string): boolean {
 
 function NewsCard({ item }: { item: NewsItem }) {
   const recent = isRecent(item.publishedAt)
+  const [imgFailed, setImgFailed] = useState(false)
   return (
     <a
       href={item.url}
@@ -139,14 +139,37 @@ function NewsCard({ item }: { item: NewsItem }) {
           overflow: 'hidden',
         }}
       >
-        {item.imageUrl && (
-          <Image
+        {item.imageUrl && !imgFailed ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
             src={item.imageUrl}
-            alt={item.title}
-            fill
-            sizes="(max-width: 768px) 100vw, 25vw"
-            style={{ objectFit: 'cover', filter: 'drop-shadow(0 8px 14px rgba(0,0,0,0.18))' }}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            referrerPolicy="no-referrer"
+            onError={() => setImgFailed(true)}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              display: 'block',
+            }}
           />
+        ) : (
+          <span
+            aria-hidden
+            style={{
+              fontFamily: brand.font.serif,
+              fontStyle: 'italic',
+              fontSize: 36,
+              color: brand.colors.muted,
+              opacity: 0.5,
+            }}
+          >
+            ◷
+          </span>
         )}
         {recent && (
           <div
