@@ -85,10 +85,19 @@ export function brandTier(brand: string): Tier {
   return BRAND_TIER[brand] ?? DEFAULT_TIER
 }
 
-export function heatScore(watch: Pick<CatalogWatch, 'id' | 'brand'>): number {
+// Order-of-magnitude rescale: the backend score (scripts/heat-score.ts) is
+// 0-1000; the legacy tier fallback is 0-115. Without this multiplier, every
+// watch that has a backend score would dominate every watch that doesn't,
+// regardless of actual ranking. ×8 brings the tier fallback to ~0-920 so a
+// mixed pool ranks coherently while the backend score still wins when
+// signals warrant it.
+const TIER_FALLBACK_SCALE = 8
+
+export function heatScore(watch: Pick<CatalogWatch, 'id' | 'brand' | 'market'>): number {
+  if (watch.market?.heatScore != null) return watch.market.heatScore
   let score = TIER_SCORE[brandTier(watch.brand)]
   if (SEEDED_WATCH_IDS.has(watch.id)) score += SEED_BONUS
-  return score
+  return score * TIER_FALLBACK_SCALE
 }
 
 export function tierLabel(tier: Tier): string {

@@ -1125,8 +1125,8 @@ Commerce + editorial hub. Personalized to the user's collection and followed wat
 - **Box insight cards** — analytical read of the user's collection (gaps, dial-color skew, brand concentration). Designed to surface "what might round out the box"
 - **Next slot recommendations** — watch cards keyed to the user's empty slot count + spend pattern, with `Find on Market →` deep links (Chrono24)
 - **Upgrade suggestions** — for each owned watch, surface plausible upgrade paths within the same brand family (e.g. Tudor Pelagos → Black Bay Pro)
-- **Strap suggestions** — lug-width-aware strap recommendations across the owned collection, with affiliate CTAs
-- **Box upgrade card** — surface physical watchbox affiliate matches sized to the user's slot count (Wolf1834, Rapport, Holme & Hadfield)
+- **Strap suggestions** *(TODO — not yet shipped; placeholder removed 2026-05, pending redesign)* — lug-width-aware strap recommendations across the owned collection, with affiliate CTAs
+- **Box upgrade card** *(TODO — not yet shipped; placeholder removed 2026-05, pending redesign)* — surface physical watchbox affiliate matches sized to the user's slot count (Wolf1834, Rapport, Holme & Hadfield)
 - **Discover Reads strip** — curated editorial pulls (typically the top-tagged articles from the news feed for the user's brands of interest)
 
 #### Personalization
@@ -1143,8 +1143,8 @@ Commerce + editorial hub. Personalized to the user's collection and followed wat
 | Box insight cards | P0 (shipped) |
 | Next slot recommendations with Chrono24 deep links | P0 (shipped) |
 | Upgrade cards (per-owned-watch upgrade paths) | P0 (shipped) |
-| Strap suggestions (lug-width aware) | P0 (shipped) |
-| Box upgrade affiliate card | P0 (shipped) |
+| Strap suggestions (lug-width aware) | P0 (TODO — placeholder removed 2026-05, pending redesign) |
+| Box upgrade affiliate card | P0 (TODO — placeholder removed 2026-05, pending redesign) |
 | Discover Reads strip | P0 (shipped) |
 | UI / spacing / typography polish pass | P1 |
 | Smart Suggestions engine integration (Feature 8) | P1 |

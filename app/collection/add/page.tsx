@@ -49,9 +49,6 @@ function loadPlaygroundBoxes() {
 
 // ─── Filter UI primitives ─────────────────────────────────────────────────────
 
-const PHOTOS_WARN_BG = '#FFF8E6'
-const PHOTOS_WARN_BORDER = '#E8D9B0'
-const PHOTOS_WARN_TEXT = '#8A6A10'
 const CHIP_FILL = '#F0EBE3'
 
 function SlidersIcon({ size = 14 }: { size?: number }) {
@@ -973,7 +970,9 @@ function AddWatchSearchInner() {
           style={{
             width: '100%', padding: '12px 52px 12px 16px',
             border: '1px solid #E0DAD0', borderRadius: 8,
-            fontFamily: 'var(--font-dm-sans)', fontSize: 15, color: '#1A1410',
+            // 16px is the iOS Safari focus-zoom threshold — anything smaller
+            // triggers an auto-zoom that persists and breaks the layout.
+            fontFamily: 'var(--font-dm-sans)', fontSize: 16, color: '#1A1410',
             background: '#FFFFFF', outline: 'none',
           }}
         />
@@ -1155,81 +1154,6 @@ function AddWatchSearchInner() {
                       scrollbarWidth: 'none',
                     }}
                   >
-                    {hasPhotos ? (
-                      <button
-                        type="button"
-                        onClick={() => setShowAll(v => !v)}
-                        title="Click to include watches without photos"
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          padding: '5px 10px 5px 11px',
-                          borderRadius: brand.radius.pill,
-                          background: 'transparent',
-                          border: `1px solid ${brand.colors.border}`,
-                          fontFamily: brand.font.sans,
-                          fontSize: 11,
-                          fontWeight: 500,
-                          color: brand.colors.muted,
-                          cursor: 'pointer',
-                          whiteSpace: 'nowrap',
-                          flexShrink: 0,
-                        }}
-                      >
-                        <PhotoIcon size={11} />
-                        <span>Photos only</span>
-                        <span style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          width: 14,
-                          height: 14,
-                          borderRadius: brand.radius.pill,
-                          background: CHIP_FILL,
-                          color: brand.colors.muted,
-                        }}>
-                          <CrossIcon size={8} />
-                        </span>
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => setShowAll(v => !v)}
-                        title="Click to show only watches with photos"
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          padding: '5px 6px 5px 11px',
-                          borderRadius: brand.radius.pill,
-                          background: PHOTOS_WARN_BG,
-                          border: `1px solid ${PHOTOS_WARN_BORDER}`,
-                          fontFamily: brand.font.sans,
-                          fontSize: 11,
-                          fontWeight: 500,
-                          color: PHOTOS_WARN_TEXT,
-                          cursor: 'pointer',
-                          whiteSpace: 'nowrap',
-                          flexShrink: 0,
-                        }}
-                      >
-                        <span>Showing all watches</span>
-                        <span style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          width: 16,
-                          height: 16,
-                          borderRadius: brand.radius.pill,
-                          background: 'rgba(138,106,16,0.12)',
-                          color: PHOTOS_WARN_TEXT,
-                        }}>
-                          <CrossIcon size={9} />
-                        </span>
-                      </button>
-                    )}
-
                     {facetChips.map(chip => (
                       <button
                         key={chip.key}

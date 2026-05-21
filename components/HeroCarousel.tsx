@@ -36,6 +36,26 @@ export interface CarouselWatch {
 const CAROUSEL_POOL_SIZE = 15
 const CAROUSEL_COUNT = 5
 
+// Heat score alone skews the pool to a handful of prestige brands (Rolex,
+// Patek, Lange) at the top of the catalog — every daily 5-of-15 pick ends
+// up being five $20k+ watches. Diversity constraints below run before the
+// daily shuffle so all 5 picks come from a pre-balanced pool.
+const MAX_PER_BRAND = 2
+const MAX_PER_TYPE = 4
+const RELAXED_MAX_PER_BRAND = 3
+// Price-band targets (sum to 13, leaving 2 wildcard slots for pass 2).
+const PRICE_BAND_TARGETS = { low: 3, mid: 6, high: 4 } as const
+const PRICE_BAND_LOW_MAX = 5_000
+const PRICE_BAND_MID_MAX = 25_000
+
+type PriceBand = keyof typeof PRICE_BAND_TARGETS
+
+function priceBandOf(value: number): PriceBand {
+  if (value < PRICE_BAND_LOW_MAX) return 'low'
+  if (value < PRICE_BAND_MID_MAX) return 'mid'
+  return 'high'
+}
+
 function toCarouselWatch(watch: typeof renderableWatches[number]): CarouselWatch {
   return {
     id: watch.id,
@@ -50,13 +70,68 @@ function toCarouselWatch(watch: typeof renderableWatches[number]): CarouselWatch
 }
 
 /**
- * Top of the photo-having catalog by heat score, with id alphabetical as a
- * deterministic tiebreak so the pool order is stable across runs.
+ * Build a 15-watch hero pool from the heat-ranked photo-having catalog,
+ * enforcing diversity across price band, brand, and type so the daily
+ * shuffle can't degenerate into five identical-feeling picks.
+ *
+ * Three passes:
+ *  1. Walk heat-ranked watches; admit if the watch's price band isn't yet
+ *     full AND brand/type caps aren't yet hit. Stops at 13 (sum of targets).
+ *  2. Top up to 15 from the remaining heat-ranked leftovers respecting only
+ *     the brand cap — these are the "wildcard" slots that let the highest-
+ *     heat surplus brands appear without crowding everything out.
+ *  3. Safety net: if constraints couldn't be satisfied (tiny catalog), relax
+ *     the brand cap to 3 and refill. Guarantees pool size 15.
  */
-const CAROUSEL_POOL: CarouselWatch[] = [...renderableWatches]
-  .sort((a, b) => heatScore(b) - heatScore(a) || a.id.localeCompare(b.id))
-  .slice(0, CAROUSEL_POOL_SIZE)
-  .map(toCarouselWatch)
+const CAROUSEL_POOL: CarouselWatch[] = (() => {
+  const ranked = [...renderableWatches]
+    .sort((a, b) => heatScore(b) - heatScore(a) || a.id.localeCompare(b.id))
+
+  const pool: typeof renderableWatches = []
+  const inPool = new Set<string>()
+  const brandCount = new Map<string, number>()
+  const typeCount = new Map<string, number>()
+  const bandCount: Record<PriceBand, number> = { low: 0, mid: 0, high: 0 }
+
+  const targetCount = PRICE_BAND_TARGETS.low + PRICE_BAND_TARGETS.mid + PRICE_BAND_TARGETS.high
+
+  // Pass 1: diversity-enforced fill to 13.
+  for (const w of ranked) {
+    if (pool.length >= targetCount) break
+    if (inPool.has(w.id)) continue
+    const band = priceBandOf(w.estimatedValue)
+    if (bandCount[band] >= PRICE_BAND_TARGETS[band]) continue
+    if ((brandCount.get(w.brand) ?? 0) >= MAX_PER_BRAND) continue
+    if ((typeCount.get(w.watchType) ?? 0) >= MAX_PER_TYPE) continue
+    pool.push(w)
+    inPool.add(w.id)
+    bandCount[band] += 1
+    brandCount.set(w.brand, (brandCount.get(w.brand) ?? 0) + 1)
+    typeCount.set(w.watchType, (typeCount.get(w.watchType) ?? 0) + 1)
+  }
+
+  // Pass 2: top up to CAROUSEL_POOL_SIZE from heat-ranked leftovers (brand cap only).
+  for (const w of ranked) {
+    if (pool.length >= CAROUSEL_POOL_SIZE) break
+    if (inPool.has(w.id)) continue
+    if ((brandCount.get(w.brand) ?? 0) >= MAX_PER_BRAND) continue
+    pool.push(w)
+    inPool.add(w.id)
+    brandCount.set(w.brand, (brandCount.get(w.brand) ?? 0) + 1)
+  }
+
+  // Pass 3: safety net — relax brand cap so the pool is never short.
+  for (const w of ranked) {
+    if (pool.length >= CAROUSEL_POOL_SIZE) break
+    if (inPool.has(w.id)) continue
+    if ((brandCount.get(w.brand) ?? 0) >= RELAXED_MAX_PER_BRAND) continue
+    pool.push(w)
+    inPool.add(w.id)
+    brandCount.set(w.brand, (brandCount.get(w.brand) ?? 0) + 1)
+  }
+
+  return pool.map(toCarouselWatch)
+})()
 
 /**
  * SSR-safe initial selection: the deterministic top of the pool. The client

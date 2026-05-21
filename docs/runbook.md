@@ -21,6 +21,7 @@ needs `SUPABASE_URL` (or `NEXT_PUBLIC_SUPABASE_URL`) plus
 | **Regenerate ML price predictions (Layer 3)** | `npm run prices:predict` then `npm run catalog:enrich -- --seed=data/catalog-seed-full.csv --out=data/catalog-enriched-full.json` |
 | **Push enriched JSON to Supabase** | `DRY_RUN=1 npm run catalog:seed-full` first, then `npm run catalog:seed-full` |
 | **Recompute heat scores on the live DB** (without a full re-enrich) | `npm run catalog:recompute-heat` then `npm run catalog:heat-report` |
+| **Apply curated collector nicknames** (Pepsi, Batman, Moonwatch, …) | `DRY_RUN=1 npm run catalog:enrich-nicknames` then `npm run catalog:enrich-nicknames` — dictionary at [data/catalog-nicknames.json](../data/catalog-nicknames.json), entries for refs not yet in the catalog are skipped silently |
 | **Generate the seed CSV from `thewatchapi` brand/ref dumps** | `npm run catalog:expand-list` (writes `data/catalog-seed-1500.csv`) |
 | **Expand seed to ~35K refs via `watch_db.csv`** | `npm run catalog:expand-from-watchdb` (writes `data/catalog-seed-full.csv`) |
 | **Cache `thewatchapi` reference lists** (rate-limited; see §6) | `npm run catalog:fetch-thewatchapi -- --mode=list-refs --brands=Rolex,Omega,Tudor` |
@@ -100,8 +101,21 @@ npm run images:upload-storage
 DRY_RUN=1 npm run catalog:seed-full
 npm run catalog:seed-full
 
+# 10b. Apply curated collector nicknames so new refs ship searchable by
+#      their aliases ("Pepsi", "Batman", "Moonwatch", "Daytona Panda", …).
+#      Dictionary: data/catalog-nicknames.json — extend it for any new refs
+#      this batch added that have well-known collector names. Re-running is
+#      idempotent; entries for refs not in the catalog are skipped silently.
+#      Always run AFTER catalog:seed-full (script reads catalog_watches and
+#      updates the nickname column). The generated search_text column from
+#      migration 023 picks the values up automatically — no other step
+#      needed for search to start matching them.
+DRY_RUN=1 npm run catalog:enrich-nicknames
+npm run catalog:enrich-nicknames
+
 # 11. Commit only what production needs.
 git add data/catalog-seed-full.csv \
+        data/catalog-nicknames.json \
         public/watch-assets/processed/manifest.json \
         lib/watchImages/cacheBust.ts
 git commit -m "catalog: +1000 imaged watches"
