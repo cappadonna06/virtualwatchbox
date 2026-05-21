@@ -76,6 +76,12 @@ The backend heat algorithm (`scripts/heat-score.ts`) writes 0–1000 scores to S
 
 After running `npm run catalog:recompute-heat`, run `npm run catalog:sync-heat` to pull the latest scores into `data/catalog-heat-scores.json`. Commit both that JSON and any catalog changes. `lib/heatScore.ts` falls back to the legacy brand-tier score (rescaled) when an entry is missing, so the JSON can be empty without breaking the build.
 
+## Catalog Search & Nicknames
+
+Search (`/collection/add`, navbar) routes through `searchCatalog` in `lib/catalog/CatalogProvider.tsx`, which ILIKEs against the generated `search_text` column added in migration 023 — it concatenates brand, model, reference, model_family, nickname, watch_type, and the `complications[]` array, indexed via pg_trgm GIN. To extend what's searchable, change the migration's `generated always as (...)` expression; no app code change needed.
+
+Curated collector nicknames live in `data/catalog-nicknames.json`. Run `npm run catalog:enrich-nicknames` after editing to write them to `catalog_watches.nickname`. The dictionary intentionally lists refs we don't yet carry — those are reported as "unmatched (expected)" and skipped; they auto-light-up when their refs join the catalog. Same `(brand, reference)` pair across multiple blocks merges (e.g. ref 16710 → "Pepsi, Coke").
+
 ## Tech Stack
 
 - **Framework:** Next.js 14, App Router, TypeScript

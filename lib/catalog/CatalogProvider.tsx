@@ -588,22 +588,21 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
           )
 
     if (params.q && params.q.trim()) {
-      // Tokenize on whitespace and AND-match each token across the column
-      // union. Multiple .or() clauses compose with AND in PostgREST, so
-      // "omega aqua" becomes:
-      //   (brand|model|reference|model_family|nickname ilike '%omega%')
-      //   AND (brand|model|reference|model_family|nickname ilike '%aqua%')
-      // catching Omega Seamaster Aqua Terra rows that no single ilike could.
-      // Future upgrade: Postgres tsvector + GIN for stemming and ranking.
+      // Tokenize on whitespace and AND-match each token against the
+      // generated `search_text` column (migration 023), which concatenates
+      // brand, model, reference, model_family, nickname, watch_type, AND the
+      // complications array. One ILIKE per token (PostgREST AND-composes
+      // them) — so "longines moonphase" hits via complications, "Pepsi"
+      // hits via nickname, "omega chronograph" via watch_type, all without
+      // the 5-column OR clause we used before. pg_trgm GIN index keeps it
+      // fast at scale.
       const tokens = params.q
         .trim()
         .split(/\s+/)
         .map(t => t.replace(/[%_,()]/g, '\\$&'))
         .filter(t => t.length >= 2)
       for (const token of tokens) {
-        q = q.or(
-          `brand.ilike.%${token}%,model.ilike.%${token}%,reference.ilike.%${token}%,model_family.ilike.%${token}%,nickname.ilike.%${token}%`,
-        )
+        q = q.ilike('search_text', `%${token}%`)
       }
     }
     if (params.brand) q = q.eq('brand', params.brand)
@@ -714,10 +713,12 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
         : supabase.from('catalog_watches').select('id', { count: 'exact', head: true })
 
       q = q.eq('brand', brand)
+      // Match against the generated search_text column (migration 023) so
+      // brand-chip counts agree with the actual result count from
+      // searchCatalog. Brand is already constrained by .eq above, so we
+      // don't need to repeat it in the token filter.
       for (const token of tokens) {
-        q = q.or(
-          `model.ilike.%${token}%,reference.ilike.%${token}%,model_family.ilike.%${token}%,nickname.ilike.%${token}%`,
-        )
+        q = q.ilike('search_text', `%${token}%`)
       }
       if (params.caseMaterial) q = q.eq('case_material', params.caseMaterial)
       if (params.dialColor) q = q.ilike('dial_color', `%${params.dialColor}%`)
