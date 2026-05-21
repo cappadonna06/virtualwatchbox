@@ -472,6 +472,56 @@ export default function NavBar() {
         </div>
 
         <div className="nav-mobile-actions" style={{ display: 'none', alignItems: 'center', gap: 8 }}>
+          {user ? (
+            <Link
+              href="/profile"
+              aria-label="Open profile"
+              title={user.email ?? 'Profile'}
+              className="nav-mobile-avatar"
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: brand.radius.circle,
+                background: brand.colors.ink,
+                color: brand.colors.bg,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontFamily: brand.font.sans,
+                fontSize: 13,
+                fontWeight: 500,
+                letterSpacing: '0.04em',
+                textDecoration: 'none',
+                flexShrink: 0,
+              }}
+            >
+              {(user.email?.charAt(0) ?? '?').toUpperCase()}
+            </Link>
+          ) : (
+            <Link
+              href={hasGuestWatches ? '/auth?next=/collection' : '/auth'}
+              className="nav-mobile-signin"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                height: 36,
+                padding: '0 14px',
+                borderRadius: brand.radius.pill,
+                border: `1px solid ${hasGuestWatches ? brand.colors.goldLine : brand.colors.border}`,
+                background: hasGuestWatches ? brand.colors.goldWash : 'transparent',
+                color: brand.colors.ink,
+                fontFamily: brand.font.sans,
+                fontSize: 13,
+                fontWeight: 500,
+                letterSpacing: '0.02em',
+                textDecoration: 'none',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+              }}
+            >
+              {hasGuestWatches ? 'Sync →' : 'Sign in'}
+            </Link>
+          )}
           <button
             type="button"
             aria-label={mobileSearchOpen ? 'Close search' : 'Search watches'}
@@ -586,7 +636,8 @@ export default function NavBar() {
               outline: 'none',
               background: 'transparent',
               fontFamily: brand.font.sans,
-              fontSize: 14,
+              // 16px avoids iOS Safari focus-zoom on mobile.
+              fontSize: 16,
               color: brand.colors.ink,
             }}
           />

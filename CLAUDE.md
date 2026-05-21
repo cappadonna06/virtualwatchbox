@@ -70,6 +70,12 @@ git commit -m "reprocess: <what was fixed>"
 
 **Admin review tool:** `/admin/image-review` — flag bad cutouts with the 10 failure-mode tags. Tag categories (missing parts / edge quality / background) map to specific pipeline stages; ticking any tag auto-stages "Needs reprocess." Reviews land in `watch_image_reviews` (migrations 021 + 022 required).
 
+## Catalog Heat Score (Hero Pool)
+
+The backend heat algorithm (`scripts/heat-score.ts`) writes 0–1000 scores to Supabase `catalog_watch_market.heat_score`. The frontend `lib/heatScore.ts` and `components/HeroCarousel.tsx` need those scores at module-load time, so `data/catalog-heat-scores.json` is the static bridge.
+
+After running `npm run catalog:recompute-heat`, run `npm run catalog:sync-heat` to pull the latest scores into `data/catalog-heat-scores.json`. Commit both that JSON and any catalog changes. `lib/heatScore.ts` falls back to the legacy brand-tier score (rescaled) when an entry is missing, so the JSON can be empty without breaking the build.
+
 ## Tech Stack
 
 - **Framework:** Next.js 14, App Router, TypeScript

@@ -1,6 +1,7 @@
-import type { CatalogWatch } from '@/types/watch'
+import type { CatalogWatch, CatalogWatchMarket } from '@/types/watch'
 import processedManifest from '@/public/watch-assets/processed/manifest.json'
 import excludedImagesData from '@/data/excluded-image-ids.json'
+import catalogHeatScores from '@/data/catalog-heat-scores.json'
 import { toStorageUrl } from './watchImages/storageUrl'
 import { withVersion } from './watchImages/cacheBust'
 
@@ -18,6 +19,13 @@ type ExcludedImagesData = {
 const excludedIds = new Set(
   (excludedImagesData as ExcludedImagesData).ids.map(e => e.id),
 )
+
+type HeatScoresFile = {
+  generatedAt: string | null
+  scores: Record<string, { heatScore: number; popularityRank: number }>
+}
+
+const heatScoresById = (catalogHeatScores as HeatScoresFile).scores ?? {}
 
 const processedWatchImages = new Map(
   (processedManifest as ProcessedManifestEntry[])
@@ -1298,5 +1306,15 @@ const catalogWatches: CatalogWatch[] = [
 
 export const watches: CatalogWatch[] = catalogWatches.map(watch => {
   const imageFields = processedWatchImages.get(watch.id)
-  return imageFields ? { ...watch, ...imageFields } : watch
+  const heatEntry = heatScoresById[watch.id]
+  let next: CatalogWatch = imageFields ? { ...watch, ...imageFields } : watch
+  if (heatEntry) {
+    const market: CatalogWatchMarket = {
+      ...(next.market ?? {}),
+      heatScore: heatEntry.heatScore,
+      popularityRank: heatEntry.popularityRank,
+    }
+    next = { ...next, market }
+  }
+  return next
 })

@@ -7,9 +7,7 @@ const NAV_SECTIONS = [
   { id: 'lead',      num: '01', label: 'Lead' },
   { id: 'upgrade',   num: '02', label: 'Upgrade' },
   { id: 'next-slot', num: '03', label: 'Next Slot' },
-  { id: 'straps',    num: '04', label: 'Straps' },
-  { id: 'box',       num: '05', label: 'Box' },
-  { id: 'news',      num: '06', label: 'News' },
+  { id: 'news',      num: '04', label: 'News' },
 ]
 
 const NAV_HEIGHT = 61

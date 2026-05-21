@@ -12,7 +12,6 @@ import {
   getNextSlotRecommendations,
   getUpgradeSuggestions,
   computeBoxRead,
-  computeStrapSummary,
   brandsOfInterest,
   collectionPriceAnchor,
   genericByline,
@@ -25,8 +24,6 @@ import SectionNav from './SectionNav'
 import CompleteTheBoxLead from './CompleteTheBoxLead'
 import UpgradeSpread from './UpgradeSpread'
 import NextSlotEditorial from './NextSlotEditorial'
-import StrapEditorial from './StrapEditorial'
-import BoxEditorial from './BoxEditorial'
 import NewsEditorial from './NewsEditorial'
 import { usePersonalizedInsight } from './usePersonalizedInsight'
 import './discover.css'
@@ -67,19 +64,6 @@ function profileDisplayName(): string | null {
   } catch {
     return null
   }
-}
-
-function lugMode(collection: CatalogWatch[]): number | null {
-  const lugs = collection.map(w => w.lugWidthMm).filter((n): n is number => typeof n === 'number')
-  if (lugs.length === 0) return null
-  const counts = new Map<number, number>()
-  for (const n of lugs) counts.set(n, (counts.get(n) ?? 0) + 1)
-  let best = lugs[0]
-  let bestC = 0
-  for (const [n, c] of counts) {
-    if (c > bestC) { best = n; bestC = c }
-  }
-  return best
 }
 
 export default function DiscoverPage() {
@@ -143,8 +127,6 @@ export default function DiscoverPage() {
   )
 
   const fallbackRead = useMemo(() => computeBoxRead(collection), [collection])
-  const strapSummary = useMemo(() => computeStrapSummary(collection), [collection])
-  const lugForDisplay = useMemo(() => lugMode(collection), [collection])
   const newsBrandFilter = useMemo(
     () => personalized ? brandsOfInterest(collection, 3) : [],
     [collection, personalized],
@@ -200,10 +182,6 @@ export default function DiscoverPage() {
       )}
 
       <NextSlotEditorial watches={nextSlotRecs} ownedTypes={ownedTypes} />
-
-      <StrapEditorial summary={strapSummary} lugMode={lugForDisplay} />
-
-      <BoxEditorial userSlotCount={session.watchboxConfig.slotCount} watches={collection} />
 
       <NewsEditorial brandFilter={newsBrandFilter} />
     </div>

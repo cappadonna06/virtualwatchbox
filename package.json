@@ -16,6 +16,7 @@
     "catalog:seed": "tsx scripts/seedCatalog.ts",
     "catalog:seed-full": "tsx scripts/seed-from-enriched.ts",
     "catalog:recompute-heat": "tsx scripts/recompute-heat.ts",
+    "catalog:sync-heat": "tsx scripts/sync-heat-scores.ts",
     "catalog:heat-report": "node scripts/heat-report.mjs",
     "catalog:migrate-ids": "tsx scripts/migrateCatalogIds.ts",
     "catalog:expand-list": "tsx scripts/expand-seed-list.ts",
