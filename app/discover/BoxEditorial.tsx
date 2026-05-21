@@ -22,11 +22,11 @@ const BOXES: BoxOption[] = [
   {
     id: 'travel-roll',
     label: 'Travel Roll',
-    desc: 'Soft case for the trip — three slots, suede-lined, fits a carry-on.',
+    desc: 'Soft cognac leather, four slots, fits a carry-on without fuss.',
     partner: 'Wolf 1834',
     price: '$165',
     capacity: 4,
-    frameId: 'light-oak',
+    frameId: 'cognac',
     liningId: 'cream',
     cols: 2,
     cta: 'Shop',
@@ -34,24 +34,24 @@ const BOXES: BoxOption[] = [
   {
     id: 'six-slot',
     label: '6-Slot Display Box',
-    desc: 'Glass-top oak, the rotation you actually wear in a week.',
+    desc: 'Light oak with a navy interior — the rotation you actually wear in a week.',
     partner: 'Rapport London',
     price: '$425',
     capacity: 6,
     frameId: 'light-oak',
-    liningId: 'taupe',
+    liningId: 'navy',
     cols: 3,
     cta: 'Shop',
   },
   {
     id: 'ten-slot',
     label: '10-Slot Collector',
-    desc: 'For the box that has outgrown the dresser drawer. Lockable.',
+    desc: 'Ebony case, bordeaux interior. For the box that has outgrown the dresser.',
     partner: 'Holme & Hadfield',
     price: '$680',
     capacity: 10,
-    frameId: 'dark-walnut',
-    liningId: 'noir',
+    frameId: 'ebony',
+    liningId: 'bordeaux',
     cols: 5,
     cta: 'Shop',
   },
@@ -221,6 +221,13 @@ function BoxPreview({
   const lining = LININGS.find(l => l.id === liningId) ?? LININGS[0]
   const rows = Math.ceil(capacity / cols)
 
+  // Light linings cast a darker inner shadow; deep linings cast a lighter highlight.
+  const liningIsLight = ['cream', 'taupe'].includes(lining.id)
+  const innerShadow = liningIsLight
+    ? 'inset 0 2px 10px rgba(0,0,0,0.18), inset 0 -1px 0 rgba(255,255,255,0.4)'
+    : 'inset 0 2px 12px rgba(0,0,0,0.45), inset 0 -1px 0 rgba(255,255,255,0.05)'
+  const dividerColor = liningIsLight ? 'rgba(0,0,0,0.10)' : 'rgba(255,255,255,0.07)'
+
   return (
     <div
       style={{
@@ -228,7 +235,7 @@ function BoxPreview({
         height: 188,
         background: frame.css,
         boxShadow: frame.shadow,
-        padding: 16,
+        padding: 18,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -236,44 +243,28 @@ function BoxPreview({
     >
       <div
         style={{
+          position: 'relative',
           flex: 1,
           alignSelf: 'stretch',
-          margin: '4px 2px',
-          padding: 8,
           background: lining.color,
-          borderRadius: 3,
-          boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.35), inset 0 -1px 2px rgba(255,255,255,0.04)',
-          display: 'grid',
-          gridTemplateColumns: `repeat(${cols}, 1fr)`,
-          gridTemplateRows: `repeat(${rows}, 1fr)`,
-          gap: 8,
+          borderRadius: 2,
+          boxShadow: innerShadow,
+          overflow: 'hidden',
         }}
       >
-        {Array.from({ length: capacity }).map((_, i) => (
-          <div
-            key={i}
-            style={{
-              position: 'relative',
-              borderRadius: 4,
-              background: `linear-gradient(160deg, ${lining.slotBg} 0%, ${lining.color} 100%)`,
-              boxShadow: '0 1px 2px rgba(255,255,255,0.10), inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(0,0,0,0.18)',
-            }}
-          >
-            <div
-              aria-hidden
-              style={{
-                position: 'absolute',
-                left: '20%',
-                right: '20%',
-                top: '38%',
-                bottom: '38%',
-                background: 'rgba(0,0,0,0.10)',
-                borderRadius: '50%',
-                boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.25)',
-              }}
-            />
-          </div>
-        ))}
+        {/* Subtle slot grid — purely visual, suggests compartments without
+            drawing pillows or hardware. */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            inset: 6,
+            backgroundImage: [
+              `repeating-linear-gradient(90deg, transparent 0, transparent calc(100%/${cols} - 1px), ${dividerColor} calc(100%/${cols} - 1px), ${dividerColor} calc(100%/${cols}))`,
+              `repeating-linear-gradient(0deg,  transparent 0, transparent calc(100%/${rows} - 1px), ${dividerColor} calc(100%/${rows} - 1px), ${dividerColor} calc(100%/${rows}))`,
+            ].join(', '),
+          }}
+        />
       </div>
     </div>
   )
