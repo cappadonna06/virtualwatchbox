@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointer
 import type { ResolvedWatch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import { getWatchboxOverflow } from '@/lib/watchboxOverflow'
-import DialSVG from '@/components/watchbox/DialSVG'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import { brand } from '@/lib/brand'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
@@ -67,22 +66,13 @@ function OverflowListItem({
           flexShrink: 0,
         }}
       >
-        {mode === 'playground' ? (
-          <DialSVG
-            dialColor={watch.dialConfig.dialColor}
-            markerColor={watch.dialConfig.markerColor}
-            handColor={watch.dialConfig.handColor}
-            size={32}
-          />
-        ) : (
-          <WatchImageOrDial
-            watch={watch}
-            fill
-            sizes="48px"
-            imageStyle={{ objectFit: 'contain', objectPosition: 'center center' }}
-            dialSize={32}
-          />
-        )}
+        <WatchImageOrDial
+          watch={watch}
+          fill
+          sizes="48px"
+          imageStyle={{ objectFit: 'contain', objectPosition: 'center center' }}
+          dialSize={32}
+        />
       </div>
       <div style={{ minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2, flexWrap: 'wrap' }}>
@@ -641,24 +631,13 @@ export default function WatchBox({
                     >
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    {mode === 'playground' ? (
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                        <DialSVG
-                          dialColor={w.dialConfig.dialColor}
-                          markerColor={w.dialConfig.markerColor}
-                          handColor={w.dialConfig.handColor}
-                          size={Math.round((slotWidth ?? 90) * 0.58)}
-                        />
-                      </div>
-                    ) : (
-                      <WatchImageOrDial
-                        watch={w}
-                        fill
-                        sizes="(max-width: 768px) 20vw, 10vw"
-                        imageStyle={{ objectFit: 'contain', objectPosition: 'center center' }}
-                        dialSize={Math.round((slotWidth ?? 90) * 0.58)}
-                      />
-                    )}
+                    <WatchImageOrDial
+                      watch={w}
+                      fill
+                      sizes="(max-width: 768px) 20vw, 10vw"
+                      imageStyle={{ objectFit: 'contain', objectPosition: 'center center' }}
+                      dialSize={Math.round((slotWidth ?? 90) * 0.58)}
+                    />
                     {shouldShowJewel(w.watchId) && (
                       <div
                         className={mode === 'collection' && !readonly ? 'watchbox-jewel-mobile-hide' : undefined}

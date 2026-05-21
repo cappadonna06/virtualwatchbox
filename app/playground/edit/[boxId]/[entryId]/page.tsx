@@ -7,7 +7,7 @@ import type { PlaygroundBox, PlaygroundWatchOverrides, ResolvedWatch, WatchCondi
 import { normalizePlaygroundBoxes } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import { watches as catalogWatches } from '@/lib/watches'
-import DialSVG from '@/components/watchbox/DialSVG'
+import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import { DEFAULT_RESOLVED_WATCH_CONDITION } from '@/lib/watchData'
 
 const STORAGE_KEY = 'playgroundBoxes'
@@ -171,11 +171,12 @@ export default function EditPlaygroundWatchPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) minmax(320px, 1fr)', gap: 24, alignItems: 'start' }}>
         <div style={{ border: '1px solid #EAE5DC', borderRadius: 12, padding: 18, background: '#FFFFFF' }}>
           <div style={{ width: 120, height: 120, margin: '0 auto 12px', position: 'relative' }}>
-            <DialSVG
-              dialColor={sourceWatch.dialConfig.dialColor}
-              markerColor={sourceWatch.dialConfig.markerColor}
-              handColor={sourceWatch.dialConfig.handColor}
-              size={120}
+            <WatchImageOrDial
+              watch={previewWatch}
+              fill
+              sizes="120px"
+              imageStyle={{ objectFit: 'contain', objectPosition: 'center center' }}
+              dialSize={120}
             />
           </div>
           <div style={{ fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#C9A84C', fontFamily: 'var(--font-dm-sans)' }}>
