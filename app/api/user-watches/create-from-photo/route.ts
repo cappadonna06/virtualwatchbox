@@ -121,7 +121,10 @@ export async function POST(request: NextRequest) {
     dial_color_hex: dialHex,
     marker_color_hex: dialMarkerHex(dialHex),
     hand_color_hex: dialHandHex(dialHex),
-    source: 'user_photo',
+    // Must match the catalog_watches source check (migration 011) and the
+    // RLS user-submission insert policy (migration 019: requires source
+    // 'user_submission' + moderation_status 'pending' + submitted_by = auth.uid()).
+    source: 'user_submission',
     moderation_status: 'pending',
     submitted_by: user.id,
     image_url: photoUrl,

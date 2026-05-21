@@ -64,15 +64,23 @@ type CatalogContextValue = {
     brands: string[],
   ) => Promise<Map<string, number>>
   // Hydrate any of the given catalog ids that aren't already in dynamicWatches.
-  // Fire from user-data hydration paths so out-of-top-2000-by-heat refs the
-  // user owns/follows/targets actually resolve in catalogWatchMap. Safe to
-  // over-call — already-present ids are skipped, concurrent calls dedupe.
+  // Legacy path — kept for compatibility with non-collection surfaces (e.g.
+  // Add Watch confirm page). Owned-watch resolution should use
+  // `fetchWatchesByIds` instead so it never goes near `dynamicWatches`,
+  // which is a heat-score-driven discovery cache and therefore subject to
+  // load races. See CollectionSessionProvider.ownedCatalogWatches.
   ensureWatches: (ids: string[]) => Promise<void>
   // Synchronous merge of already-fetched catalog watches (no extra round-trip).
   // Use after fetchById, or in mutations where the caller hands us the full
   // CatalogWatch object — avoids the brief render gap where ensureWatches
   // is still in flight.
   registerWatches: (watches: CatalogWatch[]) => void
+  // Pure ID-based catalog fetch. Returns the rows; does NOT touch
+  // `dynamicWatches`. The intended consumer is CollectionSessionProvider's
+  // owned-set hydration — its local `ownedCatalogWatches` map is the source
+  // of truth for catalog rows the user actually references (collection,
+  // followed, targets, grail, jewel) and is independent of heat score.
+  fetchWatchesByIds: (ids: string[]) => Promise<CatalogWatch[]>
 }
 
 type BrandIndexEntry = { brand: string; count: number }
@@ -88,6 +96,7 @@ const CatalogContext = createContext<CatalogContextValue>({
   fetchBrandCounts: async () => new Map(),
   ensureWatches: async () => {},
   registerWatches: () => {},
+  fetchWatchesByIds: async () => [],
 })
 
 const VALID_WATCH_TYPES: WatchType[] = [
@@ -325,14 +334,18 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (topIds.length === 0) {
-        // DB empty / not yet seeded. Use static fallback.
+        // DB empty / not yet seeded. Use static fallback. Preserve any
+        // straggler rows (user-submitted catalog entries, long-tail
+        // ensureWatches/registerWatches additions) that may have been
+        // injected before this load resolved — see preserveStragglers
+        // note below.
         if (!usingStaticFallback) {
           console.warn(
             '[CatalogProvider] catalog_watch_market is empty — falling back to lib/watches.ts. ' +
             'Run `npm run catalog:seed-full` to populate.',
           )
         }
-        setDynamicWatches([])
+        setDynamicWatches(prev => prev)
         setUsingStaticFallback(true)
         return
       }
@@ -373,11 +386,27 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
         .sort((a, b) => b.count - a.count || a.brand.localeCompare(b.brand))
       setBrandIndex(brandEntries)
 
-      setDynamicWatches(merged)
+      // Preserve stragglers from prior ensureWatches/registerWatches calls.
+      // The top-2000-by-heat query CANNOT include user-submitted catalog rows
+      // (no catalog_watch_market entry yet) or any low-heat owned watch the
+      // user added before the market job runs. ensureWatches has already
+      // appended those into `prev` with the correct full row; without this
+      // merge, a blind `setDynamicWatches(merged)` replacement would race
+      // ensureWatches' append on initial mount or after refreshCatalog()
+      // — the "flash then gone" symptom — wiping the user's own watches
+      // from the watchbox the moment the top-2000 fetch returns.
+      setDynamicWatches(prev => {
+        if (prev.length === 0) return merged
+        const incomingIds = new Set(merged.map(w => w.id))
+        const stragglers = prev.filter(w => !incomingIds.has(w.id))
+        return stragglers.length === 0 ? merged : [...merged, ...stragglers]
+      })
       setUsingStaticFallback(false)
     } catch (err) {
       console.warn('[CatalogProvider] load failed; using static seed fallback', err)
-      setDynamicWatches([])
+      // Same straggler-preservation reasoning as the happy path above —
+      // a transient network failure shouldn't wipe ensureWatches additions.
+      setDynamicWatches(prev => prev)
       setUsingStaticFallback(true)
     } finally {
       setLoading(false)
@@ -462,6 +491,42 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
       for (const id of missing) inFlight.delete(id)
     }
   }, [dynamicWatches])
+
+  // ── Pure ID-based catalog fetch (no state mutation) ───────────────────
+  // The intended consumer is CollectionSessionProvider's owned-set hydration.
+  // Unlike ensureWatches, this returns the rows and does NOT touch
+  // `dynamicWatches` — which means owned-watch resolution is fully insulated
+  // from the heat-score discovery cache and its load races.
+  const fetchWatchesByIds = useCallback(async (ids: string[]): Promise<CatalogWatch[]> => {
+    if (!ids || ids.length === 0) return []
+    const uniq = [...new Set(ids.filter(id => typeof id === 'string' && id.length > 0))]
+    if (uniq.length === 0) return []
+    if (!supabaseRef.current) supabaseRef.current = createClient()
+    const supabase = supabaseRef.current
+    try {
+      const [catalogRows, imageRows, marketRows] = await Promise.all([
+        fetchChunkedByIds(supabase, 'catalog_watches', '*', uniq),
+        fetchImagesByIds(supabase, uniq),
+        (async () => {
+          const out: Array<Record<string, unknown>> = []
+          for (let i = 0; i < uniq.length; i += PG_IN_CHUNK) {
+            const slice = uniq.slice(i, i + PG_IN_CHUNK)
+            const { data, error } = await supabase
+              .from('catalog_watch_market')
+              .select('*')
+              .in('catalog_watch_id', slice)
+            if (error) throw new Error(`catalog_watch_market: ${error.message}`)
+            if (data) out.push(...(data as unknown as Array<Record<string, unknown>>))
+          }
+          return out
+        })(),
+      ])
+      return mergeRows(catalogRows, marketRows, imageRows)
+    } catch (err) {
+      console.warn('[CatalogProvider] fetchWatchesByIds failed', err)
+      return []
+    }
+  }, [])
 
   // ── Synchronous: inject already-fetched catalog watches ───────────────
   // Companion to ensureWatches for callers that already hold the full
@@ -690,6 +755,7 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
         fetchBrandCounts,
         ensureWatches,
         registerWatches,
+        fetchWatchesByIds,
       }}
     >
       {children}
