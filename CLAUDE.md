@@ -82,6 +82,8 @@ Search (`/collection/add`, navbar) routes through `searchCatalog` in `lib/catalo
 
 Curated collector nicknames live in `data/catalog-nicknames.json`. Run `npm run catalog:enrich-nicknames` after editing to write them to `catalog_watches.nickname`. The dictionary intentionally lists refs we don't yet carry — those are reported as "unmatched (expected)" and skipped; they auto-light-up when their refs join the catalog. Same `(brand, reference)` pair across multiple blocks merges (e.g. ref 16710 → "Pepsi, Coke").
 
+**Intake requirement:** whenever a batch of new refs is added to the catalog (the "Add 1000 more imaged watches" playbook in [docs/runbook.md §2](docs/runbook.md)), audit the new refs for well-known collector aliases, add them to `data/catalog-nicknames.json`, and run `npm run catalog:enrich-nicknames` as step 10b of that playbook. The script is idempotent and the dictionary commit is part of the standard batch PR — a new ref should never ship without its nickname populated.
+
 ## Tech Stack
 
 - **Framework:** Next.js 14, App Router, TypeScript
