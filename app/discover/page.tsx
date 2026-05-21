@@ -195,7 +195,7 @@ export default function DiscoverPage() {
 
       <StrapEditorial summary={strapSummary} lugMode={lugForDisplay} />
 
-      <BoxEditorial userSlotCount={session.watchboxConfig.slotCount} />
+      <BoxEditorial userSlotCount={session.watchboxConfig.slotCount} watches={collection} />
 
       <NewsEditorial brandFilter={newsBrandFilter} />
     </div>

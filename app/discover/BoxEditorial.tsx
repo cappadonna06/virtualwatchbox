@@ -1,8 +1,10 @@
 'use client'
 
+import type { CatalogWatch } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import { FRAMES, LININGS } from '@/lib/frameConfig'
 import { bestFitBoxIndex } from '@/lib/discover'
+import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import EditorialHeader from './EditorialHeader'
 
 type BoxOption = {
@@ -57,7 +59,13 @@ const BOXES: BoxOption[] = [
   },
 ]
 
-export default function BoxEditorial({ userSlotCount }: { userSlotCount: number }) {
+export default function BoxEditorial({
+  userSlotCount,
+  watches,
+}: {
+  userSlotCount: number
+  watches: CatalogWatch[]
+}) {
   const bestIdx = bestFitBoxIndex(userSlotCount, BOXES.map(b => b.capacity))
 
   return (
@@ -72,7 +80,7 @@ export default function BoxEditorial({ userSlotCount }: { userSlotCount: number 
       <EditorialHeader
         kicker="§ 05"
         title="Upgrade this box."
-        sub="Physical cases for the collection you actually own. Sized to your slot count."
+        sub="Physical cases for the collection you actually own. Your watches, previewed in each."
       />
       <div
         className="discover-box-grid"
@@ -83,7 +91,7 @@ export default function BoxEditorial({ userSlotCount }: { userSlotCount: number 
         }}
       >
         {BOXES.map((b, i) => (
-          <BoxCard key={b.id} box={b} bestFit={i === bestIdx} />
+          <BoxCard key={b.id} box={b} bestFit={i === bestIdx} watches={watches} />
         ))}
       </div>
       <div
@@ -101,7 +109,7 @@ export default function BoxEditorial({ userSlotCount }: { userSlotCount: number 
   )
 }
 
-function BoxCard({ box, bestFit }: { box: BoxOption; bestFit: boolean }) {
+function BoxCard({ box, bestFit, watches }: { box: BoxOption; bestFit: boolean; watches: CatalogWatch[] }) {
   return (
     <article
       style={{
@@ -135,7 +143,13 @@ function BoxCard({ box, bestFit }: { box: BoxOption; bestFit: boolean }) {
         </div>
       )}
 
-      <BoxPreview frameId={box.frameId} liningId={box.liningId} capacity={box.capacity} cols={box.cols} />
+      <BoxPreview
+        frameId={box.frameId}
+        liningId={box.liningId}
+        capacity={box.capacity}
+        cols={box.cols}
+        watches={watches}
+      />
 
       <div style={{ padding: '22px 24px 20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
         <div
@@ -211,22 +225,31 @@ function BoxPreview({
   liningId,
   capacity,
   cols,
+  watches,
 }: {
   frameId: string
   liningId: string
   capacity: number
   cols: number
+  watches: CatalogWatch[]
 }) {
   const frame = FRAMES.find(f => f.id === frameId) ?? FRAMES[0]
   const lining = LININGS.find(l => l.id === liningId) ?? LININGS[0]
   const rows = Math.ceil(capacity / cols)
 
-  // Light linings cast a darker inner shadow; deep linings cast a lighter highlight.
   const liningIsLight = ['cream', 'taupe'].includes(lining.id)
   const innerShadow = liningIsLight
     ? 'inset 0 2px 10px rgba(0,0,0,0.18), inset 0 -1px 0 rgba(255,255,255,0.4)'
     : 'inset 0 2px 12px rgba(0,0,0,0.45), inset 0 -1px 0 rgba(255,255,255,0.05)'
-  const dividerColor = liningIsLight ? 'rgba(0,0,0,0.10)' : 'rgba(255,255,255,0.07)'
+  const emptySlotBg = liningIsLight
+    ? 'radial-gradient(ellipse at center, rgba(0,0,0,0.08) 0%, transparent 70%)'
+    : 'radial-gradient(ellipse at center, rgba(0,0,0,0.30) 0%, transparent 70%)'
+
+  // Fill slots with the user's watches in order; if box has more slots than
+  // the user has watches, the remainder render as empty wells.
+  const slots: (CatalogWatch | null)[] = Array.from({ length: capacity }).map(
+    (_, i) => watches[i] ?? null,
+  )
 
   return (
     <div
@@ -249,22 +272,42 @@ function BoxPreview({
           background: lining.color,
           borderRadius: 2,
           boxShadow: innerShadow,
-          overflow: 'hidden',
+          padding: 6,
+          display: 'grid',
+          gridTemplateColumns: `repeat(${cols}, 1fr)`,
+          gridTemplateRows: `repeat(${rows}, 1fr)`,
+          gap: 4,
         }}
       >
-        {/* Subtle slot grid — purely visual, suggests compartments without
-            drawing pillows or hardware. */}
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            inset: 6,
-            backgroundImage: [
-              `repeating-linear-gradient(90deg, transparent 0, transparent calc(100%/${cols} - 1px), ${dividerColor} calc(100%/${cols} - 1px), ${dividerColor} calc(100%/${cols}))`,
-              `repeating-linear-gradient(0deg,  transparent 0, transparent calc(100%/${rows} - 1px), ${dividerColor} calc(100%/${rows} - 1px), ${dividerColor} calc(100%/${rows}))`,
-            ].join(', '),
-          }}
-        />
+        {slots.map((watch, i) => (
+          <div
+            key={i}
+            style={{
+              position: 'relative',
+              borderRadius: 2,
+              background: watch ? 'transparent' : emptySlotBg,
+              overflow: 'hidden',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {watch && (
+              <div style={{ position: 'relative', width: '88%', height: '88%' }}>
+                <WatchImageOrDial
+                  watch={watch}
+                  fill
+                  sizes="80px"
+                  imageStyle={{
+                    objectFit: 'contain',
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.35))',
+                  }}
+                  dialSize={36}
+                />
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   )
