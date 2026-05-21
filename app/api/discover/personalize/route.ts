@@ -14,8 +14,9 @@ type CollectionLine = {
 type RequestBody = {
   collection: CollectionLine[]
   gap?: { type: string; gapLabel: string } | null
-  leadPick?: { brand: string; model: string; reference: string; type: string } | null
+  leadPick?: { brand: string; model: string; reference: string; type: string; value?: number } | null
   brandRead?: string | null
+  priceTarget?: number | null
 }
 
 type Payload = { read: string; leadInsight: string }
@@ -70,8 +71,12 @@ export async function POST(req: Request) {
   const gapLine = body.gap
     ? `The collection is missing a "${body.gap.type}" (gap label: "${body.gap.gapLabel}").`
     : 'No specific gap identified — speak to the collection\'s overall character.'
+  const leadValueBit = body.leadPick?.value ? ` ~$${Math.round(body.leadPick.value).toLocaleString('en-US')}` : ''
   const leadLine = body.leadPick
-    ? `The deterministic lead pick is: ${body.leadPick.brand} ${body.leadPick.model} (${body.leadPick.reference}, a ${body.leadPick.type}). Do not name it in "leadInsight" — explain the gap, not the pick.`
+    ? `The deterministic lead pick is: ${body.leadPick.brand} ${body.leadPick.model} (${body.leadPick.reference}, a ${body.leadPick.type}${leadValueBit}). Do not name it in "leadInsight" — explain the gap, not the pick.`
+    : ''
+  const priceLine = body.priceTarget
+    ? `Price context: the collection's median value is roughly $${Math.round(body.priceTarget).toLocaleString('en-US')}. The pick sits in that band on purpose — the leadInsight should sound like a peer recommendation, not a stretch grail.`
     : ''
   const brandReadHint = body.brandRead
     ? `Rules-based read for reference (improve on this, don't echo it): "${body.brandRead}"`
@@ -83,6 +88,7 @@ export async function POST(req: Request) {
     '',
     gapLine,
     leadLine,
+    priceLine,
     brandReadHint,
   ].filter(Boolean).join('\n')
 

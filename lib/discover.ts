@@ -101,16 +101,66 @@ const MISSING_TYPE_COPY: Record<WatchType, string[]> = {
   ],
 }
 
+export type PriceAnchor = {
+  median: number
+  target: number
+  floor: number
+  ceiling: number
+}
+
+export function collectionPriceAnchor(collection: CatalogWatch[]): PriceAnchor | null {
+  const values = collection
+    .map(w => w.estimatedValue)
+    .filter(v => typeof v === 'number' && v > 0)
+    .sort((a, b) => a - b)
+  if (values.length === 0) return null
+  const median = values[Math.floor(values.length / 2)]
+  return {
+    median,
+    target: Math.round(median * 1.15),
+    floor: Math.max(Math.round(median * 0.5), 200),
+    ceiling: Math.round(median * 5),
+  }
+}
+
+function priceScore(value: number, anchor: PriceAnchor): number {
+  const dist = Math.abs(value - anchor.target)
+  return value < anchor.target ? dist * 1.2 : dist
+}
+
+export type SelectionOptions = {
+  hasImage?: (watch: CatalogWatch) => boolean
+  priceAnchor?: PriceAnchor | null
+}
+
+function passesImage(watch: CatalogWatch, hasImage?: (w: CatalogWatch) => boolean): boolean {
+  if (hasImage) return hasImage(watch)
+  return Boolean(watch.imageUrl)
+}
+
 export function getBoxInsight(
   collectionWatches: CatalogWatch[],
   allWatches: CatalogWatch[],
+  options: SelectionOptions = {},
 ): { missingType: WatchType; suggestion: CatalogWatch; copy: string } | null {
   const ownedTypes = new Set(collectionWatches.map(w => w.watchType))
+  const anchor = options.priceAnchor ?? collectionPriceAnchor(collectionWatches)
+
   for (const type of MISSING_TYPE_PRIORITY) {
     if (ownedTypes.has(type)) continue
-    const candidates = allWatches
+
+    let candidates = allWatches
       .filter(w => w.watchType === type)
-      .sort((a, b) => a.estimatedValue - b.estimatedValue)
+      .filter(w => passesImage(w, options.hasImage))
+
+    if (anchor) {
+      const inBand = candidates.filter(w => w.estimatedValue >= anchor.floor && w.estimatedValue <= anchor.ceiling)
+      if (inBand.length > 0) candidates = inBand
+      candidates.sort((a, b) => priceScore(a.estimatedValue, anchor) - priceScore(b.estimatedValue, anchor))
+    } else {
+      candidates.sort((a, b) => a.estimatedValue - b.estimatedValue)
+    }
+
     if (candidates.length === 0) continue
     const suggestion = candidates[0]
     const copies = MISSING_TYPE_COPY[type]
@@ -134,13 +184,14 @@ function findHardcodedUpgrade(
   ownedId: string,
   ownedIds: Set<string>,
   watchById: Map<string, CatalogWatch>,
+  hasImage?: (w: CatalogWatch) => boolean,
 ): CatalogWatch | null {
   const chain = UPGRADE_PATHS[ownedId]
   if (!chain) return null
   for (const candidateId of chain) {
     if (ownedIds.has(candidateId)) continue
     const watch = watchById.get(candidateId)
-    if (watch) return watch
+    if (watch && passesImage(watch, hasImage)) return watch
   }
   return null
 }
@@ -150,6 +201,7 @@ function findAlgorithmicUpgrade(
   ownedIds: Set<string>,
   collectionWatches: CatalogWatch[],
   allWatches: CatalogWatch[],
+  hasImage?: (w: CatalogWatch) => boolean,
 ): CatalogWatch | null {
   const ownedTier = BRAND_TIERS[owned.brand] ?? 1
   const sameTypeOwnedCount = collectionWatches.filter(w => w.watchType === owned.watchType).length
@@ -157,6 +209,7 @@ function findAlgorithmicUpgrade(
 
   const candidates = allWatches
     .filter(w => !ownedIds.has(w.id))
+    .filter(w => passesImage(w, hasImage))
     .filter(w => w.watchType === owned.watchType)
     .filter(w => w.estimatedValue >= owned.estimatedValue * 1.2)
     .filter(w => (BRAND_TIERS[w.brand] ?? 1) >= ownedTier)
@@ -172,6 +225,7 @@ export function getUpgradeSuggestions(
   jewelWatchId: string | null,
   grailWatchId: string | null,
   targetWatchIds: string[],
+  options: SelectionOptions = {},
 ): UpgradeSuggestion[] {
   const ownedIds = new Set(collectionWatches.map(w => w.id))
   const watchById = new Map(allWatches.map(w => [w.id, w] as const))
@@ -184,8 +238,8 @@ export function getUpgradeSuggestions(
     if (jewelWatchId && owned.id === jewelWatchId) continue
 
     const upgrade =
-      findHardcodedUpgrade(owned.id, ownedIds, watchById)
-      ?? findAlgorithmicUpgrade(owned, ownedIds, collectionWatches, allWatches)
+      findHardcodedUpgrade(owned.id, ownedIds, watchById, options.hasImage)
+      ?? findAlgorithmicUpgrade(owned, ownedIds, collectionWatches, allWatches, options.hasImage)
 
     if (!upgrade) continue
     if (usedUpgradeIds.has(upgrade.id)) continue
@@ -210,9 +264,11 @@ export function getNextSlotRecommendations(
   followedWatchIds: string[],
   allWatches: CatalogWatch[],
   count = 6,
+  options: SelectionOptions = {},
 ): CatalogWatch[] {
   const ownedIds = new Set(collectionWatches.map(w => w.id))
   const followedIds = new Set(followedWatchIds)
+  const anchor = options.priceAnchor ?? collectionPriceAnchor(collectionWatches)
 
   const typeCounts = new Map<WatchType, number>()
   for (const w of collectionWatches) {
@@ -222,16 +278,26 @@ export function getNextSlotRecommendations(
     ? 0
     : Math.min(...Array.from(typeCounts.values()))
 
-  const eligible = allWatches.filter(w => !ownedIds.has(w.id))
+  const eligible = allWatches
+    .filter(w => !ownedIds.has(w.id))
+    .filter(w => passesImage(w, options.hasImage))
+    .filter(w => !anchor || (w.estimatedValue >= anchor.floor && w.estimatedValue <= anchor.ceiling))
 
-  const scored = eligible.map(w => {
+  const pool = eligible.length > 0
+    ? eligible
+    : allWatches.filter(w => !ownedIds.has(w.id)).filter(w => passesImage(w, options.hasImage))
+
+  const scored = pool.map(w => {
     const typeCount = typeCounts.get(w.watchType) ?? 0
     const underrepBonus = typeCount === minCount ? 2 : typeCount <= minCount + 1 ? 1 : 0
     const followedPenalty = followedIds.has(w.id) ? -1 : 0
     const tier = BRAND_TIERS[w.brand] ?? 1
+    const priceBonus = anchor
+      ? 2 - Math.min(2, priceScore(w.estimatedValue, anchor) / Math.max(anchor.target, 1))
+      : 0
     return {
       watch: w,
-      score: underrepBonus + followedPenalty + tier * 0.3 + Math.random() * 0.5,
+      score: underrepBonus + followedPenalty + tier * 0.3 + priceBonus + Math.random() * 0.3,
     }
   })
 

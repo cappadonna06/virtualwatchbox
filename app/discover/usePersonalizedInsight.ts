@@ -12,9 +12,10 @@ type Args = {
   grailWatchId: string | null
   gapType: string | null
   gapLabel: string | null
-  leadPick: { brand: string; model: string; reference: string; type: string } | null
+  leadPick: { brand: string; model: string; reference: string; type: string; value?: number } | null
   fallbackRead: string
   brandReadHint: string
+  priceTarget: number | null
   enabled: boolean
 }
 
@@ -42,7 +43,7 @@ function writeCache(entry: CacheEntry) {
 }
 
 export function usePersonalizedInsight(args: Args): Payload {
-  const { collection, slotCount, grailWatchId, gapType, gapLabel, leadPick, fallbackRead, brandReadHint, enabled } = args
+  const { collection, slotCount, grailWatchId, gapType, gapLabel, leadPick, fallbackRead, brandReadHint, priceTarget, enabled } = args
 
   const hash = personalizeHash({
     watchIds: collection.map(w => w.id),
@@ -85,6 +86,7 @@ export function usePersonalizedInsight(args: Args): Payload {
         gap: gapType && gapLabel ? { type: gapType, gapLabel } : null,
         leadPick,
         brandRead: brandReadHint,
+        priceTarget,
       }),
     })
       .then(r => r.ok ? r.json() : null)

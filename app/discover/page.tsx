@@ -5,6 +5,7 @@ import type { CatalogWatch, WatchType } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import { watches as catalogWatches } from '@/lib/watches'
 import {
   DISCOVER_DEMO_COLLECTION_IDS,
@@ -14,6 +15,7 @@ import {
   computeBoxRead,
   computeStrapSummary,
   brandsOfInterest,
+  collectionPriceAnchor,
   genericByline,
 } from '@/lib/discover'
 import { getProfileDemoState } from '@/lib/profileDemo'
@@ -83,7 +85,13 @@ function lugMode(collection: CatalogWatch[]): number | null {
 export default function DiscoverPage() {
   const { user } = useAuth()
   const session = useCollectionSession()
+  const { getImageUrl } = useWatchImages()
   const isGuest = !user
+
+  const hasImage = useMemo(
+    () => (watch: CatalogWatch) => Boolean(getImageUrl(watch.id) ?? watch.imageUrl),
+    [getImageUrl],
+  )
 
   const realCollection = useMemo(() => ownedToCatalog(session.collectionWatches), [session.collectionWatches])
 
@@ -96,9 +104,11 @@ export default function DiscoverPage() {
   const collection = realCollection.length > 0 ? realCollection : demoCollection
   const personalized = !isGuest && realCollection.length > 0
 
+  const priceAnchor = useMemo(() => collectionPriceAnchor(collection), [collection])
+
   const boxInsight = useMemo(
-    () => getBoxInsight(collection, catalogWatches),
-    [collection],
+    () => getBoxInsight(collection, catalogWatches, { hasImage, priceAnchor }),
+    [collection, hasImage, priceAnchor],
   )
 
   const upgradeSuggestions = useMemo(
@@ -109,13 +119,14 @@ export default function DiscoverPage() {
       session.collectionJewelWatchId,
       session.grailWatchId,
       session.nextTargets.map(t => t.watchId),
+      { hasImage, priceAnchor },
     ),
-    [collection, session.followedWatchIds, session.collectionJewelWatchId, session.grailWatchId, session.nextTargets],
+    [collection, session.followedWatchIds, session.collectionJewelWatchId, session.grailWatchId, session.nextTargets, hasImage, priceAnchor],
   )
 
   const nextSlotRecs = useMemo(
-    () => getNextSlotRecommendations(collection, session.followedWatchIds, catalogWatches, 3),
-    [collection, session.followedWatchIds],
+    () => getNextSlotRecommendations(collection, session.followedWatchIds, catalogWatches, 3, { hasImage, priceAnchor }),
+    [collection, session.followedWatchIds, hasImage, priceAnchor],
   )
 
   const ownedTypes = useMemo(
@@ -139,10 +150,11 @@ export default function DiscoverPage() {
     gapType: boxInsight?.missingType ?? null,
     gapLabel: boxInsight?.missingType ?? null,
     leadPick: leadWatch
-      ? { brand: leadWatch.brand, model: leadWatch.model, reference: leadWatch.reference, type: leadWatch.watchType ?? 'Watch' }
+      ? { brand: leadWatch.brand, model: leadWatch.model, reference: leadWatch.reference, type: leadWatch.watchType ?? 'Watch', value: leadWatch.estimatedValue }
       : null,
     fallbackRead,
     brandReadHint: fallbackRead,
+    priceTarget: priceAnchor?.target ?? null,
     enabled: personalized,
   })
 
