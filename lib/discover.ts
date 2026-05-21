@@ -239,6 +239,173 @@ export function getNextSlotRecommendations(
   return scored.slice(0, count).map(s => s.watch)
 }
 
+// ─── Editorial helpers (new) ─────────────────────────────────────────────
+
+function modeOf<T extends string>(values: T[]): T | null {
+  if (values.length === 0) return null
+  const counts = new Map<T, number>()
+  for (const v of values) counts.set(v, (counts.get(v) ?? 0) + 1)
+  let best: T | null = null
+  let bestCount = 0
+  for (const [v, c] of counts) {
+    if (c > bestCount) { best = v; bestCount = c }
+  }
+  return best
+}
+
+function priceBand(median: number): string {
+  if (median < 5_000)  return 'sub-$5K'
+  if (median < 10_000) return 'sub-$10K'
+  if (median < 25_000) return '$10K–$25K'
+  return '$25K+'
+}
+
+function normalizeDial(color: string | undefined | null): string {
+  if (!color) return ''
+  const c = color.toLowerCase().trim()
+  if (c.includes('blue'))   return 'blue'
+  if (c.includes('black'))  return 'black'
+  if (c.includes('white'))  return 'white'
+  if (c.includes('silver')) return 'silver'
+  if (c.includes('green'))  return 'green'
+  if (c.includes('grey') || c.includes('gray')) return 'grey'
+  if (c.includes('brown'))  return 'brown'
+  if (c.includes('cream') || c.includes('ivory')) return 'cream'
+  if (c.includes('champagne') || c.includes('gold')) return 'champagne'
+  if (c.includes('salmon') || c.includes('orange') || c.includes('red')) return 'warm'
+  return c.split(/\s+/)[0]
+}
+
+export function computeBoxRead(collection: CatalogWatch[]): string {
+  if (collection.length === 0) return 'Editor’s curation, broad strokes'
+
+  const parts: string[] = []
+
+  const brandCounts = new Map<string, number>()
+  for (const w of collection) brandCounts.set(w.brand, (brandCounts.get(w.brand) ?? 0) + 1)
+  let topBrand: string | null = null
+  let topBrandShare = 0
+  for (const [b, c] of brandCounts) {
+    const share = c / collection.length
+    if (share > topBrandShare) { topBrand = b; topBrandShare = share }
+  }
+  if (topBrand && topBrandShare >= 0.4 && collection.length >= 3) {
+    parts.push(`${topBrand}-anchored`)
+  } else {
+    const typeMode = modeOf(collection.map(w => w.watchType).filter((t): t is WatchType => Boolean(t)))
+    if (typeMode) parts.push(`${typeMode}-led`)
+  }
+
+  const dialColors = collection.map(w => normalizeDial(w.dialColor)).filter(Boolean)
+  const dialCounts = new Map<string, number>()
+  for (const c of dialColors) dialCounts.set(c, (dialCounts.get(c) ?? 0) + 1)
+  const dialRanked = Array.from(dialCounts.entries()).sort((a, b) => b[1] - a[1])
+  if (dialRanked.length === 1 && dialRanked[0][1] >= 2) {
+    parts.push(dialRanked[0][0])
+  } else if (dialRanked.length >= 2 && dialRanked[0][1] + dialRanked[1][1] >= Math.max(2, collection.length * 0.5)) {
+    parts.push(`${dialRanked[0][0]}–${dialRanked[1][0]}`)
+  }
+
+  const values = collection.map(w => w.estimatedValue).filter(v => v > 0).sort((a, b) => a - b)
+  if (values.length > 0) {
+    const median = values[Math.floor(values.length / 2)]
+    parts.push(priceBand(median))
+  }
+
+  return parts.join(', ')
+}
+
+export function computeStrapSummary(collection: CatalogWatch[]): string {
+  const lugs = collection.map(w => w.lugWidthMm).filter((n): n is number => typeof n === 'number')
+  if (lugs.length === 0) return 'Swap-friendly across most boxes — bring your lug widths in by adding watches.'
+
+  const counts = new Map<number, number>()
+  for (const n of lugs) counts.set(n, (counts.get(n) ?? 0) + 1)
+  const ranked = Array.from(counts.entries()).sort((a, b) => b[1] - a[1])
+  const [topLug, topCount] = ranked[0]
+
+  if (topCount === lugs.length) {
+    return `All ${lugs.length} of your watches share ${topLug} mm lugs. Anything in this row will fit.`
+  }
+  return `${topCount} of your ${lugs.length} watches share ${topLug} mm lugs. Swap-friendly across most of your box.`
+}
+
+export function priceBandFor(watch: CatalogWatch): { low: number; high: number; median: number } {
+  const median = watch.estimatedValue
+  return {
+    low: Math.round(median * 0.85),
+    high: Math.round(median * 1.15),
+    median,
+  }
+}
+
+export function upgradeDeltaFor(from: CatalogWatch, to: CatalogWatch): string {
+  const delta = to.estimatedValue - from.estimatedValue
+  const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+  return `${delta >= 0 ? '+' : '−'}${fmt.format(Math.abs(delta))}`
+}
+
+export function isAspirationalUpgrade(from: CatalogWatch, to: CatalogWatch): boolean {
+  if (from.estimatedValue <= 0) return false
+  return to.estimatedValue >= from.estimatedValue * 3
+}
+
+export function brandsOfInterest(collection: CatalogWatch[], topN = 3): string[] {
+  if (collection.length === 0) return []
+  const counts = new Map<string, number>()
+  for (const w of collection) counts.set(w.brand, (counts.get(w.brand) ?? 0) + 1)
+  return Array.from(counts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, topN)
+    .map(([brand]) => brand)
+}
+
+export const PERSONALIZE_VERSION = 1
+
+export function personalizeHash(input: {
+  watchIds: string[]
+  slotCount: number
+  grailWatchId: string | null
+  gapType: string | null
+}): string {
+  const sorted = [...input.watchIds].sort().join('|')
+  return [
+    sorted,
+    String(input.slotCount),
+    input.grailWatchId ?? '',
+    input.gapType ?? '',
+    `v${PERSONALIZE_VERSION}`,
+  ].join('::')
+}
+
+const GENERIC_BYLINES = [
+  'For the refined collector',
+  'For the discerning wrist',
+  'For the studied eye',
+  'For the deliberate collector',
+  'For the considered hand',
+]
+
+export function genericByline(): string {
+  const dayStr = new Date().toDateString()
+  let hash = 0
+  for (let i = 0; i < dayStr.length; i += 1) hash = (hash * 31 + dayStr.charCodeAt(i)) | 0
+  return GENERIC_BYLINES[Math.abs(hash) % GENERIC_BYLINES.length]
+}
+
+export function bestFitBoxIndex(slotCount: number, capacities: number[]): number {
+  let bestIdx = 0
+  let bestDist = Infinity
+  for (let i = 0; i < capacities.length; i += 1) {
+    const dist = Math.abs(capacities[i] - slotCount)
+    if (dist < bestDist || (dist === bestDist && capacities[i] < capacities[bestIdx])) {
+      bestDist = dist
+      bestIdx = i
+    }
+  }
+  return bestIdx
+}
+
 export function getTargetOpportunities(
   targets: WatchTarget[],
   grailWatchId: string | null,
