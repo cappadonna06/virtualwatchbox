@@ -70,6 +70,45 @@ export const DISCOVER_DEMO_COLLECTION_IDS: string[] = [
   'orient-bambino',
 ]
 
+// Heat-driven demo collection. When the user is signed out or has an empty
+// box, /discover needs *something* to anchor the algorithms — the lead pick
+// needs a missing gap, the upgrade row needs a from-watch, etc. Previously
+// this looked up the four hard-coded DISCOVER_DEMO_COLLECTION_IDS in the
+// static 87-watch seed; this version draws from whatever catalog the caller
+// supplies (the dynamic Supabase top-2000 in production) and prefers
+// type-diverse, high-heat watches that also have a resolvable image. Result
+// feels like a real collector's starter box without depending on the seed.
+export function pickDemoCollection(
+  allWatches: CatalogWatch[],
+  options: { hasImage?: (w: CatalogWatch) => boolean; count?: number } = {},
+): CatalogWatch[] {
+  const count = options.count ?? 4
+  const ranked = [...allWatches]
+    .filter(w => Boolean(w.watchType))
+    .filter(w => options.hasImage ? options.hasImage(w) : Boolean(w.imageUrl))
+    .sort((a, b) => (b.market?.heatScore ?? 0) - (a.market?.heatScore ?? 0))
+
+  if (ranked.length === 0) return []
+
+  // Type-diverse pass: take the top-heat watch of each unique type first.
+  const picked: CatalogWatch[] = []
+  const seenTypes = new Set<WatchType>()
+  for (const w of ranked) {
+    if (picked.length >= count) break
+    const t = w.watchType as WatchType
+    if (seenTypes.has(t)) continue
+    seenTypes.add(t)
+    picked.push(w)
+  }
+  // Fill any remaining slots with the next-best regardless of type.
+  for (const w of ranked) {
+    if (picked.length >= count) break
+    if (picked.find(p => p.id === w.id)) continue
+    picked.push(w)
+  }
+  return picked
+}
+
 const MISSING_TYPE_PRIORITY: WatchType[] = [
   'Dress', 'GMT', 'Chronograph', 'Field', 'Diver', 'Pilot',
 ]

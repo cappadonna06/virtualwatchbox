@@ -7,9 +7,7 @@ import { useAuth } from '@/lib/auth/AuthProvider'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
-import { watches as seedCatalogWatches } from '@/lib/watches'
 import {
-  DISCOVER_DEMO_COLLECTION_IDS,
   getBoxInsight,
   getNextSlotRecommendations,
   getUpgradeSuggestions,
@@ -18,6 +16,7 @@ import {
   brandsOfInterest,
   collectionPriceAnchor,
   genericByline,
+  pickDemoCollection,
 } from '@/lib/discover'
 import { getProfileDemoState } from '@/lib/profileDemo'
 
@@ -87,19 +86,12 @@ export default function DiscoverPage() {
   const { user } = useAuth()
   const session = useCollectionSession()
   const { getImageUrl } = useWatchImages()
-  const { allWatches: dynamicCatalogWatches } = useCatalog()
+  // Supabase-backed catalog. CatalogProvider transparently falls back to
+  // the curated static seed when the Supabase load hasn't completed (SSR,
+  // first paint) or when the load fails, so consumers can treat this as
+  // "always populated."
+  const { allWatches: catalogWatches } = useCatalog()
   const isGuest = !user
-
-  // Use the dynamic top-2000-by-heat catalog as the suggestion pool when
-  // it's loaded; fall back to the curated 87-watch static seed so SSR and
-  // first paint aren't empty. Merged-by-id so we don't double-count.
-  const catalogWatches = useMemo(() => {
-    if (dynamicCatalogWatches.length === 0) return seedCatalogWatches
-    const byId = new Map<string, CatalogWatch>()
-    for (const w of seedCatalogWatches) byId.set(w.id, w)
-    for (const w of dynamicCatalogWatches) byId.set(w.id, w)
-    return Array.from(byId.values())
-  }, [dynamicCatalogWatches])
 
   const hasImage = useMemo(
     () => (watch: CatalogWatch) => Boolean(getImageUrl(watch.id) ?? watch.imageUrl),
@@ -108,11 +100,14 @@ export default function DiscoverPage() {
 
   const realCollection = useMemo(() => ownedToCatalog(session.collectionWatches), [session.collectionWatches])
 
-  const demoCollection: CatalogWatch[] = useMemo(() => (
-    DISCOVER_DEMO_COLLECTION_IDS
-      .map(id => catalogWatches.find(w => w.id === id))
-      .filter((w): w is CatalogWatch => Boolean(w))
-  ), [catalogWatches])
+  // Demo collection for guest / empty-box sessions: top-heat watches from
+  // the live Supabase catalog, with a type-variety pass so the four picks
+  // span different watch types (Field, GMT, Dress, Chrono, etc.) rather
+  // than landing on four Rolex sport models.
+  const demoCollection: CatalogWatch[] = useMemo(
+    () => pickDemoCollection(catalogWatches, { hasImage, count: 4 }),
+    [catalogWatches, hasImage],
+  )
 
   const collection = realCollection.length > 0 ? realCollection : demoCollection
   const personalized = !isGuest && realCollection.length > 0
