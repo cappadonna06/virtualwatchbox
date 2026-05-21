@@ -364,22 +364,35 @@ type ManifestEntry = {
 }
 
 // Storage URL base — written into watch_images.png_url / webp_url so the app
-// reads from Supabase Storage in production. Falls back to the local manifest
-// path only when SUPABASE_URL is unset (offline / CI mode).
+// reads from Supabase Storage in production.
+//
+// The previous behaviour fell back to local manifest paths when SUPABASE_URL
+// was unset, which sounded harmless ("for offline / CI mode") but in practice
+// silently wrote 1,397 broken `/watch-assets/processed/...` URLs to prod
+// during a run where the env wasn't loaded as expected — every catalog image
+// 404'd until the rows were overwritten. The fix is to fail loudly: an
+// offline seed run that can't produce Storage URLs has nothing valuable to
+// upsert, so abort instead of poisoning the table.
 const STORAGE_BASE = SUPABASE_URL
   ? `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/watch-images`
   : null
 
-function storageUrlFor(watchId: string, ext: 'png' | 'webp'): string | null {
-  if (!STORAGE_BASE) return null
+function storageUrlFor(watchId: string, ext: 'png' | 'webp'): string {
+  if (!STORAGE_BASE) {
+    fail(
+      'Cannot build watch_images URL: SUPABASE_URL / NEXT_PUBLIC_SUPABASE_URL is not set. ' +
+      'Aborting before writing local-path URLs into Supabase. Set the env var (loadLocalEnv ' +
+      'normally picks it up from .env.local) and re-run.',
+    )
+  }
   return `${STORAGE_BASE}/${watchId}/primary.${ext}`
 }
 
 function buildImageRow(m: ManifestEntry): Record<string, unknown> {
   return {
     catalog_watch_id: m.watchId,
-    png_url: storageUrlFor(m.watchId, 'png') ?? m.pngPath,
-    webp_url: storageUrlFor(m.watchId, 'webp') ?? m.webpPath,
+    png_url: storageUrlFor(m.watchId, 'png'),
+    webp_url: storageUrlFor(m.watchId, 'webp'),
     source_width: m.sourceWidth ?? null,
     source_height: m.sourceHeight ?? null,
     processed_width: m.processedWidth ?? null,
