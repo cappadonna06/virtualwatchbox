@@ -372,9 +372,13 @@ async function main() {
   fs.mkdirSync(cacheDir, { recursive: true })
 
   // Prefer enriched JSON for heat-ordered priority. Fall back to seed CSV.
+  // Exception: if --seed was explicitly passed on the command line, honor it
+  // (used to scope the scrape to a curated batch CSV rather than the full
+  // enriched catalog).
+  const seedExplicit = process.argv.slice(2).some(a => a === '--seed' || a.startsWith('--seed='))
   const enrichedPath = path.resolve(repoRoot, ENRICHED_JSON)
   let rows: Array<SeedRow & { heatScore?: number; popularityRank?: number }> = []
-  if (fs.existsSync(enrichedPath)) {
+  if (!seedExplicit && fs.existsSync(enrichedPath)) {
     console.log(`[watchbase] reading priorities from ${path.relative(repoRoot, enrichedPath)}`)
     const enriched = JSON.parse(fs.readFileSync(enrichedPath, 'utf8'))
     rows = (enriched.records as Array<Record<string, unknown>>)

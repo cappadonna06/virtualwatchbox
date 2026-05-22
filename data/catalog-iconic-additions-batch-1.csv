@@ -1,0 +1,33 @@
+id,brand,model,reference,dialColor,watchType,sourceUrl,communitySignal,verificationStatus
+rolex-116610lv,Rolex,Submariner Date,116610LV,Green,Diver,https://www.rolex.com/watches/submariner,hand_curated_iconic,identity_seeded_specs_pending
+rolex-116619lb,Rolex,Submariner Date,116619LB,Blue,Diver,https://www.rolex.com/watches/submariner,hand_curated_iconic,identity_seeded_specs_pending
+rolex-126619lb,Rolex,Submariner Date,126619LB,Blue,Diver,https://www.rolex.com/watches/submariner,hand_curated_iconic,identity_seeded_specs_pending
+rolex-1675,Rolex,GMT-Master,1675,Black,GMT,https://www.rolex.com/watches/gmt-master-ii,hand_curated_iconic,identity_seeded_specs_pending
+rolex-16710,Rolex,GMT-Master II,16710,Black,GMT,https://www.rolex.com/watches/gmt-master-ii,hand_curated_iconic,identity_seeded_specs_pending
+rolex-16750,Rolex,GMT-Master,16750,Black,GMT,https://www.rolex.com/watches/gmt-master-ii,hand_curated_iconic,identity_seeded_specs_pending
+rolex-116719blro,Rolex,GMT-Master II,116719BLRO,Black,GMT,https://www.rolex.com/watches/gmt-master-ii,hand_curated_iconic,identity_seeded_specs_pending
+rolex-126719blro,Rolex,GMT-Master II,126719BLRO,Black,GMT,https://www.rolex.com/watches/gmt-master-ii,hand_curated_iconic,identity_seeded_specs_pending
+rolex-126720vtnr,Rolex,GMT-Master II,126720VTNR,Black,GMT,https://www.rolex.com/watches/gmt-master-ii,hand_curated_iconic,identity_seeded_specs_pending
+rolex-126711chnr,Rolex,GMT-Master II,126711CHNR,Black,GMT,https://www.rolex.com/watches/gmt-master-ii,hand_curated_iconic,identity_seeded_specs_pending
+rolex-126715chnr,Rolex,GMT-Master II,126715CHNR,Black,GMT,https://www.rolex.com/watches/gmt-master-ii,hand_curated_iconic,identity_seeded_specs_pending
+rolex-16570,Rolex,Explorer II,16570,White,GMT,https://www.rolex.com/watches/explorer,hand_curated_iconic,identity_seeded_specs_pending
+rolex-216570,Rolex,Explorer II,216570,White,GMT,https://www.rolex.com/watches/explorer,hand_curated_iconic,identity_seeded_specs_pending
+rolex-1655,Rolex,Explorer II,1655,Black,GMT,https://www.rolex.com/watches/explorer,hand_curated_iconic,identity_seeded_specs_pending
+rolex-116508,Rolex,Cosmograph Daytona,116508,Green,Chronograph,https://www.rolex.com/watches/cosmograph-daytona,hand_curated_iconic,identity_seeded_specs_pending
+rolex-126506,Rolex,Cosmograph Daytona,126506,White,Chronograph,https://www.rolex.com/watches/cosmograph-daytona,hand_curated_iconic,identity_seeded_specs_pending
+rolex-6239,Rolex,Cosmograph Daytona,6239,Silver,Chronograph,https://www.rolex.com/watches/cosmograph-daytona,hand_curated_iconic,identity_seeded_specs_pending
+rolex-6263,Rolex,Cosmograph Daytona,6263,Black,Chronograph,https://www.rolex.com/watches/cosmograph-daytona,hand_curated_iconic,identity_seeded_specs_pending
+rolex-1665,Rolex,Sea-Dweller,1665,Black,Diver,https://www.rolex.com/watches/sea-dweller,hand_curated_iconic,identity_seeded_specs_pending
+rolex-5513,Rolex,Submariner,5513,Black,Diver,https://www.rolex.com/watches/submariner,hand_curated_iconic,identity_seeded_specs_pending
+omega-311-30-42-30-01-005,Omega,Speedmaster Professional Moonwatch,311.30.42.30.01.005,Black,Chronograph,https://www.omegawatches.com/watches/speedmaster/moonwatch,hand_curated_iconic,identity_seeded_specs_pending
+omega-310-32-42-50-02-001,Omega,Speedmaster Silver Snoopy 50th Anniversary,310.32.42.50.02.001,Silver,Chronograph,https://www.omegawatches.com/watches/speedmaster/moonwatch,hand_curated_iconic,identity_seeded_specs_pending
+omega-311-92-44-51-01-007,Omega,Speedmaster Dark Side of the Moon,311.92.44.51.01.007,Black,Chronograph,https://www.omegawatches.com/watches/speedmaster/dark-side-of-the-moon,hand_curated_iconic,identity_seeded_specs_pending
+omega-210-22-42-20-01-004,Omega,Seamaster Diver 300M No Time To Die Edition,210.22.42.20.01.004,Black,Diver,https://www.omegawatches.com/watches/seamaster,hand_curated_iconic,identity_seeded_specs_pending
+audemars-piguet-15202st-oo-1240st-01,Audemars Piguet,Royal Oak Jumbo Extra-Thin,15202ST.OO.1240ST.01,Blue,Integrated Bracelet,https://www.audemarspiguet.com/com/en/collection/royal-oak.html,hand_curated_iconic,identity_seeded_specs_pending
+audemars-piguet-15400st-oo-1220st-01,Audemars Piguet,Royal Oak Selfwinding 41,15400ST.OO.1220ST.01,Blue,Integrated Bracelet,https://www.audemarspiguet.com/com/en/collection/royal-oak.html,hand_curated_iconic,identity_seeded_specs_pending
+patek-philippe-5740-1g-001,Patek Philippe,Nautilus Perpetual Calendar,5740/1G-001,Blue,Integrated Bracelet,https://www.patek.com/en/collection/nautilus,hand_curated_iconic,identity_seeded_specs_pending
+patek-philippe-5168g-010,Patek Philippe,Aquanaut Jumbo,5168G-010,Blue,Diver,https://www.patek.com/en/collection/aquanaut,hand_curated_iconic,identity_seeded_specs_pending
+cartier-w2020018,Cartier,Crash,W2020018,White,Dress,https://www.cartier.com/en-us/watches.html,hand_curated_iconic,identity_seeded_specs_pending
+seiko-sbdx017,Seiko,Prospex Marinemaster 300,SBDX017,Black,Diver,https://www.seikowatches.com/global-en/products/prospex,hand_curated_iconic,identity_seeded_specs_pending
+seiko-sla037,Seiko,Prospex 62MAS Modern Re-interpretation,SLA037,Black,Diver,https://www.seikowatches.com/global-en/products/prospex,hand_curated_iconic,identity_seeded_specs_pending
+grand-seiko-sbgh271,Grand Seiko,Heritage Mt. Iwate,SBGH271,White,Dress,https://www.grand-seiko.com/us-en/collections/heritage,hand_curated_iconic,identity_seeded_specs_pending
