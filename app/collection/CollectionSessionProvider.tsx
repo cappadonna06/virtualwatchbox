@@ -13,7 +13,7 @@ import {
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { remapLegacyCatalogId } from '@/lib/catalog/legacyIdRemap'
 import { createCatalogWatchMap, resolveCatalogWatchId, resolveOwnedWatches } from '@/lib/watchData'
-import { getEffectiveSlotCount } from '@/lib/watchboxOverflow'
+import { getEffectiveSlotCount, packToSlotCount } from '@/lib/watchboxOverflow'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { createClient } from '@/lib/supabase/client'
 import type {
@@ -1746,9 +1746,28 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   function setWatchboxSlotCount(slotCount: number) {
     if (!SLOT_COUNTS.some(slot => slot.n === slotCount)) return
     setWatchboxConfig(prev => {
+      if (prev.slotCount === slotCount) return prev
       const next = { ...prev, slotCount }
       if (user) void trackedSync(syncWatchboxConfig(next, user.id))
       return next
+    })
+    // Shrinking can leave watches at slot indices that no longer exist (e.g.
+    // [W][ ][ ][ ][ ][ ][ ][W] at 8 slots → 6 slots leaves slot-7 stranded).
+    // Pack any out-of-range watches into the lowest empty slots so nothing
+    // silently falls into overflow.
+    setCollectionEntries(prev => {
+      const repacked = packToSlotCount(
+        prev,
+        slotCount,
+        owned => owned.slot,
+        (owned, newSlot) => ({ ...owned, slot: newSlot }),
+      )
+      if (repacked === prev) return prev
+      const prevById = new Map(prev.map(w => [w.id, w.slot]))
+      const changed = repacked.some(w => prevById.get(w.id) !== w.slot)
+      if (!changed) return prev
+      if (user) void trackedSync(syncWatchReorder(repacked, user.id))
+      return repacked
     })
   }
 

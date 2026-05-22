@@ -28,7 +28,7 @@ import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import WatchTray from '@/components/playground/WatchTray'
 import { PLAYGROUND_BOXES_STORAGE_KEY } from '@/lib/storageKeys'
-import { getEffectiveSlotCount, getOverflowSummary } from '@/lib/watchboxOverflow'
+import { getOverflowSummary, packToSlotCount } from '@/lib/watchboxOverflow'
 import WatchBox from '@/components/collection/WatchBox'
 import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarSheet'
 import WatchSidebar from '@/components/collection/WatchSidebar'
@@ -280,23 +280,21 @@ function PlaygroundPageInner() {
   }
 
   function handleBoxConfigChange(field: 'frame' | 'lining' | 'slotCount', value: string | number) {
-    updateActiveBox(box => ({
-      ...box,
-      [field]: value,
-    }))
+    updateActiveBox(box => {
+      if (field !== 'slotCount') return { ...box, [field]: value }
+      const newSlotCount = value as number
+      if (box.slotCount === newSlotCount) return box
+      // Shrinking? Pack any out-of-range entries into the lowest empty slots
+      // so nothing falls into overflow by surprise. Growing leaves slots as-is.
+      const packedEntries = packToSlotCount(
+        box.entries,
+        newSlotCount,
+        (entry, index) => getEntrySlot(entry, index),
+        (entry, slot) => ({ ...entry, slot }),
+      )
+      return { ...box, slotCount: newSlotCount, entries: packedEntries }
+    })
   }
-
-  useEffect(() => {
-    if (!activeBox) return
-    // Auto-bump slot count to fit the highest occupied slot — keeps a drop on
-    // slot 7 from being hidden behind the overflow tile when slotCount is 6.
-    let maxSlotPlusOne = 0
-    for (const r of resolvedEntries) maxSlotPlusOne = Math.max(maxSlotPlusOne, r.slot + 1)
-    const effective = getEffectiveSlotCount(activeBox.slotCount, maxSlotPlusOne)
-    if (effective !== activeBox.slotCount) {
-      updateActiveBox(box => ({ ...box, slotCount: effective }))
-    }
-  }, [activeBox, resolvedEntries])
 
   function startEditing() {
     setEditingNameValue(activeBox?.name ?? '')
@@ -794,7 +792,12 @@ function PlaygroundPageInner() {
           brandCount,
           slotCount: activeBox.slotCount,
           boxTitle: activeBox.name,
-          watchImageUrls: displayWatches.map(w => w.imageUrl ?? null),
+          // Sparse: align image URL index with slot so the share preview keeps
+          // empty middle slots empty.
+          watchImageUrls: Array.from({ length: activeBox.slotCount }, (_, i) => {
+            const r = resolvedEntries.find(item => item.slot === i)
+            return r?.displayWatch.imageUrl ?? null
+          }),
         } : null
         const buildShareUrl = (flags: ShareFlags) => activeBox && data
           ? buildAbsoluteProfileDemoUrl(buildBoxShareUrl(getPlaygroundBoxSlug(activeBox), 'playground', data, flags))

@@ -286,7 +286,13 @@ export default function CollectionPage() {
           totalValue: totalEstimatedValue,
           brandCount,
           slotCount: watchboxConfig.slotCount,
-          watchImageUrls: collectionWatches.map(w => w.imageUrl ?? null),
+          // Sparse image array: index = slot, null at empty slots. Keeps the
+          // OG image and share URL preview rendering gaps the same way the
+          // owner sees them.
+          watchImageUrls: Array.from({ length: watchboxConfig.slotCount }, (_, i) => {
+            const w = collectionWatches.find(x => x.slot === i)
+            return w?.imageUrl ?? null
+          }),
         }
         const buildShareUrl = (flags: ShareFlags) =>
           buildAbsoluteProfileDemoUrl(buildBoxShareUrl(getCollectionBoxSlug(), 'collection', data, flags))

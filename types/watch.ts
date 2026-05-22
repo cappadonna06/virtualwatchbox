@@ -231,6 +231,12 @@ export interface ResolvedWatch {
   condition: WatchCondition
   notes: string
   market?: CatalogWatchMarket
+  /**
+   * Optional sparse-slot index. Owned watches always carry one. Playground
+   * resolved watches attach theirs at snapshot time. Catalog displayWatches
+   * leave it undefined.
+   */
+  slot?: number
 }
 
 export interface ResolvedOwnedWatch extends ResolvedWatch {
