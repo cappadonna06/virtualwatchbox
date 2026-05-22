@@ -115,6 +115,7 @@ function PlaygroundPageInner() {
   const [mobileStatsOpen, setMobileStatsOpen] = useState(false)
   const [hydrated, setHydrated] = useState(false)
   const [screenW, setScreenW] = useState(0)
+  const [touchHoverSlot, setTouchHoverSlot] = useState<number | null>(null)
   const nameInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -220,9 +221,11 @@ function PlaygroundPageInner() {
   }
 
   function handleTrayDrop(slotIndex: number | null, watchId: string) {
-    if (!activeBoxId) return
-    const targetIndex = slotIndex ?? (activeBox?.entries.length ?? 0)
-    setBoxes(prev => placeWatchInPlaygroundSlot(prev, activeBoxId, targetIndex, watchId))
+    // Touch drops must land on a real slot — otherwise the gesture is treated
+    // as a cancel. Falling back to "append" would let stray finger lifts add
+    // watches by accident, which was the v1 complaint.
+    if (!activeBoxId || slotIndex === null) return
+    setBoxes(prev => placeWatchInPlaygroundSlot(prev, activeBoxId, slotIndex, watchId))
   }
 
   async function handleShareBox() {
@@ -726,6 +729,7 @@ function PlaygroundPageInner() {
                     reorderBoxEntries(activeBoxId, entries)
                   }}
                   onExternalDrop={handleExternalDrop}
+                  externalHoverIndex={touchHoverSlot}
                   collectionWatchCount={collectionWatches.length}
                   onImportCollection={handleImportCollection}
                 />
@@ -735,6 +739,7 @@ function PlaygroundPageInner() {
                       followedWatches={followedWatches}
                       collectionWatches={collectionWatches}
                       onWatchDropped={handleTrayDrop}
+                      onTouchHoverChange={setTouchHoverSlot}
                     />
                   </div>
                 )}
@@ -1116,6 +1121,7 @@ interface WatchboxViewProps {
   overflowSummary: string | null
   onReorder?: (from: number, to: number) => void
   onExternalDrop?: (slotIndex: number, watchId: string) => void
+  externalHoverIndex?: number | null
   collectionWatchCount: number
   onImportCollection: () => void
 }
@@ -1135,6 +1141,7 @@ function WatchboxView({
   overflowSummary,
   onReorder,
   onExternalDrop,
+  externalHoverIndex,
   collectionWatchCount,
   onImportCollection,
 }: WatchboxViewProps) {
@@ -1275,6 +1282,7 @@ function WatchboxView({
           onEmptySlotClick={onEmptySlotClick}
           onReorder={onReorder}
           onExternalDrop={onExternalDrop}
+          externalHoverIndex={externalHoverIndex}
           frame={box.frame}
           lining={box.lining}
           slotCount={box.slotCount}

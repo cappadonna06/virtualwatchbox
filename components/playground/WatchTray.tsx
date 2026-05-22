@@ -12,25 +12,41 @@ interface Props {
   followedWatches: CatalogWatch[]
   collectionWatches: ResolvedOwnedWatch[]
   onWatchDropped: (slotIndex: number | null, watchId: string) => void
+  /** Fires as the touch ghost moves over slots, so the page can light up the target slot in WatchBox. */
+  onTouchHoverChange?: (slotIndex: number | null) => void
   /** Selector that resolves to all valid drop-target slot wrappers in the active watchbox. */
   slotSelector?: string
 }
 
 const COLLAPSE_KEY = 'playgroundTray.collapsed'
 const TAB_KEY = 'playgroundTray.tab'
+const LONG_PRESS_MS = 350
+const MOVE_CANCEL_PX = 8
 
 export default function WatchTray({
   followedWatches,
   collectionWatches,
   onWatchDropped,
+  onTouchHoverChange,
   slotSelector = '[data-slot-index]',
 }: Props) {
   const [tab, setTab] = useState<Tab>('followed')
   const [collapsed, setCollapsed] = useState(false)
   const [isTouchDevice, setIsTouchDevice] = useState(false)
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
+  const [armedId, setArmedId] = useState<string | null>(null)
   const [hoverSlot, setHoverSlot] = useState<number | null>(null)
   const cleanupRef = useRef<(() => void) | null>(null)
+  const longPressRef = useRef<{
+    timer: ReturnType<typeof setTimeout> | null
+    startX: number
+    startY: number
+    watchId: string
+    pointerId: number
+    el: HTMLElement
+    moveHandler: (ev: PointerEvent) => void
+    cancelHandler: (ev: PointerEvent) => void
+  } | null>(null)
 
   useEffect(() => {
     setIsTouchDevice(window.matchMedia('(hover: none) and (pointer: coarse)').matches)
@@ -58,7 +74,10 @@ export default function WatchTray({
     if (followedWatches.length === 0 && collectionWatches.length > 0) setTab('collection')
   }, [followedWatches.length, collectionWatches.length])
 
-  useEffect(() => () => { cleanupRef.current?.() }, [])
+  useEffect(() => () => {
+    cleanupRef.current?.()
+    cancelLongPress()
+  }, [])
 
   const items = useMemo(() => {
     if (tab === 'followed') {
@@ -92,27 +111,76 @@ export default function WatchTray({
     setActiveDragId(null)
   }
 
-  function startTouchDrag(e: ReactPointerEvent<HTMLDivElement>, watchId: string) {
-    const sourceEl = e.currentTarget as HTMLElement
-    e.preventDefault()
-    e.stopPropagation()
+  function cancelLongPress() {
+    const lp = longPressRef.current
+    if (!lp) return
+    if (lp.timer) clearTimeout(lp.timer)
+    document.removeEventListener('pointermove', lp.moveHandler)
+    document.removeEventListener('pointerup', lp.cancelHandler)
+    document.removeEventListener('pointercancel', lp.cancelHandler)
+    longPressRef.current = null
+  }
+
+  function armDrag(watchId: string, el: HTMLElement, clientX: number, clientY: number, pointerId: number) {
+    setArmedId(watchId)
     setActiveDragId(watchId)
+    try { el.setPointerCapture(pointerId) } catch {}
+    try { (navigator as Navigator & { vibrate?: (n: number) => void }).vibrate?.(10) } catch {}
+
     cleanupRef.current?.()
     cleanupRef.current = startGhostDrag({
-      sourceEl,
-      clientX: e.clientX,
-      clientY: e.clientY,
+      sourceEl: el,
+      clientX,
+      clientY,
       ghostWidth: 72,
       ghostHeight: 96,
       watchId,
       targetSelector: slotSelector,
-      onHover: idx => setHoverSlot(idx),
+      onHover: idx => {
+        setHoverSlot(idx)
+        onTouchHoverChange?.(idx)
+      },
       onDrop: (slotIndex, id) => {
         setActiveDragId(null)
+        setArmedId(null)
         setHoverSlot(null)
+        onTouchHoverChange?.(null)
         onWatchDropped(slotIndex, id)
       },
     })
+  }
+
+  function handleTouchPointerDown(e: ReactPointerEvent<HTMLDivElement>, watchId: string) {
+    if (e.pointerType !== 'touch' && e.pointerType !== 'pen') return
+    const el = e.currentTarget as HTMLElement
+    const startX = e.clientX
+    const startY = e.clientY
+    const pointerId = e.pointerId
+
+    cancelLongPress()
+
+    const moveHandler = (ev: PointerEvent) => {
+      const dx = Math.abs(ev.clientX - startX)
+      const dy = Math.abs(ev.clientY - startY)
+      if (dx + dy > MOVE_CANCEL_PX) cancelLongPress()
+    }
+    const cancelHandler = () => cancelLongPress()
+
+    document.addEventListener('pointermove', moveHandler, { passive: true })
+    document.addEventListener('pointerup', cancelHandler)
+    document.addEventListener('pointercancel', cancelHandler)
+
+    const timer = setTimeout(() => {
+      const lp = longPressRef.current
+      longPressRef.current = null
+      if (!lp) return
+      document.removeEventListener('pointermove', lp.moveHandler)
+      document.removeEventListener('pointerup', lp.cancelHandler)
+      document.removeEventListener('pointercancel', lp.cancelHandler)
+      armDrag(watchId, el, startX, startY, pointerId)
+    }, LONG_PRESS_MS)
+
+    longPressRef.current = { timer, startX, startY, watchId, pointerId, el, moveHandler, cancelHandler }
   }
 
   return (
@@ -163,7 +231,7 @@ export default function WatchTray({
               color: brand.colors.muted,
             }}
           >
-            {isTouchDevice ? 'Press & drag' : 'Drag onto a slot'}
+            {isTouchDevice ? 'Hold to drag · swipe to scroll' : 'Drag onto a slot'}
           </span>
           <button
             onClick={() => setCollapsed(v => !v)}
@@ -228,28 +296,31 @@ export default function WatchTray({
           ) : (
             items.map(item => {
               const isActive = activeDragId === item.watchId
+              const isArmed = armedId === item.watchId
               return (
                 <div
                   key={item.id}
                   draggable={!isTouchDevice}
                   onDragStart={!isTouchDevice ? e => handleDesktopDragStart(e as DragEvent<HTMLDivElement>, item.watchId) : undefined}
                   onDragEnd={!isTouchDevice ? handleDesktopDragEnd : undefined}
-                  onPointerDown={isTouchDevice ? e => startTouchDrag(e, item.watchId) : undefined}
+                  onPointerDown={isTouchDevice ? e => handleTouchPointerDown(e, item.watchId) : undefined}
                   title={`${item.brand} ${item.model}`}
                   style={{
                     flexShrink: 0,
                     width: 76,
-                    cursor: isTouchDevice ? 'grab' : 'grab',
+                    cursor: 'grab',
                     background: brand.colors.bg,
-                    border: `1px solid ${brand.colors.borderMid}`,
+                    border: isArmed
+                      ? `1px solid ${brand.colors.gold}`
+                      : `1px solid ${brand.colors.borderMid}`,
                     borderRadius: brand.radius.md,
                     padding: 6,
                     opacity: isActive ? 0.45 : 1,
-                    transition: 'opacity 0.15s ease, transform 0.15s ease',
-                    transform: isActive ? 'scale(0.96)' : 'scale(1)',
+                    boxShadow: isArmed ? brand.shadow.gold : undefined,
+                    transition: 'opacity 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease',
+                    transform: isActive ? 'scale(0.96)' : isArmed ? 'scale(1.04)' : 'scale(1)',
                     userSelect: 'none',
                     WebkitUserSelect: 'none',
-                    touchAction: isTouchDevice ? 'none' : undefined,
                   }}
                 >
                   <div

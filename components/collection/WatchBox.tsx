@@ -17,6 +17,8 @@ interface Props {
   onEmptySlotClick?: () => void
   onReorder?: (from: number, to: number) => void
   onExternalDrop?: (slotIndex: number, watchId: string) => void
+  /** Controlled hover index used by touch-driven external drags (HTML5 dragover doesn't fire for pointer events). */
+  externalHoverIndex?: number | null
   frame: string
   lining: string
   slotCount: number
@@ -158,6 +160,7 @@ export default function WatchBox({
   onEmptySlotClick,
   onReorder,
   onExternalDrop,
+  externalHoverIndex,
   frame,
   lining,
   slotCount,
@@ -291,7 +294,7 @@ export default function WatchBox({
 
               if (slot.type === 'empty') {
                 const isFirstSlot = i === 0
-                const isExternalHover = externalDragOverIndex === i
+                const isExternalHover = externalDragOverIndex === i || externalHoverIndex === i
                 return (
                   <div
                     key={i}
@@ -475,7 +478,7 @@ export default function WatchBox({
               const isDestInPreview = inPreview && i === dragOverIndex
               const isBeingDragged = !inPreview && onReorder !== undefined && draggedIndex === i
               const isDragTarget = !inPreview && onReorder !== undefined && dragOverIndex === i && draggedIndex !== i
-              const isExternalDragTarget = externalDragOverIndex === i
+              const isExternalDragTarget = externalDragOverIndex === i || externalHoverIndex === i
 
               return (
                 <div
