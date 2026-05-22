@@ -237,7 +237,7 @@ function UpgradeSide({
 
   return (
     <Link href={href} style={linkStyle} onClick={onNavigate}>
-      <div style={{ textAlign: 'center', position: 'relative' }}>
+      <div className="discover-upgrade-side" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', position: 'relative' }}>
         <div
           className="discover-upgrade-image-well"
           style={{
@@ -248,11 +248,13 @@ function UpgradeSide({
             justifyContent: 'center',
             padding: '8px 0',
             position: 'relative',
+            flexShrink: 0,
           }}
         >
           {showHalo && (
             <div
               aria-hidden
+              className="discover-upgrade-halo"
               style={{
                 position: 'absolute',
                 top: '50%',
@@ -267,6 +269,7 @@ function UpgradeSide({
             />
           )}
           <div
+            className="discover-upgrade-image-inner"
             style={{
               position: 'relative',
               width: 260,
@@ -296,53 +299,55 @@ function UpgradeSide({
             </div>
           )}
         </div>
-        <div
-          style={{
-            fontFamily: brand.font.sans,
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '0.18em',
-            textTransform: 'uppercase',
-            color: kickerColor,
-            marginBottom: 6,
-          }}
-        >
-          {kicker}
-        </div>
-        <div
-          style={{
-            fontFamily: brand.font.sans,
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '0.16em',
-            textTransform: 'uppercase',
-            color: brand.colors.ink,
-            marginBottom: 4,
-          }}
-        >
-          {watch.brand}
-        </div>
-        <div
-          style={{
-            fontFamily: brand.font.serif,
-            fontSize: 21,
-            fontStyle: modelItalic ? 'italic' : 'normal',
-            lineHeight: 1.1,
-            color: brand.colors.ink,
-          }}
-        >
-          {watch.model}
-        </div>
-        <div
-          style={{
-            fontFamily: brand.font.sans,
-            fontSize: 11.5,
-            color: brand.colors.muted,
-            marginTop: 4,
-            letterSpacing: '0.04em',
-          }}
-        >
-          {fmt(watch.estimatedValue)} · {watch.caseSizeMm} mm
+        <div className="discover-upgrade-side-meta" style={{ width: '100%' }}>
+          <div
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 10,
+              fontWeight: 600,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: kickerColor,
+              marginBottom: 6,
+            }}
+          >
+            {kicker}
+          </div>
+          <div
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 10,
+              fontWeight: 600,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: brand.colors.ink,
+              marginBottom: 4,
+            }}
+          >
+            {watch.brand}
+          </div>
+          <div
+            style={{
+              fontFamily: brand.font.serif,
+              fontSize: 21,
+              fontStyle: modelItalic ? 'italic' : 'normal',
+              lineHeight: 1.1,
+              color: brand.colors.ink,
+            }}
+          >
+            {watch.model}
+          </div>
+          <div
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 11.5,
+              color: brand.colors.muted,
+              marginTop: 4,
+              letterSpacing: '0.04em',
+            }}
+          >
+            {fmt(watch.estimatedValue)} · {watch.caseSizeMm} mm
+          </div>
         </div>
       </div>
     </Link>

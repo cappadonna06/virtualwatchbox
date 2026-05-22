@@ -67,6 +67,7 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
             </h2>
 
             <p
+              className="discover-complete-insight"
               style={{
                 fontFamily: brand.font.serif,
                 fontStyle: 'italic',
