@@ -22,6 +22,10 @@
  *   npm run images:acquire -- --sources=wikimedia
  *   npm run images:acquire -- --sources=watchbase,wikimedia (default)
  *   npm run images:acquire -- --overwrite   # re-acquire even if cached
+ *   npm run images:acquire -- --ref-list=data/catalog-batch-1.csv --top=1000
+ *                                          # acquire only the ids listed in
+ *                                          # the CSV (first column = id),
+ *                                          # bypassing heat-based ordering.
  */
 
 import fs from 'node:fs/promises'
@@ -50,6 +54,7 @@ const SOURCES = (arg('--sources') ?? 'watchbase,wikimedia').split(',').map(s => 
 const DRY_RUN = hasFlag('--dry-run')
 const OVERWRITE = hasFlag('--overwrite')
 const DELAY_MS = Number(process.env.IMAGES_DELAY_MS ?? 800)
+const REF_LIST = arg('--ref-list')
 
 const watchbaseCacheDir = path.join(repoRoot, 'data', 'external', 'watchbase-cache')
 const missesCsvPath = path.join(repoRoot, 'data', 'external', '_logs', 'image-acquire-misses.csv')
@@ -246,8 +251,35 @@ async function main() {
   const all = (enriched.records as WatchRow[])
     .filter(r => r.brand && r.reference && r.id)
     .sort((a, b) => (a.popularityRank ?? 999999) - (b.popularityRank ?? 999999))
-  const targets = TOP > 0 ? all.slice(0, TOP) : all
-  console.log(`[images:acquire] processing ${targets.length} of ${all.length}, sources: ${SOURCES.join(', ')}${DRY_RUN ? ' DRY_RUN' : ''}${OVERWRITE ? ' OVERWRITE' : ''}`)
+
+  // --ref-list overrides heat ordering: walk only the ids listed in the CSV
+  // (first column = id), in the same heat-sorted order so the most-likely-to-
+  // succeed acquisitions happen first within the curated set.
+  let pool = all
+  if (REF_LIST) {
+    const refListPath = path.resolve(repoRoot, REF_LIST)
+    if (!fsSync.existsSync(refListPath)) {
+      console.error(`--ref-list file not found at ${refListPath}`)
+      process.exit(1)
+    }
+    const refCsv = fsSync.readFileSync(refListPath, 'utf8')
+    const refIds = new Set<string>()
+    const lines = refCsv.split('\n')
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i]
+      if (!line.trim()) continue
+      const id = line.split(',')[0].trim().replace(/^"|"$/g, '')
+      if (id) refIds.add(id)
+    }
+    pool = all.filter(r => refIds.has(r.id))
+    const missing = refIds.size - pool.length
+    console.log(
+      `[images:acquire] --ref-list=${REF_LIST}: ${pool.length} of ${refIds.size} ids matched enriched JSON${missing ? ` (${missing} ids not in enriched data — likely need re-enrich)` : ''}`,
+    )
+  }
+
+  const targets = TOP > 0 ? pool.slice(0, TOP) : pool
+  console.log(`[images:acquire] processing ${targets.length} of ${pool.length}, sources: ${SOURCES.join(', ')}${DRY_RUN ? ' DRY_RUN' : ''}${OVERWRITE ? ' OVERWRITE' : ''}`)
 
   let acquired = 0
   let skipped = 0

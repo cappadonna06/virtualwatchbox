@@ -1,0 +1,51 @@
+id,brand,model,reference,dialColor,watchType,sourceUrl,communitySignal,verificationStatus
+bulova-96b251,Bulova,Lunar Pilot,96B251,Black,Chronograph,https://www.bulova.com/us/en/watch/lunar-pilot-mens-watch-96B251.html,hand_curated_batch1,identity_seeded_specs_pending
+bulova-98a186,Bulova,Lunar Pilot Meteorite,98A186,Grey,Chronograph,https://www.bulova.com/us/en/watch/98A186.html,hand_curated_batch1,identity_seeded_specs_pending
+bulova-96k111,Bulova,Lunar Pilot Apollo 15,96K111,Black,Chronograph,https://www.bulova.com/us/en/watch/96K111.html,hand_curated_batch1,identity_seeded_specs_pending
+timex-tw2t22800,Timex,Marlin Hand-Wound,TW2T22800,Silver,Dress,https://www.timex.com/marlin-34mm-stainless-steel-bracelet-watch/TW2T22800ZV.html,hand_curated_batch1,identity_seeded_specs_pending
+timex-tw2v00500,Timex,Marlin Sub-Dial Chronograph,TW2V00500,Silver,Chronograph,https://www.timex.com/marlin-sub-dial-chronograph-40mm-leather-strap-watch/TW2V00500.html,hand_curated_batch1,identity_seeded_specs_pending
+timex-tw2u61500,Timex,Q Reissue,TW2U61500,Blue,Sport,https://www.timex.com/q-timex-reissue-38mm-stainless-steel-bracelet-watch/TW2U61500ZV.html,hand_curated_batch1,identity_seeded_specs_pending
+timex-tw2v38000,Timex,Q GMT,TW2V38000,Black,GMT,https://www.timex.com/q-timex-gmt-38mm-stainless-steel-bracelet-watch/TW2V38000.html,hand_curated_batch1,identity_seeded_specs_pending
+timex-tw2v41600,Timex,Expedition North Field Mechanical,TW2V41600,Black,Field,https://www.timex.com/expedition-north-field-mechanical-38mm-fabric-strap-watch/TW2V41600.html,hand_curated_batch1,identity_seeded_specs_pending
+baltic-hms-002,Baltic,HMS 002 Sector,HMS-002,Silver,Dress,https://www.baltic-watches.com/en/52-hms,hand_curated_batch1,identity_seeded_specs_pending
+baltic-aquascaphe-classic,Baltic,Aquascaphe Classic,Aquascaphe-Classic,Blue,Diver,https://www.baltic-watches.com/en/56-aquascaphe,hand_curated_batch1,identity_seeded_specs_pending
+baltic-aquascaphe-gmt,Baltic,Aquascaphe GMT,Aquascaphe-GMT,Black,GMT,https://www.baltic-watches.com/en/56-aquascaphe,hand_curated_batch1,identity_seeded_specs_pending
+baltic-aquascaphe-bronze,Baltic,Aquascaphe Bronze,Aquascaphe-Bronze,Green,Diver,https://www.baltic-watches.com/en/56-aquascaphe,hand_curated_batch1,identity_seeded_specs_pending
+baltic-hermetique-tourer,Baltic,Hermétique Tourer,Hermetique-Tourer,Cream,Field,https://www.baltic-watches.com/en/57-hermetique,hand_curated_batch1,identity_seeded_specs_pending
+baltic-bicompax-001,Baltic,Bicompax 001,Bicompax-001,Salmon,Chronograph,https://www.baltic-watches.com/en/55-bicompax,hand_curated_batch1,identity_seeded_specs_pending
+lorier-hyperion-iii,Lorier,Hyperion Series III,Hyperion-III,Black,GMT,https://lorierwatches.com/products/hyperion,hand_curated_batch1,identity_seeded_specs_pending
+lorier-neptune-iv,Lorier,Neptune Series IV,Neptune-IV,Black,Diver,https://lorierwatches.com/products/neptune,hand_curated_batch1,identity_seeded_specs_pending
+lorier-falcon-iii,Lorier,Falcon Series III,Falcon-III,Silver,Chronograph,https://lorierwatches.com/products/falcon,hand_curated_batch1,identity_seeded_specs_pending
+lorier-zephyr-iii,Lorier,Zephyr Series III,Zephyr-III,Black,Pilot,https://lorierwatches.com/products/zephyr,hand_curated_batch1,identity_seeded_specs_pending
+traska-freediver-gen-3,Traska,Freediver,Freediver-Gen-3,Blue,Diver,https://traskawatches.com/products/freediver,hand_curated_batch1,identity_seeded_specs_pending
+traska-summiteer-v1,Traska,Summiteer,Summiteer-V1,Black,Field,https://traskawatches.com/products/summiteer,hand_curated_batch1,identity_seeded_specs_pending
+traska-commuter-v2,Traska,Commuter,Commuter-V2,White,Sport,https://traskawatches.com/products/commuter,hand_curated_batch1,identity_seeded_specs_pending
+traska-venturer-gmt,Traska,Venturer GMT,Venturer-GMT,Black,GMT,https://traskawatches.com/products/venturer,hand_curated_batch1,identity_seeded_specs_pending
+farer-bernina-iii,Farer,Bernina III,Bernina-III,Cream,Sport,https://www.farer.com/collections/3-hand-watches/products/bernina-iii,hand_curated_batch1,identity_seeded_specs_pending
+farer-carnegie-iii-gmt,Farer,Carnegie III GMT,Carnegie-III-GMT,Blue,GMT,https://www.farer.com/collections/gmt-watches/products/carnegie-iii,hand_curated_batch1,identity_seeded_specs_pending
+farer-endurance,Farer,Aqua Compressor Endurance,Endurance,Blue,Diver,https://www.farer.com/collections/automatic-dive-watches,hand_curated_batch1,identity_seeded_specs_pending
+farer-markham-iii,Farer,Markham III,Markham-III,Grey,Sport,https://www.farer.com/collections/3-hand-watches,hand_curated_batch1,identity_seeded_specs_pending
+monta-oceanking-iii,Monta,Oceanking III,Oceanking-III,Black,Diver,https://montawatch.com/collections/oceanking,hand_curated_batch1,identity_seeded_specs_pending
+monta-atlas-gmt,Monta,Atlas GMT,Atlas-GMT,Blue,GMT,https://montawatch.com/collections/atlas,hand_curated_batch1,identity_seeded_specs_pending
+monta-triumph-v1,Monta,Triumph,Triumph-V1,Silver,Sport,https://montawatch.com/collections/triumph,hand_curated_batch1,identity_seeded_specs_pending
+monta-noble-v1,Monta,Noble,Noble-V1,Black,Dress,https://montawatch.com/collections/noble,hand_curated_batch1,identity_seeded_specs_pending
+nodus-sector-sport-v2,Nodus,Sector Sport,Sector-Sport-V2,Black,Sport,https://nodushq.com/collections/sector-sport,hand_curated_batch1,identity_seeded_specs_pending
+nodus-avalon-v2,Nodus,Avalon,Avalon-V2,Blue,Diver,https://nodushq.com/collections/avalon,hand_curated_batch1,identity_seeded_specs_pending
+nodus-retrospect-v3,Nodus,Retrospect,Retrospect-V3,Black,Sport,https://nodushq.com/collections/retrospect,hand_curated_batch1,identity_seeded_specs_pending
+brew-retromatic-v2,Brew,Retromatic,Retromatic-V2,Black,Sport,https://brew-watches.com/collections/retromatic,hand_curated_batch1,identity_seeded_specs_pending
+brew-metric-c,Brew,Metric C,Metric-C,Black,Chronograph,https://brew-watches.com/collections/metric,hand_curated_batch1,identity_seeded_specs_pending
+vaer-c5-field-usa,Vaer,C5 Field Standard USA,C5-Field-USA,Black,Field,https://vaerwatches.com/collections/field-watches,hand_curated_batch1,identity_seeded_specs_pending
+vaer-d5-meridian-gmt,Vaer,D5 Meridian GMT,D5-Meridian-GMT,Black,GMT,https://vaerwatches.com/collections/gmt-watches,hand_curated_batch1,identity_seeded_specs_pending
+vaer-a5-uss-cody,Vaer,A5 USS Cody Atomic,A5-USS-Cody,Black,Field,https://vaerwatches.com/collections/field-watches,hand_curated_batch1,identity_seeded_specs_pending
+zelos-mako-v3,Zelos,Mako,Mako-V3,Blue,Diver,https://www.zeloswatches.com/collections/mako,hand_curated_batch1,identity_seeded_specs_pending
+zelos-swordfish-bronze,Zelos,Swordfish Bronze,Swordfish-Bronze,Black,Diver,https://www.zeloswatches.com/collections/swordfish,hand_curated_batch1,identity_seeded_specs_pending
+zelos-helmsman-iii,Zelos,Helmsman III,Helmsman-III,Green,Pilot,https://www.zeloswatches.com/collections/helmsman,hand_curated_batch1,identity_seeded_specs_pending
+citizen-bn0150-28e,Citizen,Promaster Dive Ecozilla,BN0150-28E,Black,Diver,https://www.citizenwatch.com/us/en/collection/promaster/,hand_curated_batch1,identity_seeded_specs_pending
+citizen-at8020-54l,Citizen,Skyhawk A-T Blue Angels,AT8020-54L,Blue,Pilot,https://www.citizenwatch.com/us/en/collection/blue-angels/,hand_curated_batch1,identity_seeded_specs_pending
+citizen-bm8180-03e,Citizen,Eco-Drive Field,BM8180-03E,Black,Field,https://www.citizenwatch.com/us/en/collection/all-mens-watches/,hand_curated_batch1,identity_seeded_specs_pending
+citizen-nb6021-17e,Citizen,Series 8 880,NB6021-17E,Black,Sport,https://www.citizenwatch.com/us/en/collection/series-8/,hand_curated_batch1,identity_seeded_specs_pending
+orient-ra-ac0m02s10b,Orient,Bambino Open Heart,RA-AC0M02S10B,White,Dress,https://www.orient-watch.com/,hand_curated_batch1,identity_seeded_specs_pending
+orient-ra-aa0001l19b,Orient,Kamasu,RA-AA0001L19B,Blue,Diver,https://www.orient-watch.com/,hand_curated_batch1,identity_seeded_specs_pending
+orient-faa02001b9,Orient,Mako II,FAA02001B9,Black,Diver,https://www.orient-watch.com/,hand_curated_batch1,identity_seeded_specs_pending
+orient-ra-ar0007s10b,Orient,Bambino 38,RA-AR0007S10B,Silver,Dress,https://www.orient-watch.com/,hand_curated_batch1,identity_seeded_specs_pending
+orient-star-ra-ar0001s,Orient Star,Modern Classic,RA-AR0001S,White,Dress,https://www.orient-watch.com/orient-star/,hand_curated_batch1,identity_seeded_specs_pending

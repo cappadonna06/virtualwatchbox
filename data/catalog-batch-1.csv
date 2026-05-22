@@ -1,0 +1,1161 @@
+id,brand,model,reference,dialColor,watchType,sourceUrl,communitySignal,verificationStatus
+rolex-124060,Rolex,Submariner,124060,Black,Diver,https://www.rolex.com/en-us/watches/submariner,core_icon,identity_seeded_specs_pending
+rolex-126610ln,Rolex,Submariner Date,126610LN,Black,Diver,https://www.rolex.com/en-us/watches/submariner/m126610ln-0001,core_icon,identity_seeded_specs_partial
+rolex-116610,Rolex,Submariner Date,116610,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+rolex-116610ln,Rolex,Submariner Date,116610LN,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+rolex-116613lb-0005,Rolex,Submariner,116613lb-0005,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116613ln-0003-aka-m116613ln-0003,Rolex,Submariner,116613LN-0003 (aka: M116613LN - 0003),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116618lb-0002,Rolex,Submariner,116618lb-0002,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116618lb-0003,Rolex,Submariner,116618LB-0003,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116618ln-0001,Rolex,Submariner,116618ln-0001,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116619lb-0001,Rolex,Submariner,116619lb-0001,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116619lb-0002,Rolex,Submariner,116619lb-0002,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116659sabr-0001,Rolex,Submariner,116659SABR-0001,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126613lb-0002-aka-m126613lb-0002,Rolex,Submariner,126613LB-0002 (aka: M126613LB-0002),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126613ln-0002-aka-m126613ln-0002,Rolex,Submariner,126613LN-0002 (aka: M126613LN-0002),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126618lb-0002-aka-m126618lb-0002,Rolex,Submariner,126618LB-0002 (aka: M126618LB-0002),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126618ln-0002-aka-m126618ln-0002,Rolex,Submariner,126618LN-0002 (aka: M126618ln-0002),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126619lb-0003-aka-m126619lb-0003,Rolex,Submariner,126619LB-0003 (aka: M126619LB-0003),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-14060m-0001,Rolex,Submariner,14060M-0001,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16610-comex,Rolex,Submariner,16610 Comex,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16610-panama-canal,Rolex,Submariner,16610 Panama Canal,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16610-tritium,Rolex,Submariner,16610 Tritium,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16610-tritium-tiffany,Rolex,Submariner,16610 Tritium Tiffany,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16610lv-mk1,Rolex,Submariner,16610LV MK1,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16610lv-mk2,Rolex,Submariner,16610LV MK2,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16610lv-mk3,Rolex,Submariner,16610LV MK3,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16610lv-mk4,Rolex,Submariner,16610LV MK4,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16610lv-mk5,Rolex,Submariner,16610LV MK5,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16610lv-mk6,Rolex,Submariner,16610LV MK6,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16610lv-mk7,Rolex,Submariner,16610LV MK7,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16613-black-superluminova,Rolex,Submariner,16613 Black Superluminova,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16613-black-tiffany-tritium,Rolex,Submariner,16613 Black Tiffany Tritium,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16613-black-tritium,Rolex,Submariner,16613 Black Tritium,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16613-blue-superluminova,Rolex,Submariner,16613 Blue SuperLuminova,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16613-blue-tiffany-tritium,Rolex,Submariner,16613 Blue Tiffany Tritium,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16613-blue-tritium,Rolex,Submariner,16613 Blue Tritium,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116710blnr,Rolex,GMT-Master II,116710BLNR,,GMT,,thewatchapi:ref-list,identity_seeded_specs_pending
+rolex-116710ln,Rolex,GMT-Master II,116710LN,,GMT,,thewatchapi:ref-list,identity_seeded_specs_pending
+rolex-116758-saru,Rolex,GMT-Master,116758 SARU,Paved,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116759-sa,Rolex,GMT-Master,116759 SA,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126710blro-0002,Rolex,GMT-Master,126710BLRO-0002,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126715chnr-0001,Rolex,GMT-Master,126715CHNR-0001,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16713,Rolex,GMT-Master,16713,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126710blnr,Rolex,GMT-Master II,126710BLNR,Black,GMT,https://www.rolex.com/en-us/watches/gmt-master-ii,core_icon,identity_seeded_specs_pending
+rolex-126710blro,Rolex,GMT-Master II,126710BLRO,Black,GMT,https://www.rolex.com/en-us/watches/gmt-master-ii,core_icon,identity_seeded_specs_pending
+rolex-116710,Rolex,GMT-Master II,116710,,GMT,,thewatchapi:ref-list,identity_seeded_specs_pending
+rolex-116710blnr-0002,Rolex,GMT-Master,116710BLNR-0002,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116710ln-0001,Rolex,GMT-Master,116710LN-0001,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116713ln-0001,Rolex,GMT-Master,116713ln-0001,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116718ln-0001,Rolex,GMT-Master,116718LN-0001,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116718ln-0002,Rolex,GMT-Master,116718LN-0002,Green,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116719blro-0002,Rolex,GMT-Master,116719BLRO-0002,Blue,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126710blnr-0002-aka-batgirl,Rolex,GMT-Master,126710BLNR-0002 (aka: Batgirl),Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126710blnr-0003-aka-m126710blnr-0003-batman,Rolex,GMT-Master,"126710BLNR-0003 (aka: M126710BLNR-0003, Batman)",Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126710blro-0001-aka-m126710blro-0001,Rolex,GMT-Master,126710BLRO-0001 (aka: M126710BLRO-0001),Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126710grnr-0003-aka-m126710grnr-0003,Rolex,GMT-Master,126710GRNR-0003 (aka: m126710grnr-0003),Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126710grnr-0004-aka-m126710grnr-0004,Rolex,GMT-Master,126710GRNR-0004 (aka: m126710grnr-0004),Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126711chnr-0002-aka-m126711chnr-0002,Rolex,GMT-Master,126711CHNR-0002 (aka: m126711chnr-0002),Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126713grnr-0001-aka-m126713grnr-0001,Rolex,GMT-Master,126713GRNR-0001 (aka: M126713GRNR-0001),Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126718grnr-0002,Rolex,GMT-Master,126718GRNR-0002,Green,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126719blro-0002-aka-m126719blro-0002,Rolex,GMT-Master,126719BLRO-0002 (aka: m126719blro-0002),Silver,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126719blro-0003-aka-m126719blro-0003,Rolex,GMT-Master,126719BLRO-0003 (aka: m126719blro-0003),Blue,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126720vtnr-0001-aka-m126720vtnr,Rolex,GMT-Master,126720VTNR-0001 (aka: m126720vtnr),Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126720vtnr-0002-aka-m126720vtnr-0002,Rolex,GMT-Master,126720VTNR-0002 (aka: m126720vtnr-0002),Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16700-0001,Rolex,GMT-Master,16700-0001,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16710-coke,Rolex,GMT-Master,16710 Coke,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126200-0003,Rolex,Datejust 36,126200-0003,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126200-0005,Rolex,Datejust 36,126200-0005,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126200-0006,Rolex,Datejust 36,126200-0006,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126200-0007,Rolex,Datejust 36,126200-0007,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126200-0017,Rolex,Datejust 36,126200-0017,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126200-0023,Rolex,Datejust 36,126200-0023,Green,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126231-0021,Rolex,Datejust 36,126231-0021,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126231-0029,Rolex,Datejust 36,126231-0029,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126233-0015,Rolex,Datejust 36,126233-0015,Champagne,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126233-0017,Rolex,Datejust 36,126233-0017,Champagne,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126233-0025,Rolex,Datejust 36,126233-0025,Green,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126233-0035,Rolex,Datejust 36,126233-0035,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126233-0045,Rolex,Datejust 36,126233-0045,Champagne,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126234-0013,Rolex,Datejust 36,126234-0013,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126234-0015,Rolex,Datejust 36,126234-0015,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126234-0017,Rolex,Datejust 36,126234-0017,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126234-0018,Rolex,Datejust 36,126234-0018,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126234-0019,Rolex,Datejust 36,126234-0019,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126234-0021,Rolex,Datejust 36,126234-0021,Purple,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126234-0026,Rolex,Datejust 36,126234-0026,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126234-0038,Rolex,Datejust 36,126234-0038,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126234-0045,Rolex,Datejust 36,126234-0045,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126234-0046,Rolex,Datejust 36,126234-0046,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126234-0047,Rolex,Datejust 36,126234-0047,Green,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126234-0049,Rolex,Datejust 36,126234-0049,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-124270,Rolex,Explorer,124270,Black,Field,https://www.rolex.com/en-us/watches/explorer,core_icon,identity_seeded_specs_pending
+rolex-216570-0001,Rolex,Explorer II,216570-0001,White,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-226570,Rolex,Explorer II,226570,White,GMT,https://www.rolex.com/en-us/watches/explorer,curated,identity_seeded_specs_verified
+rolex-114270-0001,Rolex,Explorer,114270-0001,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-124270-0001-aka-m124270-0001,Rolex,Explorer,124270-0001 (aka: m124270-0001),Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-124273-0001-aka-m124273-0001,Rolex,Explorer,124273-0001 (aka: m124273-0001),Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16570-0001,Rolex,Explorer II,16570-0001,White,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16570-0002,Rolex,Explorer II,16570-0002,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16570-0003,Rolex,Explorer II,16570-0003,White,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-16570-0004,Rolex,Explorer II,16570-0004,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-214270-0001,Rolex,Explorer,214270-0001,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-214270-0003,Rolex,Explorer,214270-0003,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-216570-0002,Rolex,Explorer II,216570-0002,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-224270-0001-aka-m224270-0001,Rolex,Explorer,224270-0001 (aka: m224270-0001),Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-226570-0001-aka-m226570-0001,Rolex,Explorer II,226570-0001 (aka: M226570-0001),White,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-114200-0024,Rolex,Oyster Perpetual 34,114200-0024,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-124300,Rolex,Oyster Perpetual 41,124300,Green,Sport,https://www.rolex.com/en-us/watches/oyster-perpetual,core_icon,identity_seeded_specs_pending
+rolex-114200-0014,Rolex,Oyster Perpetual 34,114200-0014,Blue,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-114200-0019,Rolex,Oyster Perpetual 34,114200-0019,Silver,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-114200-0020,Rolex,Oyster Perpetual 34,114200-0020,Purple,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-114200-0021,Rolex,Oyster Perpetual 34,114200-0021,Green,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-114200-0022,Rolex,Oyster Perpetual 34,114200-0022,Champagne,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-114200-0023,Rolex,Oyster Perpetual 34,114200-0023,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-114300-0001,Rolex,Oyster Perpetual 39,114300-0001,Grey,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-114300-0002,Rolex,Oyster Perpetual 39,114300-0002,Purple,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-114300-0003,Rolex,Oyster Perpetual 39,114300-0003,Blue,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-114300-0004,Rolex,Oyster Perpetual 39,114300-0004,White,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116505-0016,Rolex,Daytona,116505-0016,Pink,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116509-0072,Rolex,Daytona,116509-0072,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116518ln-0040,Rolex,Daytona,116518LN-0040,Champagne,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116518ln-0043,Rolex,Daytona,116518LN-0043,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116576tbr,Rolex,Daytona,116576TBR,Paved,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116589br,Rolex,Daytona,116589br,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126500ln,Rolex,Cosmograph Daytona,126500LN,White,Chronograph,https://www.rolex.com/en-us/watches/cosmograph-daytona,core_icon,identity_seeded_specs_pending
+rolex-116500ln,Rolex,Cosmograph Daytona,116500LN,White,Chronograph,,curated,identity_seeded_specs_verified
+rolex-116500,Rolex,Cosmograph Daytona,116500,,Chronograph,,thewatchapi:ref-list,identity_seeded_specs_pending
+rolex-116515,Rolex,Daytona,116515,,Chronograph,,thewatchapi:ref-list,identity_seeded_specs_pending
+rolex-116515ln,Rolex,Daytona,116515LN,,Chronograph,,thewatchapi:ref-list,identity_seeded_specs_pending
+rolex-116500ln-0001-aka-m116500ln-0001,Rolex,Daytona,116500LN-0001 (aka: m116500ln-0001),White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116500ln-0002-aka-m116500ln-0002,Rolex,Daytona,116500LN-0002 (aka: m116500ln-0002),Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116503-0001-aka-m116503-0001,Rolex,Daytona,116503-0001 (aka: m116503-0001),White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116503-0004-aka-m116503-0004,Rolex,Daytona,116503-0004 (aka: m116503-0004),Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116503-0006,Rolex,Daytona,116503-0006,Champagne,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116503-0007,Rolex,Daytona,116503-0007,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116503-0008,Rolex,Daytona,116503-0008,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116503-0009,Rolex,Daytona,116503-0009,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116503-0011-aka-m116503-0011,Rolex,Daytona,116503-0011 (aka: m116503-0011),Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116505-0001,Rolex,Daytona,116505-0001,Pink,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116505-0002,Rolex,Daytona,116505-0002,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116505-0008-aka-m116505-0008,Rolex,Daytona,116505-0008 (aka: M116505-0008),Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116505-0009,Rolex,Daytona,116505-0009,Pink,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116505-0012,Rolex,Daytona,116505-0012,Pink,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126600-0001,Rolex,Sea-Dweller,126600-0001,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126660-0001,Rolex,Sea-Dweller,126660-0001,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126660-0002,Rolex,Sea-Dweller,126660-0002,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126600,Rolex,Sea-Dweller,126600,Black,Diver,https://www.rolex.com/en-us/watches/sea-dweller,core_icon,identity_seeded_specs_pending
+rolex-116600-0003-aka-seadweller,Rolex,Sea-Dweller,116600-0003 (aka: Seadweller),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116660-0001-aka-seadweller,Rolex,Sea-Dweller,116660-0001 (aka: Seadweller),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116660-0003-aka-seadweller,Rolex,Sea-Dweller,116660-0003 (aka: Seadweller),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126067-0001-aka-m126067-0001,Rolex,Sea-Dweller,126067-0001 (aka: m126067-0001),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126067-0002-aka-m126067-0002,Rolex,Sea-Dweller,126067-0002 (aka: m126067-0002),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126600-0002,Rolex,Sea-Dweller,126600-0002,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116681-0002,Rolex,Yacht-Master,116681-0002,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126622-0001,Rolex,Yacht-Master,126622-0001,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126622,Rolex,Yacht-Master 40,126622,Slate,Sport,https://www.rolex.com/en-us/watches/yacht-master,core_icon,identity_seeded_specs_pending
+rolex-116621-0001,Rolex,Yacht-Master,116621-0001,Brown,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116621-0002,Rolex,Yacht-Master,116621-0002,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116622-0001,Rolex,Yacht-Master,116622-0001,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116622-0002,Rolex,Yacht-Master,116622-0002,Silver,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116622-0003,Rolex,Yacht-Master,116622-0003,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116655-0001,Rolex,Yacht-Master,116655-0001,Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116680-0001,Rolex,Yacht-Master,116680-0001,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116900-0001,Rolex,Air-King,116900-0001,Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-126900-0001-aka-m126900-0001,Rolex,Air-King,126900-0001 (aka: m126900-0001),Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-128235-0041,Rolex,Day-Date 36,128235-0041,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-18038,Rolex,Day-Date 36,18038,Champagne,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-228206-0004,Rolex,Day-Date 40,228206-0004,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-228206-0036,Rolex,Day-Date 40,228206-0036,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-228235-0002,Rolex,Day-Date 40,228235-0002,Brown,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-228235-0003,Rolex,Day-Date 40,228235-0003,Brown,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-228235-0004,Rolex,Day-Date 40,228235-0004,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-228235-0006,Rolex,Day-Date 40,228235-0006,Brown,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-228238-0004,Rolex,Day-Date 40,228238-0004,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-228239-0055,Rolex,Day-Date 40,228239-0055,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-228345rbr-0007,Rolex,Day-Date 40,228345rbr-0007,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-228345rbr-0011,Rolex,Day-Date 40,228345rbr-0011,Green,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-228349rbr-0036,Rolex,Day-Date 40,228349rbr-0036,Paved,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-6611,Rolex,Day-Date 36,6611,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-228235,Rolex,Day-Date 40,228235,Olive,Dress,https://www.rolex.com/en-us/watches/day-date,core_icon,identity_seeded_specs_pending
+rolex-116400,Rolex,Milgauss,116400,,Sport,,thewatchapi:ref-list,identity_seeded_specs_pending
+rolex-116400v,Rolex,Milgauss,116400V,,Sport,,thewatchapi:ref-list,identity_seeded_specs_pending
+rolex-1019-001,Rolex,Milgauss,1019-001,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116400-0001,Rolex,Milgauss,116400-0001,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116400-0002,Rolex,Milgauss,116400-0002,White,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116400gv,Rolex,Milgauss,116400GV,Blue,Sport,https://www.rolex.com/en-us/watches,enthusiast_icon,identity_seeded_specs_pending
+omega-310-30-42-50-01-001,Omega,Speedmaster Professional Moonwatch,310.30.42.50.01.001,Black,Chronograph,https://www.omegawatches.com/watches/speedmaster/moonwatch-professional,core_icon,identity_seeded_specs_partial
+omega-310-30-42-50-01-002,Omega,Speedmaster Professional Moonwatch,310.30.42.50.01.002,Black,Chronograph,https://www.omegawatches.com/watches/speedmaster/moonwatch-professional,core_icon,identity_seeded_specs_pending
+omega-310-60-42-50-99-002,Omega,Speedmaster Moonwatch,310.60.42.50.99.002,Champagne,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-310-62-42-50-99-001,Omega,Speedmaster Moonwatch,310.62.42.50.99.001,Champagne,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-310-63-42-50-10-001,Omega,Speedmaster Moonwatch,310.63.42.50.10.001,Green,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-311-50-39-30-01-001,Omega,Speedmaster Moonwatch,311.50.39.30.01.001,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3113-30-00,Omega,Speedmaster (Non-Moonwatch),3113.30.00,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-321-30-44-52-01-002,Omega,Speedmaster (Non-Moonwatch),321.30.44.52.01.002,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-321-90-42-50-13-002,Omega,Speedmaster Broad Arrow,321.90.42.50.13.002,Brown,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-329-30-44-51-01-002,Omega,Speedmaster Racing,329.30.44.51.01.002,Black,Chronograph,https://www.omegawatches.com/watches/speedmaster,brand_variety,identity_seeded_specs_pending
+omega-332-10-41-51-01-001,Omega,Speedmaster '57,332.10.41.51.01.001,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-332-10-41-51-03-001,Omega,Speedmaster 57,332.10.41.51.03.001,Blue,Chronograph,https://www.omegawatches.com/watches/speedmaster,brand_variety,identity_seeded_specs_pending
+omega-332-10-41-51-11-001,Omega,Speedmaster '57,332.10.41.51.11.001,Red,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-332-12-41-51-01-001,Omega,Speedmaster '57,332.12.41.51.01.001,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-332-12-41-51-10-001,Omega,Speedmaster '57,332.12.41.51.10.001,Green,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-332-12-41-51-11-001,Omega,Speedmaster '57,332.12.41.51.11.001,Red,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3510-50-00,Omega,Speedmaster Reduced,3510.50.00,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3510-61-00,Omega,Speedmaster Reduced,3510.61.00,Red,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3510-80-00,Omega,Speedmaster Reduced,3510.80.00,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3510-81-00,Omega,Speedmaster Reduced,3510.81.00,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3513-20-00,Omega,Speedmaster (Non-Moonwatch),3513.20.00,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3513-30-00,Omega,Speedmaster (Non-Moonwatch),3513.30.00,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3513-53-00,Omega,Speedmaster (Non-Moonwatch),3513.53.00,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3516-20-00,Omega,Speedmaster (Non-Moonwatch),3516.20.00,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3551-20-00,Omega,Speedmaster Broad Arrow,3551.20.00,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3551-50-00,Omega,Speedmaster Broad Arrow,3551.50.00,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3552-59-00,Omega,Speedmaster (Non-Moonwatch),3552.59.00,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3556-50-00,Omega,Speedmaster Broad Arrow,3556.50.00,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3557-50-00,Omega,Speedmaster Broad Arrow,3557.50.00,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3559-32-00,Omega,Speedmaster (Non-Moonwatch),3559.32.00,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3623-33-01,Omega,Speedmaster (Non-Moonwatch),3623.33.01,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3653-80-33,Omega,Speedmaster Broad Arrow,3653.80.33,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3656-20-31,Omega,Speedmaster Broad Arrow,3656.20.31,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3802-70-56,Omega,Speedmaster Reduced,3802.70.56,Pink,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-3810-12-40,Omega,Speedmaster Reduced,3810.12.40,Yellow,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+omega-210-30-42-20-01-001,Omega,Seamaster Diver 300M,210.30.42.20.01.001,Black,Diver,https://www.omegawatches.com/watches/seamaster/diver-300-m,core_icon,identity_seeded_specs_pending
+omega-210-30-42-20-03-001,Omega,Seamaster Diver 300M,210.30.42.20.03.001,Blue,Diver,https://www.omegawatches.com/watches/seamaster/diver-300-m,core_icon,identity_seeded_specs_pending
+omega-234-30-41-21-01-001,Omega,Seamaster 300,234.30.41.21.01.001,Black,Diver,https://www.omegawatches.com/watches/seamaster/seamaster-300,core_icon,identity_seeded_specs_pending
+omega-210-30-42-20-03-002,Omega,Seamaster Diver 300M,210.30.42.20.03.002,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-210-30-42-20-03-003,Omega,Seamaster Diver 300M,210.30.42.20.03.003,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-210-30-42-20-04-001,Omega,Seamaster Diver 300M,210.30.42.20.04.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-210-30-42-20-06-001,Omega,Seamaster Diver 300M,210.30.42.20.06.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-210-30-42-20-10-001,Omega,Seamaster Diver 300M,210.30.42.20.10.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-210-30-44-51-01-001,Omega,Seamaster Diver 300M,210.30.44.51.01.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-210-30-44-51-03-001,Omega,Seamaster Diver 300M,210.30.44.51.03.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-210-32-42-20-01-001,Omega,Seamaster Diver 300M,210.32.42.20.01.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-210-32-42-20-03-001,Omega,Seamaster Diver 300M,210.32.42.20.03.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-210-32-42-20-03-002,Omega,Seamaster Diver 300M,210.32.42.20.03.002,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-210-32-42-20-04-001,Omega,Seamaster Diver 300M,210.32.42.20.04.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-210-32-42-20-06-001,Omega,Seamaster Diver 300M,210.32.42.20.06.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-210-32-42-20-10-001,Omega,Seamaster Diver 300M,210.32.42.20.10.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-210-32-44-51-01-001,Omega,Seamaster Diver 300M,210.32.44.51.01.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-210-92-42-20-10-001,Omega,Seamaster Diver 300M,210.92.42.20.10.001,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+omega-2196-20-00,Omega,Seamaster Diver 300M,2196.20.00,Silver,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+omega-2227-80-00,Omega,Seamaster Diver 300M,2227.80.00,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+omega-220-10-41-21-10-001,Omega,Seamaster Aqua Terra,220.10.41.21.10.001,Green,Sport,https://www.omegawatches.com/watches/seamaster/aqua-terra-150m,curated,identity_seeded_specs_verified
+omega-231-10-42-21-03-003,Omega,Seamaster Aqua Terra,231.10.42.21.03.003,Blue,Sport,,curated,identity_seeded_specs_verified
+omega-220-10-41-21-03-004,Omega,Seamaster Aqua Terra,220.10.41.21.03.004,Blue,Sport,https://www.omegawatches.com/watches/seamaster/aqua-terra-150m,folder_image_candidate,identity_seeded_specs_pending
+omega-220-10-38-20-01-001,Omega,Seamaster Aqua Terra,220.10.38.20.01.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-220-10-38-20-02-001,Omega,Seamaster Aqua Terra,220.10.38.20.02.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-220-10-41-21-01-001,Omega,Seamaster Aqua Terra,220.10.41.21.01.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-220-10-41-21-03-001,Omega,Seamaster Aqua Terra,220.10.41.21.03.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-220-10-43-22-03-001,Omega,Seamaster Aqua Terra,220.10.43.22.03.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-220-12-41-21-02-002,Omega,Seamaster Aqua Terra,220.12.41.21.02.002,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-220-12-41-21-03-001,Omega,Seamaster Aqua Terra,220.12.41.21.03.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-220-12-41-21-03-005,Omega,Seamaster Aqua Terra,220.12.41.21.03.005,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-220-12-43-22-03-001,Omega,Seamaster Aqua Terra,220.12.43.22.03.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-220-22-41-21-03-001,Omega,Seamaster Aqua Terra,220.22.41.21.03.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-220-92-43-22-99-001,Omega,Seamaster Aqua Terra,220.92.43.22.99.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-2200-51-00,Omega,Seamaster Aqua Terra,2200.51.00,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-30-44-21-01-001,Omega,Seamaster Planet Ocean 600M,215.30.44.21.01.001,Black,Diver,https://www.omegawatches.com/watches/seamaster/planet-ocean-600m,core_icon,identity_seeded_specs_pending
+omega-215-30-40-20-01-001,Omega,Seamaster Planet Ocean,215.30.40.20.01.001,,,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-30-40-20-03-002,Omega,Seamaster Planet Ocean,215.30.40.20.03.002,,,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-30-44-21-01-002,Omega,Seamaster Planet Ocean,215.30.44.21.01.002,,,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-30-44-21-03-001,Omega,Seamaster Planet Ocean,215.30.44.21.03.001,,,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-30-44-21-04-001,Omega,Seamaster Planet Ocean,215.30.44.21.04.001,,,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-30-44-22-01-001,Omega,Seamaster Planet Ocean,215.30.44.22.01.001,,,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-30-46-51-01-002,Omega,Seamaster Planet Ocean,215.30.46.51.01.002,,,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-32-44-21-01-001,Omega,Seamaster Planet Ocean,215.32.44.21.01.001,,,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-33-44-21-03-001,Omega,Seamaster Planet Ocean,215.33.44.21.03.001,,,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-130-30-39-21-02-001,Omega,Constellation Globemaster,130.30.39.21.02.001,Silver,Dress,https://www.omegawatches.com/watches/constellation/globemaster,curated,identity_seeded_specs_verified
+omega-220-10-40-20-06-001,Omega,Railmaster,220.10.40.20.06.001,Grey,Field,,curated,identity_seeded_specs_verified
+omega-1102-10-00,Omega,Constellation,1102.10.00,Champagne,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+omega-111-10-36-20-52-001,Omega,Constellation,111.10.36.20.52.001,Silver,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+omega-111-20-23-60-55-002,Omega,Constellation,111.20.23.60.55.002,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+omega-111-20-36-20-52-001,Omega,Constellation,111.20.36.20.52.001,Silver,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+omega-111-20-36-20-58-001,Omega,Constellation,111.20.36.20.58.001,Champagne,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+omega-111-25-23-60-55-001,Omega,Constellation,111.25.23.60.55.001,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+omega-111-25-26-60-55-001,Omega,Constellation,111.25.26.60.55.001,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+omega-111-25-36-10-52-001,Omega,Constellation,111.25.36.10.52.001,Silver,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+omega-111-25-36-20-52-001,Omega,Constellation,111.25.36.20.52.001,Silver,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+omega-111-50-36-10-52-001,Omega,Constellation,111.50.36.10.52.001,Silver,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+omega-111-50-36-20-52-001,Omega,Constellation,111.50.36.20.52.001,Silver,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+omega-111-55-23-60-58-001,Omega,Constellation,111.55.23.60.58.001,Champagne,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-wsta0041,Cartier,Tank Must Large,WSTA0041,Silver,Dress,https://www.cartier.com/en-us/watches/collections/tank,core_icon,identity_seeded_specs_pending
+cartier-w4ta0016,Cartier,Tank,W4TA0016,Silver,Field,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w4ta0017,Cartier,Tank,W4TA0017,Silver,Field,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w5200026,Cartier,Tank,W5200026,Silver,Field,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w5200028,Cartier,Tank,W5200028,Silver,Field,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w5310009,Cartier,Tank,W5310009,Silver,Field,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w5330001,Cartier,Tank,W5330001,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w5330002,Cartier,Tank,W5330002,Brown,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w5330003,Cartier,Tank,W5330003,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w5330007,Cartier,Tank,W5330007,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-wgta0010,Cartier,Tank,WGTA0010,Silver,Field,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-wgta0091,Cartier,Tank,WGTA0091,Silver,Field,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w2006951,Cartier,Santos de Cartier,W2006951,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w20072x7,Cartier,Santos de Cartier,W20072X7,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w20073x8,Cartier,Santos de Cartier,W20073X8,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-wssa0018,Cartier,Santos de Cartier Large,WSSA0018,Silver,Dress,https://www.cartier.com/en-us/watches/collections/santos-de-cartier,core_icon,identity_seeded_specs_pending
+cartier-wssa0022,Cartier,Santos-Dumont,WSSA0022,Silver,Dress,https://www.cartier.com/en-us/watches/collections/santos-dumont,core_icon,identity_seeded_specs_pending
+cartier-wssa0029,Cartier,Santos de Cartier Medium,WSSA0029,Silver,Dress,https://www.cartier.com/en-us/watches/collections/santos-de-cartier,core_icon,identity_seeded_specs_pending
+cartier-wssa0032,Cartier,Santos-Dumont XL,WSSA0032,Silver,Vintage,,curated,identity_seeded_specs_verified
+cartier-w2020067,Cartier,Santos de Cartier,W2020067,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w2020068,Cartier,Santos de Cartier,W2020068,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w2sa0027,Cartier,Santos de Cartier,W2SA0027,Pink,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w69012z4,Cartier,Ballon Bleu de Cartier,W69012Z4,Silver,Dress,https://www.cartier.com/en-us/watches/collections/ballon-bleu-de-cartier,core_icon,identity_seeded_specs_pending
+cartier-wsbb0040,Cartier,Ballon Bleu 40,WSBB0040,Silver,Dress,,curated,identity_seeded_specs_verified
+cartier-wspa0013,Cartier,Pasha de Cartier,WSPA0013,Blue,Sport,,curated,identity_seeded_specs_verified
+cartier-wspa0010,Cartier,Pasha de Cartier,WSPA0010,Silver,Dress,https://www.cartier.com/en-us/watches/collections/pasha-de-cartier,brand_variety,identity_seeded_specs_pending
+cartier-wspn0006,Cartier,Panthere de Cartier,WSPN0006,Silver,Dress,https://www.cartier.com/en-us/watches/collections/panthere-de-cartier,style_icon,identity_seeded_specs_pending
+breitling-a17326241b1a1,Breitling,Navitimer,A17326241B1A1,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-a17326361l1p1,Breitling,Navitimer,A17326361L1P1,Green,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-a17395211a1a1,Breitling,Navitimer,A17395211A1A1,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-a17395f41g1a1,Breitling,Navitimer,A17395F41G1A1,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-ab0137211b1p1,Breitling,Navitimer,AB0137211B1P1,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-ab0137211c1a1,Breitling,Navitimer,AB0137211C1A1,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-ab0137211c1p1,Breitling,Navitimer,AB0137211C1P1,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-ab0137241l1p1,Breitling,Navitimer,AB0137241L1P1,Green,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-ab0138211b1p1,Breitling,Navitimer,AB0138211B1P1,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-ab0138241c1p1,Breitling,Navitimer,AB0138241C1P1,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-ab0134101b1a1,Breitling,Chronomat B01 42,AB0134101B1A1,Black,Chronograph,https://www.breitling.com/us-en/watches/chronomat/,core_icon,identity_seeded_specs_pending
+breitling-a10380101l1a1,Breitling,Chronomat 36,A10380101L1A1,Green,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-a10380591a1a1,Breitling,Chronomat 36,A10380591A1A1,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-a10380591l1a1,Breitling,Chronomat 36,A10380591L1A1,Green,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-a17356531c1s1,Breitling,Super Chronomat,A17356531C1S1,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-a32398101a1a1,Breitling,Chronomat 40 GMT,A32398101A1A1,Silver,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-a32398101c1a1,Breitling,Chronomat 40 GMT,A32398101C1A1,Blue,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-a77310591a1a1,Breitling,Chronomat 32,A77310591A1A1,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-a17375e71c1a1,Breitling,Superocean Automatic 42,A17375E71C1A1,Blue,Diver,https://www.breitling.com/us-en/watches/superocean/,curated,identity_seeded_specs_verified
+breitling-a32395101c1a1,Breitling,Avenger Automatic GMT 45,A32395101C1A1,Blue,GMT,,curated,identity_seeded_specs_verified
+breitling-a13317101c1x1,Breitling,Avenger,A13317101C1X1,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-a17376211b1s1,Breitling,Superocean,A17376211B1S1,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-a17376211c1a1,Breitling,Superocean,A17376211C1A1,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-a17376211l2a1,Breitling,Superocean,A17376211L2A1,Turquoise,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-a17377211a1s1,Breitling,Superocean,A17377211A1S1,White,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-a17377211o1a1,Breitling,Superocean,A17377211O1A1,Orange,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-a17377211o1s1,Breitling,Superocean,A17377211O1S1,Orange,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+breitling-ab0162121c1s1,Breitling,Superocean Heritage,AB0162121C1S1,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+tag-heuer-wbn2111-ba0639,TAG Heuer,Carrera Date,WBN2111.BA0639,Silver,Sport,https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-carrera/,curated,identity_seeded_specs_verified
+tag-heuer-car201t-ba0766,TAG Heuer,Carrera,CAR201T.BA0766,Skeleton,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+tag-heuer-car201z-ba0714,TAG Heuer,Carrera,CAR201Z.BA0714,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+tag-heuer-cbg2a1zft6157,TAG Heuer,Carrera,CBG2A1ZFT6157,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+tag-heuer-cbm2110-ba0651,TAG Heuer,Carrera,CBM2110.BA0651,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+tag-heuer-cbn2012-fc6483,TAG Heuer,Carrera,CBN2012.FC6483,Grey,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+tag-heuer-cbn2013-fc6483,TAG Heuer,Carrera,CBN2013.FC6483,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+tag-heuer-cbn2a1a-fc6537,TAG Heuer,Carrera,CBN2A1A.FC6537,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+tag-heuer-wbe511a-ba0650,TAG Heuer,Autavia GMT,WBE511A.BA0650,Blue,GMT,https://www.tagheuer.com/us/en/timepieces/collections/tag-heuer-autavia/,curated,identity_seeded_specs_verified
+tag-heuer-cbe2110-ba0687,TAG Heuer,Autavia,CBE2110.BA0687,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+tag-heuer-way201b-ba0927,TAG Heuer,Aquaracer,WAY201B.BA0927,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tag-heuer-way201f-ba0927,TAG Heuer,Aquaracer,WAY201F.BA0927,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tag-heuer-wbe5114-eb0173,TAG Heuer,Autavia,WBE5114.EB0173,Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+tag-heuer-wbe5116-eb0173,TAG Heuer,Autavia,WBE5116.EB0173,Blue,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+tag-heuer-wbe5190-fc8268,TAG Heuer,Autavia,WBE5190.FC8268,Green,Field,,kaggle:watch_db,identity_seeded_specs_partial
+tag-heuer-wbp1110-ba0627,TAG Heuer,Aquaracer,WBP1110.BA0627,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw326805,IWC,Pilot's Watch Automatic Spitfire,IW326805,Brown,Pilot,https://www.iwc.com/us/en/watch-collections/pilot-watches.html,curated,identity_seeded_specs_verified
+iwc-iw328203,IWC,Pilot's Watch Mark XX,IW328203,Blue,Pilot,https://www.iwc.com/us/en/watch-collections/pilot-watches.html,curated,identity_seeded_specs_verified
+iwc-iw329301,IWC,Big Pilot's Watch 43,IW329301,Black,Pilot,https://www.iwc.com/us/en/watch-collections/pilot-watches.html,curated,identity_seeded_specs_verified
+iwc-iw377709,IWC,Pilot Chronograph,IW377709,,Chronograph,,thewatchapi:ref-list,identity_seeded_specs_pending
+iwc-iw377714,IWC,Pilot Chronograph,IW377714,,Chronograph,,thewatchapi:ref-list,identity_seeded_specs_pending
+iwc-iw377717,IWC,Pilot Chronograph,IW377717,,Chronograph,,thewatchapi:ref-list,identity_seeded_specs_pending
+iwc-iw3201-01-aka-iw320101,IWC,Pilot,IW3201-01 (aka: IW320101),Brown,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw3201-03-aka-iw320103,IWC,Pilot,IW3201-03 (aka: IW320103),Brown,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw3240-01-aka-iw324001,IWC,Pilot,IW3240-01 (aka: IW324001),Grey,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw3240-02-aka-3240-02-iw324002,IWC,Pilot,"IW3240-02 (aka: 3240-02, IW324002)",Grey,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw3240-06-aka-3240-06-iw324006,IWC,Pilot,"IW3240-06 (aka: 3240-06, IW324006)",Silver,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw3240-07-aka-3240-07-iw324007,IWC,Pilot,"IW3240-07 (aka: 3240-07, IW324007)",Silver,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw3240-08-aka-3240-08-iw324008,IWC,Pilot,"IW3240-08 (aka: 3240-08, IW324008)",Blue,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw3240-09-aka-iw324009,IWC,Pilot,IW3240-09 (aka: IW324009),Brown,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw371446,IWC,Portugieser Chronograph,IW371446,White,Chronograph,https://www.iwc.com/us/en/watch-collections/portugieser.html,curated,identity_seeded_specs_verified
+iwc-iw371606,IWC,Portugieser Chronograph,IW371606,Silver,Chronograph,https://www.iwc.com/us/en/watch-collections/portugieser.html,curated,identity_seeded_specs_verified
+iwc-iw325-01-aka-325,IWC,Portugieser,IW325-01 (aka: 325),Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw325-02-aka-325,IWC,Portugieser,IW325-02 (aka: 325),Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw325-03-aka-325,IWC,Portugieser,IW325-03 (aka: 325),Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw3266-02-aka-iw326602,IWC,Portugieser,IW3266-02 (aka: IW326602),Grey,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw3266-05-aka-iw326605,IWC,Portugieser,IW3266-05 (aka: IW326605),Silver,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw3266-06-aka-iw326606,IWC,Portugieser,IW3266-06 (aka: IW326606),Blue,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw3440-01,IWC,Portugieser,IW3440-01,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw3442-02-aka-iw344202,IWC,Portugieser,IW3442-02 (aka: IW344202),Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw328901,IWC,Ingenieur Automatic 40,IW328901,Aqua Blue,Integrated Bracelet,https://www.iwc.com/us/en/watch-collections/ingenieur.html,curated,identity_seeded_specs_verified
+iwc-666ad,IWC,Ingenieur,666AD,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw3227-01,IWC,Ingenieur,IW3227-01,Black,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw328801,IWC,Aquatimer Automatic,IW328801,Black,Diver,https://www.iwc.com/us/en/watch-collections/aquatimer.html,brand_variety,identity_seeded_specs_pending
+iwc-iw3707-08,IWC,GST Aquatimer,IW3707-08,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-666a,IWC,Ingenieur,666A,Ivory,Field,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw1832-01-aka-iw183201,IWC,Ingenieur,IW1832-01 (aka: IW183201),Black,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw2010-01-aka-2010-2010-001,IWC,Portofino,"IW2010-01 (aka: 2010, 2010-001)",White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw3224-01-aka-iw322401-322401-3224-01,IWC,Ingenieur,"IW3224-01 (aka: IW322401, 322401, 3224-01)",Black,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-iw3224-02-aka-iw322402-322402-3224-02,IWC,Ingenieur,"IW3224-02 (aka: IW322402, 322402, 3224-02)",Black,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-q3848422,Jaeger-LeCoultre,Reverso Classic Medium Thin,Q3848422,Silver,Dress,https://www.jaeger-lecoultre.com/us-en/watches/reverso,core_icon,identity_seeded_specs_pending
+jaeger-lecoultre-q3858522,Jaeger-LeCoultre,Reverso Classic Large,Q3858522,Silver,Dress,,curated,identity_seeded_specs_verified
+jaeger-lecoultre-q3978480,Jaeger-LeCoultre,Reverso Tribute Small Seconds,Q3978480,Blue,Dress,https://www.jaeger-lecoultre.com/us-en/watches/reverso,core_icon,identity_seeded_specs_pending
+jaeger-lecoultre-216279-aka-q216279,Jaeger-LeCoultre,Reverso,216279 (aka: Q216279),Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-2213399-aka-q2213399,Jaeger-LeCoultre,Reverso,2213399 (aka: Q2213399),Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-2323425,Jaeger-LeCoultre,Reverso,2323425,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-2332420-aka-q2332420,Jaeger-LeCoultre,Reverso,2332420 (aka: Q2332420),Skeleton,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-2353520-aka-q2353520,Jaeger-LeCoultre,Reverso,2353520 (aka: Q2353520),Skeleton,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-235352m-aka-q235352m,Jaeger-LeCoultre,Reverso,235352M (aka: Q235352M),Skeleton,Field,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-2438520-aka-q2438520,Jaeger-LeCoultre,Reverso,2438520 (aka: Q2438520),Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-q1368420,Jaeger-LeCoultre,Master Ultra Thin Moon,Q1368420,Silver,Dress,https://www.jaeger-lecoultre.com/us-en/watches/master-ultra-thin,enthusiast_favorite,identity_seeded_specs_pending
+jaeger-lecoultre-q4018420,Jaeger-LeCoultre,Master Control Date,Q4018420,Silver,Dress,https://www.jaeger-lecoultre.com/us-en/watches/master-control,brand_variety,identity_seeded_specs_pending
+jaeger-lecoultre-q1362540,Jaeger-LeCoultre,Master Ultra Thin Moon,Q1362540,Silver,Dress,,curated,identity_seeded_specs_verified
+jaeger-lecoultre-1-30eplus05,Jaeger-LeCoultre,Master Ultra Thin,1.30E+05,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-1-32eplus05,Jaeger-LeCoultre,Master Ultra Thin,1.32E+05,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-1-36eplus05,Jaeger-LeCoultre,Master Ultra Thin,1.36E+05,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-1152520,Jaeger-LeCoultre,Master Ultra Thin,1152520,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-1212501-aka-q1212501,Jaeger-LeCoultre,Master Ultra Thin,1212501 (aka: Q1212501),Ivory,,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-1212510-aka-q1212510,Jaeger-LeCoultre,Master Ultra Thin,1212510 (aka: Q1212510),Ivory,,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-1218420-aka-q1218420,Jaeger-LeCoultre,Master Ultra Thin,1218420 (aka: Q1218420),Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-9008170-aka-q9008170,Jaeger-LeCoultre,Polaris,9008170 (aka: Q9008170),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-9008180-aka-q9008180,Jaeger-LeCoultre,Polaris,9008180 (aka: Q9008180),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-9008470,Jaeger-LeCoultre,Polaris,9008470,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-9008471-aka-q9008471,Jaeger-LeCoultre,Polaris,9008471 (aka: Q9008471),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-9008480-aka-q9008480,Jaeger-LeCoultre,Polaris,9008480 (aka: Q9008480),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-m79000n-0001,Tudor,Black Bay 54,M79000N-0001,Black,Diver,https://www.tudorwatch.com/en/watches/black-bay-54,enthusiast_favorite,identity_seeded_specs_pending
+tudor-79000-0001-aka-m79000-0001,Tudor,Black Bay 54,79000-0001 (aka: M79000-0001),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79000n-0001-aka-m79000n-0001,Tudor,Black Bay 54,79000N-0001 (aka: M79000N-0001),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79000n-0002-aka-m79000n-0002,Tudor,Black Bay 54,79000N-0002 (aka: M79000N-0002),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79600-0001-aka-m79600-0001,Tudor,Black Bay One,79600-0001 (aka: M79600-0001),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79600-0002-aka-m79600-0002,Tudor,Black Bay One,79600-0002 (aka: M79600-0002),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79600-0004-aka-m79600-0004,Tudor,Black Bay One,79600-0004 (aka: M79600-0004),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79600-0005-aka-m79600-0005,Tudor,Black Bay One,79600-0005 (aka: M79600-0005),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-m79030n-0001,Tudor,Black Bay 58,M79030N-0001,Black,Diver,https://www.tudorwatch.com/en/watches/black-bay-58,core_icon,identity_seeded_specs_pending
+tudor-79030b,Tudor,Black Bay 58,79030B,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+tudor-79030n,Tudor,Black Bay 58,79030N,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+tudor-79010sg-0001-aka-m79010sg0001-m79010sg-0001-bb58-black-bay-58,Tudor,Black Bay 58,"79010SG-0001 (aka: M79010SG0001, M79010SG-0001, BB58, Black Bay 58)",Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79010sg-0002-aka-m79010sg0002-m79010sg-0002-bb58-black-bay-58,Tudor,Black Bay 58,"79010SG-0002 (aka: M79010SG0002, M79010SG-0002, BB58, Black Bay 58)",Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79012m-0001-aka-bb58-black-bay-58-m79012m-0001,Tudor,Black Bay 58,"79012M-0001 (aka: BB58, Black Bay 58, M79012M-0001)",Brown,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79018v-0001-aka-m79018v-0001-bb58-black-bay-58,Tudor,Black Bay 58,"79018V-0001 (aka: M79018V-0001, BB58, Black Bay 58)",Brown,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79030b-0001-aka-m79030b-0001-79030b0001-m79030b0001-bb58-black-bay-58,Tudor,Black Bay 58,"79030B-0001 (aka: M79030B-0001, 79030B0001, M79030B0001, BB58, Black Bay 58)",Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79030b-0002-aka-m79030b-0002-79030b-0002-79030b0002-bb58-black-bay-58,Tudor,Black Bay 58,"79030B-0002 (aka: M79030B-0002, 79030B-0002, 79030B0002, BB58, Black Bay 58)",Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79030b-0003-aka-m79030b-0003-m79030b0003-79030b0003-bb58-black-bay-58,Tudor,Black Bay 58,"79030B-0003 (aka: M79030B-0003, M79030B0003, 79030B0003, BB58, Black Bay 58)",Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79030b-00af-aka-m79030b-00af,Tudor,Black Bay 58,79030B-00AF (aka: M79030B-00AF),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79030n-0001-aka-m79030n-0001-79030n0001,Tudor,Black Bay 58,"79030N-0001 (aka: M79030N-0001, 79030N0001)",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79030n-0002-aka-m79030n-0002-79030n0002,Tudor,Black Bay 58,"79030N-0002 (aka: M79030N-0002, 79030N0002)",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79030n-0003-aka-79030n0003-bb58-black-bay-58-m79030n-0003,Tudor,Black Bay 58,"79030N-0003 (aka: 79030N0003, BB58, Black Bay 58, M79030N-0003)",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-7939g1a0nru-0001-aka-m7939g1a0nru-0001,Tudor,Black Bay 58,7939G1A0NRU-0001 (aka: M7939G1A0NRU-0001),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-7939g1a0nru-0002-aka-m7939g1a0nru-0002,Tudor,Black Bay 58,7939G1A0NRU-0002 (aka: M7939G1A0NRU-0002),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-m79018v-0006-aka-79018v-0006,Tudor,Black Bay 58,M79018V-0006 (aka: 79018V-0006),Brown,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-m79030n-0025,Tudor,Black Bay 58,M79030N-0025,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-m7939a1a0ru-0001-aka-7939a1a0ru-0001,Tudor,Black Bay 58,M7939A1A0RU-0001 (aka: 7939A1A0RU-0001),Red,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-m7939a1a0ru-0002-aka-7939a1a0ru-0002,Tudor,Black Bay 58,M7939A1A0RU-0002 (aka: 7939A1A0RU-0002),Red,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-m7939a1a0ru-0003-aka-7939a1a0ru-0003,Tudor,Black Bay 58,M7939A1A0RU-0003 (aka: 7939A1A0RU-0003),Red,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-m79830rb-0001,Tudor,Black Bay GMT,M79830RB-0001,Black,GMT,https://www.tudorwatch.com/en/watches/black-bay-gmt/m79830rb-0001,curated,identity_seeded_specs_verified
+tudor-m79830rb-0010,Tudor,Black Bay GMT,M79830RB-0010,Black,GMT,,curated,identity_seeded_specs_verified
+tudor-m79830rb,Tudor,Black Bay GMT,M79830RB,Black,GMT,,curated,identity_seeded_specs_verified
+tudor-79733n,Tudor,Black Bay GMT,79733N,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+tudor-7983-001u-aka-7983-001u-m7983-001u,Tudor,Black Bay GMT,"7983/001U (aka: 7983/001U, M7983/001U)",Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79830rb-0001-aka-m79830rb-0001-79830rb0001-79830rb-0001,Tudor,Black Bay GMT,"79830RB-0001 (aka: M79830RB-0001, 79830RB0001, 79830RB-0001)",Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79830rb-0002-aka-m79830rb-0002-79830rb0002-79830rb-0002,Tudor,Black Bay GMT,"79830RB-0002 (aka: M79830RB-0002, 79830RB0002, 79830RB-0002)",Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79830rb-0003-aka-m79830rb-0003-79830rb0003,Tudor,Black Bay GMT,"79830RB-0003 (aka: M79830RB-0003, 79830RB0003)",Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79830rb-0010-aka-m79830rb-0010,Tudor,Black Bay GMT,79830RB-0010 (aka: M79830RB-0010),White,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79830rb-0012-aka-m79830rb-0012,Tudor,Black Bay GMT,79830RB-0012 (aka: M79830RB-0012),White,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79830rb-00af-aka-m79830rb-00af,Tudor,Black Bay GMT,79830RB-00AF (aka: M79830RB-00AF),Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79833mn-0001-aka-m79833mn-0001,Tudor,Black Bay GMT,79833MN-0001 (aka: M79833MN-0001),Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-m79360n-0002,Tudor,Black Bay Chrono,M79360N-0002,Black,Chronograph,,curated,identity_seeded_specs_verified
+tudor-m79470-0001,Tudor,Black Bay Pro,M79470-0001,Black,GMT,https://www.tudorwatch.com/en/watches/black-bay-pro,enthusiast_favorite,identity_seeded_specs_pending
+tudor-79350-0001-aka-m79350-0001-793500001,Tudor,Black Bay Chronograph,"79350-0001 (aka: M79350-0001, 793500001)",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79350-0002-aka-m79350-0002-793500002,Tudor,Black Bay Chronograph,"79350-0002 (aka: M79350-0002, 793500002)",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79350-0003-aka-m79350-0003-793500003,Tudor,Black Bay Chronograph,"79350-0003 (aka: M79350-0003, 793500003)",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79350-0004-aka-m79350-0004-793500004,Tudor,Black Bay Chronograph,"79350-0004 (aka: M79350-0004, 793500004)",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79350-0005-aka-m79350-0005-793500005,Tudor,Black Bay Chronograph,"79350-0005 (aka: M79350-0005, 793500005)",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79360dk-0001-aka-m79360dk-0001,Tudor,Black Bay Chronograph,79360DK-0001 (aka: M79360DK-0001),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79360n-0001-aka-m79360n-0001,Tudor,Black Bay Chronograph,79360N-0001 (aka: M79360N-0001),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79360n-0002-aka-m79360n-0002,Tudor,Black Bay Chronograph,79360N-0002 (aka: M79360N-0002),Silver,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79360n-0005-aka-m79360n-0005,Tudor,Black Bay Chronograph,79360N-0005 (aka: M79360N-0005),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79360n-0006-aka-m79360n-0006,Tudor,Black Bay Chronograph,79360N-0006 (aka: M79360N-0006),Silver,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79230g,Tudor,Black Bay,79230G,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+tudor-79230b-0002,Tudor,Black Bay,79230b-0002,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79230dk-0008,Tudor,Black Bay,79230DK-0008,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79250bb-0001,Tudor,Black Bay,79250BB-0001,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79250bm-0001,Tudor,Black Bay,79250BM-0001,Brown,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79250bm-0003,Tudor,Black Bay,79250BM-0003,Brown,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79500-0001,Tudor,Black Bay One,79500-0001,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79500-0005,Tudor,Black Bay One,79500-0005,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79500-0006,Tudor,Black Bay One,79500-0006,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79500-0009,Tudor,Black Bay One,79500-0009,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79500-0011,Tudor,Black Bay One,79500-0011,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79540-0003,Tudor,Black Bay One,79540-0003,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79733n-0003,Tudor,Black Bay,79733N-0003,Champagne,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79733n-0004,Tudor,Black Bay,79733N-0004,Champagne,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79733n-0005,Tudor,Black Bay,79733N-0005,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-m25407n-0001,Tudor,Pelagos 39,M25407N-0001,Black,Diver,https://www.tudorwatch.com/en/watches/pelagos-39,curated,identity_seeded_specs_verified
+tudor-25600tb,Tudor,Pelagos,25600TB,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+tudor-25600tn,Tudor,Pelagos,25600TN,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+tudor-m25707b-23-0001,Tudor,Pelagos FXD,M25707B/23-0001,Blue,Diver,https://www.tudorwatch.com/en/watches/pelagos-fxd,enthusiast_favorite,identity_seeded_specs_pending
+tudor-25407n-0001-aka-m25407n-0001,Tudor,Pelagos,25407N-0001 (aka: M25407N-0001),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-25500tn-0001-aka-m25500tn-0001,Tudor,Pelagos,25500TN-0001 (aka: M25500TN-0001),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-25600tb-0001-aka-m25600tb-0001-25600tb0001,Tudor,Pelagos,"25600TB-0001 (aka: m25600tb-0001, 25600TB0001)",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-25600tn-0001-aka-m25600tn-0001-25600tn0001,Tudor,Pelagos,"25600TN-0001 (aka: M25600TN-0001, 25600TN0001)",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-25610tnl-0001-aka-25610tnl-0001-25610tnl0001,Tudor,Pelagos,"25610TNL-0001 (aka: 25610TNL-0001, 25610TNL0001)",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-25707b-21-0001-aka-m25707b-21-0001,Tudor,Pelagos,25707B/21-0001 (aka: M25707B/21-0001),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-25707b-22-0001-aka-m25707b-22-0001,Tudor,Pelagos,25707B/22-0001 (aka: M25707B/22-0001),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-25707b-23-0001-aka-m25707b-23-0001,Tudor,Pelagos,25707B/23-0001 (aka: M25707B/23-0001),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-25707b-24-0001-aka-m25707b-24-0001,Tudor,Pelagos,25707B/24-0001 (aka: M25707B/24-0001),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-25707kn-0001-aka-m25707kn-0001,Tudor,Pelagos,25707KN-0001 (aka: M25707KN-0001),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-25717n-0001-aka-m25717n-0001,Tudor,Pelagos,25717N-0001 (aka: M25717N-0001),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-m28600-0005,Tudor,Royal,M28600-0005,Blue,Integrated Bracelet,https://www.tudorwatch.com/en/watches/tudor-royal,curated,identity_seeded_specs_verified
+tudor-m79950-0001,Tudor,Ranger,M79950-0001,Black,Field,https://www.tudorwatch.com/en/watches/ranger,curated,identity_seeded_specs_verified
+tudor-79910-0001,Tudor,Ranger,79910-0001,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79910-0002,Tudor,Ranger,79910-0002,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79910-0003,Tudor,Ranger,79910-0003,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-79910-0010,Tudor,Ranger,79910-0010,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-28300-0001-aka-m28300-0001,Tudor,Royal,28300-0001 (aka: M28300-0001),Silver,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-28300-0002-aka-m28300-0002,Tudor,Royal,28300-0002 (aka: M28300-0002),Silver,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-28300-0003-aka-m28300-0003,Tudor,Royal,28300-0003 (aka: M28300-0003),Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+tudor-28300-0004-aka-m28300-0004,Tudor,Royal,28300-0004 (aka: M28300-0004),Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-4-96-6,Longines,HydroConquest,L3.781.4.96.6,Blue,Diver,https://www.longines.com/en-us/collection/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-780-3-78-6,Longines,HydroConquest,L3.780.3.78.6,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-780-3-78-9,Longines,HydroConquest,L3.780.3.78.9,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-780-4-56-6,Longines,HydroConquest,L3.780.4.56.6,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-780-4-96-6,Longines,HydroConquest,L3.780.4.96.6,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-780-4-96-9,Longines,HydroConquest,L3.780.4.96.9,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-3-06-9,Longines,HydroConquest,L3.781.3.06.9,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-3-56-7,Longines,HydroConquest,L3.781.3.56.7,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-3-56-9,Longines,HydroConquest,L3.781.3.56.9,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-3-58-7,Longines,HydroConquest,L3.781.3.58.7,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-3-58-9,Longines,HydroConquest,L3.781.3.58.9,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-3-78-7,Longines,HydroConquest,L3.781.3.78.7,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-3-96-9,Longines,HydroConquest,L3.781.3.96.9,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-4-06-9,Longines,HydroConquest,L3.781.4.06.9,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-4-59-6,Longines,HydroConquest,L3.781.4.59.6,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-782-3-06-7,Longines,HydroConquest,L3.782.3.06.7,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-782-3-06-9,Longines,HydroConquest,L3.782.3.06.9,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-782-3-56-7,Longines,HydroConquest,L3.782.3.56.7,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-782-3-58-7,Longines,HydroConquest,L3.782.3.58.7,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-782-3-58-9,Longines,HydroConquest,L3.782.3.58.9,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-782-3-78-9,Longines,HydroConquest,L3.782.3.78.9,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-782-3-96-7,Longines,HydroConquest,L3.782.3.96.7,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-782-3-96-9,Longines,HydroConquest,L3.782.3.96.9,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-4-05-2-aka-l37814052,Longines,HydroConquest,L3.781.4.05.2 (aka: L37814052),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-4-05-6-aka-l37814056,Longines,HydroConquest,L3.781.4.05.6 (aka: L37814056),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-4-05-9-aka-l37814059,Longines,HydroConquest,L3.781.4.05.9 (aka: L37814059),Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-4-56-6-aka-l37814566,Longines,HydroConquest,L3.781.4.56.6 (aka: L37814566),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-4-56-9-aka-l37814569,Longines,HydroConquest,L3.781.4.56.9 (aka: L37814569),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-4-76-6-aka-l37814766,Longines,HydroConquest,L3.781.4.76.6 (aka: L37814766),Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-4-76-9-aka-l37814769,Longines,HydroConquest,L3.781.4.76.9 (aka: L37814769),Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-4-96-6-aka-l37814966,Longines,HydroConquest,L3.781.4.96.6 (aka: L37814966),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-4-96-9-aka-l37814969,Longines,HydroConquest,L3.781.4.96.9 (aka: L37814969),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-4-97-6-aka-l37814976,Longines,HydroConquest,L3.781.4.97.6 (aka: L37814976),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-781-4-98-6-aka-l37814986,Longines,HydroConquest,L3.781.4.98.6 (aka: L37814986),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-782-4-56-6-aka-l37824566,Longines,HydroConquest,L3.782.4.56.6 (aka: L37824566),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-782-4-56-9-aka-l37824569,Longines,HydroConquest,L3.782.4.56.9 (aka: L37824569),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-782-4-76-6-aka-l37824766,Longines,HydroConquest,L3.782.4.76.6 (aka: L37824766),Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-782-4-96-6-aka-l37824966,Longines,HydroConquest,L3.782.4.96.6 (aka: L37824966),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-782-4-96-9-aka-l37824969,Longines,HydroConquest,L3.782.4.96.9 (aka: L37824969),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-810-4-73-6,Longines,Spirit,L3.810.4.73.6,Silver,Field,,curated,identity_seeded_specs_verified
+longines-l3-812-4-63-2,Longines,Spirit Zulu Time,L3.812.4.63.2,Black,GMT,https://www.longines.com/en-us/collection/longines-spirit,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-810-4-53-0,Longines,Spirit,L3.810.4.53.0,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-810-4-53-6,Longines,Spirit,L3.810.4.53.6,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-810-4-53-9,Longines,Spirit,L3.810.4.53.9,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-810-4-73-2,Longines,Spirit,L3.810.4.73.2,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-810-4-93-0,Longines,Spirit,L3.810.4.93.0,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-810-4-93-9,Longines,Spirit,L3.810.4.93.9,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-811-4-53-0,Longines,Spirit,L3.811.4.53.0,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-811-4-53-6,Longines,Spirit,L3.811.4.53.6,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-811-4-73-2,Longines,Spirit,L3.811.4.73.2,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-811-4-73-6,Longines,Spirit,L3.811.4.73.6,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-374-4-30-2,Longines,Legend Diver,L3.374.4.30.2,Beige,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-374-4-80-6,Longines,Legend Diver,L3.374.4.80.6,White,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-374-4-90-2,Longines,Legend Diver,L3.374.4.90.2,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-774-2-50-9,Longines,Legend Diver,L3.774.2.50.9,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-774-4-30-2,Longines,Legend Diver,L3.774.4.30.2,Beige,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-774-4-50-0,Longines,Legend Diver,L3.774.4.50.0,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-793-4-78-3,Longines,Master Collection,L2.793.4.78.3,Silver,Dress,,curated,identity_seeded_specs_verified
+longines-l2-909-4-78-3,Longines,Master Collection Moonphase,L2.909.4.78.3,Silver,Dress,https://www.longines.com/en-us/collection/the-longines-master-collection,curated,identity_seeded_specs_verified
+longines-l2-357-4-07-2,Longines,Master Collection,L2.357.4.07.2,Beige,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-07-6,Longines,Master Collection,L2.357.4.07.6,Beige,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-08-6,Longines,Master Collection,L2.357.4.08.6,Orange,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-87-0,Longines,Master Collection,L2.357.4.87.0,White,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-87-2,Longines,Master Collection,L2.357.4.87.2,White,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-87-6,Longines,Master Collection,L2.357.4.87.6,White,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-97-6,Longines,Master Collection,L2.357.4.97.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-98-6,Longines,Master Collection,L2.357.4.98.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l3-830-4-02-6,Longines,Conquest,L3.830.4.02.6,Green,Sport,https://www.longines.com/en-us/collection/conquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l5-255-0-71-7,Longines,DolceVita,L5.255.0.71.7,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l5-255-4-59-2,Longines,DolceVita,L5.255.4.59.2,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l5-255-4-71-7,Longines,DolceVita,L5.255.4.71.7,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l5-255-4-75-2,Longines,DolceVita,L5.255.4.75.2,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l5-255-4-75-6,Longines,DolceVita,L5.255.4.75.6,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l5-255-4-79-2,Longines,DolceVita,L5.255.4.79.2,Beige,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l5-255-5-75-7,Longines,DolceVita,L5.255.5.75.7,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-400-7763-4157-07-4-24-74eb,Oris,Aquis,01 400 7763 4157-07 4 24 74EB,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-400-7769-4135-07-4-22-74fc,Oris,Aquis,01 400 7769 4135-07 4 22 74FC,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-400-7769-6355-07-4-22-75fc,Oris,Aquis,01 400 7769 6355-07 4 22 75FC,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7653-4154-07-8-26-01peb,Oris,Aquis,01 733 7653 4154-07 8 26 01PEB,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7730-4105-set,Oris,Aquis,01 733 7730 4105-Set,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7730-4134-07-4-24-64eb,Oris,Aquis,01 733 7730 4134-07 4 24 64EB,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7730-4134-07-8-24-05peb,Oris,Aquis,01 733 7730 4134-07 8 24 05PEB,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7730-4135-07-8-24-05peb,Oris,Aquis,01 733 7730 4135-07 8 24 05PEB,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7730-4153-07-4-24-63eb,Oris,Aquis,01 733 7730 4153-07 4 24 63EB,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7730-4153-07-4-24-66eb,Oris,Aquis,01 733 7730 4153-07 4 24 66EB,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7730-4153-07-8-24-05peb,Oris,Aquis,01 733 7730 4153-07 8 24 05PEB,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7730-4154-07-8-24-05peb,Oris,Aquis,01 733 7730 4154-07 8 24 05PEB,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7730-4157-07-4-24-64eb,Oris,Aquis,01 733 7730 4157-07 4 24 64EB,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7730-4157-07-8-24-05peb,Oris,Aquis,01 733 7730 4157-07 8 24 05PEB,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7730-4158-07-8-24-05peb,Oris,Aquis,01 733 7730 4158-07 8 24 05PEB,Red,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7730-4159-07-8-24-05peb,Oris,Aquis,01 733 7730 4159-07 8 24 05PEB,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7730-7153-07-4-24-63teb,Oris,Aquis,01 733 7730 7153-07 4 24 63TEB,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7730-7153-07-8-24-15peb,Oris,Aquis,01 733 7730 7153-07 8 24 15PEB,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7732-4134-07-4-21-64fc,Oris,Aquis,01 733 7732 4134-07 4 21 64FC,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7732-4134-07-8-21-05peb,Oris,Aquis,01 733 7732 4134-07 8 21 05PEB,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7732-4135-07-4-21-64fc,Oris,Aquis,01 733 7732 4135-07 4 21 64FC,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7732-4135-07-8-21-05peb,Oris,Aquis,01 733 7732 4135-07 8 21 05PEB,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-754-7741-3165-07-5-20-58br,Oris,Big Crown,01 754 7741 3165-07 5 20 58BR,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-754-7741-3166-07-5-20-74br,Oris,Big Crown,01 754 7741 3166-07 5 20 74BR,Brown,,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-754-7741-3167-07-5-20-58br,Oris,Big Crown,01 754 7741 3167-07 5 20 58BR,Green,,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-754-7741-3168-07-5-20-58br,Oris,Big Crown,01 754 7741 3168-07 5 20 58BR,Red,,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-754-7741-3168-07-8-20-01,Oris,Big Crown,01 754 7741 3168-07 8 20 01,Red,,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-754-7741-4064-07-5-20-64,Oris,Big Crown,01 754 7741 4064-07 5 20 64,Black,,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-754-7741-4064-07-5-20-65,Oris,Big Crown,01 754 7741 4064-07 5 20 65,Black,,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-754-7741-4065-07-5-20-63,Oris,Big Crown,01 754 7741 4065-07 5 20 63,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-754-7741-4068-07-5-20-50,Oris,Big Crown,01 754 7741 4068-07 5 20 50,Red,,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-754-7741-4068-07-5-20-64,Oris,Big Crown,01 754 7741 4068-07 5 20 64,Red,,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-400-7772-4054-07-5-20-82,Oris,Divers 65,01 400 7772 4054-07 5 20 82,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7707-4055-07-4-20-18,Oris,Divers 65,01 733 7707 4055-07 4 20 18,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7707-4064-07-8-20-18,Oris,Divers 65,01 733 7707 4064-07 8 20 18,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7707-4337-set,Oris,Divers 65,01 733 7707 4337-Set,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7707-4354-07-4-20-18,Oris,Divers 65,01 733 7707 4354-07 4 20 18,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7707-4354-07-5-20-45,Oris,Divers 65,01 733 7707 4354-07 5 20 45,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7707-4354-07-5-20-55,Oris,Divers 65,01 733 7707 4354-07 5 20 55,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7707-4356-07-5-20-45,Oris,Divers 65,01 733 7707 4356-07 5 20 45,Brown,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7707-4356-07-8-20-17,Oris,Divers 65,01 733 7707 4356-07 8 20 17,Brown,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7707-4357-07-4-20-18,Oris,Divers 65,01 733 7707 4357-07 4 20 18,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7707-4357-07-8-20-18,Oris,Divers 65,01 733 7707 4357-07 8 20 18,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-733-7720-3185-set-ls,Oris,Divers 65,01 733 7720 3185-Set LS,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-111-7711-4163-set-1-22-72fc,Oris,ProPilot,01 111 7711 4163-Set 1 22 72FC,Grey,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-748-7756-4064-07-3-22-02lc,Oris,ProPilot,01 748 7756 4064-07 3 22 02LC,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-748-7756-4064-07-8-22-08,Oris,ProPilot,01 748 7756 4064-07 8 22 08,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-751-7761-3164-07-3-2003brlc,Oris,ProPilot,01 751 7761 3164-07 3 2003BRLC,Black,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-751-7761-4063-07-3-20-03lc,Oris,ProPilot,01 751 7761 4063-07 3 20 03LC,Grey,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+oris-01-751-7761-4065-07-8-20-08p,Oris,ProPilot,01 751 7761 4065-07 8 20 08P,Blue,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-556-010,Sinn,556.010,556.010,Black,Sport,https://www.sinn.de/en/watches/series/556.html,curated,identity_seeded_specs_verified
+sinn-104-010,Sinn,104 St Sa I,104.010,Black,Pilot,https://www.sinn.de/en/watches/series/104.html,reddit_collection_strategy_signal,identity_seeded_specs_pending
+sinn-104-012,Sinn,104 St Sa I,104.012,White,Pilot,https://www.sinn.de/en/watches/series/104.html,reddit_sotc_signal,identity_seeded_specs_pending
+sinn-356-072,Sinn,356 Sa,356.072,Black,Chronograph,https://www.sinn.de/en/watches/series/356.html,reddit_sotc_signal,identity_seeded_specs_pending
+sinn-u1-101,Sinn,U1,U1.101,Black,Diver,https://www.sinn.de/en/watches/series/u1.html,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-u50-010,Sinn,U50,U50.010,Black,Diver,https://www.sinn.de/en/watches/series/u50.html,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-1-010-010,Sinn,Diving Watches,"1,010,010",Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-010-020,Sinn,Diving Watches,"1,010,020",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-010-023,Sinn,Diving Watches,"1,010,023",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-010-040,Sinn,Diving Watches,"1,010,040",Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-010-111,Sinn,Diving Watches,"1,010,111",White,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-011-010,Sinn,Diving Watches,"1,011,010",Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-011-020,Sinn,Diving Watches,"1,011,020",Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-011-021,Sinn,Diving Watches,"1,011,021",Green,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-011-030,Sinn,Diving Watches,"1,011,030",Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-012-010,Sinn,Diving Watches,"1,012,010",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-012-030,Sinn,Diving Watches,"1,012,030",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-014-010,Sinn,Diving Watches,"1,014,010",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-014-011,Sinn,Diving Watches,"1,014,011",Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-015-010,Sinn,Diving Watches,"1,015,010",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-015-011,Sinn,Diving Watches,"1,015,011",Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-020-010,Sinn,Diving Watches,"1,020,010",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-020-020,Sinn,Diving Watches,"1,020,020",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-020-040,Sinn,Diving Watches,"1,020,040",Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-030-601,Sinn,Instrument Chronographs,"1,030,601",Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-030-621,Sinn,Instrument Chronographs,"1,030,621",Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-030-791,Sinn,Instrument Chronographs,"1,030,791",Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-030-793,Sinn,Instrument Chronographs,"1,030,793",Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-1-736-011,Sinn,Classic Timepieces,"1,736,011",Silver,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+sinn-10-100-101,Sinn,Diving Watches,"10,100,101",Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-164,NOMOS,Tangente 38,164,White,Dress,https://nomos-glashuette.com/en/tangente,core_design_icon,identity_seeded_specs_pending
+nomos-180,NOMOS,Tangente Neomatik 41 Update,180,White,Dress,https://nomos-glashuette.com/en/tangente,reddit_sotc_signal,identity_seeded_specs_pending
+nomos-glashutte-101,Nomos Glashütte,Tangente,101,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-101-lange,Nomos Glashütte,Tangente,101-Lange,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-101-s14,Nomos Glashütte,Tangente,101.S14,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-101-s15,Nomos Glashütte,Tangente,101.S15,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-101-s16,Nomos Glashütte,Tangente,101.S16,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-101-s17,Nomos Glashütte,Tangente,101.S17,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-101-s18,Nomos Glashütte,Tangente,101.S18,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-101-s19,Nomos Glashütte,Tangente,101.S19,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-101-s5,Nomos Glashütte,Tangente,101.S5,Turquoise,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-101-s6,Nomos Glashütte,Tangente,101.S6,Pink,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-101-s7,Nomos Glashütte,Tangente,101.S7,Purple,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-107,Nomos Glashütte,Tangente,107,White,,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-110,Nomos Glashütte,Tangente,110,Brown,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-115,Nomos Glashütte,Tangente,115,White,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-116,Nomos Glashütte,Tangente,116,White,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-117,Nomos Glashütte,Tangente,117,White,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-737,NOMOS,Club Campus 38,737,White,Field,https://nomos-glashuette.com/en/club,reddit_collection_strategy_signal,identity_seeded_specs_pending
+nomos-753,NOMOS,Club,753,White,Field,https://nomos-glashuette.com/en/club,reddit_sotc_signal,identity_seeded_specs_pending
+nomos-glashutte-701,Nomos Glashütte,Club,701,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-701-1,Nomos Glashütte,Club,701.1,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-701-s3,Nomos Glashütte,Club,701.S3,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-702,Nomos Glashütte,Club,702,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-703,Nomos Glashütte,Club,703,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-703-1,Nomos Glashütte,Club,703.1,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-703-s3,Nomos Glashütte,Club,703.S3,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-703-s4,Nomos Glashütte,Club,703.S4,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-704,Nomos Glashütte,Club,704,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-708,Nomos Glashütte,Club,708,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-319,NOMOS,Orion Duo,319,White,Dress,https://nomos-glashuette.com/en/orion,reddit_sotc_signal,identity_seeded_specs_pending
+nomos-384,NOMOS,Orion 38,384,White,Dress,https://nomos-glashuette.com/en/orion,enthusiast_pick,identity_seeded_specs_pending
+nomos-glashutte-301,Nomos Glashütte,Orion,301,White,Vintage,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-302,Nomos Glashütte,Orion,302,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-306,Nomos Glashütte,Orion,306,White,Vintage,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-307,Nomos Glashütte,Orion,307,Black,Vintage,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-309,Nomos Glashütte,Orion,309,White,Vintage,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-311-9,Nomos Glashütte,Orion,311.9,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-1113,NOMOS,Metro Neomatik,1113,White,Dress,https://nomos-glashuette.com/en/metro,reddit_sotc_signal,identity_seeded_specs_pending
+nomos-glashutte-1101,Nomos Glashütte,Metro,1101,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-1101-s1,Nomos Glashütte,Metro,1101.S1,Green,,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-1102,Nomos Glashütte,Metro,1102,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-1103,Nomos Glashütte,Metro,1103,Grey,,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-1104,Nomos Glashütte,Metro,1104,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-234,NOMOS,Ludwig 38,234,White,Dress,https://nomos-glashuette.com/en/ludwig,brand_variety,identity_seeded_specs_pending
+nomos-glashutte-201,Nomos Glashütte,Ludwig,201,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-205,Nomos Glashütte,Ludwig,205,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-205-ol,Nomos Glashütte,Ludwig,205.OL,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-205-s2,Nomos Glashütte,Ludwig,205.S2,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-205-s3,Nomos Glashütte,Ludwig,205.S3,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-211,Nomos Glashütte,Ludwig,211,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-213,Nomos Glashütte,Ludwig,213,Brown,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-561,NOMOS,Ahoi Neomatik Atlantic,561,Blue,Sport,https://nomos-glashuette.com/en/ahoi,reddit_nomos_gs_signal,identity_seeded_specs_pending
+nomos-glashutte-516,Nomos Glashütte,Ahoi,516,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-517,Nomos Glashütte,Ahoi,517,Beige,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-526,Nomos Glashütte,Ahoi,526,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-527,Nomos Glashütte,Ahoi,527,Beige,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m005-417-11-031-00,Mido,Multifort,M005.417.11.031.00,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m005-417-11-051-00,Mido,Multifort,M005.417.11.051.00,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m005-417-17-051-20,Mido,Multifort,M005.417.17.051.20,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m005-430-11-061-80,Mido,Multifort,M005.430.11.061.80,Grey,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m005-430-11-061-81,Mido,Multifort,M005.430.11.061.81,Grey,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m005-430-16-031-80,Mido,Multifort,M005.430.16.031.80,Silver,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m005-430-36-051-80,Mido,Multifort,M005.430.36.051.80,Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m005-430-37-051-80,Mido,Multifort,M005.430.37.051.80,Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m005-614-11-031-00,Mido,Multifort,M005.614.11.031.00,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m005-614-11-061-00,Mido,Multifort,M005.614.11.061.00,Grey,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m026-430-11-041-00,Mido,Ocean Star,M026.430.11.041.00,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m026-430-11-051-00,Mido,Ocean Star,M026.430.11.051.00,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m026-430-17-041-00,Mido,Ocean Star,M026.430.17.041.00,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m026-430-17-041-01,Mido,Ocean Star,M026.430.17.041.01,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m026-430-17-051-00,Mido,Ocean Star,M026.430.17.051.00,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m026-430-22-051-00,Mido,Ocean Star,M026.430.22.051.00,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m026-430-36-041-00,Mido,Ocean Star,M026.430.36.041.00,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m026-430-36-091-00,Mido,Ocean Star,M026.430.36.091.00,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m026-430-37-051-00,Mido,Ocean Star,M026.430.37.051.00,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m026-430-44-061-00,Mido,Ocean Star,M026.430.44.061.00,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m016-414-11-041-00,Mido,Commander,M016.414.11.041.00,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m016-414-11-061-00,Mido,Commander,M016.414.11.061.00,Grey,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m016-414-36-081-00,Mido,Commander,M016.414.36.081.00,Grey,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m021-207-11-031-00,Mido,Commander,M021.207.11.031.00,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m021-207-11-041-00,Mido,Commander,M021.207.11.041.00,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m021-207-11-106-00,Mido,Commander,M021.207.11.106.00,White,,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m021-207-16-296-00,Mido,Commander,M021.207.16.296.00,Brown,,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m021-207-33-021-00,Mido,Commander,M021.207.33.021.00,Champagne,,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m007-207-11-036-00,Mido,Baroncelli,M007.207.11.036.00,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m007-207-11-038-00,Mido,Baroncelli,M007.207.11.038.00,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m007-207-16-036-00,Mido,Baroncelli,M007.207.16.036.00,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m007-207-36-036-00,Mido,Baroncelli,M007.207.36.036.00,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m007-207-36-291-00,Mido,Baroncelli,M007.207.36.291.00,Brown,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m022-207-11-036-10,Mido,Baroncelli,M022.207.11.036.10,White,,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m027-207-11-010-00,Mido,Baroncelli,M027.207.11.010.00,White,,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m027-207-11-010-01,Mido,Baroncelli,M027.207.11.010.01,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+christopher-ward-c5gwt,Christopher Ward,Dress,C5GWT,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+christopher-ward-c5sks,Christopher Ward,Dress,C5SKS,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+christopher-ward-c5swt,Christopher Ward,Dress,C5SWT,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+christopher-ward-c60-38ada2-s0rk0-rk,Christopher Ward,Dive,C60-38ADA2-S0RK0-RK,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+doxa-821-10-011-10,Doxa,SUB 300,821.10.011.10,White,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+doxa-821-10-011-23,Doxa,SUB 300,821.10.011.23,White,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+doxa-821-10-021-10,Doxa,SUB 300,821.10.021.10,Silver,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+doxa-821-10-021-20,Doxa,SUB 300,821.10.021.20,Silver,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+doxa-821-10-101-20,Doxa,SUB 300,821.10.101.20,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+doxa-821-10-201-10,Doxa,SUB 300,821.10.201.10,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+doxa-821-10-201-32,Doxa,SUB 300,821.10.201.32,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+doxa-821-10-241-10,Doxa,SUB 300,821.10.241.10,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+doxa-821-10-361-10,Doxa,SUB 300,821.10.361.10,Yellow,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+doxa-821-10-361-31,Doxa,SUB 300,821.10.361.31,Yellow,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+doxa-822-70-011-23,Doxa,SUB 300,822.70.011.23,White,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+doxa-822-70-021-20,Doxa,SUB 300,822.70.021.20,Silver,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+unimatic-u1-a,Unimatic,Modello Uno,U1-A,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+unimatic-u1-b,Unimatic,Modello Uno,U1-B,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+unimatic-u1-bf,Unimatic,Modello Uno,U1-BF,Silver,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+unimatic-u1-bfn,Unimatic,Modello Uno,U1-BFN,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+unimatic-u1-bn,Unimatic,Modello Uno,U1-BN,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+unimatic-u1-btp,Unimatic,Modello Uno,U1-BTP,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+unimatic-u1-c,Unimatic,Modello Uno,U1-C,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+unimatic-u1-d,Unimatic,Modello Uno,U1-D,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+unimatic-u1-dhk,Unimatic,Modello Uno,U1-DHK,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+unimatic-u1-dl,Unimatic,Modello Uno,U1-DL,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+unimatic-u1-dn,Unimatic,Modello Uno,U1-DN,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+unimatic-u1-dw,Unimatic,Modello Uno,U1-DW,White,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-spb143,Seiko,Prospex Alpinist,SPB143,Green,Field,,curated,identity_seeded_specs_verified
+seiko-spb155,Seiko,Prospex Baby Alpinist,SPB155,Green,Field,https://www.seikowatches.com/us-en/products/prospex,reddit_sotc_signal,identity_seeded_specs_pending
+seiko-skx007j1,Seiko,SKX007,SKX007J1,Black,Diver,,curated,identity_seeded_specs_verified
+seiko-skx007,Seiko,SKX007,SKX007,Black,Diver,https://www.seikowatches.com/us-en,reddit_icon,identity_seeded_specs_pending
+seiko-skx009,Seiko,SKX009,SKX009,Blue,Diver,https://www.seikowatches.com/us-en,reddit_sotc_signal,identity_seeded_specs_pending
+seiko-ssk001,Seiko,5 Sports GMT,SSK001,Black,GMT,,curated,identity_seeded_specs_verified
+seiko-snzf15k1,Seiko,5 Sports,SNZF15K1,Blue,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-srpd51k1-aka-srpd51,Seiko,5 Sports,SRPD51K1 (aka: SRPD51),Blue,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-srpd51k2-aka-srpd51,Seiko,5 Sports,SRPD51K2 (aka: SRPD51),Blue,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-srpd53k1-aka-srpd53,Seiko,5 Sports,SRPD53K1 (aka: SRPD53),Blue,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-srpd55,Seiko,Seiko 5 Sports,SRPD55,Black,Diver,https://www.seikowatches.com/us-en/products/5sports,entry_icon,identity_seeded_specs_pending
+seiko-srpd55k2-aka-srpd55,Seiko,5 Sports,SRPD55K2 (aka: SRPD55),Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-srpd55k3-aka-srpd55,Seiko,5 Sports,SRPD55K3 (aka: SRPD55),Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-srpd57k1-aka-srpd57,Seiko,5 Sports,SRPD57K1 (aka: SRPD57),Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-srpd59k1-aka-srpd59,Seiko,5 Sports,SRPD59K1 (aka: SRPD59),Orange,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-spb077,Seiko,Prospex 1965 Diver Reissue,SPB077,Black,Diver,,curated,identity_seeded_specs_verified
+seiko-spb151,Seiko,Prospex Captain Willard,SPB151,Black,Diver,https://www.seikowatches.com/us-en/products/prospex,reddit_sotc_signal,identity_seeded_specs_pending
+seiko-sbbn035,Seiko,Prospex Divers,SBBN035,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-sbdc039,Seiko,Prospex Divers,SBDC039,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-sbdx014g,Seiko,Prospex Divers,SBDX014G,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-sbdx017-aka-mm300,Seiko,Prospex Divers,SBDX017 (aka: MM300),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-sla017j1-aka-sla017,Seiko,Prospex Divers,SLA017J1 (aka: SLA017),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-sla043,Seiko,Prospex 62MAS Re-creation,SLA043,Blue,Diver,https://www.seikowatches.com/us-en/products/prospex,enthusiast_pick,identity_seeded_specs_pending
+seiko-sne435p1,Seiko,Prospex Divers,SNE435P1,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-sne437p1,Seiko,Prospex Divers,SNE437P1,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-spb051j1,Seiko,Prospex Divers,SPB051J1,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-spb053j1,Seiko,Prospex Divers,SPB053J1,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-srpb41,Seiko,Presage Cocktail Time,SRPB41,Blue,Dress,https://www.seikowatches.com/us-en/products/presage,enthusiast_favorite,identity_seeded_specs_pending
+seiko-srpe41,Seiko,Presage Cocktail Time,SRPE41,Red,Dress,https://www.seikowatches.com/us-en/products/presage,enthusiast_favorite,identity_seeded_specs_pending
+seiko-ssa346j1-aka-ssa346,Seiko,Presage,SSA346J1 (aka: SSA346),Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-ssc813,Seiko,Prospex Speedtimer,SSC813,White,Chronograph,https://www.seikowatches.com/us-en/products/prospex,enthusiast_favorite,identity_seeded_specs_pending
+seiko-sarb017,Seiko,Mechanical,SARB017,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-sarb033,Seiko,SARB033,SARB033,Black,Dress,https://www.seikowatches.com/us-en,enthusiast_icon,identity_seeded_specs_pending
+seiko-sarb035,Seiko,SARB035,SARB035,Cream,Dress,https://www.seikowatches.com/us-en,enthusiast_icon,identity_seeded_specs_pending
+seiko-sarb065,Seiko,Mechanical,SARB065,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-skx007k1-aka-skx007,Seiko,Mechanical,SKX007K1 (aka: SKX007),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-skx007k2-aka-skx007,Seiko,Mechanical,SKX007K2 (aka: SKX007),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-skx009k2,Seiko,Mechanical,SKX009K2,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+seiko-srpa29,Seiko,Mechanical,SRPA29,Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbga211,Grand Seiko,Heritage Snowflake,SBGA211,White,Dress,https://www.grand-seiko.com/us-en/collections/sbga211g,core_icon,identity_seeded_specs_pending
+grand-seiko-sbga413,Grand Seiko,Heritage Shunbun,SBGA413,Pink,Sport,https://www.grand-seiko.com/us-en/collections/sbga413g,curated,identity_seeded_specs_verified
+grand-seiko-sbgx335,Grand Seiko,Heritage Quartz,SBGX335,White,Sport,,curated,identity_seeded_specs_verified
+grand-seiko-slgh005,Grand Seiko,Evolution 9 White Birch,SLGH005,Silver,Sport,https://www.grand-seiko.com/us-en/collections/slgh005g,curated,identity_seeded_specs_verified
+grand-seiko-sbga375,Grand Seiko,Heritage Spring Drive,SBGA375,Blue,Dress,https://www.grand-seiko.com/us-en/collections/sbga375g,reddit_nomos_gs_signal,identity_seeded_specs_pending
+grand-seiko-sbga469,Grand Seiko,Heritage Katsuiro,SBGA469,Blue,Dress,https://www.grand-seiko.com/us-en/collections,reddit_sotc_signal,identity_seeded_specs_pending
+grand-seiko-sbgp005,Grand Seiko,Heritage Quartz,SBGP005,Blue,Dress,https://www.grand-seiko.com/us-en/collections,reddit_grandseiko_signal,identity_seeded_specs_pending
+grand-seiko-sbgr261,Grand Seiko,Heritage Automatic,SBGR261,Cream,Dress,https://www.grand-seiko.com/us-en/collections/sbgr261g,reddit_nomos_gs_signal,identity_seeded_specs_pending
+grand-seiko-sbgx261,Grand Seiko,Heritage 9F Quartz,SBGX261,Black,Dress,https://www.grand-seiko.com/us-en/collections/sbgx261g,reddit_sotc_signal,identity_seeded_specs_pending
+grand-seiko-sbga203,Grand Seiko,Spring Drive,SBGA203,Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbgc221,Grand Seiko,Spring Drive,SBGC221,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbge211,Grand Seiko,Spring Drive,SBGE211,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbga101,Grand Seiko,Spring Drive,SBGA101,Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbga201,Grand Seiko,Spring Drive,SBGA201,Champagne,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbga225,Grand Seiko,Spring Drive,SBGA225,White,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbga227,Grand Seiko,Spring Drive,SBGA227,Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbga229,Grand Seiko,Spring Drive,SBGA229,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbga231,Grand Seiko,Spring Drive,SBGA231,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbga241,Grand Seiko,Spring Drive,SBGA241,Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbga259,Grand Seiko,Spring Drive,SBGA259,White,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbga273,Grand Seiko,Spring Drive,SBGA273,Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbgm221,Grand Seiko,Elegance GMT,SBGM221,Ivory,GMT,,curated,identity_seeded_specs_verified
+grand-seiko-sbgn017,Grand Seiko,Sport Quartz GMT,SBGN017,Blue,Sport,,curated,identity_seeded_specs_verified
+grand-seiko-sbgw301,Grand Seiko,Elegance Manual Wind,SBGW301,Silver,Dress,https://www.grand-seiko.com/us-en/collections,reddit_under_5k_signal,identity_seeded_specs_pending
+grand-seiko-slga021,Grand Seiko,Evolution 9 Lake Suwa,SLGA021,Blue,Sport,https://www.grand-seiko.com/us-en/collections/slga021g,reddit_sinn_thread_signal,identity_seeded_specs_pending
+grand-seiko-sbgj001,Grand Seiko,Mechanical,SBGJ001,Beige,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbgj021,Grand Seiko,Mechanical,SBGJ021,Red,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbgj201-aka-mount-iwate,Grand Seiko,Mechanical,SBGJ201 (aka: Mount Iwate),White,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbgj207,Grand Seiko,Mechanical,SBGJ207,Silver,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbgj208,Grand Seiko,Mechanical,SBGJ208,Silver,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbgj210,Grand Seiko,Mechanical,SBGJ210,Silver,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbgj211,Grand Seiko,Mechanical,SBGJ211,White,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+grand-seiko-sbgj213,Grand Seiko,Mechanical,SBGJ213,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h69439931,Hamilton,Khaki Field Mechanical,H69439931,Black,Field,https://www.hamiltonwatch.com/en-us/collection/khaki-field.html,curated,identity_seeded_specs_verified
+hamilton-h60416533,Hamilton,Khaki Field,H60416533,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h60455593,Hamilton,Khaki Field,H60455593,Beige,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h60515533,Hamilton,Khaki Field,H60515533,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h60515593,Hamilton,Khaki Field,H60515593,Grey,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64211523,Hamilton,Khaki Field,H64211523,Beige,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64451133,Hamilton,Khaki Field,H64451133,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64451533,Hamilton,Khaki Field,H64451533,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64451733,Hamilton,Khaki Field,H64451733,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64451823,Hamilton,Khaki Field,H64451823,Beige,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64455133,Hamilton,Khaki Field,H64455133,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64455933,Hamilton,Khaki Field,H64455933,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64465733,Hamilton,Khaki Field,H64465733,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64656351,Hamilton,Khaki Field,H64656351,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h68201043,Hamilton,Khaki Field,H68201043,Blue,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h68201063,Hamilton,Khaki Field,H68201063,Green,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h68201093,Hamilton,Khaki Field,H68201093,Brown,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h68201143,Hamilton,Khaki Field,H68201143,Blue,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h68201193,Hamilton,Khaki Field,H68201193,Brown,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h68201943,Hamilton,Khaki Field,H68201943,Blue,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h68201993,Hamilton,Khaki Field,H68201993,Brown,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h68311533,Hamilton,Khaki Field,H68311533,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64635555,Hamilton,Khaki Aviation Pilot Day Date,H64635555,Black,Pilot,,curated,identity_seeded_specs_verified
+hamilton-h78719553,Hamilton,Khaki Navy Pioneer,H78719553,White,Dress,https://www.hamiltonwatch.com/en-us/collection/khaki-navy.html,curated,identity_seeded_specs_verified
+hamilton-h64425555,Hamilton,Khaki Aviation,H64425555,Silver,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64425585,Hamilton,Khaki Aviation,H64425585,Black,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64445595,Hamilton,Khaki Aviation,H64445595,Brown,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64511133,Hamilton,Khaki Navy,H64511133,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64511733,Hamilton,Khaki Navy,H64511733,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64512132,Hamilton,Khaki Navy,H64512132,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64512352,Hamilton,Khaki Navy,H64512352,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64515133,Hamilton,Khaki Navy,H64515133,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64515333,Hamilton,Khaki Navy,H64515333,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h64515337,Hamilton,Khaki Navy,H64515337,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h38416111,Hamilton,Intra-Matic,H38416111,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h38416141,Hamilton,Intra-Matic,H38416141,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h38416160,Hamilton,Intra-Matic,H38416160,Green,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h38416541,Hamilton,Intra-Matic,H38416541,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h38416560,Hamilton,Intra-Matic,H38416560,Green,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h38416711,Hamilton,Intra-Matic Auto Chrono,H38416711,White,Chronograph,https://www.hamiltonwatch.com/en-us/collection/american-classic.html,enthusiast_favorite,identity_seeded_specs_pending
+hamilton-h38425120,Hamilton,Intra-Matic,H38425120,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h38425140,Hamilton,Intra-Matic,H38425140,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h32111140,Hamilton,Jazzmaster,H32111140,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h32111190,Hamilton,Jazzmaster,H32111190,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h32115191,Hamilton,Jazzmaster,H32115191,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h32121430,Hamilton,Jazzmaster,H32121430,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h32201430,Hamilton,Jazzmaster,H32201430,Black,,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h32205890-aka-h32205890,Hamilton,Jazzmaster,H32205890 (aka: H32205890),White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h32215100,Hamilton,Jazzmaster,H32215100,Orange,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h32215130,Hamilton,Jazzmaster,H32215130,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h32215140,Hamilton,Jazzmaster,H32215140,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h32215141,Hamilton,Jazzmaster,H32215141,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t137-407-11-041-00,Tissot,PRX Powermatic 80,T137.407.11.041.00,Blue,Integrated Bracelet,https://www.tissotwatches.com/en-us/collection/all-our-watches/t-classic/tissot-prx.html,curated,identity_seeded_specs_verified
+tissot-t077-417-11-031-00-aka-t0774171103100,Tissot,PRX,T077.417.11.031.00 (aka: T0774171103100),Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t077-417-11-041-00-aka-t0774171104100,Tissot,PRX,T077.417.11.041.00 (aka: T0774171104100),Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t077-417-11-051-00-aka-t0774171105100,Tissot,PRX,T077.417.11.051.00 (aka: T0774171105100),Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t077-417-11-051-01-aka-t0774171105101,Tissot,PRX,T077.417.11.051.01 (aka: T0774171105101),Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t077-417-22-031-00-aka-t0774172203100,Tissot,PRX,T077.417.22.031.00 (aka: T0774172203100),Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t137-010-11-056-00,Tissot,PRX,T137.010.11.056.00,Black,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t137-010-11-111-00,Tissot,PRX,T137.010.11.111.00,White,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t137-010-11-351-00,Tissot,PRX,T137.010.11.351.00,Blue,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t137-010-21-111-00,Tissot,PRX,T137.010.21.111.00,White,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t137-010-33-021-00,Tissot,PRX,T137.010.33.021.00,Champagne,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t137-010-33-506-00,Tissot,PRX,T137.010.33.506.00,Rose,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t137-207-11-041-00-aka-t1372071104100,Tissot,PRX,T137.207.11.041.00 (aka: t1372071104100),Blue,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t137-207-11-051-00-aka-t1372071105100,Tissot,PRX,T137.207.11.051.00 (aka: T1372071105100),Black,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t137-207-11-091-00-aka-t1372071109100,Tissot,PRX,T137.207.11.091.00 (aka: T1372071109100),Green,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t098-407-26-052-00-aka-t0984072605200,Tissot,Gentleman,T098.407.26.052.00 (aka: T0984072605200),Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t127-407-11-031-00-aka-t1274071103100,Tissot,Gentleman,T127.407.11.031.00 (aka: T1274071103100),Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t127-407-11-031-01-aka-t1274071103101,Tissot,Gentleman,T127.407.11.031.01 (aka: T1274071103101),Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t127-407-11-041-00,Tissot,Gentleman Powermatic 80,T127.407.11.041.00,Blue,Sport,https://www.tissotwatches.com/en-us/collection/all-our-watches/t-classic/tissot-gentleman.html,entry_value,identity_seeded_specs_pending
+tissot-t127-407-11-041-00-aka-t1274071104100,Tissot,Gentleman,T127.407.11.041.00 (aka: T1274071104100),Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t127-407-11-041-00tyo,Tissot,Gentleman,T127.407.11.041.00TYO,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t127-407-11-041-01,Tissot,Gentleman,T127.407.11.041.01,Grey,,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t127-407-11-051-00-aka-t1274071105100,Tissot,Gentleman,T127.407.11.051.00 (aka: T1274071105100),Black,,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t066-407-11-047-00-aka-t0664071104700,Tissot,Seastar,T066.407.11.047.00 (aka: T0664071104700),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t066-407-11-047-02-aka-t0664071104702,Tissot,Seastar,T066.407.11.047.02 (aka: T0664071104702),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t066-407-11-057-00-aka-t0664071105700,Tissot,Seastar,T066.407.11.057.00 (aka: T0664071105700),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t066-407-17-047-00-aka-t0664071704700,Tissot,Seastar,T066.407.17.047.00 (aka: T0664071704700),Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t066-407-17-057-00-aka-t0664071705700,Tissot,Seastar,T066.407.17.057.00 (aka: T0664071705700),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t066-407-17-057-01-aka-t0664071705701,Tissot,Seastar,T066.407.17.057.01 (aka: T0664071705701),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t066-407-17-057-02-aka-t0664071705702,Tissot,Seastar,T066.407.17.057.02 (aka: T0664071705702),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t066-407-17-057-03-aka-t0664071705703,Tissot,Seastar,T066.407.17.057.03 (aka: T0664071705703),Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t006-207-11-036-00-aka-t0062071103600,Tissot,Le Locle,T006.207.11.036.00 (aka: T0062071103600),Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t006-207-11-036-01,Tissot,Le Locle,T006.207.11.036.01,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t006-207-11-038-00-aka-t0062071103800,Tissot,Le Locle,T006.207.11.038.00 (aka: T0062071103800),Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t006-207-11-058-00-aka-t0062071105800,Tissot,Le Locle,T006.207.11.058.00 (aka: T0062071105800),Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t006-207-11-116-00-aka-t0062071111600,Tissot,Le Locle,T006.207.11.116.00 (aka: T0062071111600),White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t006-207-11-126-00-aka-t0062071112600,Tissot,Le Locle,T006.207.11.126.00 (aka: T0062071112600),Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t006-207-16-038-00-aka-t0062071603800,Tissot,Le Locle,T006.207.16.038.00 (aka: T0062071603800),Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+tissot-t006-207-22-036-00-aka-t0062072203600,Tissot,Le Locle,T006.207.22.036.00 (aka: T0062072203600),Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+casio-gmw-b5000d-1,Casio,G-Shock Full Metal,GMW-B5000D-1,Black,Sport,https://www.casio.com/us/watches/gshock/,reddit_sotc_signal,identity_seeded_specs_pending
+casio-gw-m5610u-1,Casio,G-Shock Square,GW-M5610U-1,Black,Sport,https://www.casio.com/us/watches/gshock/,reddit_sotc_signal,identity_seeded_specs_pending
+casio-dw-6900ac-2,Casio,G-Shock 6900,DW-6900AC-2,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+casio-dw-6900cb-1,Casio,G-Shock 6900,DW-6900CB-1,Champagne,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+casio-dw-6900cb-2,Casio,G-Shock 6900,DW-6900CB-2,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+casio-dw-6900cb-4,Casio,G-Shock 6900,DW-6900CB-4,Red,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+casio-dw-6900cb-8,Casio,G-Shock 6900,DW-6900CB-8,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+casio-dw-6900cr-3,Casio,G-Shock 6900,DW-6900CR-3,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+casio-dw-6900cr-7,Casio,G-Shock 6900,DW-6900CR-7,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+casio-dw-6900ds-1,Casio,G-Shock 6900,DW-6900DS-1,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+casio-dw-6900e-1,Casio,G-Shock 6900,DW-6900E-1,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+casio-dw-6900hm-1,Casio,G-Shock 6900,DW-6900HM-1,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+casio-dw-6900hm-2,Casio,G-Shock 6900,DW-6900HM-2,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+casio-dw-6900mf-1,Casio,G-Shock 6900,DW-6900MF-1,Purple,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+casio-dw-6900mf-2,Casio,G-Shock 6900,DW-6900MF-2,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+orient-faa02001b9,Orient,Mako II,FAA02001B9,Black,Diver,https://www.orient-watch.com/,hand_curated_batch1,identity_seeded_specs_pending
+orient-fac00004w0,Orient,Bambino Version 1,FAC00004W0,White,Dress,,curated,identity_seeded_specs_verified
+orient-ra-aa0001l19b,Orient,Kamasu,RA-AA0001L19B,Blue,Diver,https://www.orient-watch.com/,hand_curated_batch1,identity_seeded_specs_pending
+orient-ra-ac0m02s10b,Orient,Bambino Open Heart,RA-AC0M02S10B,White,Dress,https://www.orient-watch.com/,hand_curated_batch1,identity_seeded_specs_pending
+orient-ra-ar0007s10b,Orient,Bambino 38,RA-AR0007S10B,Silver,Dress,https://www.orient-watch.com/,hand_curated_batch1,identity_seeded_specs_pending
+orient-star-ra-ar0001s,Orient Star,Modern Classic,RA-AR0001S,White,Dress,https://www.orient-watch.com/orient-star/,hand_curated_batch1,identity_seeded_specs_pending
+citizen-at8020-54l,Citizen,Skyhawk A-T Blue Angels,AT8020-54L,Blue,Pilot,https://www.citizenwatch.com/us/en/collection/blue-angels/,hand_curated_batch1,identity_seeded_specs_pending
+citizen-bm8180-03e,Citizen,Eco-Drive Field,BM8180-03E,Black,Field,https://www.citizenwatch.com/us/en/collection/all-mens-watches/,hand_curated_batch1,identity_seeded_specs_pending
+citizen-bn0150-28e,Citizen,Promaster Dive Ecozilla,BN0150-28E,Black,Diver,https://www.citizenwatch.com/us/en/collection/promaster/,hand_curated_batch1,identity_seeded_specs_pending
+citizen-nb6021-17e,Citizen,Series 8 880,NB6021-17E,Black,Sport,https://www.citizenwatch.com/us/en/collection/series-8/,hand_curated_batch1,identity_seeded_specs_pending
+citizen-nj0150-56l,Citizen,Tsuyosa,NJ0150-56L,Blue,Integrated Bracelet,https://www.citizenwatch.com/us/en/collection/mens-tsuyosa-automatics/,enthusiast_value,identity_seeded_specs_pending
+citizen-ny0040-09e,Citizen,Promaster Diver,NY0040-09E,Black,Diver,https://www.citizenwatch.com/us/en/collection/promaster/,enthusiast_value,identity_seeded_specs_pending
+swatch-so33a100,Swatch,MoonSwatch,SO33A100,Grey,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+swatch-so33b700,Swatch,MoonSwatch,SO33B700,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+swatch-so33c100,Swatch,MoonSwatch,SO33C100,Brown,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+swatch-so33g100,Swatch,MoonSwatch,SO33G100,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+swatch-so33j100,Swatch,MoonSwatch,SO33J100,Yellow,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+swatch-so33l100,Swatch,MoonSwatch,SO33L100,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+swatch-so33l103,Swatch,MoonSwatch,SO33L103,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+swatch-so33m100,Swatch,MoonSwatch,SO33M100,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+swatch-so33m101,Swatch,MoonSwatch,SO33M101,Grey,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+swatch-so33m102,Swatch,MoonSwatch,SO33M102,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+swatch-so33m102-104,Swatch,MoonSwatch,SO33M102-104,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+swatch-so33m102-105,Swatch,MoonSwatch,SO33M102-105,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+swatch-so33m102-106,Swatch,MoonSwatch,SO33M102-106,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+swatch-so33m102-107,Swatch,MoonSwatch,SO33M102-107,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+swatch-so33m102-108,Swatch,MoonSwatch,SO33M102-108,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+bulova-96b251,Bulova,Lunar Pilot,96B251,Black,Chronograph,https://www.bulova.com/us/en/watch/lunar-pilot-mens-watch-96B251.html,hand_curated_batch1,identity_seeded_specs_pending
+bulova-96k111,Bulova,Lunar Pilot Apollo 15,96K111,Black,Chronograph,https://www.bulova.com/us/en/watch/96K111.html,hand_curated_batch1,identity_seeded_specs_pending
+bulova-98a186,Bulova,Lunar Pilot Meteorite,98A186,Grey,Chronograph,https://www.bulova.com/us/en/watch/98A186.html,hand_curated_batch1,identity_seeded_specs_pending
+timex-tw2t22800,Timex,Marlin Hand-Wound,TW2T22800,Silver,Dress,https://www.timex.com/marlin-34mm-stainless-steel-bracelet-watch/TW2T22800ZV.html,hand_curated_batch1,identity_seeded_specs_pending
+timex-tw2u61500,Timex,Q Reissue,TW2U61500,Blue,Sport,https://www.timex.com/q-timex-reissue-38mm-stainless-steel-bracelet-watch/TW2U61500ZV.html,hand_curated_batch1,identity_seeded_specs_pending
+timex-tw2v00500,Timex,Marlin Sub-Dial Chronograph,TW2V00500,Silver,Chronograph,https://www.timex.com/marlin-sub-dial-chronograph-40mm-leather-strap-watch/TW2V00500.html,hand_curated_batch1,identity_seeded_specs_pending
+timex-tw2v38000,Timex,Q GMT,TW2V38000,Black,GMT,https://www.timex.com/q-timex-gmt-38mm-stainless-steel-bracelet-watch/TW2V38000.html,hand_curated_batch1,identity_seeded_specs_pending
+timex-tw2v41600,Timex,Expedition North Field Mechanical,TW2V41600,Black,Field,https://www.timex.com/expedition-north-field-mechanical-38mm-fabric-strap-watch/TW2V41600.html,hand_curated_batch1,identity_seeded_specs_pending
+baltic-aquascaphe-bronze,Baltic,Aquascaphe Bronze,Aquascaphe-Bronze,Green,Diver,https://www.baltic-watches.com/en/56-aquascaphe,hand_curated_batch1,identity_seeded_specs_pending
+baltic-aquascaphe-classic,Baltic,Aquascaphe Classic,Aquascaphe-Classic,Blue,Diver,https://www.baltic-watches.com/en/56-aquascaphe,hand_curated_batch1,identity_seeded_specs_pending
+baltic-aquascaphe-gmt,Baltic,Aquascaphe GMT,Aquascaphe-GMT,Black,GMT,https://www.baltic-watches.com/en/56-aquascaphe,hand_curated_batch1,identity_seeded_specs_pending
+baltic-bicompax-001,Baltic,Bicompax 001,Bicompax-001,Salmon,Chronograph,https://www.baltic-watches.com/en/55-bicompax,hand_curated_batch1,identity_seeded_specs_pending
+baltic-hermetique-tourer,Baltic,Hermétique Tourer,Hermetique-Tourer,Cream,Field,https://www.baltic-watches.com/en/57-hermetique,hand_curated_batch1,identity_seeded_specs_pending
+baltic-hms-002,Baltic,HMS 002 Sector,HMS-002,Silver,Dress,https://www.baltic-watches.com/en/52-hms,hand_curated_batch1,identity_seeded_specs_pending
+lorier-falcon-iii,Lorier,Falcon Series III,Falcon-III,Silver,Chronograph,https://lorierwatches.com/products/falcon,hand_curated_batch1,identity_seeded_specs_pending
+lorier-hyperion-iii,Lorier,Hyperion Series III,Hyperion-III,Black,GMT,https://lorierwatches.com/products/hyperion,hand_curated_batch1,identity_seeded_specs_pending
+lorier-neptune-iv,Lorier,Neptune Series IV,Neptune-IV,Black,Diver,https://lorierwatches.com/products/neptune,hand_curated_batch1,identity_seeded_specs_pending
+lorier-zephyr-iii,Lorier,Zephyr Series III,Zephyr-III,Black,Pilot,https://lorierwatches.com/products/zephyr,hand_curated_batch1,identity_seeded_specs_pending
+traska-commuter-v2,Traska,Commuter,Commuter-V2,White,Sport,https://traskawatches.com/products/commuter,hand_curated_batch1,identity_seeded_specs_pending
+traska-freediver-gen-3,Traska,Freediver,Freediver-Gen-3,Blue,Diver,https://traskawatches.com/products/freediver,hand_curated_batch1,identity_seeded_specs_pending
+traska-summiteer-v1,Traska,Summiteer,Summiteer-V1,Black,Field,https://traskawatches.com/products/summiteer,hand_curated_batch1,identity_seeded_specs_pending
+traska-venturer-gmt,Traska,Venturer GMT,Venturer-GMT,Black,GMT,https://traskawatches.com/products/venturer,hand_curated_batch1,identity_seeded_specs_pending
+farer-endurance,Farer,Aqua Compressor Endurance,Endurance,Blue,Diver,https://www.farer.com/collections/automatic-dive-watches,hand_curated_batch1,identity_seeded_specs_pending
+farer-bernina-iii,Farer,Bernina III,Bernina-III,Cream,Sport,https://www.farer.com/collections/3-hand-watches/products/bernina-iii,hand_curated_batch1,identity_seeded_specs_pending
+farer-carnegie-iii-gmt,Farer,Carnegie III GMT,Carnegie-III-GMT,Blue,GMT,https://www.farer.com/collections/gmt-watches/products/carnegie-iii,hand_curated_batch1,identity_seeded_specs_pending
+farer-markham-iii,Farer,Markham III,Markham-III,Grey,Sport,https://www.farer.com/collections/3-hand-watches,hand_curated_batch1,identity_seeded_specs_pending
+monta-atlas-gmt,Monta,Atlas GMT,Atlas-GMT,Blue,GMT,https://montawatch.com/collections/atlas,hand_curated_batch1,identity_seeded_specs_pending
+monta-noble-v1,Monta,Noble,Noble-V1,Black,Dress,https://montawatch.com/collections/noble,hand_curated_batch1,identity_seeded_specs_pending
+monta-oceanking-iii,Monta,Oceanking III,Oceanking-III,Black,Diver,https://montawatch.com/collections/oceanking,hand_curated_batch1,identity_seeded_specs_pending
+monta-triumph-v1,Monta,Triumph,Triumph-V1,Silver,Sport,https://montawatch.com/collections/triumph,hand_curated_batch1,identity_seeded_specs_pending
+nodus-avalon-v2,Nodus,Avalon,Avalon-V2,Blue,Diver,https://nodushq.com/collections/avalon,hand_curated_batch1,identity_seeded_specs_pending
+nodus-retrospect-v3,Nodus,Retrospect,Retrospect-V3,Black,Sport,https://nodushq.com/collections/retrospect,hand_curated_batch1,identity_seeded_specs_pending
+nodus-sector-sport-v2,Nodus,Sector Sport,Sector-Sport-V2,Black,Sport,https://nodushq.com/collections/sector-sport,hand_curated_batch1,identity_seeded_specs_pending
+brew-metric-c,Brew,Metric C,Metric-C,Black,Chronograph,https://brew-watches.com/collections/metric,hand_curated_batch1,identity_seeded_specs_pending
+brew-retromatic-v2,Brew,Retromatic,Retromatic-V2,Black,Sport,https://brew-watches.com/collections/retromatic,hand_curated_batch1,identity_seeded_specs_pending
+vaer-a5-uss-cody,Vaer,A5 USS Cody Atomic,A5-USS-Cody,Black,Field,https://vaerwatches.com/collections/field-watches,hand_curated_batch1,identity_seeded_specs_pending
+vaer-c5-field-usa,Vaer,C5 Field Standard USA,C5-Field-USA,Black,Field,https://vaerwatches.com/collections/field-watches,hand_curated_batch1,identity_seeded_specs_pending
+vaer-d5-meridian-gmt,Vaer,D5 Meridian GMT,D5-Meridian-GMT,Black,GMT,https://vaerwatches.com/collections/gmt-watches,hand_curated_batch1,identity_seeded_specs_pending
+zelos-helmsman-iii,Zelos,Helmsman III,Helmsman-III,Green,Pilot,https://www.zeloswatches.com/collections/helmsman,hand_curated_batch1,identity_seeded_specs_pending
+zelos-mako-v3,Zelos,Mako,Mako-V3,Blue,Diver,https://www.zeloswatches.com/collections/mako,hand_curated_batch1,identity_seeded_specs_pending
+zelos-swordfish-bronze,Zelos,Swordfish Bronze,Swordfish-Bronze,Black,Diver,https://www.zeloswatches.com/collections/swordfish,hand_curated_batch1,identity_seeded_specs_pending
+formex-0330-1-6321-100,Formex,Essence,0330.1.6321.100,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+formex-0330-1-6321-311,Formex,Essence,0330.1.6321.311,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+formex-0330-1-6321-713,Formex,Essence,0330.1.6321.713,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+formex-0330-1-6321-722,Formex,Essence,0330.1.6321.722,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+formex-0330-1-6324-100,Formex,Essence,0330.1.6324.100,Grey,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+formex-0330-1-6324-713,Formex,Essence,0330.1.6324.713,Grey,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+formex-0330-1-6324-722,Formex,Essence,0330.1.6324.722,Grey,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+formex-0330-1-6331-100,Formex,Essence,0330.1.6331.100,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+formex-0330-1-6331-744,Formex,Essence,0330.1.6331.744,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+formex-0330-1-6331-910,Formex,Essence,0330.1.6331.910,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5711-1a-010,Patek Philippe,Nautilus,5711/1A-010,Blue,Integrated Bracelet,https://www.patek.com/en/collection/nautilus,core_icon,identity_seeded_specs_pending
+patek-philippe-5811-1g-001,Patek Philippe,Nautilus,5811/1G-001,Blue,Integrated Bracelet,https://www.patek.com/en/collection/nautilus,core_icon,identity_seeded_specs_pending
+patek-philippe-3700-1a,Patek Philippe,Nautilus,3700/1A,Blue,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5711-110p-001,Patek Philippe,Nautilus,5711/110P-001,Grey,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5711-1300a-001,Patek Philippe,Nautilus,5711/1300A-001,Green,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5711-1a-001,Patek Philippe,Nautilus,5711/1A-001,Blue,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5711-1a-011,Patek Philippe,Nautilus,5711/1A-011,White,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5711-1a-014,Patek Philippe,Nautilus,5711/1A-014,Green,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5711-1a-018,Patek Philippe,Nautilus,5711/1A-018,Blue,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5711-1r-001,Patek Philippe,Nautilus,5711/1R-001,Brown,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5711g-001,Patek Philippe,Nautilus,5711G-001,Grey,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5711j-001,Patek Philippe,Nautilus,5711J-001,Silver,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5711r-001,Patek Philippe,Nautilus,5711R-001,Grey,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5712-1a-001,Patek Philippe,Nautilus,5712/1A-001,Blue,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5712-1r-001,Patek Philippe,Nautilus,5712/1R-001,Brown,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5167a-001,Patek Philippe,Aquanaut,5167A-001,Black,Sport,https://www.patek.com/en/collection/aquanaut,curated,identity_seeded_specs_verified
+patek-philippe-5062-450r-001,Patek Philippe,Aquanaut,5062/450R-001,Gold,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5067a-001,Patek Philippe,Aquanaut,5067A-001,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5067a-011,Patek Philippe,Aquanaut,5067A-011,White,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5067a-023,Patek Philippe,Aquanaut,5067A-023,Brown,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5068r-010,Patek Philippe,Aquanaut,5068R-010,White,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5167a-012,Patek Philippe,Aquanaut,5167A-012,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5268-200r-001,Patek Philippe,Aquanaut,5268/200R-001,White,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-6119r-001,Patek Philippe,Calatrava,6119R-001,Ivory,Dress,https://www.patek.com/en/collection/calatrava,curated,identity_seeded_specs_verified
+patek-philippe-4897-300g-001,Patek Philippe,Calatrava,4897/300G-001,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-4897g-001,Patek Philippe,Calatrava,4897G-001,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-4897g-010,Patek Philippe,Calatrava,4897G-010,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-4897r-001,Patek Philippe,Calatrava,4897R-001,Brown,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-4897r-010,Patek Philippe,Calatrava,4897R-010,Beige,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-4899-901g-001,Patek Philippe,Calatrava,4899/901G-001,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-4978-400g-001,Patek Philippe,Calatrava,4978/400G-001,Diamonds,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5230p-001,Patek Philippe,World Time,5230P-001,Blue,GMT,https://www.patek.com/en/collection/complications,curated,identity_seeded_specs_verified
+patek-philippe-5738r-001,Patek Philippe,Golden Ellipse,5738R-001,Blue,Vintage,https://www.patek.com/en/collection/golden-ellipse,curated,identity_seeded_specs_verified
+patek-philippe-5738-51g-001,Patek Philippe,Golden Ellipse,5738/51G-001,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-5738p-001,Patek Philippe,Golden Ellipse,5738P-001,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-3738-100g-012,Patek Philippe,Golden Ellipse,3738/100G-012,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+patek-philippe-3738-100j-012,Patek Philippe,Golden Ellipse,3738/100J-012,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15500st-oo-1220st-01,Audemars Piguet,Royal Oak Selfwinding,15500ST.OO.1220ST.01,Blue,Integrated Bracelet,https://www.audemarspiguet.com/com/en/watch-collection/royal-oak.html,core_icon,identity_seeded_specs_pending
+audemars-piguet-15510st-oo-1320st-06,Audemars Piguet,Royal Oak Selfwinding,15510ST.OO.1320ST.06,Blue,Integrated Bracelet,https://www.audemarspiguet.com/com/en/watch-collection/royal-oak.html,core_icon,identity_seeded_specs_pending
+audemars-piguet-16202st-oo-1240st-02,Audemars Piguet,Royal Oak Jumbo Extra-Thin,16202ST.OO.1240ST.02,Blue,Integrated Bracelet,https://www.audemarspiguet.com/com/en/watch-collection/royal-oak.html,core_icon,identity_seeded_specs_pending
+audemars-piguet-26240st-oo-1320st-05,Audemars Piguet,Royal Oak Chronograph,26240ST.OO.1320ST.05,Blue,Chronograph,https://www.audemarspiguet.com/com/en/watch-collection/royal-oak.html,core_icon,identity_seeded_specs_pending
+audemars-piguet-14790st-oo-0789st-09,Audemars Piguet,Royal Oak,14790ST.OO.0789ST.09,Black,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-14790st-oo-0789st-10,Audemars Piguet,Royal Oak,14790ST.OO.0789ST.10,White,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15000st-oo-0789st-05,Audemars Piguet,Royal Oak,15000ST.OO.0789ST.05,Black,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15202ba-oo-0944ba-01,Audemars Piguet,Royal Oak,15202BA.OO.0944BA.01,Silver,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15202ba-oo-1240ba-01,Audemars Piguet,Royal Oak,15202BA.OO.1240BA.01,Blue,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15202ba-oo-1240ba-02,Audemars Piguet,Royal Oak,15202BA.OO.1240BA.02,Champagne,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15202bc-oo-1240bc-01,Audemars Piguet,Royal Oak,15202BC.OO.1240BC.01,Pink,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15202bc-zz-1241bc-01,Audemars Piguet,Royal Oak,15202BC.ZZ.1241BC.01,Paved,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15202ip-oo-1240ip-01,Audemars Piguet,Royal Oak,15202IP.OO.1240IP.01,Blue,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15202or-oo-0944or-01,Audemars Piguet,Royal Oak,15202OR.OO.0944OR.01,Silver,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15202pt-oo-1240pt-01,Audemars Piguet,Royal Oak,15202PT.OO.1240PT.01,Green,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15202st-oo-0944st-02,Audemars Piguet,Royal Oak,15202ST.OO.0944ST.02,Blue,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15210bc-oo-a002cr-01,Audemars Piguet,CODE 11.59,15210BC.OO.A002CR.01,Black,,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15210bc-oo-a002kb-01,Audemars Piguet,CODE 11.59,15210BC.OO.A002KB.01,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15210bc-oo-a068cr-01,Audemars Piguet,CODE 11.59,15210BC.OO.A068CR.01,Red,,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15210bc-oo-a321cr-01,Audemars Piguet,CODE 11.59,15210BC.OO.A321CR.01,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15210bc-oo-a500kb-01,Audemars Piguet,CODE 11.59,15210BC.OO.A500KB.01,Red,,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15210cr-oo-a002cr-01,Audemars Piguet,CODE 11.59,15210CR.OO.A002CR.01,Grey,,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15210cr-oo-a002kb-01,Audemars Piguet,CODE 11.59,15210CR.OO.A002KB.01,Grey,,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15210cr-oo-a008kb-01,Audemars Piguet,CODE 11.59,15210CR.OO.A008KB.01,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15210cr-oo-a009cr-01,Audemars Piguet,CODE 11.59,15210CR.OO.A009CR.01,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+audemars-piguet-15210or-oo-a002cr-01,Audemars Piguet,CODE 11.59,15210OR.OO.A002CR.01,Black,,,kaggle:watch_db,identity_seeded_specs_partial
+vacheron-constantin-4500v-110a-b128,Vacheron Constantin,Overseas,4500V/110A-B128,Blue,Integrated Bracelet,https://www.vacheron-constantin.com/us/en/collections/overseas.html,core_icon,identity_seeded_specs_pending
+vacheron-constantin-7900v-110a-b333,Vacheron Constantin,Overseas Dual Time,7900V/110A-B333,Blue,GMT,https://www.vacheron-constantin.com/us/en/collections/overseas.html,core_icon,identity_seeded_specs_pending
+vacheron-constantin-1205v-000r-b592,Vacheron Constantin,Overseas,1205V/000R-B592,Silver,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+vacheron-constantin-1205v-100a-b591,Vacheron Constantin,Overseas,1205V/100A-B591,Black,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+vacheron-constantin-2300v-100a-b078,Vacheron Constantin,Overseas,2300V/100A-B078,Beige,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+vacheron-constantin-2305v-100a-b078,Vacheron Constantin,Overseas,2305V/100A-B078,Beige,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+vacheron-constantin-2305v-100a-b170,Vacheron Constantin,Overseas,2305V/100A-B170,Blue,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+vacheron-constantin-2305v-100r-b077,Vacheron Constantin,Overseas,2305V/100R-B077,Beige,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+vacheron-constantin-4300v-000r-b064,Vacheron Constantin,Overseas,4300V/000R-B064,Silver,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+vacheron-constantin-4300v-000r-b509,Vacheron Constantin,Overseas,4300V/000R-B509,Blue,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
+vacheron-constantin-1100s-000g-b734,Vacheron Constantin,Historiques,1100S/000G-B734,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+vacheron-constantin-1100s-000r-b430,Vacheron Constantin,Historiques,1100S/000R-B430,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+vacheron-constantin-1110u-000g-b086,Vacheron Constantin,Patrimony,1110U/000G-B086,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+vacheron-constantin-1110u-000r-b085,Vacheron Constantin,Patrimony,1110U/000R-B085,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+vacheron-constantin-25558-000g-b157,Vacheron Constantin,Traditionnelle,25558/000G-B157,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+vacheron-constantin-25558-000r-b156,Vacheron Constantin,Traditionnelle,25558/000R-B156,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+vacheron-constantin-3110v-000a-b425,Vacheron Constantin,Historiques,3110V/000A-B425,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+vacheron-constantin-33158-000g-9394,Vacheron Constantin,Patrimony,33158/000G-9394,Skeleton,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+a-lange-and-sohne-191-032,A. Lange & Söhne,Lange 1,191.032,Silver,Dress,https://www.alange-soehne.com/us-en/timepieces/lange-1,curated,identity_seeded_specs_verified
+a-lange-and-sohne-101-002,A. Lange & Söhne,Lange 1,"101,002",Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+a-lange-and-sohne-101-005,A. Lange & Söhne,Lange 1,"101,005",Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+a-lange-and-sohne-101-022,A. Lange & Söhne,Lange 1,"101,022",Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+a-lange-and-sohne-101-025,A. Lange & Söhne,Lange 1,"101,025",Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+a-lange-and-sohne-101-026,A. Lange & Söhne,Lange 1,"101,026",White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+a-lange-and-sohne-101-027,A. Lange & Söhne,Lange 1,"101,027",Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+a-lange-and-sohne-101-029,A. Lange & Söhne,Lange 1,"101,029",Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+a-lange-and-sohne-142-031,A. Lange & Söhne,Zeitwerk,142.031,Black,Dress,https://www.alange-soehne.com/us-en/timepieces/zeitwerk,curated,identity_seeded_specs_verified
+a-lange-and-sohne-205-086,A. Lange & Söhne,Saxonia Thin,205.086,Blue,Dress,https://www.alange-soehne.com/us-en/timepieces/saxonia,curated,identity_seeded_specs_verified
+a-lange-and-sohne-234-026,A. Lange & Söhne,1815 Up/Down,234.026,White,Dress,,curated,identity_seeded_specs_verified
+a-lange-and-sohne-363-179,A. Lange & Söhne,Odysseus,363.179,Grey,Integrated Bracelet,https://www.alange-soehne.com/us-en/timepieces/odysseus,curated,identity_seeded_specs_verified
+a-lange-and-sohne-414-028,A. Lange & Söhne,1815 Chronograph,414.028,Black,Chronograph,https://www.alange-soehne.com/us-en/timepieces/1815,curated,identity_seeded_specs_verified
+a-lange-and-sohne-102-001,A. Lange & Söhne,Saxonia,"102,001",Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+a-lange-and-sohne-102-002,A. Lange & Söhne,Saxonia,"102,002",Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+a-lange-and-sohne-105-021,A. Lange & Söhne,Saxonia,"105,021",Champagne,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+a-lange-and-sohne-105-022,A. Lange & Söhne,Saxonia,"105,022",Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+a-lange-and-sohne-105-025,A. Lange & Söhne,Saxonia,"105,025",Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+a-lange-and-sohne-105-027,A. Lange & Söhne,Saxonia,"105,027",Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+a-lange-and-sohne-105-035,A. Lange & Söhne,Saxonia,"105,035",Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+zenith-03-3200-3600-21-c903,Zenith,Chronomaster Original,03.3200.3600/21.C903,Black,Chronograph,https://www.zenith-watches.com/en_us/collection/chronomaster,core_icon,identity_seeded_specs_pending
+zenith-03-3100-3600-21-m3100,Zenith,Chronomaster Sport,03.3100.3600/21.M3100,White,Chronograph,https://www.zenith-watches.com/en_us/collection/chronomaster,enthusiast_favorite,identity_seeded_specs_pending
+zenith-03-3200-3600-69-m3200,Zenith,Chronomaster Original,03.3200.3600/69.M3200,Silver,Chronograph,,curated,identity_seeded_specs_verified
+zenith-03-2040-400-21-c496,Zenith,El Primero,03.2040.400/21.C496,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+zenith-03-2040-400-21-m2040,Zenith,El Primero,03.2040.400/21.M2040,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+zenith-03-2040-400-26-c802,Zenith,El Primero,03.2040.400/26.C802,Grey,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+zenith-03-1930-681-21-c723,Zenith,Pilot,03.1930.681/21.C723,Black,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+zenith-03-2241-405-51-c915,Zenith,Pilot,03.2241.405/51.C915,Blue,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+zenith-03-2431-679-51-c765,Zenith,Pilot,03.2431.679/51.C765,Blue,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+zenith-03-2434-4069-20-i010,Zenith,Pilot,03.2434.4069/20.I010,Grey,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
+zenith-03-2435-679-51-i012,Zenith,Pilot,03.2435.679/51.I012,Blue,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
+blancpain-5000-0130-b52a,Blancpain,Fifty Fathoms,5000-0130-B52A,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+blancpain-5000-0240-o52a,Blancpain,Fifty Fathoms,5000-0240-O52A,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+blancpain-5000-1110-b52a,Blancpain,Fifty Fathoms,5000-1110-B52A,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+blancpain-5015-12b30-b52a,Blancpain,Fifty Fathoms,5015-12B30-B52A,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+blancpain-5015-3630-52,Blancpain,Fifty Fathoms,5015-3630-52,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+blancpain-5050-12b30-b52a,Blancpain,Fifty Fathoms,5050-12B30-B52A,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+blancpain-5054-1110-b52a,Blancpain,Fifty Fathoms,5054-1110-B52A,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+blancpain-5100-1140-o52a,Blancpain,Fifty Fathoms,5100-1140-O52A,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
+breguet-1907ba-12,Breguet,Classique Complications,1907BA/12,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+breguet-3355pt-00-pa0,Breguet,Classique Complications,3355PT/00/PA0,Skeleton,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+breguet-3357ba-12-986,Breguet,Classique Complications,3357BA/12/986,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+breguet-3357bb-12-986,Breguet,Classique Complications,3357BB/12/986,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+breguet-3357br-12-986,Breguet,Classique Complications,3357BR/12/986,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+breguet-3358bb-2p-986-dd0d,Breguet,Classique Complications,3358BB/2P/986/DD0D,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
