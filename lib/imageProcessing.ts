@@ -378,6 +378,95 @@ async function refineMaskByColor(
   return current
 }
 
+// Trust ML for the silhouette outline only — don't let it touch the face.
+//
+// ML matting (imgly's segmentation model) is good at finding the watch
+// outline but unreliable at pixel-level classification inside the silhouette.
+// Documented failure modes:
+//   1. Light/cream dials on bright backdrops → ML drops α to 0 inside an
+//      enclosed case outline (dominant Calatrava/Aqua Terra failure).
+//   2. Uncertain regions get α∈[200,250) with ML's RGB darkened to a
+//      premultiplied-looking gray — visible as "continent" patches on
+//      dark page backgrounds (Patek 7119J was the canonical case).
+//   3. Subtle RGB drift at fully-opaque interior pixels — can't always
+//      verify ML didn't shift hues.
+//
+// Strategy: use ML's alpha only at the silhouette boundary. Inside the
+// outline, override with α=255 and *source* RGB. The watch face becomes
+// byte-identical to the source photo; ML's anti-aliasing survives only at
+// the outer edge of the silhouette where it matters for soft compositing.
+//
+// Implementation:
+//   • BFS from the image border at α<200 (conservative threshold — chains
+//     only through clearly-background pixels, so a 1-px crack at α=240 in
+//     ML's case outline doesn't leak into the dial).
+//   • Every pixel NOT in the exterior set is "inside the watch":
+//       — α<250: force α=255 (closes interior holes + sharpens the inner
+//         half of the silhouette anti-aliasing by ~1 pixel).
+//       — Any α: copy source RGB (guarantees no ML-side artifacts in the
+//         face).
+//
+// This intentionally bridges any genuine interior gap (skeleton movements,
+// open dials viewable through both sides) — those are a tiny minority of the
+// catalog, and a sealed dial is a far worse failure than a sealed cutout.
+async function fillInteriorAlphaHoles(input: Buffer, sourceForRgb?: Buffer): Promise<Buffer> {
+  const { data, info } = await sharp(input).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+  const { width, height } = info
+
+  let sourceData: Buffer | null = null
+  if (sourceForRgb) {
+    const sourceRaw = await sharp(sourceForRgb).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+    if (sourceRaw.info.width === width && sourceRaw.info.height === height) {
+      sourceData = sourceRaw.data
+    }
+  }
+
+  const BFS_THRESHOLD = 200
+  const FILL_THRESHOLD = 250
+  const exterior = new Uint8Array(width * height)
+  const queue: number[] = []
+  const tryEnqueue = (i: number) => {
+    if (exterior[i]) return
+    if (data[i * 4 + 3] < BFS_THRESHOLD) { exterior[i] = 1; queue.push(i) }
+  }
+  for (let x = 0; x < width; x += 1) {
+    tryEnqueue(x)
+    tryEnqueue((height - 1) * width + x)
+  }
+  for (let y = 1; y < height - 1; y += 1) {
+    tryEnqueue(y * width)
+    tryEnqueue(y * width + (width - 1))
+  }
+  for (let cursor = 0; cursor < queue.length; cursor += 1) {
+    const i = queue[cursor]
+    const x = i % width
+    const y = (i / width) | 0
+    if (x > 0) tryEnqueue(i - 1)
+    if (x < width - 1) tryEnqueue(i + 1)
+    if (y > 0) tryEnqueue(i - width)
+    if (y < height - 1) tryEnqueue(i + width)
+  }
+
+  let touched = 0
+  for (let i = 0; i < width * height; i += 1) {
+    if (exterior[i]) continue
+    // Every non-exterior pixel is "inside the watch outline."
+    // 1. Force α=255 if sub-threshold (closes holes, sharpens inner-half AA).
+    const a = data[i * 4 + 3]
+    if (a < FILL_THRESHOLD) data[i * 4 + 3] = 255
+    // 2. Replace RGB with source if available — guarantees the face is the
+    //    source photo untouched, no ML-side drift, no muddy continents.
+    if (sourceData) {
+      data[i * 4] = sourceData[i * 4]
+      data[i * 4 + 1] = sourceData[i * 4 + 1]
+      data[i * 4 + 2] = sourceData[i * 4 + 2]
+    }
+    touched += 1
+  }
+  if (touched === 0) return input
+  return sharp(data, { raw: { width, height, channels: 4 } }).png().toBuffer()
+}
+
 // Alpha-feather pass: imgly's segmentation often leaves a 1–2px halo of
 // premultiplied dark fringe at the silhouette boundary, visible against a
 // non-white display background. Blurring ONLY the alpha channel (not RGB)
@@ -774,6 +863,11 @@ export async function processWatchImageBuffer(
   //    The alpha channel from `working` (post-shadow-walk) is what we want.
   if (mlBuffer) {
     working = await combineAlphaWithSourceRgb(mlBuffer, working)
+    // Trust ML for the silhouette outline only. Inside the watch, force
+    // source RGB at full opacity so the face is untouched. Closes the
+    // light-dial holes (Patek Calatrava, Omega Aqua Terra) and erases the
+    // "muddy continent" patches (Patek 7119J) in one pass.
+    working = await fillInteriorAlphaHoles(working, sourceBuffer)
   }
 
   // 6. Alpha feather softens the 1–2px halo imgly tends to leave at the
