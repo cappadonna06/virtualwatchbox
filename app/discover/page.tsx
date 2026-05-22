@@ -9,14 +9,17 @@ import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import {
   getBoxInsight,
-  getNextSlotRecommendations,
-  getUpgradeSuggestions,
+  getNextSlotPools,
+  getUpgradeSuggestionPools,
+  getUpgradeRationale,
   computeBoxRead,
   brandsOfInterest,
   collectionPriceAnchor,
   genericByline,
   pickDemoCollection,
 } from '@/lib/discover'
+import { pickFromPool } from '@/lib/discoverRotation'
+import type { UpgradeSuggestion } from '@/lib/discover'
 import { getProfileDemoState } from '@/lib/profileDemo'
 
 import HeroMasthead from './HeroMasthead'
@@ -103,23 +106,93 @@ export default function DiscoverPage() {
     [collection, catalogWatches, hasImage, priceAnchor],
   )
 
-  const upgradeSuggestions = useMemo(
-    () => getUpgradeSuggestions(
+  // Daily-rotated lead pick: pick one watch out of the per-type top-10. The
+  // rotation seed is keyed off the missing-type so the hero stays stable for
+  // the day, rotates next day, and advances independently of upgrade refresh.
+  const heroSeedKey = boxInsight ? `hero::${boxInsight.missingType}` : 'hero::none'
+  const heroOffset = session.discoverRefreshOffsets[heroSeedKey] ?? 0
+  const leadWatch = useMemo(() => {
+    if (!boxInsight) return null
+    return pickFromPool(boxInsight.suggestionPool, heroSeedKey, heroOffset) ?? boxInsight.suggestion
+  }, [boxInsight, heroSeedKey, heroOffset])
+
+  const upgradePools = useMemo(
+    () => getUpgradeSuggestionPools(
       collection,
       catalogWatches,
-      session.followedWatchIds,
       session.collectionJewelWatchId,
-      session.grailWatchId,
-      session.nextTargets.map(t => t.watchId),
       { hasImage, priceAnchor },
     ),
-    [collection, catalogWatches, session.followedWatchIds, session.collectionJewelWatchId, session.grailWatchId, session.nextTargets, hasImage, priceAnchor],
+    [collection, catalogWatches, session.collectionJewelWatchId, hasImage, priceAnchor],
   )
 
-  const nextSlotRecs = useMemo(
-    () => getNextSlotRecommendations(collection, session.followedWatchIds, catalogWatches, 3, { hasImage, priceAnchor }),
+  const upgradeSuggestions: UpgradeSuggestion[] = useMemo(() => {
+    const targetSet = new Set(session.nextTargets.map(t => t.watchId))
+    const grailId = session.grailWatchId
+    const used = new Set<string>()
+    const out: UpgradeSuggestion[] = []
+
+    for (const pool of upgradePools) {
+      if (out.length >= 3) break
+      const seedKey = `upgrade::${pool.ownedWatch.id}`
+      const offset = session.discoverRefreshOffsets[seedKey] ?? 0
+      // Walk the pool starting from the rotated index, skipping anything
+      // already shown in another card so we don't pick the same upgrade twice.
+      const baseIdx = pool.upgradePool.length === 0
+        ? 0
+        : (pickFromPool([...Array(pool.upgradePool.length).keys()], seedKey, offset) ?? 0)
+      let pick: typeof pool.upgradePool[number] | null = null
+      for (let i = 0; i < pool.upgradePool.length; i += 1) {
+        const cand = pool.upgradePool[(baseIdx + i) % pool.upgradePool.length]
+        if (used.has(cand.id)) continue
+        pick = cand
+        break
+      }
+      if (!pick) continue
+      used.add(pick.id)
+      out.push({
+        ownedWatch: pool.ownedWatch,
+        upgradeWatch: pick,
+        headline: pool.headline,
+        balanceNote: getUpgradeRationale(pool.ownedWatch.watchType, `${pool.ownedWatch.id}->${pick.id}`),
+        isGrail: grailId === pick.id,
+        isTarget: targetSet.has(pick.id),
+        isJewel: false,
+      })
+    }
+    return out
+  }, [upgradePools, session.nextTargets, session.grailWatchId, session.discoverRefreshOffsets])
+
+  const nextSlotPools = useMemo(
+    () => getNextSlotPools(collection, session.followedWatchIds, catalogWatches, { hasImage, priceAnchor }),
     [collection, catalogWatches, session.followedWatchIds, hasImage, priceAnchor],
   )
+
+  const { nextSlotRecs, nextSlotSeedKeys } = useMemo(() => {
+    const usedIds = new Set<string>()
+    const picks: CatalogWatch[] = []
+    const seedMap = new Map<string, string>()
+    for (const slot of nextSlotPools) {
+      if (picks.length >= 3) break
+      const seedKey = `nextSlot::${slot.watchType}`
+      const offset = session.discoverRefreshOffsets[seedKey] ?? 0
+      const baseIdx = slot.pool.length === 0
+        ? 0
+        : (pickFromPool([...Array(slot.pool.length).keys()], seedKey, offset) ?? 0)
+      let pick: CatalogWatch | null = null
+      for (let i = 0; i < slot.pool.length; i += 1) {
+        const cand = slot.pool[(baseIdx + i) % slot.pool.length]
+        if (usedIds.has(cand.id)) continue
+        pick = cand
+        break
+      }
+      if (!pick) continue
+      usedIds.add(pick.id)
+      seedMap.set(pick.id, seedKey)
+      picks.push(pick)
+    }
+    return { nextSlotRecs: picks, nextSlotSeedKeys: seedMap }
+  }, [nextSlotPools, session.discoverRefreshOffsets])
 
   const ownedTypes = useMemo(
     () => new Set(collection.map(w => w.watchType).filter((t): t is WatchType => Boolean(t))),
@@ -132,7 +205,28 @@ export default function DiscoverPage() {
     [collection, personalized],
   )
 
-  const leadWatch = boxInsight?.suggestion ?? null
+  const upgradePairsForCopy = useMemo(
+    () => upgradeSuggestions.map(s => ({
+      fromWatchId: s.ownedWatch.id,
+      fromBrand: s.ownedWatch.brand,
+      fromModel: s.ownedWatch.model,
+      fromType: s.ownedWatch.watchType ?? 'Watch',
+      toWatchId: s.upgradeWatch.id,
+      toBrand: s.upgradeWatch.brand,
+      toModel: s.upgradeWatch.model,
+      toType: s.upgradeWatch.watchType ?? 'Watch',
+      upgradeDeltaUsd: (s.upgradeWatch.estimatedValue ?? 0) - (s.ownedWatch.estimatedValue ?? 0),
+    })),
+    [upgradeSuggestions],
+  )
+
+  const heroLeadForCopy = useMemo(
+    () => leadWatch
+      ? { toWatchId: leadWatch.id, brand: leadWatch.brand, model: leadWatch.model, type: leadWatch.watchType ?? 'Watch' }
+      : null,
+    [leadWatch],
+  )
+
   const personalize = usePersonalizedInsight({
     collection,
     slotCount: session.watchboxConfig.slotCount,
@@ -142,6 +236,8 @@ export default function DiscoverPage() {
     leadPick: leadWatch
       ? { brand: leadWatch.brand, model: leadWatch.model, reference: leadWatch.reference, type: leadWatch.watchType ?? 'Watch', value: leadWatch.estimatedValue }
       : null,
+    heroLead: heroLeadForCopy,
+    upgradePairs: upgradePairsForCopy,
     fallbackRead,
     brandReadHint: fallbackRead,
     priceTarget: priceAnchor?.target ?? null,
@@ -150,6 +246,16 @@ export default function DiscoverPage() {
 
   const insightRead = personalize.read || fallbackRead
   const leadInsight = personalize.leadInsight || boxInsight?.copy || ''
+
+  // Map pair-id → rationale sentence for UpgradeSpread to render in place of
+  // the static balanceNote when the LLM/cached copy is available.
+  const upgradeRationaleByPair = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const [k, v] of Object.entries(personalize.upgradeRationales)) {
+      if (typeof v === 'string' && v.trim()) map.set(k, v.trim())
+    }
+    return map
+  }, [personalize.upgradeRationales])
 
   const firstName = personalized ? profileDisplayName() : null
   const bylineLeft = isGuest
@@ -174,14 +280,15 @@ export default function DiscoverPage() {
           gapType={boxInsight?.missingType ?? null}
           insight={leadInsight || `A ${(boxInsight?.missingType ?? 'next pick').toLowerCase()} would round out the box.`}
           personalized={personalized}
+          refreshSeedKey={heroSeedKey}
         />
       )}
 
       {personalized && upgradeSuggestions.length > 0 && (
-        <UpgradeSpread suggestions={upgradeSuggestions} />
+        <UpgradeSpread suggestions={upgradeSuggestions} rationaleByPair={upgradeRationaleByPair} />
       )}
 
-      <NextSlotEditorial watches={nextSlotRecs} ownedTypes={ownedTypes} />
+      <NextSlotEditorial watches={nextSlotRecs} ownedTypes={ownedTypes} seedKeyByWatchId={nextSlotSeedKeys} />
 
       <NewsEditorial brandFilter={newsBrandFilter} />
     </div>

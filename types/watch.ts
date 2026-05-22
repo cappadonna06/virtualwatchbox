@@ -24,6 +24,9 @@ export type WatchStateSource =
   | 'playground'
   | 'cards'
   | 'profile'
+  | 'discover_upgrade'
+  | 'discover_lead'
+  | 'discover_next_slot'
 
 export interface DialConfig {
   dialColor: string

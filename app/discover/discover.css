@@ -11,18 +11,96 @@
   .discover-section-nav-inner { padding: 0 18px !important; gap: 16px !important; height: 40px !important; }
   .discover-section-nav-inner > a { height: 40px !important; }
 
-  .discover-complete-row { grid-template-columns: 1fr !important; gap: 36px !important; }
-  .discover-complete-h2 { font-size: 30px !important; }
-  .discover-complete-specs { grid-template-columns: repeat(2, auto) !important; }
-  .discover-complete-actions { flex-direction: column !important; align-items: stretch !important; }
-  .discover-complete-actions > a,
-  .discover-complete-actions > button { text-align: center; }
+  /* ── Hero / Complete the Box ─────────────────────────────────────────── */
+  .discover-complete-row { grid-template-columns: 1fr !important; gap: 24px !important; }
+  .discover-complete-h2 { font-size: 28px !important; line-height: 1.1 !important; margin-bottom: 16px !important; }
+  .discover-complete-insight { font-size: 14.5px !important; line-height: 1.5 !important; margin-bottom: 18px !important; }
 
+  /* Brand / Reference / Median in ONE row on mobile (was 2 cols stacked). */
+  .discover-complete-specs {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 12px !important;
+    padding-top: 16px !important;
+    margin-bottom: 18px !important;
+  }
+  .discover-complete-specs > div > div:first-child { font-size: 8.5px !important; margin-bottom: 4px !important; }
+  .discover-complete-specs > div > div:last-child { font-size: 15px !important; }
+
+  /* View Details / Chrono24 / Playground in ONE row on mobile (was column). */
+  .discover-complete-actions {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+  .discover-complete-actions > a,
+  .discover-complete-actions > button {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    padding: 10px 6px !important;
+    font-size: 9.5px !important;
+    letter-spacing: 0.1em !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+
+  /* Tighter hero image well — keep it featured but reduce vertical weight. */
+  .discover-complete-image > a[href] {
+    max-width: 280px !important;
+    height: 320px !important;
+  }
+
+  /* ── Upgrade card: image LEFT, text RIGHT on mobile (was stacked). ─── */
   .discover-upgrade-grid { grid-template-columns: 1fr !important; }
-  .discover-upgrade-pair { grid-template-columns: 1fr !important; gap: 24px !important; }
-  .discover-upgrade-arrow { flex-direction: row !important; gap: 16px !important; }
+  .discover-upgrade-pair { grid-template-columns: 1fr !important; gap: 10px !important; margin-bottom: 10px !important; }
+  .discover-upgrade-side {
+    flex-direction: row !important;
+    align-items: center !important;
+    text-align: left !important;
+    gap: 14px !important;
+  }
+  .discover-upgrade-image-well {
+    width: 180px !important;
+    height: 180px !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+  }
+  .discover-upgrade-image-inner {
+    width: 180px !important;
+    height: 180px !important;
+  }
+  .discover-upgrade-halo { display: none !important; }
+  .discover-upgrade-side-meta { flex: 1; min-width: 0; }
+  .discover-upgrade-side-meta > div:nth-child(3) { /* model */
+    font-size: 20px !important;
+  }
+
+  /* "STEP UP +$3,552 ↓" — flank with subtle gold hairlines so it reads as
+     a deliberate divider between the two watches, not an afterthought. */
+  .discover-upgrade-arrow {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 4px 8px !important;
+    margin: 4px 0 !important;
+  }
+  .discover-upgrade-arrow::before,
+  .discover-upgrade-arrow::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201,168,76,0.5) 30%, rgba(201,168,76,0.5) 70%, transparent);
+  }
+  .discover-upgrade-arrow > div:first-child { /* "STEP UP" kicker */
+    margin-bottom: 0 !important;
+    font-size: 9px !important;
+  }
+  .discover-upgrade-arrow > div:nth-child(2) { /* delta amount */
+    font-size: 18px !important;
+  }
   .discover-upgrade-arrow svg { transform: rotate(90deg); }
 
+  /* ── Next-slot grid, etc. ────────────────────────────────────────────── */
   .discover-nextslot-grid { grid-template-columns: 1fr !important; }
   .discover-strap-grid { grid-template-columns: repeat(2, 1fr) !important; }
   .discover-box-grid { grid-template-columns: 1fr !important; }
@@ -40,7 +118,13 @@
   .discover-hero-pad {
     padding-left: 18px !important;
     padding-right: 18px !important;
-    padding-top: 40px !important;
+    padding-top: 32px !important;
     padding-bottom: 24px !important;
+  }
+  section#upgrade article { padding: 18px 14px 16px !important; }
+  section#upgrade article > p { /* balance note */
+    font-size: 13px !important;
+    padding-top: 12px !important;
+    margin-bottom: 10px !important;
   }
 }

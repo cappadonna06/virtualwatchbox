@@ -1,10 +1,14 @@
 'use client'
 
+import Link from 'next/link'
 import type { CatalogWatch, WatchType } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import { buildChrono24URL, priceBandFor, getUpgradeRationale } from '@/lib/discover'
+import { logDiscoverEvent } from '@/lib/discoverAnalytics'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
+import WatchStateControl from '@/components/collection/WatchStateControl'
 import EditorialHeader from './EditorialHeader'
+import RefreshButton from './RefreshButton'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -18,9 +22,10 @@ function fmtK(n: number) {
 type Props = {
   watches: CatalogWatch[]
   ownedTypes: Set<WatchType>
+  seedKeyByWatchId?: Map<string, string>
 }
 
-export default function NextSlotEditorial({ watches, ownedTypes }: Props) {
+export default function NextSlotEditorial({ watches, ownedTypes, seedKeyByWatchId }: Props) {
   const recs = watches.slice(0, 3)
 
   return (
@@ -51,6 +56,8 @@ export default function NextSlotEditorial({ watches, ownedTypes }: Props) {
             watch={watch}
             rank={String(i + 1).padStart(2, '0')}
             ownedTypes={ownedTypes}
+            slotIndex={i}
+            seedKey={seedKeyByWatchId?.get(watch.id) ?? `nextSlot::${watch.watchType ?? 'Other'}`}
           />
         ))}
       </div>
@@ -62,10 +69,14 @@ function NextSlotCard({
   watch,
   rank,
   ownedTypes,
+  slotIndex,
+  seedKey,
 }: {
   watch: CatalogWatch
   rank: string
   ownedTypes: Set<WatchType>
+  slotIndex: number
+  seedKey: string
 }) {
   const band = priceBandFor(watch)
   const type = (watch.watchType ?? 'Watch') as WatchType
@@ -81,9 +92,17 @@ function NextSlotCard({
         border: `1px solid ${brand.colors.border}`,
         display: 'flex',
         flexDirection: 'column',
+        position: 'relative',
       }}
     >
-      <div
+      <div style={{ position: 'absolute', top: 12, right: 12, zIndex: 4 }}>
+        <RefreshButton section="next_slot" seedKey={seedKey} variant="corner" />
+      </div>
+      <Link
+        href={`/collection/add/${watch.id}?from=discover`}
+        onClick={() => logDiscoverEvent({
+          eventType: 'click', section: 'next_slot', seedKey, catalogWatchId: watch.id, slotIndex,
+        })}
         style={{
           background: brand.colors.paperWarm,
           aspectRatio: '4/3',
@@ -92,6 +111,9 @@ function NextSlotCard({
           justifyContent: 'center',
           position: 'relative',
           overflow: 'hidden',
+          textDecoration: 'none',
+          color: 'inherit',
+          cursor: 'pointer',
         }}
       >
         <div
@@ -108,22 +130,6 @@ function NextSlotCard({
         >
           No. {rank}
         </div>
-        <div
-          style={{
-            position: 'absolute',
-            top: 16,
-            right: 16,
-            fontFamily: brand.font.sans,
-            fontSize: 9,
-            fontWeight: 500,
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            color: brand.colors.muted,
-            zIndex: 1,
-          }}
-        >
-          {type}
-        </div>
         <div style={{ position: 'relative', width: '70%', height: '90%' }}>
           <WatchImageOrDial
             watch={watch}
@@ -133,7 +139,18 @@ function NextSlotCard({
             dialSize={140}
           />
         </div>
-      </div>
+        <div
+          onClick={e => { e.stopPropagation(); e.preventDefault() }}
+          style={{ position: 'absolute', left: 14, bottom: 14, zIndex: 2 }}
+        >
+          <WatchStateControl
+            catalogWatchId={watch.id}
+            source="discover_next_slot"
+            size="sm"
+            layout="inline"
+          />
+        </div>
+      </Link>
 
       <div style={{ padding: '20px 22px', flex: 1, display: 'flex', flexDirection: 'column' }}>
         <div
@@ -184,7 +201,7 @@ function NextSlotCard({
             letterSpacing: '0.04em',
           }}
         >
-          Ref. {watch.reference} · {watch.caseSizeMm} mm
+          Ref. {watch.reference} · {watch.caseSizeMm} mm · {type}
         </div>
 
         <p
@@ -224,6 +241,9 @@ function NextSlotCard({
             href={buildChrono24URL(watch.brand, watch.model)}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => logDiscoverEvent({
+              eventType: 'market_click', section: 'next_slot', seedKey, catalogWatchId: watch.id, slotIndex,
+            })}
             style={{
               fontFamily: brand.font.sans,
               fontSize: 10.5,

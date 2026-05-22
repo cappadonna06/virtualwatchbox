@@ -178,6 +178,9 @@ interface CollectionSessionContextValue {
   deleteWatchPhoto: (ownedWatchId: string, photoId: string) => Promise<void>
   reorderWatchPhotos: (ownedWatchId: string, orderedIds: string[]) => Promise<void>
   refreshWatchPhotos: (ownedWatchId?: string) => Promise<void>
+  // Discover rotation
+  discoverRefreshOffsets: Record<string, number>
+  bumpDiscoverRefresh: (seedKey: string) => void
 }
 
 const CollectionSessionContext = createContext<CollectionSessionContextValue | null>(null)
@@ -706,6 +709,11 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   const [hydrated, setHydrated] = useState(false)
   const [dataLoading, setDataLoading] = useState(false)
   const [migrationPending, setMigrationPending] = useState(false)
+  const [discoverRefreshOffsets, setDiscoverRefreshOffsets] = useState<Record<string, number>>({})
+
+  const bumpDiscoverRefresh = useCallback((seedKey: string) => {
+    setDiscoverRefreshOffsets(prev => ({ ...prev, [seedKey]: (prev[seedKey] ?? 0) + 1 }))
+  }, [])
 
   const prevUserIdRef = useRef<string | null>(null)
   const showTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -1889,6 +1897,8 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     deleteWatchPhoto,
     reorderWatchPhotos,
     refreshWatchPhotos,
+    discoverRefreshOffsets,
+    bumpDiscoverRefresh,
   }
 
   return (
