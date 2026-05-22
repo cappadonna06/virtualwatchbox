@@ -16,7 +16,12 @@ function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
 }
 
-export default function UpgradeSpread({ suggestions }: { suggestions: UpgradeSuggestion[] }) {
+type UpgradeSpreadProps = {
+  suggestions: UpgradeSuggestion[]
+  rationaleByPair?: Map<string, string>
+}
+
+export default function UpgradeSpread({ suggestions, rationaleByPair }: UpgradeSpreadProps) {
   return (
     <section
       id="upgrade"
@@ -39,22 +44,36 @@ export default function UpgradeSpread({ suggestions }: { suggestions: UpgradeSug
           gap: 16,
         }}
       >
-        {suggestions.map((s, i) => (
-          <UpgradeCard
-            key={`${s.ownedWatch.id}-${s.upgradeWatch.id}`}
-            suggestion={s}
-            slotIndex={i}
-          />
-        ))}
+        {suggestions.map((s, i) => {
+          const pairKey = `${s.ownedWatch.id}|${s.upgradeWatch.id}`
+          const customRationale = rationaleByPair?.get(pairKey) ?? null
+          return (
+            <UpgradeCard
+              key={`${s.ownedWatch.id}-${s.upgradeWatch.id}`}
+              suggestion={s}
+              slotIndex={i}
+              rationale={customRationale}
+            />
+          )
+        })}
       </div>
     </section>
   )
 }
 
-function UpgradeCard({ suggestion, slotIndex }: { suggestion: UpgradeSuggestion; slotIndex: number }) {
+function UpgradeCard({
+  suggestion,
+  slotIndex,
+  rationale,
+}: {
+  suggestion: UpgradeSuggestion
+  slotIndex: number
+  rationale: string | null
+}) {
   const { ownedWatch: from, upgradeWatch: to, balanceNote } = suggestion
   const delta = upgradeDeltaFor(from, to)
   const seedKey = `upgrade::${from.id}`
+  const note = rationale ?? balanceNote
 
   return (
     <article
@@ -65,6 +84,9 @@ function UpgradeCard({ suggestion, slotIndex }: { suggestion: UpgradeSuggestion;
         position: 'relative',
       }}
     >
+      <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 2 }}>
+        <RefreshButton section="upgrade" seedKey={seedKey} variant="corner" />
+      </div>
       <div
         className="discover-upgrade-pair"
         style={{
@@ -86,6 +108,7 @@ function UpgradeCard({ suggestion, slotIndex }: { suggestion: UpgradeSuggestion;
           onNavigate={() => logDiscoverEvent({
             eventType: 'click', section: 'upgrade', seedKey, catalogWatchId: from.id, slotIndex,
           })}
+          showStateControl={false}
         />
 
         <div
@@ -138,6 +161,7 @@ function UpgradeCard({ suggestion, slotIndex }: { suggestion: UpgradeSuggestion;
           onNavigate={() => logDiscoverEvent({
             eventType: 'click', section: 'upgrade', seedKey, catalogWatchId: to.id, slotIndex,
           })}
+          showStateControl
         />
       </div>
 
@@ -155,50 +179,29 @@ function UpgradeCard({ suggestion, slotIndex }: { suggestion: UpgradeSuggestion;
           textWrap: 'pretty',
         }}
       >
-        {balanceNote}
+        {note}
       </p>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+        <a
+          href={buildChrono24URL(to.brand, to.model)}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => logDiscoverEvent({
+            eventType: 'market_click', section: 'upgrade', seedKey, catalogWatchId: to.id, slotIndex,
+          })}
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 9,
-            fontWeight: 600,
-            letterSpacing: '0.18em',
+            fontSize: 10.5,
+            fontWeight: 500,
+            letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            color: brand.colors.muted,
+            color: brand.colors.ink,
+            textDecoration: 'none',
           }}
         >
-          {from.brand} → {to.brand}
-        </div>
-        <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-          <WatchStateControl
-            catalogWatchId={to.id}
-            source="discover_upgrade"
-            size="sm"
-            layout="inline"
-          />
-          <a
-            href={buildChrono24URL(to.brand, to.model)}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => logDiscoverEvent({
-              eventType: 'market_click', section: 'upgrade', seedKey, catalogWatchId: to.id, slotIndex,
-            })}
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 10.5,
-              fontWeight: 500,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: brand.colors.ink,
-              textDecoration: 'none',
-            }}
-          >
-            Find on market ↗
-          </a>
-          <RefreshButton section="upgrade" seedKey={seedKey} />
-        </div>
+          Find on market ↗
+        </a>
       </div>
     </article>
   )
@@ -213,6 +216,7 @@ function UpgradeSide({
   showHalo,
   href,
   onNavigate,
+  showStateControl,
 }: {
   watch: CatalogWatch
   kicker: string
@@ -222,6 +226,7 @@ function UpgradeSide({
   showHalo: boolean
   href: string
   onNavigate: () => void
+  showStateControl: boolean
 }) {
   const linkStyle: CSSProperties = {
     display: 'block',
@@ -277,6 +282,19 @@ function UpgradeSide({
               dialSize={180}
             />
           </div>
+          {showStateControl && (
+            <div
+              onClick={e => { e.stopPropagation(); e.preventDefault() }}
+              style={{ position: 'absolute', left: 16, bottom: 12, zIndex: 3 }}
+            >
+              <WatchStateControl
+                catalogWatchId={watch.id}
+                source="discover_upgrade"
+                size="sm"
+                layout="inline"
+              />
+            </div>
+          )}
         </div>
         <div
           style={{
@@ -290,6 +308,19 @@ function UpgradeSide({
           }}
         >
           {kicker}
+        </div>
+        <div
+          style={{
+            fontFamily: brand.font.sans,
+            fontSize: 10,
+            fontWeight: 600,
+            letterSpacing: '0.16em',
+            textTransform: 'uppercase',
+            color: brand.colors.ink,
+            marginBottom: 4,
+          }}
+        >
+          {watch.brand}
         </div>
         <div
           style={{

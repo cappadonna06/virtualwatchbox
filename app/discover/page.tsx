@@ -205,6 +205,28 @@ export default function DiscoverPage() {
     [collection, personalized],
   )
 
+  const upgradePairsForCopy = useMemo(
+    () => upgradeSuggestions.map(s => ({
+      fromWatchId: s.ownedWatch.id,
+      fromBrand: s.ownedWatch.brand,
+      fromModel: s.ownedWatch.model,
+      fromType: s.ownedWatch.watchType ?? 'Watch',
+      toWatchId: s.upgradeWatch.id,
+      toBrand: s.upgradeWatch.brand,
+      toModel: s.upgradeWatch.model,
+      toType: s.upgradeWatch.watchType ?? 'Watch',
+      upgradeDeltaUsd: (s.upgradeWatch.estimatedValue ?? 0) - (s.ownedWatch.estimatedValue ?? 0),
+    })),
+    [upgradeSuggestions],
+  )
+
+  const heroLeadForCopy = useMemo(
+    () => leadWatch
+      ? { toWatchId: leadWatch.id, brand: leadWatch.brand, model: leadWatch.model, type: leadWatch.watchType ?? 'Watch' }
+      : null,
+    [leadWatch],
+  )
+
   const personalize = usePersonalizedInsight({
     collection,
     slotCount: session.watchboxConfig.slotCount,
@@ -214,6 +236,8 @@ export default function DiscoverPage() {
     leadPick: leadWatch
       ? { brand: leadWatch.brand, model: leadWatch.model, reference: leadWatch.reference, type: leadWatch.watchType ?? 'Watch', value: leadWatch.estimatedValue }
       : null,
+    heroLead: heroLeadForCopy,
+    upgradePairs: upgradePairsForCopy,
     fallbackRead,
     brandReadHint: fallbackRead,
     priceTarget: priceAnchor?.target ?? null,
@@ -222,6 +246,16 @@ export default function DiscoverPage() {
 
   const insightRead = personalize.read || fallbackRead
   const leadInsight = personalize.leadInsight || boxInsight?.copy || ''
+
+  // Map pair-id → rationale sentence for UpgradeSpread to render in place of
+  // the static balanceNote when the LLM/cached copy is available.
+  const upgradeRationaleByPair = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const [k, v] of Object.entries(personalize.upgradeRationales)) {
+      if (typeof v === 'string' && v.trim()) map.set(k, v.trim())
+    }
+    return map
+  }, [personalize.upgradeRationales])
 
   const firstName = personalized ? profileDisplayName() : null
   const bylineLeft = isGuest
@@ -251,7 +285,7 @@ export default function DiscoverPage() {
       )}
 
       {personalized && upgradeSuggestions.length > 0 && (
-        <UpgradeSpread suggestions={upgradeSuggestions} />
+        <UpgradeSpread suggestions={upgradeSuggestions} rationaleByPair={upgradeRationaleByPair} />
       )}
 
       <NextSlotEditorial watches={nextSlotRecs} ownedTypes={ownedTypes} seedKeyByWatchId={nextSlotSeedKeys} />

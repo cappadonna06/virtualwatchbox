@@ -92,8 +92,12 @@ function NextSlotCard({
         border: `1px solid ${brand.colors.border}`,
         display: 'flex',
         flexDirection: 'column',
+        position: 'relative',
       }}
     >
+      <div style={{ position: 'absolute', top: 12, right: 12, zIndex: 4 }}>
+        <RefreshButton section="next_slot" seedKey={seedKey} variant="corner" />
+      </div>
       <Link
         href={`/collection/add/${watch.id}?from=discover`}
         onClick={() => logDiscoverEvent({
@@ -126,22 +130,6 @@ function NextSlotCard({
         >
           No. {rank}
         </div>
-        <div
-          style={{
-            position: 'absolute',
-            top: 16,
-            right: 16,
-            fontFamily: brand.font.sans,
-            fontSize: 9,
-            fontWeight: 500,
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            color: brand.colors.muted,
-            zIndex: 1,
-          }}
-        >
-          {type}
-        </div>
         <div style={{ position: 'relative', width: '70%', height: '90%' }}>
           <WatchImageOrDial
             watch={watch}
@@ -149,6 +137,17 @@ function NextSlotCard({
             sizes="(max-width: 768px) 80vw, 280px"
             imageStyle={{ objectFit: 'contain', filter: 'drop-shadow(0 12px 22px rgba(26,20,16,0.18))' }}
             dialSize={140}
+          />
+        </div>
+        <div
+          onClick={e => { e.stopPropagation(); e.preventDefault() }}
+          style={{ position: 'absolute', left: 14, bottom: 14, zIndex: 2 }}
+        >
+          <WatchStateControl
+            catalogWatchId={watch.id}
+            source="discover_next_slot"
+            size="sm"
+            layout="inline"
           />
         </div>
       </Link>
@@ -202,7 +201,7 @@ function NextSlotCard({
             letterSpacing: '0.04em',
           }}
         >
-          Ref. {watch.reference} · {watch.caseSizeMm} mm
+          Ref. {watch.reference} · {watch.caseSizeMm} mm · {type}
         </div>
 
         <p
@@ -238,36 +237,25 @@ function NextSlotCard({
               Median {fmt(band.median)}
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            <WatchStateControl
-              catalogWatchId={watch.id}
-              source="discover_next_slot"
-              size="sm"
-              layout="inline"
-            />
-            <a
-              href={buildChrono24URL(watch.brand, watch.model)}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => logDiscoverEvent({
-                eventType: 'market_click', section: 'next_slot', seedKey, catalogWatchId: watch.id, slotIndex,
-              })}
-              style={{
-                fontFamily: brand.font.sans,
-                fontSize: 10.5,
-                fontWeight: 500,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: brand.colors.ink,
-                textDecoration: 'none',
-              }}
-            >
-              Find on market ↗
-            </a>
-          </div>
-        </div>
-        <div style={{ marginTop: 10, display: 'flex', justifyContent: 'flex-end' }}>
-          <RefreshButton section="next_slot" seedKey={seedKey} />
+          <a
+            href={buildChrono24URL(watch.brand, watch.model)}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => logDiscoverEvent({
+              eventType: 'market_click', section: 'next_slot', seedKey, catalogWatchId: watch.id, slotIndex,
+            })}
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 10.5,
+              fontWeight: 500,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: brand.colors.ink,
+              textDecoration: 'none',
+            }}
+          >
+            Find on market ↗
+          </a>
         </div>
       </div>
     </article>

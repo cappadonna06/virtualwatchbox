@@ -25,7 +25,7 @@ function fmt(n: number) {
 const PANEL_BG = '#1e1b16'
 
 export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, personalized, refreshSeedKey }: Props) {
-  const headlineNoun = gapType ? `${gapType.toLowerCase()} watch` : 'next pick'
+  const headlineNoun = headlineNounFor(gapType)
   const headlineTail = headlineTailFor(gapType, personalized)
 
   return (
@@ -46,7 +46,7 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
               <div style={{ height: 1, width: 24, background: 'rgba(201,168,76,0.6)' }} />
               <GoldKicker>{gapLabel}</GoldKicker>
               <div style={{ marginLeft: 'auto' }}>
-                <RefreshButton section="hero" seedKey={refreshSeedKey} />
+                <RefreshButton section="hero" seedKey={refreshSeedKey} variant="corner" tone="dark" />
               </div>
             </div>
 
@@ -252,19 +252,33 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
   )
 }
 
+function headlineNounFor(gapType: string | null): string {
+  if (!gapType) return 'next pick'
+  const lower = gapType.toLowerCase()
+  // Drop the "watch" suffix where the type-word reads awkwardly with it.
+  switch (gapType) {
+    case 'Integrated Bracelet': return 'integrated-bracelet piece'
+    case 'Chronograph':         return 'chronograph'
+    case 'GMT':                 return 'GMT'
+    case 'Vintage':             return 'vintage piece'
+    case 'Sport':               return 'sport piece'
+    default:                    return `${lower} watch`
+  }
+}
+
 function headlineTailFor(gapType: string | null, personalized: boolean): string {
   if (!personalized) return 'to lead the week'
   switch (gapType) {
     case 'Dress':               return 'the formal anchor your rotation is missing'
-    case 'GMT':                 return 'the travel companion your rotation has yet to claim'
-    case 'Chronograph':         return 'the sport complication your collection has yet to own'
-    case 'Diver':               return 'the tool watch your collection deserves'
-    case 'Field':               return 'a legible daily your rotation can reach for'
-    case 'Pilot':               return 'the cockpit-bred legibility your rotation is missing'
-    case 'Integrated Bracelet': return 'the integrated-bracelet daily your collection has yet to claim'
-    case 'Sport':               return 'a versatile sport piece your rotation can lean on'
-    case 'Vintage':             return 'the heritage chapter your collection has yet to open'
-    default:                    return 'the chapter your collection has yet to open'
+    case 'GMT':                 return 'the travel companion you have yet to claim'
+    case 'Chronograph':         return 'the sport complication you have yet to claim'
+    case 'Diver':               return 'the tool watch your rotation hasn’t earned yet'
+    case 'Field':               return 'a legible daily you don’t yet reach for'
+    case 'Pilot':               return 'the cockpit-bred legibility you haven’t added'
+    case 'Integrated Bracelet': return 'the bracelet daily you haven’t added'
+    case 'Sport':               return 'a versatile sport piece you haven’t leaned on'
+    case 'Vintage':             return 'the heritage chapter you haven’t opened'
+    default:                    return 'the chapter you haven’t opened yet'
   }
 }
 
