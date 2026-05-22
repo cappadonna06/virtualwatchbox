@@ -43,12 +43,16 @@ function getButtonStyle({
   state,
   placement,
   layout,
+  hovered,
+  pressed,
 }: {
   size: 'sm' | 'md'
   tone: 'light' | 'dark'
   state: WatchSavedState | null
   placement: 'bottom-left' | 'top-right'
   layout: 'overlay' | 'inline'
+  hovered: boolean
+  pressed: boolean
 }): CSSProperties {
   const metrics = getButtonMetrics(size)
   const isSaved = state !== null
@@ -62,29 +66,38 @@ function getButtonStyle({
           : { left: metrics.inset, bottom: metrics.inset }),
       }
 
+  const borderColor = hovered || isSaved ? brand.colors.goldLine : brand.colors.borderLight
+  const baseBg = tone === 'dark'
+    ? brand.colors.white
+    : isSaved
+      ? brand.colors.goldWash
+      : brand.colors.white
+  const hoverBg = hovered && !isSaved ? brand.colors.goldWash : baseBg
+  const iconColor = state === 'followed' || state === 'target' || state === 'grail' || state === 'jewel'
+    ? brand.colors.gold
+    : hovered
+      ? brand.colors.gold
+      : tone === 'dark'
+        ? brand.colors.ink
+        : brand.colors.muted
+  const scale = pressed ? 0.94 : hovered ? 1.06 : 1
+  const shadow = hovered ? brand.shadow.lg : brand.shadow.md
+
   return {
     ...positioning,
     width: metrics.button,
     height: metrics.button,
     borderRadius: brand.radius.circle,
-    border: `1px solid ${isSaved ? brand.colors.goldLine : brand.colors.borderLight}`,
-    background: tone === 'dark'
-      ? brand.colors.white
-      : isSaved
-        ? brand.colors.goldWash
-        : brand.colors.white,
-    color: state === 'followed'
-      ? brand.colors.gold
-      : state === 'target' || state === 'grail' || state === 'jewel'
-        ? brand.colors.gold
-        : tone === 'dark'
-          ? brand.colors.ink
-          : brand.colors.muted,
+    border: `1px solid ${borderColor}`,
+    background: hoverBg,
+    color: iconColor,
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
     cursor: 'pointer',
-    boxShadow: brand.shadow.md,
+    boxShadow: shadow,
+    transform: `scale(${scale})`,
+    transition: 'transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background 140ms ease, color 140ms ease',
     zIndex: 4,
   }
 }
@@ -110,6 +123,8 @@ export default function WatchStateControl({
   const [pickerPosition, setPickerPosition] = useState<PickerPosition | null>(null)
   const [grailMoment, setGrailMoment] = useState<GrailMomentState | null>(null)
   const [grailRemoveOpen, setGrailRemoveOpen] = useState(false)
+  const [hovered, setHovered] = useState(false)
+  const [pressed, setPressed] = useState(false)
   const isMobile = useIsMobile()
 
   const currentState = typeof session.getWatchSavedState === 'function'
@@ -402,7 +417,13 @@ export default function WatchStateControl({
         ref={buttonRef}
         type="button"
         onClick={toggleOpen}
-        style={getButtonStyle({ size, tone, state: currentState, placement, layout })}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => { setHovered(false); setPressed(false) }}
+        onMouseDown={() => setPressed(true)}
+        onMouseUp={() => setPressed(false)}
+        onFocus={() => setHovered(true)}
+        onBlur={() => { setHovered(false); setPressed(false) }}
+        style={getButtonStyle({ size, tone, state: currentState, placement, layout, hovered: hovered || open, pressed })}
         aria-label={currentState ? `${getStateLabel(currentState)} saved state` : 'Save watch state'}
         title={currentState ? getStateLabel(currentState) : 'Follow'}
       >

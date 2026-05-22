@@ -29,7 +29,10 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
   const headlineTail = headlineTailFor(gapType, personalized)
 
   return (
-    <section id="lead" style={{ background: PANEL_BG, color: brand.colors.slot }}>
+    <section id="lead" style={{ background: PANEL_BG, color: brand.colors.slot, position: 'relative' }}>
+      <div style={{ position: 'absolute', top: 20, right: 20, zIndex: 3 }}>
+        <RefreshButton section="hero" seedKey={refreshSeedKey} variant="corner" tone="dark" />
+      </div>
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '64px 56px' }}>
         <div
           className="discover-complete-row"
@@ -45,9 +48,6 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
               <GoldKicker>{personalized ? 'Complete the Box' : 'This Week’s Pick'}</GoldKicker>
               <div style={{ height: 1, width: 24, background: 'rgba(201,168,76,0.6)' }} />
               <GoldKicker>{gapLabel}</GoldKicker>
-              <div style={{ marginLeft: 'auto' }}>
-                <RefreshButton section="hero" seedKey={refreshSeedKey} variant="corner" tone="dark" />
-              </div>
             </div>
 
             <h2
@@ -165,32 +165,12 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
               >
                 Add to Playground
               </Link>
-              <div style={{ marginLeft: 8 }}>
-                <WatchStateControl
-                  catalogWatchId={watch.id}
-                  source="discover_lead"
-                  size="md"
-                  layout="inline"
-                  tone="dark"
-                />
-              </div>
             </div>
           </div>
 
-          <Link
-            href={`/collection/add/${watch.id}?from=discover`}
-            onClick={() => logDiscoverEvent({
-              eventType: 'click', section: 'hero', seedKey: refreshSeedKey, catalogWatchId: watch.id, slotIndex: 0,
-            })}
+          <div
             className="discover-complete-image"
-            style={{
-              position: 'relative',
-              textAlign: 'center',
-              textDecoration: 'none',
-              color: 'inherit',
-              cursor: 'pointer',
-              display: 'block',
-            }}
+            style={{ position: 'relative', textAlign: 'center' }}
           >
             <div
               aria-hidden
@@ -210,15 +190,23 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
             >
               ¶ 01
             </div>
-            <div
+            <Link
+              href={`/collection/add/${watch.id}?from=discover`}
+              onClick={() => logDiscoverEvent({
+                eventType: 'click', section: 'hero', seedKey: refreshSeedKey, catalogWatchId: watch.id, slotIndex: 0,
+              })}
               style={{
                 position: 'relative',
                 zIndex: 1,
+                display: 'block',
                 width: '100%',
                 maxWidth: 340,
                 height: 420,
                 margin: '0 auto',
                 filter: 'drop-shadow(0 18px 32px rgba(0,0,0,0.45))',
+                textDecoration: 'none',
+                color: 'inherit',
+                cursor: 'pointer',
               }}
             >
               <WatchImageOrDial
@@ -228,8 +216,33 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
                 imageStyle={{ objectFit: 'contain' }}
                 dialSize={260}
               />
-            </div>
+              <div
+                onClick={e => { e.stopPropagation(); e.preventDefault() }}
+                style={{ position: 'absolute', left: 8, bottom: 8, zIndex: 3 }}
+              >
+                <WatchStateControl
+                  catalogWatchId={watch.id}
+                  source="discover_lead"
+                  size="md"
+                  layout="inline"
+                  tone="dark"
+                />
+              </div>
+            </Link>
             <div style={{ marginTop: 18 }}>
+              <div
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 10,
+                  fontWeight: 600,
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  color: 'rgba(250,248,244,0.7)',
+                  marginBottom: 6,
+                }}
+              >
+                {watch.brand}
+              </div>
               <div style={{ fontFamily: brand.font.serif, fontStyle: 'italic', fontSize: 22, color: brand.colors.slot }}>
                 {watch.model}
               </div>
@@ -245,7 +258,7 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
                 {watch.caseSizeMm} mm · {watch.watchType ?? 'Watch'}
               </div>
             </div>
-          </Link>
+          </div>
         </div>
       </div>
     </section>
