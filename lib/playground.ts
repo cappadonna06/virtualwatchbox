@@ -5,6 +5,7 @@ import type {
   PlaygroundBox,
   PlaygroundBoxEntry,
   PlaygroundWatchOverrides,
+  ResolvedOwnedWatch,
   ResolvedWatch,
 } from '@/types/watch'
 
@@ -74,6 +75,44 @@ export function addWatchToPlaygroundBox(boxes: PlaygroundBox[], boxId: string, w
       ? { ...box, entries: [...box.entries, createPlaygroundEntry(watchId)] }
       : box,
   )
+}
+
+export function importCollectionToPlaygroundBox(
+  boxes: PlaygroundBox[],
+  boxId: string,
+  ownedWatches: ResolvedOwnedWatch[],
+): PlaygroundBox[] {
+  return boxes.map(box => {
+    if (box.id !== boxId) return box
+    const entries = ownedWatches.map(owned => {
+      const overrides: PlaygroundWatchOverrides = {}
+      if (owned.condition) overrides.condition = owned.condition
+      if (owned.notes) overrides.notes = owned.notes
+      return createPlaygroundEntry(
+        owned.watchId,
+        Object.keys(overrides).length > 0 ? overrides : undefined,
+      )
+    })
+    return { ...box, entries }
+  })
+}
+
+export function placeWatchInPlaygroundSlot(
+  boxes: PlaygroundBox[],
+  boxId: string,
+  slotIndex: number,
+  watchId: string,
+): PlaygroundBox[] {
+  return boxes.map(box => {
+    if (box.id !== boxId) return box
+    const entries = [...box.entries]
+    if (slotIndex < entries.length) {
+      entries[slotIndex] = createPlaygroundEntry(watchId)
+    } else {
+      entries.push(createPlaygroundEntry(watchId))
+    }
+    return { ...box, entries }
+  })
 }
 
 export function migratePlaygroundBox(raw: LegacyPlaygroundBox): PlaygroundBox | null {

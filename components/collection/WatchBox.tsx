@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type DragEvent as ReactDragEvent, type PointerEvent as ReactPointerEvent } from 'react'
 import type { ResolvedWatch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import { getWatchboxOverflow } from '@/lib/watchboxOverflow'
@@ -8,6 +8,7 @@ import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import { brand } from '@/lib/brand'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { IntentBadge } from './WatchStateIcons'
+import { PLAYGROUND_DRAG_PAYLOAD_KEY, PLAYGROUND_WATCH_MIME } from '@/lib/dragGhost'
 
 interface Props {
   watches: ResolvedWatch[]
@@ -15,6 +16,7 @@ interface Props {
   onSlotClick: (i: number) => void
   onEmptySlotClick?: () => void
   onReorder?: (from: number, to: number) => void
+  onExternalDrop?: (slotIndex: number, watchId: string) => void
   frame: string
   lining: string
   slotCount: number
@@ -155,6 +157,7 @@ export default function WatchBox({
   onSlotClick,
   onEmptySlotClick,
   onReorder,
+  onExternalDrop,
   frame,
   lining,
   slotCount,
@@ -169,12 +172,29 @@ export default function WatchBox({
   const [overflowOpen, setOverflowOpen] = useState(false)
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
+  const [externalDragOverIndex, setExternalDragOverIndex] = useState<number | null>(null)
   const [isTouchDevice, setIsTouchDevice] = useState(false)
   const dragCounter = useRef(0)
   const ghostRef = useRef<HTMLDivElement | null>(null)
   const touchDragging = useRef(false)
   const touchGhostRef = useRef<HTMLDivElement | null>(null)
   const slotRectsRef = useRef<{ rect: DOMRect; index: number }[]>([])
+
+  // External drag (e.g. tray → slot) uses HTML5 dataTransfer with a custom
+  // MIME. We can't read the payload during dragover (browsers block it for
+  // security), but the MIME's presence in `types` tells us a watch is being
+  // dragged from the tray and we should accept the drop on this slot.
+  function hasExternalPayload(e: ReactDragEvent) {
+    return onExternalDrop !== undefined && e.dataTransfer.types.includes(PLAYGROUND_WATCH_MIME)
+  }
+
+  function readExternalPayload(e: ReactDragEvent): string | null {
+    if (onExternalDrop === undefined) return null
+    const id = e.dataTransfer.getData(PLAYGROUND_WATCH_MIME)
+    if (id) return id
+    const text = e.dataTransfer.getData('text/plain')
+    return text || null
+  }
 
   useEffect(() => {
     setIsTouchDevice(window.matchMedia('(hover: none) and (pointer: coarse)').matches)
@@ -271,8 +291,29 @@ export default function WatchBox({
 
               if (slot.type === 'empty') {
                 const isFirstSlot = i === 0
+                const isExternalHover = externalDragOverIndex === i
                 return (
-                  <div key={i} style={{ aspectRatio: '3/4', borderRadius: 3, position: 'relative' }}>
+                  <div
+                    key={i}
+                    data-slot-index={i}
+                    style={{ aspectRatio: '3/4', borderRadius: 3, position: 'relative' }}
+                    onDragOver={onExternalDrop ? e => {
+                      if (!hasExternalPayload(e)) return
+                      e.preventDefault()
+                      e.dataTransfer.dropEffect = 'copy'
+                      setExternalDragOverIndex(i)
+                    } : undefined}
+                    onDragLeave={onExternalDrop ? () => {
+                      setExternalDragOverIndex(prev => (prev === i ? null : prev))
+                    } : undefined}
+                    onDrop={onExternalDrop ? e => {
+                      if (!hasExternalPayload(e)) return
+                      e.preventDefault()
+                      const watchId = readExternalPayload(e)
+                      setExternalDragOverIndex(null)
+                      if (watchId) onExternalDrop(i, watchId)
+                    } : undefined}
+                  >
                     <div
                       onClick={readonly ? undefined : onEmptySlotClick}
                       style={{
@@ -286,6 +327,13 @@ export default function WatchBox({
                         cursor: readonly ? 'default' : 'pointer',
                         opacity: useHighContrastSlotText ? 0.88 : 0.55,
                         background: ln.slotBg,
+                        border: isExternalHover
+                          ? '1.5px dashed rgba(201,168,76,0.85)'
+                          : '1.5px solid transparent',
+                        boxShadow: isExternalHover
+                          ? '0 0 0 1px rgba(201,168,76,0.35), 0 3px 14px rgba(201,168,76,0.18)'
+                          : undefined,
+                        transition: 'border-color 0.18s, box-shadow 0.18s',
                       }}
                     >
                       {readonly ? (
@@ -427,6 +475,7 @@ export default function WatchBox({
               const isDestInPreview = inPreview && i === dragOverIndex
               const isBeingDragged = !inPreview && onReorder !== undefined && draggedIndex === i
               const isDragTarget = !inPreview && onReorder !== undefined && dragOverIndex === i && draggedIndex !== i
+              const isExternalDragTarget = externalDragOverIndex === i
 
               return (
                 <div
@@ -444,17 +493,34 @@ export default function WatchBox({
                     ghostRef.current = clone
                     e.dataTransfer.setDragImage(clone, e.nativeEvent.offsetX, e.nativeEvent.offsetY)
                   } : undefined}
-                  onDragOver={onReorder ? e => {
+                  onDragOver={(onReorder || onExternalDrop) ? e => {
+                    if (hasExternalPayload(e)) {
+                      e.preventDefault()
+                      e.dataTransfer.dropEffect = 'copy'
+                      setExternalDragOverIndex(i)
+                      return
+                    }
+                    if (!onReorder) return
                     e.preventDefault()
                     setDragOverIndex(i)
                   } : undefined}
                   onDragEnter={onReorder ? () => { dragCounter.current++ } : undefined}
-                  onDragLeave={onReorder ? () => {
-                    dragCounter.current--
-                    if (dragCounter.current === 0) setDragOverIndex(null)
+                  onDragLeave={(onReorder || onExternalDrop) ? () => {
+                    if (onReorder) {
+                      dragCounter.current--
+                      if (dragCounter.current === 0) setDragOverIndex(null)
+                    }
+                    setExternalDragOverIndex(prev => (prev === i ? null : prev))
                   } : undefined}
-                  onDrop={onReorder ? () => {
-                    if (draggedIndex !== null && draggedIndex !== i) onReorder(draggedIndex, i)
+                  onDrop={(onReorder || onExternalDrop) ? (e: ReactDragEvent) => {
+                    if (hasExternalPayload(e) && onExternalDrop) {
+                      e.preventDefault()
+                      const watchId = readExternalPayload(e)
+                      setExternalDragOverIndex(null)
+                      if (watchId) onExternalDrop(i, watchId)
+                      return
+                    }
+                    if (onReorder && draggedIndex !== null && draggedIndex !== i) onReorder(draggedIndex, i)
                     setDraggedIndex(null)
                     setDragOverIndex(null)
                   } : undefined}
@@ -604,12 +670,12 @@ export default function WatchBox({
                       position: 'relative',
                       background: ln.slotBg,
                       cursor: 'pointer',
-                      border: (isActive || isDragTarget || isDestInPreview)
+                      border: (isActive || isDragTarget || isDestInPreview || isExternalDragTarget)
                         ? '1.5px solid rgba(201,168,76,0.8)'
                         : isSourceInPreview
                         ? '1.5px dashed rgba(201,168,76,0.6)'
                         : '1.5px solid transparent',
-                      boxShadow: (isActive || isDragTarget || isDestInPreview)
+                      boxShadow: (isActive || isDragTarget || isDestInPreview || isExternalDragTarget)
                         ? 'inset 0 1px 4px rgba(0,0,0,0.12), 0 0 0 1px rgba(201,168,76,0.4), 0 3px 14px rgba(201,168,76,0.16)'
                         : 'inset 0 1px 4px rgba(0,0,0,0.12)',
                       transition: 'border-color 0.2s, box-shadow 0.2s',
