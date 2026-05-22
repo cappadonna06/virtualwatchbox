@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { brand } from '@/lib/brand'
 
 type Props = {
@@ -7,9 +8,10 @@ type Props = {
   title: string
   italic?: boolean
   sub?: string
+  action?: ReactNode
 }
 
-export default function EditorialHeader({ kicker, title, italic = true, sub }: Props) {
+export default function EditorialHeader({ kicker, title, italic = true, sub, action }: Props) {
   return (
     <div
       className="discover-section-head"
@@ -51,20 +53,32 @@ export default function EditorialHeader({ kicker, title, italic = true, sub }: P
           {italic ? <em style={{ fontStyle: 'italic' }}>{title}</em> : title}
         </h2>
       </div>
-      {sub && (
+      {(sub || action) && (
         <div
           style={{
-            fontFamily: brand.font.sans,
-            fontSize: 11.5,
-            color: brand.colors.muted,
-            letterSpacing: '0.04em',
-            maxWidth: 320,
-            textAlign: 'right',
-            textWrap: 'pretty',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: 10,
             alignSelf: 'end',
+            maxWidth: 320,
           }}
         >
-          {sub}
+          {sub && (
+            <div
+              style={{
+                fontFamily: brand.font.sans,
+                fontSize: 11.5,
+                color: brand.colors.muted,
+                letterSpacing: '0.04em',
+                textAlign: 'right',
+                textWrap: 'pretty',
+              }}
+            >
+              {sub}
+            </div>
+          )}
+          {action}
         </div>
       )}
     </div>

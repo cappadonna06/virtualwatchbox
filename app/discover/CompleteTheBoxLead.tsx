@@ -4,8 +4,10 @@ import Link from 'next/link'
 import type { CatalogWatch } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import { buildChrono24URL } from '@/lib/discover'
-import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import { logDiscoverEvent } from '@/lib/discoverAnalytics'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
+import WatchStateControl from '@/components/collection/WatchStateControl'
+import RefreshButton from './RefreshButton'
 
 type Props = {
   watch: CatalogWatch
@@ -13,6 +15,7 @@ type Props = {
   gapType: string | null
   insight: string
   personalized: boolean
+  refreshSeedKey: string
 }
 
 function fmt(n: number) {
@@ -21,9 +24,7 @@ function fmt(n: number) {
 
 const PANEL_BG = '#1e1b16'
 
-export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, personalized }: Props) {
-  const { isWatchFollowed, toggleFollowedWatch } = useCollectionSession()
-  const followed = isWatchFollowed(watch.id)
+export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, personalized, refreshSeedKey }: Props) {
   const headlineNoun = gapType ? `${gapType.toLowerCase()} watch` : 'next pick'
   const headlineTail = headlineTailFor(gapType, personalized)
 
@@ -44,6 +45,9 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
               <GoldKicker>{personalized ? 'Complete the Box' : 'This Week’s Pick'}</GoldKicker>
               <div style={{ height: 1, width: 24, background: 'rgba(201,168,76,0.6)' }} />
               <GoldKicker>{gapLabel}</GoldKicker>
+              <div style={{ marginLeft: 'auto' }}>
+                <RefreshButton section="hero" seedKey={refreshSeedKey} />
+              </div>
             </div>
 
             <h2
@@ -98,10 +102,11 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
               className="discover-complete-actions"
               style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}
             >
-              <a
-                href={buildChrono24URL(watch.brand, watch.model)}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href={`/collection/add/${watch.id}?from=discover`}
+                onClick={() => logDiscoverEvent({
+                  eventType: 'click', section: 'hero', seedKey: refreshSeedKey, catalogWatchId: watch.id, slotIndex: 0,
+                })}
                 style={{
                   fontFamily: brand.font.sans,
                   fontSize: 10.5,
@@ -115,6 +120,29 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
                   borderRadius: 2,
                   textDecoration: 'none',
                   cursor: 'pointer',
+                }}
+              >
+                View details →
+              </Link>
+              <a
+                href={buildChrono24URL(watch.brand, watch.model)}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => logDiscoverEvent({
+                  eventType: 'market_click', section: 'hero', seedKey: refreshSeedKey, catalogWatchId: watch.id, slotIndex: 0,
+                })}
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 10.5,
+                  fontWeight: 500,
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  padding: '11px 18px',
+                  background: 'transparent',
+                  color: brand.colors.slot,
+                  border: '1px solid rgba(250,248,244,0.28)',
+                  borderRadius: 2,
+                  textDecoration: 'none',
                 }}
               >
                 Find on Chrono24 ↗
@@ -137,28 +165,33 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
               >
                 Add to Playground
               </Link>
-              <button
-                type="button"
-                onClick={() => toggleFollowedWatch(watch.id)}
-                style={{
-                  fontFamily: brand.font.sans,
-                  fontSize: 10.5,
-                  background: 'none',
-                  border: 'none',
-                  color: followed ? brand.colors.gold : 'rgba(250,248,244,0.6)',
-                  letterSpacing: '0.06em',
-                  marginLeft: 8,
-                  cursor: 'pointer',
-                  padding: 0,
-                }}
-                aria-pressed={followed}
-              >
-                {followed ? '♥ Following' : '♡ Follow'}
-              </button>
+              <div style={{ marginLeft: 8 }}>
+                <WatchStateControl
+                  catalogWatchId={watch.id}
+                  source="discover_lead"
+                  size="md"
+                  layout="inline"
+                  tone="dark"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="discover-complete-image" style={{ position: 'relative', textAlign: 'center' }}>
+          <Link
+            href={`/collection/add/${watch.id}?from=discover`}
+            onClick={() => logDiscoverEvent({
+              eventType: 'click', section: 'hero', seedKey: refreshSeedKey, catalogWatchId: watch.id, slotIndex: 0,
+            })}
+            className="discover-complete-image"
+            style={{
+              position: 'relative',
+              textAlign: 'center',
+              textDecoration: 'none',
+              color: 'inherit',
+              cursor: 'pointer',
+              display: 'block',
+            }}
+          >
             <div
               aria-hidden
               style={{
@@ -212,7 +245,7 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
                 {watch.caseSizeMm} mm · {watch.watchType ?? 'Watch'}
               </div>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
     </section>

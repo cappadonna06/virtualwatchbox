@@ -16,6 +16,10 @@ type WatchStateControlProps = {
   size?: 'sm' | 'md'
   tone?: 'light' | 'dark'
   placement?: 'bottom-left' | 'top-right'
+  // 'overlay' (default) absolutely positions inside a positioned parent — used
+  // on watch image wells (sidebar, add detail). 'inline' renders in the normal
+  // flow so the control can sit next to text in an editorial row (discover).
+  layout?: 'overlay' | 'inline'
 }
 
 type PickerPosition = {
@@ -38,20 +42,28 @@ function getButtonStyle({
   tone,
   state,
   placement,
+  layout,
 }: {
   size: 'sm' | 'md'
   tone: 'light' | 'dark'
   state: WatchSavedState | null
   placement: 'bottom-left' | 'top-right'
+  layout: 'overlay' | 'inline'
 }): CSSProperties {
   const metrics = getButtonMetrics(size)
   const isSaved = state !== null
 
+  const positioning: CSSProperties = layout === 'inline'
+    ? { position: 'relative' }
+    : {
+        position: 'absolute',
+        ...(placement === 'top-right'
+          ? { top: metrics.inset, right: metrics.inset }
+          : { left: metrics.inset, bottom: metrics.inset }),
+      }
+
   return {
-    position: 'absolute',
-    ...(placement === 'top-right'
-      ? { top: metrics.inset, right: metrics.inset }
-      : { left: metrics.inset, bottom: metrics.inset }),
+    ...positioning,
     width: metrics.button,
     height: metrics.button,
     borderRadius: brand.radius.circle,
@@ -88,6 +100,7 @@ export default function WatchStateControl({
   size = 'md',
   tone = 'light',
   placement = 'bottom-left',
+  layout = 'overlay',
 }: WatchStateControlProps) {
   const session = useCollectionSession()
   const buttonRef = useRef<HTMLButtonElement | null>(null)
@@ -389,7 +402,7 @@ export default function WatchStateControl({
         ref={buttonRef}
         type="button"
         onClick={toggleOpen}
-        style={getButtonStyle({ size, tone, state: currentState, placement })}
+        style={getButtonStyle({ size, tone, state: currentState, placement, layout })}
         aria-label={currentState ? `${getStateLabel(currentState)} saved state` : 'Save watch state'}
         title={currentState ? getStateLabel(currentState) : 'Follow'}
       >

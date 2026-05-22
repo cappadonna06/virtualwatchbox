@@ -1,11 +1,16 @@
 'use client'
 
+import Link from 'next/link'
+import type { CSSProperties } from 'react'
 import type { CatalogWatch } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import type { UpgradeSuggestion } from '@/lib/discover'
 import { buildChrono24URL, upgradeDeltaFor } from '@/lib/discover'
+import { logDiscoverEvent } from '@/lib/discoverAnalytics'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
+import WatchStateControl from '@/components/collection/WatchStateControl'
 import EditorialHeader from './EditorialHeader'
+import RefreshButton from './RefreshButton'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -34,17 +39,22 @@ export default function UpgradeSpread({ suggestions }: { suggestions: UpgradeSug
           gap: 16,
         }}
       >
-        {suggestions.map((s) => (
-          <UpgradeCard key={`${s.ownedWatch.id}-${s.upgradeWatch.id}`} suggestion={s} />
+        {suggestions.map((s, i) => (
+          <UpgradeCard
+            key={`${s.ownedWatch.id}-${s.upgradeWatch.id}`}
+            suggestion={s}
+            slotIndex={i}
+          />
         ))}
       </div>
     </section>
   )
 }
 
-function UpgradeCard({ suggestion }: { suggestion: UpgradeSuggestion }) {
+function UpgradeCard({ suggestion, slotIndex }: { suggestion: UpgradeSuggestion; slotIndex: number }) {
   const { ownedWatch: from, upgradeWatch: to, balanceNote } = suggestion
   const delta = upgradeDeltaFor(from, to)
+  const seedKey = `upgrade::${from.id}`
 
   return (
     <article
@@ -72,6 +82,10 @@ function UpgradeCard({ suggestion }: { suggestion: UpgradeSuggestion }) {
           modelItalic={false}
           imageShadow="drop-shadow(0 16px 28px rgba(26,20,16,0.22))"
           showHalo={false}
+          href={`/collection/watch/${from.id}?from=discover`}
+          onNavigate={() => logDiscoverEvent({
+            eventType: 'click', section: 'upgrade', seedKey, catalogWatchId: from.id, slotIndex,
+          })}
         />
 
         <div
@@ -120,6 +134,10 @@ function UpgradeCard({ suggestion }: { suggestion: UpgradeSuggestion }) {
           modelItalic
           imageShadow="drop-shadow(0 20px 32px rgba(26,20,16,0.26))"
           showHalo
+          href={`/collection/add/${to.id}?from=discover`}
+          onNavigate={() => logDiscoverEvent({
+            eventType: 'click', section: 'upgrade', seedKey, catalogWatchId: to.id, slotIndex,
+          })}
         />
       </div>
 
@@ -153,23 +171,20 @@ function UpgradeCard({ suggestion }: { suggestion: UpgradeSuggestion }) {
         >
           {from.brand} → {to.brand}
         </div>
-        <div style={{ display: 'flex', gap: 18 }}>
-          <span
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 10.5,
-              fontWeight: 500,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: brand.colors.mutedDark,
-            }}
-          >
-            Set as target
-          </span>
+        <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
+          <WatchStateControl
+            catalogWatchId={to.id}
+            source="discover_upgrade"
+            size="sm"
+            layout="inline"
+          />
           <a
             href={buildChrono24URL(to.brand, to.model)}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => logDiscoverEvent({
+              eventType: 'market_click', section: 'upgrade', seedKey, catalogWatchId: to.id, slotIndex,
+            })}
             style={{
               fontFamily: brand.font.sans,
               fontSize: 10.5,
@@ -182,6 +197,7 @@ function UpgradeCard({ suggestion }: { suggestion: UpgradeSuggestion }) {
           >
             Find on market ↗
           </a>
+          <RefreshButton section="upgrade" seedKey={seedKey} />
         </div>
       </div>
     </article>
@@ -195,6 +211,8 @@ function UpgradeSide({
   modelItalic,
   imageShadow,
   showHalo,
+  href,
+  onNavigate,
 }: {
   watch: CatalogWatch
   kicker: string
@@ -202,90 +220,101 @@ function UpgradeSide({
   modelItalic: boolean
   imageShadow: string
   showHalo: boolean
+  href: string
+  onNavigate: () => void
 }) {
+  const linkStyle: CSSProperties = {
+    display: 'block',
+    color: 'inherit',
+    textDecoration: 'none',
+    cursor: 'pointer',
+  }
+
   return (
-    <div style={{ textAlign: 'center', position: 'relative' }}>
-      <div
-        className="discover-upgrade-image-well"
-        style={{
-          width: '100%',
-          height: 300,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '8px 0',
-          position: 'relative',
-        }}
-      >
-        {showHalo && (
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: 320,
-              height: 320,
-              background:
-                'radial-gradient(ellipse at center, rgba(201,168,76,0.28) 0%, rgba(201,168,76,0.12) 40%, rgba(201,168,76,0) 72%)',
-              pointerEvents: 'none',
-            }}
-          />
-        )}
+    <Link href={href} style={linkStyle} onClick={onNavigate}>
+      <div style={{ textAlign: 'center', position: 'relative' }}>
         <div
+          className="discover-upgrade-image-well"
           style={{
+            width: '100%',
+            height: 300,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '8px 0',
             position: 'relative',
-            width: 260,
-            height: 260,
-            zIndex: 1,
           }}
         >
-          <WatchImageOrDial
-            watch={watch}
-            fill
-            sizes="260px"
-            imageStyle={{ objectFit: 'contain', filter: imageShadow }}
-            dialSize={180}
-          />
+          {showHalo && (
+            <div
+              aria-hidden
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 320,
+                height: 320,
+                background:
+                  'radial-gradient(ellipse at center, rgba(201,168,76,0.28) 0%, rgba(201,168,76,0.12) 40%, rgba(201,168,76,0) 72%)',
+                pointerEvents: 'none',
+              }}
+            />
+          )}
+          <div
+            style={{
+              position: 'relative',
+              width: 260,
+              height: 260,
+              zIndex: 1,
+            }}
+          >
+            <WatchImageOrDial
+              watch={watch}
+              fill
+              sizes="260px"
+              imageStyle={{ objectFit: 'contain', filter: imageShadow }}
+              dialSize={180}
+            />
+          </div>
+        </div>
+        <div
+          style={{
+            fontFamily: brand.font.sans,
+            fontSize: 10,
+            fontWeight: 600,
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            color: kickerColor,
+            marginBottom: 6,
+          }}
+        >
+          {kicker}
+        </div>
+        <div
+          style={{
+            fontFamily: brand.font.serif,
+            fontSize: 21,
+            fontStyle: modelItalic ? 'italic' : 'normal',
+            lineHeight: 1.1,
+            color: brand.colors.ink,
+          }}
+        >
+          {watch.model}
+        </div>
+        <div
+          style={{
+            fontFamily: brand.font.sans,
+            fontSize: 11.5,
+            color: brand.colors.muted,
+            marginTop: 4,
+            letterSpacing: '0.04em',
+          }}
+        >
+          {fmt(watch.estimatedValue)} · {watch.caseSizeMm} mm
         </div>
       </div>
-      <div
-        style={{
-          fontFamily: brand.font.sans,
-          fontSize: 10,
-          fontWeight: 600,
-          letterSpacing: '0.18em',
-          textTransform: 'uppercase',
-          color: kickerColor,
-          marginBottom: 6,
-        }}
-      >
-        {kicker}
-      </div>
-      <div
-        style={{
-          fontFamily: brand.font.serif,
-          fontSize: 21,
-          fontStyle: modelItalic ? 'italic' : 'normal',
-          lineHeight: 1.1,
-          color: brand.colors.ink,
-        }}
-      >
-        {watch.model}
-      </div>
-      <div
-        style={{
-          fontFamily: brand.font.sans,
-          fontSize: 11.5,
-          color: brand.colors.muted,
-          marginTop: 4,
-          letterSpacing: '0.04em',
-        }}
-      >
-        {fmt(watch.estimatedValue)} · {watch.caseSizeMm} mm
-      </div>
-    </div>
+    </Link>
   )
 }
 

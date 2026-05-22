@@ -221,26 +221,34 @@ export default function AddWatchConfirmPage() {
 
   return (
     <div style={{ padding: isCompact ? '28px 20px 72px' : '36px 56px 80px', borderTop: `1px solid ${brand.colors.border}` }}>
-      <button
-        onClick={() => router.back()}
-        style={{
-          background: 'none',
-          border: 'none',
-          padding: 0,
-          marginBottom: 28,
-          cursor: 'pointer',
-          color: '#A89880',
-          fontFamily: 'var(--font-dm-sans)',
-          fontSize: 11,
-          letterSpacing: '0.08em',
-          textTransform: 'uppercase',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-        }}
-      >
-        ← Back to search
-      </button>
+      {(() => {
+        const fromParam = searchParams.get('from')
+        const isFromDiscover = fromParam === 'discover'
+        const label = isFromDiscover ? '← Back to Discover' : '← Back to search'
+        const onClick = isFromDiscover ? () => router.push('/discover') : () => router.back()
+        return (
+          <button
+            onClick={onClick}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              marginBottom: 28,
+              cursor: 'pointer',
+              color: '#A89880',
+              fontFamily: 'var(--font-dm-sans)',
+              fontSize: 11,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+            }}
+          >
+            {label}
+          </button>
+        )
+      })()}
 
       <div style={{ maxWidth: 1280, margin: '0 auto' }}>
         <div

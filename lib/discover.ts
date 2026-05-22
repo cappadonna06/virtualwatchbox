@@ -189,11 +189,20 @@ function passesImage(watch: CatalogWatch, hasImage?: (w: CatalogWatch) => boolea
   return Boolean(watch.imageUrl)
 }
 
+export type BoxInsight = {
+  missingType: WatchType
+  suggestion: CatalogWatch
+  suggestionPool: CatalogWatch[]
+  copy: string
+}
+
+const BOX_INSIGHT_POOL_SIZE = 10
+
 export function getBoxInsight(
   collectionWatches: CatalogWatch[],
   allWatches: CatalogWatch[],
   options: SelectionOptions = {},
-): { missingType: WatchType; suggestion: CatalogWatch; copy: string } | null {
+): BoxInsight | null {
   const ownedTypes = new Set(collectionWatches.map(w => w.watchType))
   const anchor = options.priceAnchor ?? collectionPriceAnchor(collectionWatches)
 
@@ -221,13 +230,14 @@ export function getBoxInsight(
     }
 
     if (candidates.length === 0) continue
-    const suggestion = candidates[0]
+    const suggestionPool = candidates.slice(0, BOX_INSIGHT_POOL_SIZE)
+    const suggestion = suggestionPool[0]
     const copies = MISSING_TYPE_COPY[type]
     // Deterministic copy choice keyed off the suggestion id so SSR and
     // hydration agree, but the string still rotates as the suggestion
     // changes (different missing-type, different watch).
     const copy = copies[stringHash(`${type}::${suggestion.id}`) % copies.length]
-    return { missingType: type, suggestion, copy }
+    return { missingType: type, suggestion, suggestionPool, copy }
   }
   return null
 }
@@ -241,6 +251,15 @@ export type UpgradeSuggestion = {
   isTarget: boolean
   isJewel: boolean
 }
+
+export type UpgradeSuggestionPool = {
+  ownedWatch: CatalogWatch
+  upgradePool: CatalogWatch[]
+  headline: string
+}
+
+const UPGRADE_POOL_SIZE = 10
+const MAX_UPGRADE_CARDS = 3
 
 function findHardcodedUpgrade(
   owned: CatalogWatch,
@@ -261,6 +280,26 @@ function findHardcodedUpgrade(
   return null
 }
 
+function findHardcodedUpgradePool(
+  owned: CatalogWatch,
+  ownedIds: Set<string>,
+  watchById: Map<string, CatalogWatch>,
+  hasImage?: (w: CatalogWatch) => boolean,
+): CatalogWatch[] {
+  const chain = UPGRADE_PATHS[owned.id]
+  if (!chain) return []
+  const ownedModelNorm = normalizeModel(owned.model)
+  const out: CatalogWatch[] = []
+  for (const candidateId of chain) {
+    if (ownedIds.has(candidateId)) continue
+    const watch = watchById.get(candidateId)
+    if (!watch || !passesImage(watch, hasImage)) continue
+    if (normalizeModel(watch.model) === ownedModelNorm) continue
+    out.push(watch)
+  }
+  return out
+}
+
 function normalizeModel(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 }
@@ -272,9 +311,20 @@ function findAlgorithmicUpgrade(
   allWatches: CatalogWatch[],
   hasImage?: (w: CatalogWatch) => boolean,
 ): CatalogWatch | null {
+  const pool = findAlgorithmicUpgradePool(owned, ownedIds, collectionWatches, allWatches, hasImage)
+  return pool[0] ?? null
+}
+
+function findAlgorithmicUpgradePool(
+  owned: CatalogWatch,
+  ownedIds: Set<string>,
+  collectionWatches: CatalogWatch[],
+  allWatches: CatalogWatch[],
+  hasImage?: (w: CatalogWatch) => boolean,
+): CatalogWatch[] {
   const ownedTier = BRAND_TIERS[owned.brand] ?? 1
   const sameTypeOwnedCount = collectionWatches.filter(w => w.watchType === owned.watchType).length
-  if (sameTypeOwnedCount > 2) return null
+  if (sameTypeOwnedCount > 2) return []
 
   const ownedModelNorm = normalizeModel(owned.model)
   const ownedBrandLower = owned.brand.toLowerCase()
@@ -293,7 +343,7 @@ function findAlgorithmicUpgrade(
   // Hard cap at 4x — better to show no upgrade card than recommend an 8x stretch
   // ("upgrade your $4K Aqua Terra to a $36K Patek" is not useful advice).
   const pool = allWatches.filter(w => baseFilter(w) && w.estimatedValue >= minVal && w.estimatedValue <= maxVal)
-  if (pool.length === 0) return null
+  if (pool.length === 0) return []
 
   const differentBrand = pool.filter(w => w.brand.toLowerCase() !== ownedBrandLower)
   const tier = differentBrand.length > 0 ? differentBrand : pool
@@ -302,8 +352,8 @@ function findAlgorithmicUpgrade(
   // from the effective distance so popular references break ties.
   const scoreFor = (w: CatalogWatch) =>
     Math.abs(w.estimatedValue - idealTarget) - (w.market?.heatScore ?? 0) * 1500
-  tier.sort((a, b) => scoreFor(a) - scoreFor(b))
-  return tier[0]
+  const ranked = [...tier].sort((a, b) => scoreFor(a) - scoreFor(b))
+  return ranked
 }
 
 export function getUpgradeSuggestions(
@@ -315,29 +365,21 @@ export function getUpgradeSuggestions(
   targetWatchIds: string[],
   options: SelectionOptions = {},
 ): UpgradeSuggestion[] {
-  const ownedIds = new Set(collectionWatches.map(w => w.id))
-  const watchById = new Map(allWatches.map(w => [w.id, w] as const))
+  const pools = getUpgradeSuggestionPools(collectionWatches, allWatches, jewelWatchId, options)
   const targetSet = new Set(targetWatchIds)
   const suggestions: UpgradeSuggestion[] = []
   const usedUpgradeIds = new Set<string>()
 
-  for (const owned of collectionWatches) {
-    if (suggestions.length >= 3) break
-    if (jewelWatchId && owned.id === jewelWatchId) continue
-
-    const upgrade =
-      findHardcodedUpgrade(owned, ownedIds, watchById, options.hasImage)
-      ?? findAlgorithmicUpgrade(owned, ownedIds, collectionWatches, allWatches, options.hasImage)
-
+  for (const pool of pools) {
+    if (suggestions.length >= MAX_UPGRADE_CARDS) break
+    const upgrade = pool.upgradePool.find(w => !usedUpgradeIds.has(w.id))
     if (!upgrade) continue
-    if (usedUpgradeIds.has(upgrade.id)) continue
     usedUpgradeIds.add(upgrade.id)
-
     suggestions.push({
-      ownedWatch: owned,
+      ownedWatch: pool.ownedWatch,
       upgradeWatch: upgrade,
-      headline: `Upgrade your ${owned.watchType}`,
-      balanceNote: getUpgradeRationale(owned.watchType, `${owned.id}->${upgrade.id}`),
+      headline: pool.headline,
+      balanceNote: getUpgradeRationale(pool.ownedWatch.watchType, `${pool.ownedWatch.id}->${upgrade.id}`),
       isGrail: grailWatchId === upgrade.id,
       isTarget: targetSet.has(upgrade.id),
       isJewel: false,
@@ -345,6 +387,142 @@ export function getUpgradeSuggestions(
   }
 
   return suggestions
+}
+
+// Build ranked pools (up to 10 picks per owned watch) so /discover can rotate
+// daily and respond to "Refresh" without losing the per-owned-watch grouping.
+// Pools are returned in collection order; render-time pickers decide which
+// pools to surface and which element to show. Hardcoded chain picks always
+// come first (curated stories), followed by algorithmic matches.
+export function getUpgradeSuggestionPools(
+  collectionWatches: CatalogWatch[],
+  allWatches: CatalogWatch[],
+  jewelWatchId: string | null,
+  options: SelectionOptions = {},
+): UpgradeSuggestionPool[] {
+  const ownedIds = new Set(collectionWatches.map(w => w.id))
+  const watchById = new Map(allWatches.map(w => [w.id, w] as const))
+  const out: UpgradeSuggestionPool[] = []
+
+  for (const owned of collectionWatches) {
+    if (jewelWatchId && owned.id === jewelWatchId) continue
+
+    const hardcoded = findHardcodedUpgradePool(owned, ownedIds, watchById, options.hasImage)
+    const algorithmic = findAlgorithmicUpgradePool(owned, ownedIds, collectionWatches, allWatches, options.hasImage)
+
+    const seen = new Set<string>()
+    const pool: CatalogWatch[] = []
+    for (const w of [...hardcoded, ...algorithmic]) {
+      if (seen.has(w.id)) continue
+      seen.add(w.id)
+      pool.push(w)
+      if (pool.length >= UPGRADE_POOL_SIZE) break
+    }
+    if (pool.length === 0) continue
+
+    out.push({
+      ownedWatch: owned,
+      upgradePool: pool,
+      headline: `Upgrade your ${owned.watchType}`,
+    })
+  }
+
+  return out
+}
+
+export type NextSlotPool = {
+  watchType: WatchType | 'Other'
+  pool: CatalogWatch[]
+}
+
+const NEXT_SLOT_POOL_SIZE = 10
+
+// Like getNextSlotRecommendations but returns the per-type ranked pools that
+// feed the daily rotation + refresh button. Caller picks one watch per type.
+export function getNextSlotPools(
+  collectionWatches: CatalogWatch[],
+  followedWatchIds: string[],
+  allWatches: CatalogWatch[],
+  options: SelectionOptions = {},
+): NextSlotPool[] {
+  const ownedIds = new Set(collectionWatches.map(w => w.id))
+  const ownedModelKeys = new Set(
+    collectionWatches.map(w => `${w.brand.toLowerCase()}::${normalizeModel(w.model)}`),
+  )
+  const followedIds = new Set(followedWatchIds)
+  const anchor = options.priceAnchor ?? collectionPriceAnchor(collectionWatches)
+
+  const typeCounts = new Map<WatchType, number>()
+  for (const w of collectionWatches) {
+    typeCounts.set(w.watchType, (typeCounts.get(w.watchType) ?? 0) + 1)
+  }
+  const minOwnedCount = collectionWatches.length === 0
+    ? 0
+    : Math.min(...Array.from(typeCounts.values()))
+
+  const notOwned = (w: CatalogWatch) =>
+    !ownedIds.has(w.id) &&
+    !ownedModelKeys.has(`${w.brand.toLowerCase()}::${normalizeModel(w.model)}`)
+
+  const eligible = allWatches
+    .filter(notOwned)
+    .filter(w => passesImage(w, options.hasImage))
+    .filter(w => !anchor || (w.estimatedValue >= anchor.floor && w.estimatedValue <= anchor.ceiling))
+
+  const pool = eligible.length > 0
+    ? eligible
+    : allWatches.filter(notOwned).filter(w => passesImage(w, options.hasImage))
+
+  const scored = pool.map(w => {
+    const typeCount = typeCounts.get(w.watchType) ?? 0
+    const underrepBonus = typeCount === 0
+      ? 3
+      : typeCount === minOwnedCount
+        ? 1
+        : 0
+    const followedPenalty = followedIds.has(w.id) ? -1 : 0
+    const tier = BRAND_TIERS[w.brand] ?? 1
+    const priceBonus = anchor
+      ? 2 - Math.min(2, priceScore(w.estimatedValue, anchor) / Math.max(anchor.target, 1))
+      : 0
+    const heatBonus = (w.market?.heatScore ?? 0) * 1.2
+    const jitter = (stringHash(w.id) % 1000) / 5000
+    return {
+      watch: w,
+      score: underrepBonus + followedPenalty + tier * 0.3 + priceBonus + heatBonus + jitter,
+    }
+  })
+
+  scored.sort((a, b) => b.score - a.score)
+
+  const seenModels = new Set<string>()
+  const buckets = new Map<WatchType | 'Other', CatalogWatch[]>()
+  for (const s of scored) {
+    const key = `${s.watch.brand.toLowerCase()}::${normalizeModel(s.watch.model)}`
+    if (seenModels.has(key)) continue
+    seenModels.add(key)
+    const t: WatchType | 'Other' = s.watch.watchType ?? 'Other'
+    const bucket = buckets.get(t) ?? []
+    if (bucket.length < NEXT_SLOT_POOL_SIZE) {
+      bucket.push(s.watch)
+      buckets.set(t, bucket)
+    }
+  }
+
+  // Preserve type-discovery order: pools surface in the order their top-ranked
+  // watch appears in the global sort.
+  const typeOrder: (WatchType | 'Other')[] = []
+  const seenTypes = new Set<WatchType | 'Other'>()
+  for (const s of scored) {
+    const t: WatchType | 'Other' = s.watch.watchType ?? 'Other'
+    if (seenTypes.has(t)) continue
+    seenTypes.add(t)
+    typeOrder.push(t)
+  }
+
+  return typeOrder
+    .map(t => ({ watchType: t, pool: buckets.get(t) ?? [] }))
+    .filter(p => p.pool.length > 0)
 }
 
 export function getNextSlotRecommendations(

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 
 import { brand } from '@/lib/brand'
 import { useCollectionSession } from '../../CollectionSessionProvider'
@@ -16,6 +16,10 @@ const fmt = (n: number) =>
 export default function OwnedWatchDetailPage() {
   const params = useParams<{ id: string }>()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const fromDiscover = searchParams.get('from') === 'discover'
+  const backHref = fromDiscover ? '/discover' : '/collection'
+  const backLabel = fromDiscover ? '← Back to Discover' : '← Back to Collection'
   const {
     collectionWatches,
     updateCollectionWatch,
@@ -49,14 +53,14 @@ export default function OwnedWatchDetailPage() {
           We couldn&apos;t find this watch in your collection.
         </div>
         <Link
-          href="/collection"
+          href={backHref}
           style={{
             fontFamily: brand.font.sans, fontSize: 12,
             color: brand.colors.ink, textDecoration: 'underline',
             textUnderlineOffset: 2,
           }}
         >
-          ← Back to Collection
+          {backLabel}
         </Link>
       </div>
     )
@@ -97,7 +101,7 @@ export default function OwnedWatchDetailPage() {
       borderTop: `1px solid ${brand.colors.border}`,
     }}>
       <Link
-        href="/collection"
+        href={backHref}
         style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -111,7 +115,7 @@ export default function OwnedWatchDetailPage() {
           textDecoration: 'none',
         }}
       >
-        ← Back to Collection
+        {backLabel}
       </Link>
 
       <div style={{ maxWidth: 1280, margin: '0 auto' }}>
