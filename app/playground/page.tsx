@@ -14,8 +14,11 @@ import {
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { watches as catalogWatches } from '@/lib/watches'
 import {
+  buildSlotMap,
   createPlaygroundBox,
+  getEntrySlot,
   importCollectionToPlaygroundBox,
+  moveEntryToSlot,
   normalizePlaygroundBoxes,
   placeWatchInPlaygroundSlot,
   resolvePlaygroundWatches,
@@ -25,7 +28,7 @@ import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import WatchTray from '@/components/playground/WatchTray'
 import { PLAYGROUND_BOXES_STORAGE_KEY } from '@/lib/storageKeys'
-import { getEffectiveSlotCount, getOverflowSummary, getWatchboxOverflow } from '@/lib/watchboxOverflow'
+import { getEffectiveSlotCount, getOverflowSummary } from '@/lib/watchboxOverflow'
 import WatchBox from '@/components/collection/WatchBox'
 import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarSheet'
 import WatchSidebar from '@/components/collection/WatchSidebar'
@@ -161,6 +164,12 @@ function PlaygroundPageInner() {
     () => resolvePlaygroundWatches(activeBox?.entries ?? [], catalogWatches),
     [activeBox],
   )
+  const watchBySlot = useMemo(() => {
+    const slotMap = buildSlotMap(resolvedEntries)
+    const m = new Map<number, ResolvedWatch>()
+    slotMap.forEach((r, slot) => m.set(slot, r.displayWatch))
+    return m
+  }, [resolvedEntries])
   const sortedEntries = useMemo(() => {
     if (sortBy === 'manual') return resolvedEntries
     const sorted = [...resolvedEntries]
@@ -171,15 +180,15 @@ function PlaygroundPageInner() {
   }, [resolvedEntries, sortBy])
   const displayWatches = sortedEntries.map(item => item.displayWatch)
   const selectedItem = sortedEntries.find(item => item.entry.id === selectedEntryId) ?? null
-  const activeSlot = selectedEntryId
-    ? sortedEntries.findIndex(item => item.entry.id === selectedEntryId)
-    : -1
+  const activeSlot = selectedItem ? selectedItem.slot : -1
 
   const sc = SLOT_COUNTS.find(slot => slot.n === (activeBox?.slotCount ?? 6)) ?? SLOT_COUNTS[1]
-  const overflowSummary = getOverflowSummary(
-    sc.n,
-    getWatchboxOverflow(displayWatches, sc.n).overflowCount,
-  )
+  const sparseOverflowCount = useMemo(() => {
+    let n = 0
+    for (const r of resolvedEntries) if (r.slot >= sc.n) n++
+    return n
+  }, [resolvedEntries, sc.n])
+  const overflowSummary = getOverflowSummary(sc.n, sparseOverflowCount)
   const isMobile = screenW > 0 && screenW < 768
   const watchboxContainerW = isMobile ? screenW - 40 : Math.max(200, screenW - 444)
   const watchboxMaxH = isMobile ? 300 : 480
@@ -279,11 +288,15 @@ function PlaygroundPageInner() {
 
   useEffect(() => {
     if (!activeBox) return
-    const effective = getEffectiveSlotCount(activeBox.slotCount, displayWatches.length)
+    // Auto-bump slot count to fit the highest occupied slot — keeps a drop on
+    // slot 7 from being hidden behind the overflow tile when slotCount is 6.
+    let maxSlotPlusOne = 0
+    for (const r of resolvedEntries) maxSlotPlusOne = Math.max(maxSlotPlusOne, r.slot + 1)
+    const effective = getEffectiveSlotCount(activeBox.slotCount, maxSlotPlusOne)
     if (effective !== activeBox.slotCount) {
       updateActiveBox(box => ({ ...box, slotCount: effective }))
     }
-  }, [activeBox, displayWatches.length])
+  }, [activeBox, resolvedEntries])
 
   function startEditing() {
     setEditingNameValue(activeBox?.name ?? '')
@@ -705,28 +718,23 @@ function PlaygroundPageInner() {
                 <WatchboxView
                   box={activeBox}
                   watches={resolvedEntries.map(item => item.displayWatch)}
-                  activeSlot={(() => {
-                    if (!selectedEntryId) return null
-                    const idx = resolvedEntries.findIndex(item => item.entry.id === selectedEntryId)
-                    return idx >= 0 ? idx : null
-                  })()}
-                  onSlotClick={index => {
-                    const item = resolvedEntries[index]
+                  watchBySlot={watchBySlot}
+                  activeSlot={selectedItem ? selectedItem.slot : null}
+                  onSlotClick={slotIndex => {
+                    const item = resolvedEntries.find(r => r.slot === slotIndex)
                     if (!item) return
                     setSelectedEntryId(prev => (prev === item.entry.id ? null : item.entry.id))
                   }}
                   watchboxSlotPx={watchboxSlotPx}
                   watchboxMaxW={watchboxMaxW}
                   screenW={screenW}
-                  onEmptySlotClick={() => router.push(`/collection/add?dest=playground&boxId=${activeBoxId}`)}
+                  onEmptySlotClick={slotIndex => router.push(`/collection/add?dest=playground&boxId=${activeBoxId}&slot=${slotIndex}`)}
                   onFrameChange={value => handleBoxConfigChange('frame', value)}
                   onLiningChange={value => handleBoxConfigChange('lining', value)}
                   onSlotCountChange={value => handleBoxConfigChange('slotCount', value)}
                   overflowSummary={overflowSummary}
-                  onReorder={(from, to) => {
-                    const entries = [...(activeBox?.entries ?? [])]
-                    ;[entries[from], entries[to]] = [entries[to], entries[from]]
-                    reorderBoxEntries(activeBoxId, entries)
+                  onReorder={(fromSlot, toSlot) => {
+                    setBoxes(prev => moveEntryToSlot(prev, activeBoxId, fromSlot, toSlot))
                   }}
                   onExternalDrop={handleExternalDrop}
                   externalHoverIndex={touchHoverSlot}
@@ -1109,17 +1117,18 @@ function DeleteBoxConfirmModal({
 interface WatchboxViewProps {
   box: PlaygroundBox
   watches: ResolvedWatch[]
+  watchBySlot: Map<number, ResolvedWatch>
   activeSlot: number | null
-  onSlotClick: (index: number) => void
+  onSlotClick: (slotIndex: number) => void
   watchboxSlotPx: number | undefined
   watchboxMaxW: number | undefined
   screenW: number
-  onEmptySlotClick: () => void
+  onEmptySlotClick: (slotIndex: number) => void
   onFrameChange: (value: string) => void
   onLiningChange: (value: string) => void
   onSlotCountChange: (value: number) => void
   overflowSummary: string | null
-  onReorder?: (from: number, to: number) => void
+  onReorder?: (fromSlot: number, toSlot: number) => void
   onExternalDrop?: (slotIndex: number, watchId: string) => void
   externalHoverIndex?: number | null
   collectionWatchCount: number
@@ -1129,6 +1138,7 @@ interface WatchboxViewProps {
 function WatchboxView({
   box,
   watches,
+  watchBySlot,
   activeSlot,
   onSlotClick,
   watchboxSlotPx,
@@ -1277,6 +1287,7 @@ function WatchboxView({
         )}
         <WatchBox
           watches={watches}
+          watchBySlot={watchBySlot}
           activeSlot={activeSlot}
           onSlotClick={onSlotClick}
           onEmptySlotClick={onEmptySlotClick}

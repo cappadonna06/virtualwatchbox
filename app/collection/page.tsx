@@ -49,7 +49,7 @@ export default function CollectionPage() {
     setSelectedWatchId,
     removeFromCollection,
     updateCollectionWatch,
-    reorderCollectionWatches,
+    swapCollectionSlots,
     showToast,
     watchboxPhotoUrl,
     watchboxPhotoCrop,
@@ -98,10 +98,8 @@ export default function CollectionPage() {
     setSelectedWatchId(selectedWatchId === watch.id ? null : watch.id)
   }
 
-  function handleReorder(from: number, to: number) {
-    const next = [...collectionWatches]
-    ;[next[from], next[to]] = [next[to], next[from]]
-    reorderCollectionWatches(next)
+  function handleReorder(fromSlot: number, toSlot: number) {
+    swapCollectionSlots(fromSlot, toSlot)
   }
 
   function handleDeleteWatch() {
@@ -237,7 +235,7 @@ export default function CollectionPage() {
             <SyncRibbon />
             <CollectionWatchboxSurface
               watches={collectionWatches}
-              onEmptySlotClick={() => router.push('/collection/add')}
+              onEmptySlotClick={slot => router.push(`/collection/add?slot=${slot}`)}
               onReorder={handleReorder}
             />
             {collectionWatches.length === 0 ? (

@@ -161,6 +161,12 @@ export interface OwnedWatch {
   purchasePrice: number
   notes: string
   ownershipStatus: OwnershipStatus
+  /**
+   * Sparse slot index for the user's watchbox; mirrors the `sort_order`
+   * column in `public.watches`. May leave gaps (e.g. one watch at slot 0
+   * and another at slot 5).
+   */
+  slot: number
   // Legacy single-photo field — kept for transition compatibility.
   // New writes go to user_watch_photos; reads prefer the primary photo from
   // there and fall back to this field when present.
@@ -231,6 +237,8 @@ export interface ResolvedOwnedWatch extends ResolvedWatch {
   purchaseDate: string
   purchasePrice: number
   ownershipStatus: OwnershipStatus
+  /** Sparse slot index; derived from watches.sort_order. */
+  slot: number
 }
 
 export type PlaygroundWatchOverrides = Partial<Pick<
@@ -249,6 +257,13 @@ export type PlaygroundWatchOverrides = Partial<Pick<
 export type PlaygroundBoxEntry = {
   id: string
   watchId: string
+  /**
+   * Sparse slot index this entry occupies in its parent box. Legacy entries
+   * predating sparse-slot support omit this field — `normalizePlaygroundBoxes`
+   * backfills it to the entry's array position so existing data renders
+   * unchanged.
+   */
+  slot?: number
   overrides?: PlaygroundWatchOverrides
 }
 

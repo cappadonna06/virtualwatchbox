@@ -14,11 +14,18 @@ interface Props {
   watches: ResolvedWatch[]
   activeSlot: number | null
   onSlotClick: (i: number) => void
-  onEmptySlotClick?: () => void
+  onEmptySlotClick?: (slotIndex: number) => void
   onReorder?: (from: number, to: number) => void
   onExternalDrop?: (slotIndex: number, watchId: string) => void
   /** Controlled hover index used by touch-driven external drags (HTML5 dragover doesn't fire for pointer events). */
   externalHoverIndex?: number | null
+  /**
+   * When provided, slot N renders watchBySlot.get(N). This is the sparse-slot
+   * path — gaps between filled slots are preserved. When omitted, the legacy
+   * dense rendering uses `watches[i]` directly. Either source still feeds the
+   * overflow tally via `watches`.
+   */
+  watchBySlot?: Map<number, ResolvedWatch>
   frame: string
   lining: string
   slotCount: number
@@ -161,6 +168,7 @@ export default function WatchBox({
   onReorder,
   onExternalDrop,
   externalHoverIndex,
+  watchBySlot,
   frame,
   lining,
   slotCount,
@@ -170,6 +178,7 @@ export default function WatchBox({
   jewelWatchIds,
   showFirstSlotLabel = false,
 }: Props) {
+  const isSparse = watchBySlot !== undefined
   const { isWatchJewel } = useCollectionSession()
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null)
   const [overflowOpen, setOverflowOpen] = useState(false)
@@ -211,7 +220,31 @@ export default function WatchBox({
   const ln = LININGS.find(l => l.id === lining) ?? LININGS[0]
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
   const publicJewelSet = useMemo(() => new Set(jewelWatchIds ?? []), [jewelWatchIds])
-  const overflow = useMemo(() => getWatchboxOverflow(watches, sc.n), [watches, sc.n])
+
+  // Overflow semantics:
+  // - Dense: any entries past slotCount-1 are hidden behind the overflow tile.
+  // - Sparse: any entry whose slot index >= slotCount is overflow. When that
+  //   happens we also reserve the last visible slot for the indicator, so a
+  //   watch claiming slot (slotCount-1) gets bumped into hidden too.
+  const sparseOverflow = useMemo(() => {
+    if (!isSparse || !watchBySlot) return null
+    const entries = Array.from(watchBySlot.entries()).sort((a, b) => a[0] - b[0])
+    const hasOverflow = entries.some(([slot]) => slot >= sc.n)
+    const visibleSlots = hasOverflow ? Math.max(sc.n - 1, 0) : sc.n
+    const hiddenItems = entries
+      .filter(([slot]) => slot >= visibleSlots)
+      .map(([slot, w]) => ({ item: w, index: slot }))
+    return { hasOverflow, visibleSlots, hiddenItems, overflowCount: hiddenItems.length }
+  }, [isSparse, watchBySlot, sc.n])
+
+  const overflow = useMemo(
+    () => sparseOverflow ?? getWatchboxOverflow(watches, sc.n),
+    [sparseOverflow, watches, sc.n],
+  )
+  const denseVisibleItems = useMemo(
+    () => sparseOverflow ? [] : getWatchboxOverflow(watches, sc.n).visibleItems,
+    [sparseOverflow, watches, sc.n],
+  )
   const useHighContrastSlotText = isDarkColor(ln.slotBg) || isDarkColor(ln.color)
   const slotMetaColor = useHighContrastSlotText ? 'rgba(201,168,76,0.52)' : 'rgba(80,60,40,0.3)'
   const emptyPrimaryColor = useHighContrastSlotText ? brand.colors.gold : ln.emptyColor
@@ -228,22 +261,24 @@ export default function WatchBox({
     && dragOverIndex !== null
     && draggedIndex !== dragOverIndex
 
-  const previewVisibleItems = useMemo(() => {
-    if (!inPreview) return overflow.visibleItems
-    const arr = [...overflow.visibleItems]
-    ;[arr[draggedIndex!], arr[dragOverIndex!]] = [arr[dragOverIndex!], arr[draggedIndex!]]
-    return arr
-  }, [inPreview, draggedIndex, dragOverIndex, overflow.visibleItems])
+  function watchAtSlot(slotIndex: number): ResolvedWatch | null {
+    if (isSparse) return watchBySlot?.get(slotIndex) ?? null
+    return denseVisibleItems[slotIndex] ?? null
+  }
 
   const slots = Array.from({ length: sc.n }, (_, i) => {
     if (overflow.hasOverflow && i === sc.n - 1) {
       return { type: 'overflow' as const }
     }
-    const watch = previewVisibleItems[i] ?? null
+    // Drag preview swaps watch-at-slot-from with watch-at-slot-to visually.
+    let watch: ResolvedWatch | null
+    if (inPreview && i === draggedIndex) watch = watchAtSlot(dragOverIndex!)
+    else if (inPreview && i === dragOverIndex) watch = watchAtSlot(draggedIndex!)
+    else watch = watchAtSlot(i)
     return watch ? { type: 'watch' as const, watch, originalIndex: i } : { type: 'empty' as const }
   })
 
-  const overflowSlotActive = overflow.hasOverflow && activeSlot !== null && activeSlot >= overflow.visibleItems.length
+  const overflowSlotActive = overflow.hasOverflow && activeSlot !== null && activeSlot >= overflow.visibleSlots
   return (
     <>
       {overflowOpen && (
@@ -318,7 +353,7 @@ export default function WatchBox({
                     } : undefined}
                   >
                     <div
-                      onClick={readonly ? undefined : onEmptySlotClick}
+                      onClick={readonly ? undefined : (onEmptySlotClick ? () => onEmptySlotClick(i) : undefined)}
                       style={{
                         width: '100%',
                         height: '100%',

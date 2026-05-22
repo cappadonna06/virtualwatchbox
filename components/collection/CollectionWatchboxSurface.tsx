@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
-import { getOverflowSummary, getWatchboxOverflow } from '@/lib/watchboxOverflow'
+import { getOverflowSummary } from '@/lib/watchboxOverflow'
 import type { ResolvedOwnedWatch } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
@@ -284,7 +284,7 @@ function WatchboxConfigControls({
 
 interface CollectionWatchboxSurfaceProps {
   watches: ResolvedOwnedWatch[]
-  onEmptySlotClick: () => void
+  onEmptySlotClick: (slotIndex: number) => void
   onReorder?: (from: number, to: number) => void
   topToolbar?: ReactNode
 }
@@ -340,15 +340,23 @@ export default function CollectionWatchboxSurface({
     return () => window.removeEventListener('resize', updateWidth)
   }, [])
 
-  const activeSlot = selectedWatchId ? watches.findIndex(watch => watch.id === selectedWatchId) : -1
-  const activeWatch = activeSlot >= 0 ? watches[activeSlot] : null
+  const watchBySlot = useMemo(() => {
+    const map = new Map<number, ResolvedOwnedWatch>()
+    for (const w of watches) map.set(w.slot, w)
+    return map
+  }, [watches])
+  const selectedWatch = selectedWatchId ? watches.find(w => w.id === selectedWatchId) : null
+  const activeSlot = selectedWatch ? selectedWatch.slot : -1
+  const activeWatch = selectedWatch ?? null
   const frame = FRAMES.find(item => item.id === watchboxConfig.frame) ?? FRAMES[0]
   const lining = LININGS.find(item => item.id === watchboxConfig.lining) ?? LININGS[0]
   const slotConfig = SLOT_COUNTS.find(item => item.n === watchboxConfig.slotCount) ?? SLOT_COUNTS[1]
-  const overflowSummary = getOverflowSummary(
-    slotConfig.n,
-    getWatchboxOverflow(watches, slotConfig.n).overflowCount,
-  )
+  const overflowCount = useMemo(() => {
+    let n = 0
+    for (const [slot] of watchBySlot) if (slot >= slotConfig.n) n++
+    return n
+  }, [watchBySlot, slotConfig.n])
+  const overflowSummary = getOverflowSummary(slotConfig.n, overflowCount)
 
   const isMobile = screenWidth > 0 && screenWidth < 768
   const watchboxContainerWidth = isMobile ? screenWidth - 40 : Math.max(200, screenWidth - 444)
@@ -383,8 +391,8 @@ export default function CollectionWatchboxSurface({
     )
   }, [screenWidth, slotConfig.cols])
 
-  function handleSlotClick(index: number) {
-    const watch = watches[index]
+  function handleSlotClick(slotIndex: number) {
+    const watch = watchBySlot.get(slotIndex)
     if (!watch) return
     setSelectedWatchId(selectedWatchId === watch.id ? null : watch.id)
   }
@@ -512,6 +520,7 @@ export default function CollectionWatchboxSurface({
 
             <WatchBox
               watches={watches}
+              watchBySlot={watchBySlot}
               activeSlot={activeSlot >= 0 ? activeSlot : null}
               onSlotClick={handleSlotClick}
               onEmptySlotClick={onEmptySlotClick}
