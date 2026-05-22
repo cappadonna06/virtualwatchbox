@@ -9,12 +9,15 @@ type GhostDragOptions = {
   ghostHeight?: number
   watchId: string
   targetSelector: string
+  /** Extra px of forgiveness added to every slot rect when hit-testing the touch ghost. */
+  hitPadding?: number
   onHover?: (slotIndex: number | null) => void
   onDrop: (slotIndex: number | null, watchId: string) => void
 }
 
 export function startGhostDrag(options: GhostDragOptions): () => void {
   const { sourceEl, clientX, clientY, watchId, targetSelector, onHover, onDrop } = options
+  const pad = options.hitPadding ?? 12
 
   const w = options.ghostWidth ?? sourceEl.offsetWidth
   const h = options.ghostHeight ?? sourceEl.offsetHeight
@@ -26,10 +29,22 @@ export function startGhostDrag(options: GhostDragOptions): () => void {
   ;(window as unknown as Record<string, string>)[PLAYGROUND_DRAG_PAYLOAD_KEY] = watchId
 
   function hitTest(x: number, y: number): number | null {
-    const hit = rects.find(({ rect }) =>
-      x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom,
-    )
-    return hit ? hit.index : null
+    // Score each rect by inset distance: pick whichever rect (within padding)
+    // the pointer is most inside of. Ties broken by first appearance.
+    let bestIndex: number | null = null
+    let bestScore = -Infinity
+    for (const { rect, index } of rects) {
+      if (x < rect.left - pad || x > rect.right + pad) continue
+      if (y < rect.top - pad || y > rect.bottom + pad) continue
+      const dx = Math.min(x - rect.left, rect.right - x)
+      const dy = Math.min(y - rect.top, rect.bottom - y)
+      const score = Math.min(dx, dy)
+      if (score > bestScore) {
+        bestScore = score
+        bestIndex = index
+      }
+    }
+    return bestIndex
   }
 
   function onMove(ev: PointerEvent) {

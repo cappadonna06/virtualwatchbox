@@ -184,6 +184,7 @@ export default function WatchTray({
   }
 
   return (
+    <>
     <div
       style={{
         position: 'relative',
@@ -221,18 +222,6 @@ export default function WatchTray({
           />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: brand.colors.muted,
-            }}
-          >
-            {isTouchDevice ? 'Hold to drag · swipe to scroll' : 'Drag onto a slot'}
-          </span>
           <button
             onClick={() => setCollapsed(v => !v)}
             aria-label={collapsed ? 'Expand tray' : 'Collapse tray'}
@@ -380,26 +369,27 @@ export default function WatchTray({
         </div>
       )}
 
-      {isTouchDevice && hoverSlot !== null && !collapsed && (
-        <div
-          aria-hidden="true"
-          style={{
-            position: 'absolute',
-            top: 6,
-            right: 44,
-            fontFamily: brand.font.sans,
-            fontSize: 9,
-            fontWeight: 600,
-            letterSpacing: '0.1em',
-            color: brand.colors.gold,
-            textTransform: 'uppercase',
-            pointerEvents: 'none',
-          }}
-        >
-          Slot {String(hoverSlot + 1).padStart(2, '0')}
-        </div>
-      )}
     </div>
+    {!collapsed && (
+      <div
+        style={{
+          marginTop: 6,
+          textAlign: 'center',
+          fontFamily: brand.font.sans,
+          fontSize: 9.5,
+          color: brand.colors.borderLight,
+          letterSpacing: '0.06em',
+          pointerEvents: 'none',
+        }}
+      >
+        {isTouchDevice
+          ? (hoverSlot !== null
+              ? `Drop into slot ${String(hoverSlot + 1).padStart(2, '0')}`
+              : 'Hold to drag')
+          : 'Drag onto a slot'}
+      </div>
+    )}
+  </>
   )
 }
 

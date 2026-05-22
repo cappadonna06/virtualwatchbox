@@ -328,15 +328,16 @@ export default function WatchBox({
                         alignItems: 'center',
                         justifyContent: 'center',
                         cursor: readonly ? 'default' : 'pointer',
-                        opacity: useHighContrastSlotText ? 0.88 : 0.55,
-                        background: ln.slotBg,
+                        opacity: useHighContrastSlotText ? 0.88 : isExternalHover ? 1 : 0.55,
+                        background: isExternalHover ? 'rgba(201,168,76,0.10)' : ln.slotBg,
                         border: isExternalHover
-                          ? '1.5px dashed rgba(201,168,76,0.85)'
+                          ? '2px dashed rgba(201,168,76,0.95)'
                           : '1.5px solid transparent',
                         boxShadow: isExternalHover
-                          ? '0 0 0 1px rgba(201,168,76,0.35), 0 3px 14px rgba(201,168,76,0.18)'
+                          ? 'inset 0 0 0 2px rgba(255,252,247,0.4), 0 0 0 2px rgba(201,168,76,0.55), 0 6px 22px rgba(201,168,76,0.28)'
                           : undefined,
-                        transition: 'border-color 0.18s, box-shadow 0.18s',
+                        transform: isExternalHover ? 'scale(1.04)' : 'scale(1)',
+                        transition: 'border-color 0.18s, box-shadow 0.18s, background 0.18s, transform 0.18s, opacity 0.18s',
                       }}
                     >
                       {readonly ? (
@@ -673,15 +674,20 @@ export default function WatchBox({
                       position: 'relative',
                       background: ln.slotBg,
                       cursor: 'pointer',
-                      border: (isActive || isDragTarget || isDestInPreview || isExternalDragTarget)
+                      border: isExternalDragTarget
+                        ? '2px solid rgba(201,168,76,0.95)'
+                        : (isActive || isDragTarget || isDestInPreview)
                         ? '1.5px solid rgba(201,168,76,0.8)'
                         : isSourceInPreview
                         ? '1.5px dashed rgba(201,168,76,0.6)'
                         : '1.5px solid transparent',
-                      boxShadow: (isActive || isDragTarget || isDestInPreview || isExternalDragTarget)
+                      boxShadow: isExternalDragTarget
+                        ? 'inset 0 1px 4px rgba(0,0,0,0.12), 0 0 0 2px rgba(201,168,76,0.55), 0 6px 22px rgba(201,168,76,0.28)'
+                        : (isActive || isDragTarget || isDestInPreview)
                         ? 'inset 0 1px 4px rgba(0,0,0,0.12), 0 0 0 1px rgba(201,168,76,0.4), 0 3px 14px rgba(201,168,76,0.16)'
                         : 'inset 0 1px 4px rgba(0,0,0,0.12)',
-                      transition: 'border-color 0.2s, box-shadow 0.2s',
+                      transform: isExternalDragTarget ? 'scale(1.04)' : 'scale(1)',
+                      transition: 'border-color 0.2s, box-shadow 0.2s, transform 0.2s',
                     }}
                   >
                     <span
