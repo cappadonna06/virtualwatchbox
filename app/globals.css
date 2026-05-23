@@ -345,7 +345,7 @@ body {
   .hero-action  { width: 100% !important; }
 
   /* Collection */
-  .collection-section { padding: 36px 20px 40px !important; }
+  .collection-section { padding: 28px 0 40px !important; }
   .collection-grid    { grid-template-columns: 1fr !important; }
   .collection-toolbar-row { padding-right: 0 !important; }
   .box-configurator   { flex-wrap: wrap !important; gap: 20px !important; }

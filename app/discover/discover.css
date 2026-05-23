@@ -8,9 +8,10 @@
   .discover-masthead { display: none !important; }
   .discover-hero-h1 { font-size: 44px !important; }
 
-  /* Dark section nav on mobile — sits between dark hero and dark lead */
+  /* Dark section nav on mobile — sits between dark hero and dark lead.
+     Navbar is ~80px on mobile (18px pad + 44px buttons + 18px pad). */
   .discover-section-nav {
-    top: 56px !important;
+    top: 80px !important;
     background: rgba(30, 27, 22, 0.94) !important;
     border-bottom-color: rgba(250, 248, 244, 0.12) !important;
   }

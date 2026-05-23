@@ -79,7 +79,7 @@ export default function HeroMasthead({ personalized, bylineRight, bylineLeft, in
         </div>
       </div>
 
-      {/* Mobile: compact dark hero banner */}
+      {/* Mobile: dark hero matching collection-page header pattern */}
       <div
         className="discover-mobile-hero"
         style={{
@@ -87,29 +87,32 @@ export default function HeroMasthead({ personalized, bylineRight, bylineLeft, in
           background: '#1e1b16',
         }}
       >
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '24px 18px 20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-            <Kicker color={brand.colors.gold} size={9.5}>Discover</Kicker>
-            <Kicker color="rgba(250,248,244,0.45)" size={9}>{bylineRight}</Kicker>
-          </div>
-          <p
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '24px 16px 20px' }}>
+          <h1
             style={{
               fontFamily: brand.font.serif,
-              fontStyle: 'italic',
-              fontWeight: 300,
-              fontSize: 15,
-              lineHeight: 1.45,
-              color: 'rgba(250,248,244,0.65)',
+              fontSize: 48,
+              fontWeight: 400,
+              lineHeight: 1.08,
+              color: brand.colors.slot,
               margin: 0,
-              textWrap: 'pretty',
+            }}
+          >
+            Discover
+          </h1>
+          <p
+            style={{
+              fontFamily: brand.font.sans,
+              fontSize: 14,
+              color: 'rgba(250,248,244,0.55)',
+              margin: '6px 0 0',
+              letterSpacing: '0.02em',
             }}
           >
             {personalized ? (
-              <>
-                Your collection reads <em style={{ fontStyle: 'italic' }}>{insightRead.toLowerCase()}</em>. Shaped around what it&rsquo;s missing.
-              </>
+              <>Recommendations shaped around your collection.</>
             ) : (
-              <>Recommendations, upgrades, and reads for any thoughtful collector.</>
+              <>Recommendations for any thoughtful collector.</>
             )}
           </p>
         </div>

@@ -136,7 +136,7 @@ export default function CollectionPage() {
       className="collection-section"
       style={{ padding: '0 0 120px', borderTop: `1px solid ${brand.colors.border}` }}
     >
-      <div style={{ padding: isMobile ? '28px 20px 0' : '56px 56px 0' }}>
+      <div style={{ padding: isMobile ? '24px 16px 0' : '56px 56px 0' }}>
         {isMobile ? (
           <WatchboxHeader
             title="My Collection"
@@ -234,7 +234,7 @@ export default function CollectionPage() {
         )}
       </div>
 
-      <div style={{ padding: `0 ${isMobile ? 20 : 56}px` }}>
+      <div style={{ padding: `0 ${isMobile ? 10 : 56}px` }}>
         {activeView === 'watchbox' ? (
           <>
             <SyncRibbon />
