@@ -12,13 +12,11 @@ import { brand } from '@/lib/brand'
 export default function CollectionSection() {
   const router = useRouter()
   const isMobile = useIsMobile()
-  const { collectionWatches, reorderCollectionWatches } = useCollectionSession()
+  const { collectionWatches, swapCollectionSlots } = useCollectionSession()
   const isEmpty = collectionWatches.length === 0
 
-  function handleReorder(from: number, to: number) {
-    const next = [...collectionWatches]
-    ;[next[from], next[to]] = [next[to], next[from]]
-    reorderCollectionWatches(next)
+  function handleReorder(fromSlot: number, toSlot: number) {
+    swapCollectionSlots(fromSlot, toSlot)
   }
 
   return (
@@ -67,7 +65,7 @@ export default function CollectionSection() {
           <SyncRibbon />
           <CollectionWatchboxSurface
             watches={collectionWatches}
-            onEmptySlotClick={() => router.push('/collection/add')}
+            onEmptySlotClick={slot => router.push(`/collection/add?slot=${slot}`)}
             onReorder={handleReorder}
           />
         </>

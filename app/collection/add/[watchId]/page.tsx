@@ -82,6 +82,8 @@ export default function AddWatchConfirmPage() {
   const dest = searchParams.get('dest')
   const source = searchParams.get('source')
   const incomingBoxId = searchParams.get('boxId')
+  const slotParam = searchParams.get('slot')
+  const targetSlot = slotParam !== null && Number.isFinite(Number(slotParam)) ? Number(slotParam) : undefined
   const isPlaygroundContext = dest === 'playground'
 
   const [choice, setChoice] = useState<OwnershipChoice>(isPlaygroundContext ? 'playground' : 'owned')
@@ -160,7 +162,7 @@ export default function AddWatchConfirmPage() {
   function handleAddToPlayground() {
     if (!selectedBoxId) return
     const boxes = loadPlaygroundBoxes()
-    const updated = addWatchToPlaygroundBox(boxes, selectedBoxId, resolvedWatch.id)
+    const updated = addWatchToPlaygroundBox(boxes, selectedBoxId, resolvedWatch.id, targetSlot)
     persistPlaygroundBoxes(updated, resolvedWatch.id)
     router.push(`/playground?boxId=${selectedBoxId}`)
   }
@@ -170,7 +172,7 @@ export default function AddWatchConfirmPage() {
     const boxes = loadPlaygroundBoxes()
     const newBox: PlaygroundBox = createPlaygroundBox({
       name: newBoxName.trim(),
-      entries: [createPlaygroundEntry(resolvedWatch.id)],
+      entries: [createPlaygroundEntry(resolvedWatch.id, undefined, undefined, targetSlot ?? 0)],
     })
     const updated = [...boxes, newBox]
     persistPlaygroundBoxes(updated, resolvedWatch.id)
@@ -201,7 +203,7 @@ export default function AddWatchConfirmPage() {
       date: purchaseDate || undefined,
       notes: notes.trim() || undefined,
       photoUrl,
-    })
+    }, targetSlot)
 
     // Register the user's uploaded photo into the gallery so it appears in
     // the watch detail. Best-effort — failure to register doesn't prevent

@@ -13,10 +13,23 @@ import {
 } from '@/lib/profileDemo'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { watches as catalogWatches } from '@/lib/watches'
-import { createPlaygroundBox, normalizePlaygroundBoxes, resolvePlaygroundWatches, type ResolvedPlaygroundWatch } from '@/lib/playground'
+import {
+  buildSlotMap,
+  createPlaygroundBox,
+  getEntrySlot,
+  importCollectionToPlaygroundBox,
+  moveEntryToSlot,
+  normalizePlaygroundBoxes,
+  placeWatchInPlaygroundSlot,
+  resolvePlaygroundWatches,
+  tryAddOrGrowPlaygroundBox,
+  type ResolvedPlaygroundWatch,
+} from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
+import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import WatchTray from '@/components/playground/WatchTray'
 import { PLAYGROUND_BOXES_STORAGE_KEY } from '@/lib/storageKeys'
-import { getEffectiveSlotCount, getOverflowSummary, getWatchboxOverflow } from '@/lib/watchboxOverflow'
+import { packToSlotCount } from '@/lib/watchboxOverflow'
 import WatchBox from '@/components/collection/WatchBox'
 import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarSheet'
 import WatchSidebar from '@/components/collection/WatchSidebar'
@@ -86,6 +99,7 @@ function PlaygroundPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user } = useAuth()
+  const { collectionWatches, followedWatches } = useCollectionSession()
   const requestedBoxId = searchParams.get('boxId')
   const requestedEntryId = searchParams.get('entryId')
   const [shareDisplayName, setShareDisplayName] = useState('')
@@ -105,6 +119,8 @@ function PlaygroundPageInner() {
   const [mobileStatsOpen, setMobileStatsOpen] = useState(false)
   const [hydrated, setHydrated] = useState(false)
   const [screenW, setScreenW] = useState(0)
+  const [touchHoverSlot, setTouchHoverSlot] = useState<number | null>(null)
+  const [wobbling, setWobbling] = useState(false)
   const nameInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -150,6 +166,12 @@ function PlaygroundPageInner() {
     () => resolvePlaygroundWatches(activeBox?.entries ?? [], catalogWatches),
     [activeBox],
   )
+  const watchBySlot = useMemo(() => {
+    const slotMap = buildSlotMap(resolvedEntries)
+    const m = new Map<number, ResolvedWatch>()
+    slotMap.forEach((r, slot) => m.set(slot, r.displayWatch))
+    return m
+  }, [resolvedEntries])
   const sortedEntries = useMemo(() => {
     if (sortBy === 'manual') return resolvedEntries
     const sorted = [...resolvedEntries]
@@ -160,15 +182,9 @@ function PlaygroundPageInner() {
   }, [resolvedEntries, sortBy])
   const displayWatches = sortedEntries.map(item => item.displayWatch)
   const selectedItem = sortedEntries.find(item => item.entry.id === selectedEntryId) ?? null
-  const activeSlot = selectedEntryId
-    ? sortedEntries.findIndex(item => item.entry.id === selectedEntryId)
-    : -1
+  const activeSlot = selectedItem ? selectedItem.slot : -1
 
   const sc = SLOT_COUNTS.find(slot => slot.n === (activeBox?.slotCount ?? 6)) ?? SLOT_COUNTS[1]
-  const overflowSummary = getOverflowSummary(
-    sc.n,
-    getWatchboxOverflow(displayWatches, sc.n).overflowCount,
-  )
   const isMobile = screenW > 0 && screenW < 768
   const watchboxContainerW = isMobile ? screenW - 40 : Math.max(200, screenW - 444)
   const watchboxMaxH = isMobile ? 300 : 480
@@ -197,6 +213,52 @@ function PlaygroundPageInner() {
 
   function reorderBoxEntries(boxId: string, newEntries: PlaygroundBoxEntry[]) {
     setBoxes(prev => prev.map(box => box.id === boxId ? { ...box, entries: newEntries } : box))
+  }
+
+  function handleImportCollection() {
+    if (!activeBoxId || collectionWatches.length === 0) return
+    setBoxes(prev => importCollectionToPlaygroundBox(prev, activeBoxId, collectionWatches))
+  }
+
+  function triggerBoxWobble() {
+    setWobbling(true)
+    setTimeout(() => setWobbling(false), 320)
+  }
+
+  function applyTrayDrop(slotIndex: number, watchId: string) {
+    if (!activeBoxId) return
+    const supported = SLOT_COUNTS.map(s => s.n)
+    const result = tryAddOrGrowPlaygroundBox(boxes, activeBoxId, slotIndex, watchId, supported)
+    if (result.kind === 'rejected') {
+      triggerBoxWobble()
+      return
+    }
+    setBoxes(result.boxes)
+  }
+
+  function handleExternalDrop(slotIndex: number, watchId: string) {
+    applyTrayDrop(slotIndex, watchId)
+  }
+
+  function handleTrayDrop(slotIndex: number | null, watchId: string) {
+    // Touch drops must land on a real slot — otherwise the gesture is treated
+    // as a cancel. Falling back to "append" would let stray finger lifts add
+    // watches by accident, which was the v1 complaint.
+    if (slotIndex === null) return
+    applyTrayDrop(slotIndex, watchId)
+  }
+
+  function handleTrashDrop(slotIndex: number) {
+    // Playground: instant remove. Owned-watch state is untouched; this only
+    // strips the entry from the dream-box. No confirm modal (per v3 decision).
+    if (!activeBoxId) return
+    const item = resolvedEntries.find(r => r.slot === slotIndex)
+    if (!item) return
+    updateActiveBox(box => ({
+      ...box,
+      entries: box.entries.filter(e => e.id !== item.entry.id),
+    }))
+    if (selectedEntryId === item.entry.id) setSelectedEntryId(null)
   }
 
   async function handleShareBox() {
@@ -242,19 +304,21 @@ function PlaygroundPageInner() {
   }
 
   function handleBoxConfigChange(field: 'frame' | 'lining' | 'slotCount', value: string | number) {
-    updateActiveBox(box => ({
-      ...box,
-      [field]: value,
-    }))
+    updateActiveBox(box => {
+      if (field !== 'slotCount') return { ...box, [field]: value }
+      const newSlotCount = value as number
+      if (box.slotCount === newSlotCount) return box
+      // Shrinking? Pack any out-of-range entries into the lowest empty slots
+      // so nothing falls into overflow by surprise. Growing leaves slots as-is.
+      const packedEntries = packToSlotCount(
+        box.entries,
+        newSlotCount,
+        (entry, index) => getEntrySlot(entry, index),
+        (entry, slot) => ({ ...entry, slot }),
+      )
+      return { ...box, slotCount: newSlotCount, entries: packedEntries }
+    })
   }
-
-  useEffect(() => {
-    if (!activeBox) return
-    const effective = getEffectiveSlotCount(activeBox.slotCount, displayWatches.length)
-    if (effective !== activeBox.slotCount) {
-      updateActiveBox(box => ({ ...box, slotCount: effective }))
-    }
-  }, [activeBox, displayWatches.length])
 
   function startEditing() {
     setEditingNameValue(activeBox?.name ?? '')
@@ -672,33 +736,45 @@ function PlaygroundPageInner() {
         >
           <div>
             {activeView === 'watchbox' ? (
-              <WatchboxView
-                box={activeBox}
-                watches={resolvedEntries.map(item => item.displayWatch)}
-                activeSlot={(() => {
-                  if (!selectedEntryId) return null
-                  const idx = resolvedEntries.findIndex(item => item.entry.id === selectedEntryId)
-                  return idx >= 0 ? idx : null
-                })()}
-                onSlotClick={index => {
-                  const item = resolvedEntries[index]
-                  if (!item) return
-                  setSelectedEntryId(prev => (prev === item.entry.id ? null : item.entry.id))
-                }}
-                watchboxSlotPx={watchboxSlotPx}
-                watchboxMaxW={watchboxMaxW}
-                screenW={screenW}
-                onEmptySlotClick={() => router.push(`/collection/add?dest=playground&boxId=${activeBoxId}`)}
-                onFrameChange={value => handleBoxConfigChange('frame', value)}
-                onLiningChange={value => handleBoxConfigChange('lining', value)}
-                onSlotCountChange={value => handleBoxConfigChange('slotCount', value)}
-                overflowSummary={overflowSummary}
-                onReorder={(from, to) => {
-                  const entries = [...(activeBox?.entries ?? [])]
-                  ;[entries[from], entries[to]] = [entries[to], entries[from]]
-                  reorderBoxEntries(activeBoxId, entries)
-                }}
-              />
+              <>
+                <WatchboxView
+                  box={activeBox}
+                  watches={resolvedEntries.map(item => item.displayWatch)}
+                  watchBySlot={watchBySlot}
+                  activeSlot={selectedItem ? selectedItem.slot : null}
+                  onSlotClick={slotIndex => {
+                    const item = resolvedEntries.find(r => r.slot === slotIndex)
+                    if (!item) return
+                    setSelectedEntryId(prev => (prev === item.entry.id ? null : item.entry.id))
+                  }}
+                  watchboxSlotPx={watchboxSlotPx}
+                  watchboxMaxW={watchboxMaxW}
+                  screenW={screenW}
+                  onEmptySlotClick={slotIndex => router.push(`/collection/add?dest=playground&boxId=${activeBoxId}&slot=${slotIndex}`)}
+                  onFrameChange={value => handleBoxConfigChange('frame', value)}
+                  onLiningChange={value => handleBoxConfigChange('lining', value)}
+                  onSlotCountChange={value => handleBoxConfigChange('slotCount', value)}
+                  onReorder={(fromSlot, toSlot) => {
+                    setBoxes(prev => moveEntryToSlot(prev, activeBoxId, fromSlot, toSlot))
+                  }}
+                  onExternalDrop={handleExternalDrop}
+                  onTrashDrop={handleTrashDrop}
+                  externalHoverIndex={touchHoverSlot}
+                  wobble={wobbling}
+                  collectionWatchCount={collectionWatches.length}
+                  onImportCollection={handleImportCollection}
+                />
+                {(followedWatches.length > 0 || collectionWatches.length > 0) && (
+                  <div style={{ maxWidth: watchboxMaxW, width: '100%', margin: '0 auto' }}>
+                    <WatchTray
+                      followedWatches={followedWatches}
+                      collectionWatches={collectionWatches}
+                      onWatchDropped={handleTrayDrop}
+                      onTouchHoverChange={setTouchHoverSlot}
+                    />
+                  </div>
+                )}
+              </>
             ) : (
               <CardsView
                 watches={displayWatches}
@@ -741,7 +817,12 @@ function PlaygroundPageInner() {
           brandCount,
           slotCount: activeBox.slotCount,
           boxTitle: activeBox.name,
-          watchImageUrls: displayWatches.map(w => w.imageUrl ?? null),
+          // Sparse: align image URL index with slot so the share preview keeps
+          // empty middle slots empty.
+          watchImageUrls: Array.from({ length: activeBox.slotCount }, (_, i) => {
+            const r = resolvedEntries.find(item => item.slot === i)
+            return r?.displayWatch.imageUrl ?? null
+          }),
         } : null
         const buildShareUrl = (flags: ShareFlags) => activeBox && data
           ? buildAbsoluteProfileDemoUrl(buildBoxShareUrl(getPlaygroundBoxSlug(activeBox), 'playground', data, flags))
@@ -1064,22 +1145,29 @@ function DeleteBoxConfirmModal({
 interface WatchboxViewProps {
   box: PlaygroundBox
   watches: ResolvedWatch[]
+  watchBySlot: Map<number, ResolvedWatch>
   activeSlot: number | null
-  onSlotClick: (index: number) => void
+  onSlotClick: (slotIndex: number) => void
   watchboxSlotPx: number | undefined
   watchboxMaxW: number | undefined
   screenW: number
-  onEmptySlotClick: () => void
+  onEmptySlotClick: (slotIndex: number) => void
   onFrameChange: (value: string) => void
   onLiningChange: (value: string) => void
   onSlotCountChange: (value: number) => void
-  overflowSummary: string | null
-  onReorder?: (from: number, to: number) => void
+  onReorder?: (fromSlot: number, toSlot: number) => void
+  onExternalDrop?: (slotIndex: number, watchId: string) => void
+  onTrashDrop?: (slotIndex: number) => void
+  externalHoverIndex?: number | null
+  wobble?: boolean
+  collectionWatchCount: number
+  onImportCollection: () => void
 }
 
 function WatchboxView({
   box,
   watches,
+  watchBySlot,
   activeSlot,
   onSlotClick,
   watchboxSlotPx,
@@ -1089,11 +1177,35 @@ function WatchboxView({
   onFrameChange,
   onLiningChange,
   onSlotCountChange,
-  overflowSummary,
   onReorder,
+  onExternalDrop,
+  onTrashDrop,
+  externalHoverIndex,
+  wobble = false,
+  collectionWatchCount,
+  onImportCollection,
 }: WatchboxViewProps) {
+  const [importDismissed, setImportDismissed] = useState(false)
   const [customizerOpen, setCustomizerOpen] = useState(false)
   const [configOpen, setConfigOpen] = useState(false)
+  const customizerRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!customizerOpen) return
+    function onPointerDown(e: MouseEvent) {
+      const node = customizerRef.current
+      if (node && e.target instanceof Node && !node.contains(e.target)) {
+        setCustomizerOpen(false)
+      }
+    }
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') setCustomizerOpen(false) }
+    document.addEventListener('mousedown', onPointerDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [customizerOpen])
 
   const fr = FRAMES.find(frame => frame.id === box.frame) ?? FRAMES[0]
   const ln = LININGS.find(lining => lining.id === box.lining) ?? LININGS[0]
@@ -1112,7 +1224,101 @@ function WatchboxView({
           ...(watchboxMaxW !== undefined ? { maxWidth: watchboxMaxW, width: '100%', margin: '0 auto' } : {}),
         }}
       >
-        {watches.length === 0 && (
+        {watches.length === 0 && collectionWatchCount > 0 && !importDismissed && (
+          <div
+            style={{
+              maxWidth: 520,
+              margin: '0 auto 18px',
+              background: brand.colors.white,
+              border: `1px solid ${brand.colors.goldLine}`,
+              borderRadius: brand.radius.xl,
+              padding: '18px 20px',
+              boxShadow: brand.shadow.gold,
+              textAlign: 'center',
+            }}
+          >
+            <div
+              style={{
+                fontFamily: brand.font.sans,
+                fontSize: 9.5,
+                fontWeight: 600,
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                color: brand.colors.gold,
+                marginBottom: 6,
+              }}
+            >
+              Quick start
+            </div>
+            <div
+              style={{
+                fontFamily: brand.font.serif,
+                fontSize: 22,
+                color: brand.colors.ink,
+                lineHeight: 1.2,
+                marginBottom: 6,
+              }}
+            >
+              Start from your collection
+            </div>
+            <p
+              style={{
+                margin: '0 0 14px',
+                fontFamily: brand.font.sans,
+                fontSize: 12,
+                color: brand.colors.mutedDark,
+                lineHeight: 1.5,
+              }}
+            >
+              Pre-fill this box with your {collectionWatchCount} owned {collectionWatchCount === 1 ? 'watch' : 'watches'}, then swap, replace, or add new ones to see how the box would look.
+            </p>
+            <div style={{ display: 'inline-flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <button
+                onClick={onImportCollection}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 7,
+                  fontFamily: brand.font.sans,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  padding: '10px 18px',
+                  background: brand.colors.ink,
+                  color: brand.colors.bg,
+                  border: 'none',
+                  borderRadius: brand.radius.sm,
+                  cursor: 'pointer',
+                }}
+              >
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="3,7 6.5,10.5 11,4" />
+                </svg>
+                Import {collectionWatchCount} {collectionWatchCount === 1 ? 'watch' : 'watches'}
+              </button>
+              <button
+                onClick={() => setImportDismissed(true)}
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 11,
+                  fontWeight: 500,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  padding: '10px 14px',
+                  background: 'transparent',
+                  color: brand.colors.muted,
+                  border: `1px solid ${brand.colors.borderLight}`,
+                  borderRadius: brand.radius.sm,
+                  cursor: 'pointer',
+                }}
+              >
+                Start empty
+              </button>
+            </div>
+          </div>
+        )}
+        {watches.length === 0 && (collectionWatchCount === 0 || importDismissed) && (
           <div
             style={{
               fontFamily: brand.font.sans,
@@ -1124,15 +1330,20 @@ function WatchboxView({
               lineHeight: 1.5,
             }}
           >
-            This box is empty. Tap any slot to add your first watch.
+            This box is empty. Tap any slot to add your first watch, or drag from your followed list below.
           </div>
         )}
         <WatchBox
           watches={watches}
+          watchBySlot={watchBySlot}
           activeSlot={activeSlot}
           onSlotClick={onSlotClick}
           onEmptySlotClick={onEmptySlotClick}
           onReorder={onReorder}
+          onExternalDrop={onExternalDrop}
+          onTrashDrop={onTrashDrop}
+          externalHoverIndex={externalHoverIndex}
+          wobble={wobble}
           frame={box.frame}
           lining={box.lining}
           slotCount={box.slotCount}
@@ -1140,11 +1351,10 @@ function WatchboxView({
           mode="playground"
         />
 
-        <div className="configurator-wrap" style={{ marginTop: 10, position: 'relative' }}>
+        <div ref={customizerRef} className="configurator-wrap" style={{ marginTop: 10, position: 'relative' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, color: '#A89880' }}>
               {fr.label} · {ln.label} · {sc.n} slots
-              {overflowSummary ? ` · ${overflowSummary}` : ''}
             </span>
             <button
               onClick={() => setCustomizerOpen(value => !value)}

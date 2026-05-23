@@ -380,7 +380,12 @@ export function createPlaygroundBoxSnapshot(box: PlaygroundBox, updatedAt: strin
     lining: box.lining,
     slotCount: box.slotCount,
     watchCount: box.entries.length,
-    watches: resolvePlaygroundWatches(box.entries, catalogWatches).map(item => item.displayWatch),
+    // Attach slot per watch so the public viewer can render gaps the same
+    // way the owner sees them.
+    watches: resolvePlaygroundWatches(box.entries, catalogWatches).map(item => ({
+      ...item.displayWatch,
+      slot: item.slot,
+    })),
     updatedAt,
   }
 }

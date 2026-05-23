@@ -9,6 +9,7 @@ export const SEEDED_OWNED_WATCHES: OwnedWatch[] = [
     purchasePrice: 1180,
     notes: 'AD purchase, complete set',
     ownershipStatus: 'Owned',
+    slot: 0,
   },
   {
     id: 'owned-seed-2',
@@ -18,6 +19,7 @@ export const SEEDED_OWNED_WATCHES: OwnedWatch[] = [
     purchasePrice: 1220,
     notes: 'Birthday gift, unworn',
     ownershipStatus: 'Recently Added',
+    slot: 1,
   },
   {
     id: 'owned-seed-3',
@@ -27,6 +29,7 @@ export const SEEDED_OWNED_WATCHES: OwnedWatch[] = [
     purchasePrice: 1100,
     notes: 'Limited run, hard to find',
     ownershipStatus: 'For Sale',
+    slot: 2,
   },
   {
     id: 'owned-seed-4',
@@ -36,6 +39,7 @@ export const SEEDED_OWNED_WATCHES: OwnedWatch[] = [
     purchasePrice: 980,
     notes: 'Leather strap original',
     ownershipStatus: 'Needs Service',
+    slot: 3,
   },
   {
     id: 'owned-seed-5',
@@ -45,5 +49,6 @@ export const SEEDED_OWNED_WATCHES: OwnedWatch[] = [
     purchasePrice: 1150,
     notes: 'Odd dial - love the patina feel',
     ownershipStatus: 'Owned',
+    slot: 4,
   },
 ]

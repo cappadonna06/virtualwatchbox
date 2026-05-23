@@ -60,6 +60,7 @@ export function resolveOwnedWatch(
     purchasePrice: ownedWatch.purchasePrice,
     notes: ownedWatch.notes,
     ownershipStatus: ownedWatch.ownershipStatus,
+    slot: ownedWatch.slot,
   }
 }
 

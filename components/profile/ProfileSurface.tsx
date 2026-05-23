@@ -40,7 +40,7 @@ import {
   saveProfileDemoState,
   syncPublicProfileSnapshot,
 } from '@/lib/profileDemo'
-import { getOverflowSummary, getWatchboxOverflow } from '@/lib/watchboxOverflow'
+import { getOverflowSummary } from '@/lib/watchboxOverflow'
 import type {
   FeaturedProfileWatch,
   ProfileDemoState,
@@ -101,7 +101,12 @@ function buildBoxShareData(box: PublicBoxSnapshot, handle: string) {
     brandCount,
     slotCount: box.slotCount,
     boxTitle: box.title,
-    watchImageUrls: box.watches.map(w => w.imageUrl ?? null),
+    // Sparse: index by slot so the share image preserves gaps. Falls back to
+    // array index for legacy snapshots that predate per-watch `slot`.
+    watchImageUrls: Array.from({ length: box.slotCount }, (_, i) => {
+      const found = box.watches.find((w, idx) => (typeof w.slot === 'number' ? w.slot : idx) === i)
+      return found?.imageUrl ?? null
+    }),
   }
 }
 
@@ -1581,10 +1586,20 @@ function BoxPreviewVisual({
   const frame = FRAMES.find(item => item.id === box.frame) ?? FRAMES[0]
   const lining = LININGS.find(item => item.id === box.lining) ?? LININGS[0]
   const slotConfig = SLOT_COUNTS.find(item => item.n === box.slotCount) ?? SLOT_COUNTS[1]
-  const overflow = getWatchboxOverflow(box.watches, slotConfig.n)
-  const visibleSlots = overflow.hasOverflow
-    ? [...overflow.visibleItems.slice(0, Math.max(slotConfig.n - 1, 0)), null]
-    : Array.from({ length: slotConfig.n }, (_, index) => overflow.visibleItems[index] ?? null)
+
+  // Snapshots created after sparse-slots ship carry `slot` per watch. Older
+  // snapshots don't — for those we fall back to array index so legacy stored
+  // share links keep rendering.
+  const watchBySlot = new Map<number, ResolvedWatch>()
+  box.watches.forEach((w, i) => {
+    const slot = typeof w.slot === 'number' ? w.slot : i
+    watchBySlot.set(slot, w)
+  })
+  const overflowCount = box.watches.reduce((n, w, i) => {
+    const slot = typeof w.slot === 'number' ? w.slot : i
+    return slot >= slotConfig.n ? n + 1 : n
+  }, 0)
+  const hasOverflow = overflowCount > 0
   const isFeature = variant === 'feature'
 
   return (
@@ -1611,8 +1626,8 @@ function BoxPreviewVisual({
             gap: isFeature ? 6 : PREVIEW_GAP,
           }}
         >
-          {visibleSlots.map((watch, index) => {
-            const isOverflowSlot = overflow.hasOverflow && index === slotConfig.n - 1
+          {Array.from({ length: slotConfig.n }, (_, index) => {
+            const isOverflowSlot = hasOverflow && index === slotConfig.n - 1
 
             if (isOverflowSlot) {
               return (
@@ -1629,7 +1644,7 @@ function BoxPreviewVisual({
                     color: brand.colors.ink,
                   }}
                 >
-                  <span style={{ fontFamily: brand.font.serif, fontSize: 20, lineHeight: 1 }}>+{overflow.overflowCount}</span>
+                  <span style={{ fontFamily: brand.font.serif, fontSize: 20, lineHeight: 1 }}>+{overflowCount}</span>
                   <span style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
                     More
                   </span>
@@ -1637,6 +1652,7 @@ function BoxPreviewVisual({
               )
             }
 
+            const watch = watchBySlot.get(index)
             if (!watch) {
               return (
                 <div
@@ -2521,7 +2537,11 @@ function PublicBoxFeatureCard({
   const frame = FRAMES.find(item => item.id === box.frame) ?? FRAMES[0]
   const lining = LININGS.find(item => item.id === box.lining) ?? LININGS[0]
   const slotConfig = SLOT_COUNTS.find(item => item.n === box.slotCount) ?? SLOT_COUNTS[1]
-  const overflowSummary = getOverflowSummary(slotConfig.n, getWatchboxOverflow(box.watches, slotConfig.n).overflowCount)
+  const overflowCount = box.watches.reduce((n, w, i) => {
+    const slot = typeof w.slot === 'number' ? w.slot : i
+    return slot >= slotConfig.n ? n + 1 : n
+  }, 0)
+  const overflowSummary = getOverflowSummary(slotConfig.n, overflowCount)
 
   return (
     <section id={sectionId} style={{ ...(isMobile ? getMobileFlowSectionStyle() : getSectionShellStyle()), scrollMarginTop: 88 }}>

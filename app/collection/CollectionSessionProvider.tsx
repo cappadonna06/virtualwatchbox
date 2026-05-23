@@ -13,7 +13,7 @@ import {
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { remapLegacyCatalogId } from '@/lib/catalog/legacyIdRemap'
 import { createCatalogWatchMap, resolveCatalogWatchId, resolveOwnedWatches } from '@/lib/watchData'
-import { getEffectiveSlotCount } from '@/lib/watchboxOverflow'
+import { getEffectiveSlotCount, packToSlotCount } from '@/lib/watchboxOverflow'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { createClient } from '@/lib/supabase/client'
 import type {
@@ -103,6 +103,7 @@ type LegacyWatchSnapshot = {
   purchasePrice?: unknown
   notes?: unknown
   ownershipStatus?: unknown
+  slot?: unknown
 }
 
 type LegacySessionSnapshot = {
@@ -129,7 +130,7 @@ interface CollectionSessionContextValue {
   dataLoading: boolean
   migrationPending: boolean
   setSelectedWatchId: (watchId: string | null) => void
-  addToCollection: (watch: CatalogWatch, condition: WatchCondition, purchaseDetails?: PurchaseDetails) => string
+  addToCollection: (watch: CatalogWatch, condition: WatchCondition, purchaseDetails?: PurchaseDetails, slot?: number) => string
   followWatch: (watchId: string) => void
   unfollowWatch: (watchId: string) => void
   toggleFollowedWatch: (watchId: string) => void
@@ -148,6 +149,8 @@ interface CollectionSessionContextValue {
   removeFromCollection: (watchId: string) => void
   updateCollectionWatch: (watchId: string, updates: Partial<Pick<OwnedWatch, 'condition' | 'ownershipStatus' | 'purchasePrice' | 'purchaseDate' | 'notes'>>) => void
   reorderCollectionWatches: (newWatches: ResolvedOwnedWatch[]) => void
+  /** Swap the watches at two slots (preserves sparse gaps). No-op if both slots are empty. */
+  swapCollectionSlots: (fromSlot: number, toSlot: number) => void
   setWatchboxFrame: (frameId: string) => void
   setWatchboxLining: (liningId: string) => void
   setWatchboxSlotCount: (slotCount: number) => void
@@ -222,6 +225,7 @@ function normalizeOwnedWatch(
   rawWatch: LegacyWatchSnapshot,
   catalogIds: string[],
   fallbackDate: string,
+  fallbackSlot: number,
 ): OwnedWatch | null {
   const rawId = typeof rawWatch.id === 'string' ? rawWatch.id : null
   // Catalog id can come from the modern `watchId` field, or be inferred from
@@ -249,6 +253,7 @@ function normalizeOwnedWatch(
     purchasePrice: typeof rawWatch.purchasePrice === 'number' ? rawWatch.purchasePrice : 0,
     notes: typeof rawWatch.notes === 'string' ? rawWatch.notes : '',
     ownershipStatus: isOwnershipStatus(rawWatch.ownershipStatus) ? rawWatch.ownershipStatus : 'Owned',
+    slot: typeof rawWatch.slot === 'number' && Number.isFinite(rawWatch.slot) ? rawWatch.slot : fallbackSlot,
   }
 }
 
@@ -257,7 +262,7 @@ function normalizeCollectionWatches(rawValue: unknown, catalogIds: string[]) {
 
   const fallbackDate = new Date().toISOString().split('T')[0]
   return rawValue
-    .map(entry => normalizeOwnedWatch(entry as LegacyWatchSnapshot, catalogIds, fallbackDate))
+    .map((entry, index) => normalizeOwnedWatch(entry as LegacyWatchSnapshot, catalogIds, fallbackDate, index))
     .filter((watch): watch is OwnedWatch => watch !== null)
 }
 
@@ -419,8 +424,8 @@ async function syncWatchReorder(watches: OwnedWatch[], userId: string) {
   try {
     const supabase = createClient()
     const results = await Promise.all(
-      watches.map((w, i) =>
-        supabase.from('watches').update({ sort_order: i }).eq('user_id', userId).eq('id', w.id)
+      watches.map(w =>
+        supabase.from('watches').update({ sort_order: w.slot }).eq('user_id', userId).eq('id', w.id)
       )
     )
     for (const r of results) {
@@ -553,7 +558,7 @@ async function loadFromSupabase(
     const fallbackDate = new Date().toISOString().split('T')[0]
 
     const collectionWatches: OwnedWatch[] = dbWatches
-      .map(w => ({
+      .map((w, index) => ({
         id: w.id,
         watchId: remapLegacyCatalogId(w.catalog_id),
         condition: isWatchCondition(w.condition) ? w.condition : 'Excellent',
@@ -562,6 +567,7 @@ async function loadFromSupabase(
         purchaseDate: w.purchase_date ?? fallbackDate,
         notes: w.notes ?? '',
         photoUrl: w.photo_url ?? undefined,
+        slot: typeof w.sort_order === 'number' ? w.sort_order : index,
       }))
 
     const followedWatchIds: string[] = []
@@ -1201,12 +1207,13 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     // landing mid-migration doesn't read a partial cloud snapshot and snap the
     // local UI back to nothing.
     await trackedSync((async () => {
-      // Upsert all current watches
+      // Upsert all current watches — write each entry's own slot value so
+      // sparse-slot positions persist through guest → signed-in migration.
       await Promise.all(
-        collectionEntries.map((w, i) => {
+        collectionEntries.map(w => {
           const catalogWatch = catalogWatchMapLocal.get(w.watchId)
           if (!catalogWatch) return Promise.resolve()
-          return syncWatchAdd(w, catalogWatch, userId, i)
+          return syncWatchAdd(w, catalogWatch, userId, w.slot)
         })
       )
 
@@ -1374,7 +1381,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     return Boolean(intent?.canSetJewel)
   }
 
-  function addToCollection(watch: CatalogWatch, condition: WatchCondition, purchaseDetails?: PurchaseDetails) {
+  function addToCollection(watch: CatalogWatch, condition: WatchCondition, purchaseDetails?: PurchaseDetails, slot?: number) {
     // Inject the catalog row into BOTH the discovery cache (registerWatches
     // → dynamicWatches, so other surfaces can see it) AND the owned-set
     // (injectOwnedCatalog → ownedCatalogWatches, the load-bearing resolver
@@ -1386,6 +1393,25 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
 
     const wasTarget = nextTargets.some(target => target.watchId === watch.id)
     const wasGrail = grailWatchId === watch.id
+    // Slot selection: if the caller passed an explicit slot (tap on empty
+    // slot 6 → land at 6), respect it. Otherwise pick the first unused slot
+    // so adds from search/photo land somewhere visible without disturbing
+    // existing positions.
+    const claimedSlots = new Set(collectionEntries.map(e => e.slot))
+    let targetSlot: number
+    if (typeof slot === 'number') {
+      targetSlot = slot
+    } else {
+      targetSlot = 0
+      while (claimedSlots.has(targetSlot)) targetSlot++
+    }
+    // Tapping an empty slot that already has a watch (e.g. race) replaces.
+    // For sparse-slot semantics, a manual add to a claimed slot should
+    // displace nothing — clamp to the next free slot instead so the user
+    // never silently loses an existing watch.
+    if (typeof slot === 'number' && claimedSlots.has(targetSlot)) {
+      while (claimedSlots.has(targetSlot)) targetSlot++
+    }
     const newWatch: OwnedWatch = {
       // Real UUID (no 'owned-' prefix) so it's a valid value for the watches.id
       // uuid column. The client-generated id is used unchanged in the server
@@ -1400,6 +1426,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       purchaseDate: purchaseDetails?.date ?? new Date().toISOString().split('T')[0],
       notes: purchaseDetails?.notes ?? '',
       photoUrl: purchaseDetails?.photoUrl,
+      slot: targetSlot,
     }
 
     // Compute next entries from the current closure value — avoids putting a
@@ -1407,7 +1434,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     const nextEntries = [...collectionEntries, newWatch]
     setCollectionEntries(nextEntries)
     if (user) {
-      void trackedSync(syncWatchAdd(newWatch, watch, user.id, nextEntries.length - 1))
+      void trackedSync(syncWatchAdd(newWatch, watch, user.id, targetSlot))
     }
 
     setNextTargets(prev => prev.filter(target => target.watchId !== watch.id))
@@ -1665,13 +1692,34 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   }
 
   function reorderCollectionWatches(newWatches: ResolvedOwnedWatch[]) {
+    // Legacy interface: caller passed a fully-reordered list. Reassign slot
+    // = arrayIndex so positions match the new order; this packs back into
+    // dense slots (gaps will only appear via sparse-aware paths below).
     setCollectionEntries(prev => {
       const byId = new Map(prev.map(watch => [watch.id, watch]))
       const next = newWatches
-        .map(watch => byId.get(watch.id))
-        .filter((watch): watch is OwnedWatch => watch !== undefined)
+        .map((w, i) => {
+          const existing = byId.get(w.id)
+          return existing ? { ...existing, slot: i } : null
+        })
+        .filter((watch): watch is OwnedWatch => watch !== null)
 
       if (next.length !== prev.length) return prev
+      if (user) void trackedSync(syncWatchReorder(next, user.id))
+      return next
+    })
+  }
+
+  function swapCollectionSlots(fromSlot: number, toSlot: number) {
+    if (fromSlot === toSlot) return
+    setCollectionEntries(prev => {
+      const next = prev.map(w => {
+        if (w.slot === fromSlot) return { ...w, slot: toSlot }
+        if (w.slot === toSlot) return { ...w, slot: fromSlot }
+        return w
+      })
+      // No-op if neither slot had a watch.
+      if (next.every((w, i) => w === prev[i])) return prev
       if (user) void trackedSync(syncWatchReorder(next, user.id))
       return next
     })
@@ -1698,9 +1746,28 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   function setWatchboxSlotCount(slotCount: number) {
     if (!SLOT_COUNTS.some(slot => slot.n === slotCount)) return
     setWatchboxConfig(prev => {
+      if (prev.slotCount === slotCount) return prev
       const next = { ...prev, slotCount }
       if (user) void trackedSync(syncWatchboxConfig(next, user.id))
       return next
+    })
+    // Shrinking can leave watches at slot indices that no longer exist (e.g.
+    // [W][ ][ ][ ][ ][ ][ ][W] at 8 slots → 6 slots leaves slot-7 stranded).
+    // Pack any out-of-range watches into the lowest empty slots so nothing
+    // silently falls into overflow.
+    setCollectionEntries(prev => {
+      const repacked = packToSlotCount(
+        prev,
+        slotCount,
+        owned => owned.slot,
+        (owned, newSlot) => ({ ...owned, slot: newSlot }),
+      )
+      if (repacked === prev) return prev
+      const prevById = new Map(prev.map(w => [w.id, w.slot]))
+      const changed = repacked.some(w => prevById.get(w.id) !== w.slot)
+      if (!changed) return prev
+      if (user) void trackedSync(syncWatchReorder(repacked, user.id))
+      return repacked
     })
   }
 
@@ -1868,6 +1935,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     removeFromCollection,
     updateCollectionWatch,
     reorderCollectionWatches,
+    swapCollectionSlots,
     setWatchboxFrame,
     setWatchboxLining,
     setWatchboxSlotCount,

@@ -23,6 +23,10 @@ type Props = {
   sizes?: string
   imageStyle?: CSSProperties
   dialSize?: number
+  /** Forward HTML `draggable` attr to the underlying <img>. Pass `false` to
+   *  suppress iOS Safari's native image-drag/callout gesture so a custom
+   *  long-press handler on a parent can fire instead. */
+  draggable?: boolean
 }
 
 export default function WatchImageOrDial({
@@ -33,6 +37,7 @@ export default function WatchImageOrDial({
   sizes,
   imageStyle,
   dialSize = 88,
+  draggable,
 }: Props) {
   const { getImageUrl } = useWatchImages()
   const lookupId = watch.watchId ?? watch.id
@@ -46,6 +51,7 @@ export default function WatchImageOrDial({
         fill
         sizes={sizes}
         style={imageStyle}
+        draggable={draggable}
       />
     ) : (
       <Image
@@ -55,6 +61,7 @@ export default function WatchImageOrDial({
         height={height ?? dialSize}
         sizes={sizes}
         style={imageStyle}
+        draggable={draggable}
       />
     )
   }
