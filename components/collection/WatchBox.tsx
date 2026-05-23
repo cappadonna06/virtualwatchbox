@@ -19,6 +19,8 @@ interface Props {
   onExternalDrop?: (slotIndex: number, watchId: string) => void
   /** Called when an in-box slot is dragged onto the trash drop zone. */
   onTrashDrop?: (slotIndex: number) => void
+  /** Briefly shake the box (e.g. to signal a rejected drop). Caller toggles back to false. */
+  wobble?: boolean
   /** Controlled hover index used by touch-driven external drags (HTML5 dragover doesn't fire for pointer events). */
   externalHoverIndex?: number | null
   /**
@@ -281,6 +283,7 @@ export default function WatchBox({
   onReorder,
   onExternalDrop,
   onTrashDrop,
+  wobble = false,
   externalHoverIndex,
   watchBySlot,
   frame,
@@ -374,6 +377,19 @@ export default function WatchBox({
         } else {
           setDragOverIndex(null)
           setTrashHover(false)
+        }
+      },
+      onHoverStyle: (ghostEl, hit) => {
+        // Dim + flip ghost border red when hovering trash so the trash zone
+        // underneath stays visible. Restore gold for everything else.
+        if (hit && hit.kind === 'trash') {
+          ghostEl.style.opacity = '0.55'
+          ghostEl.style.borderColor = 'rgba(183,50,42,0.95)'
+          ghostEl.style.boxShadow = '0 0 0 1px rgba(183,50,42,0.45), 0 12px 32px rgba(183,50,42,0.28)'
+        } else {
+          ghostEl.style.opacity = '0.92'
+          ghostEl.style.borderColor = 'rgba(201,168,76,0.9)'
+          ghostEl.style.boxShadow = '0 0 0 1px rgba(201,168,76,0.4), 0 12px 32px rgba(201,168,76,0.25)'
         }
       },
       onDrop: hit => {
@@ -516,6 +532,7 @@ export default function WatchBox({
       )}
 
       <div
+        className={wobble ? 'watchbox-wobble' : undefined}
         style={{
           borderRadius: 10,
           padding: '22px 22px 24px',
@@ -1132,15 +1149,19 @@ export default function WatchBox({
         <div
           aria-hidden={!trashVisible}
           style={{
+            position: 'absolute',
+            bottom: -82,
+            left: '50%',
+            transform: trashVisible
+              ? 'translate(-50%, 0)'
+              : 'translate(-50%, -6px)',
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
-            gap: 6,
-            marginTop: 12,
+            gap: 10,
             opacity: trashVisible ? 1 : 0,
-            transform: trashVisible ? 'translateY(0)' : 'translateY(-6px)',
             pointerEvents: trashVisible ? 'auto' : 'none',
             transition: 'opacity 0.18s ease, transform 0.18s ease',
+            zIndex: 20,
           }}
         >
           <div
@@ -1161,40 +1182,61 @@ export default function WatchBox({
               if (from !== null) onTrashDrop(from)
             }}
             style={{
-              width: 56,
-              height: 56,
-              borderRadius: '50%',
-              display: 'flex',
+              display: 'inline-flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              background: trashHover ? 'rgba(220,70,60,0.16)' : 'rgba(220,70,60,0.08)',
-              border: trashHover ? '2px solid rgba(220,70,60,0.85)' : `2px dashed rgba(220,70,60,0.45)`,
-              boxShadow: trashHover ? '0 0 0 4px rgba(220,70,60,0.16), 0 6px 22px rgba(220,70,60,0.18)' : undefined,
-              color: trashHover ? '#B7322A' : '#B7322A',
-              transition: 'background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease',
-              transform: trashHover ? 'scale(1.08)' : 'scale(1)',
+              gap: 10,
+              padding: '12px 22px 12px 18px',
+              minWidth: 168,
+              height: 64,
+              borderRadius: 32,
+              background: trashHover ? 'rgba(220,70,60,0.18)' : 'rgba(220,70,60,0.08)',
+              border: trashHover ? '2px solid #B7322A' : '2px dashed rgba(183,50,42,0.55)',
+              boxShadow: trashHover
+                ? '0 0 0 6px rgba(220,70,60,0.16), 0 10px 28px rgba(183,50,42,0.22)'
+                : '0 4px 14px rgba(183,50,42,0.10)',
+              color: '#B7322A',
+              transition: 'background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.18s ease',
+              transform: trashHover ? 'scale(1.06)' : 'scale(1)',
+              whiteSpace: 'nowrap',
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
             }}
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <polyline points="3 6 5 6 21 6" />
-              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-              <path d="M10 11v6" />
-              <path d="M14 11v6" />
-              <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
-            </svg>
-          </div>
-          <div
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 9.5,
-              fontWeight: 600,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: trashHover ? '#B7322A' : brand.colors.muted,
-              transition: 'color 0.15s ease',
-            }}
-          >
-            {trashHover ? 'Release to remove' : 'Drop to remove'}
+            <span
+              aria-hidden="true"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 30,
+                height: 30,
+                borderRadius: '50%',
+                background: trashHover ? '#B7322A' : 'rgba(220,70,60,0.18)',
+                color: trashHover ? '#FFFFFF' : '#B7322A',
+                transition: 'background 0.15s ease, color 0.15s ease',
+                flexShrink: 0,
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                <path d="M10 11v6" />
+                <path d="M14 11v6" />
+                <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+              </svg>
+            </span>
+            <span
+              style={{
+                fontFamily: brand.font.sans,
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: '#B7322A',
+              }}
+            >
+              {trashHover ? 'Release to remove' : 'Drop to remove'}
+            </span>
           </div>
         </div>
       )}

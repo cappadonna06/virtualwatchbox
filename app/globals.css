@@ -274,6 +274,15 @@ body {
   to   { transform: translateY(0); }
 }
 
+/* Watchbox shake — used to refuse a destructive drop on a full+max box. */
+@keyframes watchbox-wobble {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-6px); }
+  50%      { transform: translateX(5px); }
+  80%      { transform: translateX(-3px); }
+}
+.watchbox-wobble { animation: watchbox-wobble 0.32s ease-in-out; }
+
 /* ─── Discover page ───────────────────────────────────────────── */
 .discover-grid {
   display: grid;

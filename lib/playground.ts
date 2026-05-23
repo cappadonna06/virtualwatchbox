@@ -152,6 +152,68 @@ function placeEntryAtSlot(box: PlaygroundBox, watchId: string, slotIndex: number
   return { ...box, entries: [...stripped, newEntry] }
 }
 
+export type TrayDropOutcome =
+  | { kind: 'placed'; boxes: PlaygroundBox[] }
+  | { kind: 'grown'; boxes: PlaygroundBox[]; newSlotCount: number; placedSlot: number }
+  | { kind: 'rejected' }
+
+/**
+ * Tray drop decision: place at the target slot (empty), replace at the target
+ * slot (occupied but other slots are empty so the user could have aimed
+ * elsewhere — treat as intent to replace), grow the box and add to the next
+ * slot (occupied and box is full), or refuse (occupied, full, already at max).
+ *
+ * The "grow" case is what stops a tray drop from silently destroying a watch
+ * just because the user happened to drop on an occupied slot.
+ */
+export function tryAddOrGrowPlaygroundBox(
+  boxes: PlaygroundBox[],
+  boxId: string,
+  targetSlot: number,
+  watchId: string,
+  supportedSlotCounts: number[],
+): TrayDropOutcome {
+  const box = boxes.find(b => b.id === boxId)
+  if (!box) return { kind: 'placed', boxes }
+
+  const slots = new Map<number, PlaygroundBoxEntry>()
+  box.entries.forEach((e, i) => slots.set(getEntrySlot(e, i), e))
+  const occupiedAtTarget = slots.has(targetSlot)
+
+  if (!occupiedAtTarget) {
+    return { kind: 'placed', boxes: placeWatchInPlaygroundSlot(boxes, boxId, targetSlot, watchId) }
+  }
+
+  // Target is occupied. Are there empty slots elsewhere in the visible range?
+  let hasOtherEmpty = false
+  for (let i = 0; i < box.slotCount; i++) {
+    if (i !== targetSlot && !slots.has(i)) { hasOtherEmpty = true; break }
+  }
+  if (hasOtherEmpty) {
+    // User had other empty slots they could have targeted; treat as intent
+    // to replace at the chosen slot.
+    return { kind: 'placed', boxes: placeWatchInPlaygroundSlot(boxes, boxId, targetSlot, watchId) }
+  }
+
+  // Box is full in the visible range. Try to grow.
+  const sortedCounts = [...supportedSlotCounts].sort((a, b) => a - b)
+  const nextCount = sortedCounts.find(n => n > box.slotCount)
+  if (nextCount === undefined) {
+    // Already at max — refuse rather than destroy a watch.
+    return { kind: 'rejected' }
+  }
+
+  // Place at the first slot in the newly-available range (typically the old
+  // slotCount value).
+  const newSlot = box.slotCount
+  const newEntry = createPlaygroundEntry(watchId, undefined, undefined, newSlot)
+  const grownBoxes = boxes.map(b => b.id === boxId
+    ? { ...b, slotCount: nextCount, entries: [...b.entries, newEntry] }
+    : b,
+  )
+  return { kind: 'grown', boxes: grownBoxes, newSlotCount: nextCount, placedSlot: newSlot }
+}
+
 /** Move/swap an entry from one slot to another. If the destination is occupied, the two swap. */
 export function moveEntryToSlot(
   boxes: PlaygroundBox[],

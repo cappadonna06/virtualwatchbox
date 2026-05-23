@@ -22,6 +22,7 @@ import {
   normalizePlaygroundBoxes,
   placeWatchInPlaygroundSlot,
   resolvePlaygroundWatches,
+  tryAddOrGrowPlaygroundBox,
   type ResolvedPlaygroundWatch,
 } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
@@ -119,6 +120,7 @@ function PlaygroundPageInner() {
   const [hydrated, setHydrated] = useState(false)
   const [screenW, setScreenW] = useState(0)
   const [touchHoverSlot, setTouchHoverSlot] = useState<number | null>(null)
+  const [wobbling, setWobbling] = useState(false)
   const nameInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -218,17 +220,32 @@ function PlaygroundPageInner() {
     setBoxes(prev => importCollectionToPlaygroundBox(prev, activeBoxId, collectionWatches))
   }
 
-  function handleExternalDrop(slotIndex: number, watchId: string) {
+  function triggerBoxWobble() {
+    setWobbling(true)
+    setTimeout(() => setWobbling(false), 320)
+  }
+
+  function applyTrayDrop(slotIndex: number, watchId: string) {
     if (!activeBoxId) return
-    setBoxes(prev => placeWatchInPlaygroundSlot(prev, activeBoxId, slotIndex, watchId))
+    const supported = SLOT_COUNTS.map(s => s.n)
+    const result = tryAddOrGrowPlaygroundBox(boxes, activeBoxId, slotIndex, watchId, supported)
+    if (result.kind === 'rejected') {
+      triggerBoxWobble()
+      return
+    }
+    setBoxes(result.boxes)
+  }
+
+  function handleExternalDrop(slotIndex: number, watchId: string) {
+    applyTrayDrop(slotIndex, watchId)
   }
 
   function handleTrayDrop(slotIndex: number | null, watchId: string) {
     // Touch drops must land on a real slot — otherwise the gesture is treated
     // as a cancel. Falling back to "append" would let stray finger lifts add
     // watches by accident, which was the v1 complaint.
-    if (!activeBoxId || slotIndex === null) return
-    setBoxes(prev => placeWatchInPlaygroundSlot(prev, activeBoxId, slotIndex, watchId))
+    if (slotIndex === null) return
+    applyTrayDrop(slotIndex, watchId)
   }
 
   function handleTrashDrop(slotIndex: number) {
@@ -743,6 +760,7 @@ function PlaygroundPageInner() {
                   onExternalDrop={handleExternalDrop}
                   onTrashDrop={handleTrashDrop}
                   externalHoverIndex={touchHoverSlot}
+                  wobble={wobbling}
                   collectionWatchCount={collectionWatches.length}
                   onImportCollection={handleImportCollection}
                 />
@@ -1141,6 +1159,7 @@ interface WatchboxViewProps {
   onExternalDrop?: (slotIndex: number, watchId: string) => void
   onTrashDrop?: (slotIndex: number) => void
   externalHoverIndex?: number | null
+  wobble?: boolean
   collectionWatchCount: number
   onImportCollection: () => void
 }
@@ -1162,12 +1181,31 @@ function WatchboxView({
   onExternalDrop,
   onTrashDrop,
   externalHoverIndex,
+  wobble = false,
   collectionWatchCount,
   onImportCollection,
 }: WatchboxViewProps) {
   const [importDismissed, setImportDismissed] = useState(false)
   const [customizerOpen, setCustomizerOpen] = useState(false)
   const [configOpen, setConfigOpen] = useState(false)
+  const customizerRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!customizerOpen) return
+    function onPointerDown(e: MouseEvent) {
+      const node = customizerRef.current
+      if (node && e.target instanceof Node && !node.contains(e.target)) {
+        setCustomizerOpen(false)
+      }
+    }
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') setCustomizerOpen(false) }
+    document.addEventListener('mousedown', onPointerDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [customizerOpen])
 
   const fr = FRAMES.find(frame => frame.id === box.frame) ?? FRAMES[0]
   const ln = LININGS.find(lining => lining.id === box.lining) ?? LININGS[0]
@@ -1305,6 +1343,7 @@ function WatchboxView({
           onExternalDrop={onExternalDrop}
           onTrashDrop={onTrashDrop}
           externalHoverIndex={externalHoverIndex}
+          wobble={wobble}
           frame={box.frame}
           lining={box.lining}
           slotCount={box.slotCount}
@@ -1312,7 +1351,7 @@ function WatchboxView({
           mode="playground"
         />
 
-        <div className="configurator-wrap" style={{ marginTop: 10, position: 'relative' }}>
+        <div ref={customizerRef} className="configurator-wrap" style={{ marginTop: 10, position: 'relative' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, color: '#A89880' }}>
               {fr.label} · {ln.label} · {sc.n} slots

@@ -28,6 +28,11 @@ export type GhostDragOptions = {
    */
   dropZones: DropZone[]
   onHover?: (hit: { kind: DropZoneKind; index: number } | null) => void
+  /**
+   * Fires on every pointermove with the ghost element and current hit. Use
+   * to restyle the ghost mid-drag (e.g. dim + red border over the trash).
+   */
+  onHoverStyle?: (ghostEl: HTMLElement, hit: { kind: DropZoneKind; index: number } | null) => void
   onDrop: (hit: { kind: DropZoneKind; index: number } | null, payload: string) => void
 }
 
@@ -73,7 +78,9 @@ export function startGhostDrag(options: GhostDragOptions): () => void {
   function onMove(ev: PointerEvent) {
     clone.style.left = `${ev.clientX - w / 2}px`
     clone.style.top = `${ev.clientY - h * 1.15}px`
-    if (onHover) onHover(hitTest(ev.clientX, ev.clientY))
+    const hit = hitTest(ev.clientX, ev.clientY)
+    if (onHover) onHover(hit)
+    if (options.onHoverStyle) options.onHoverStyle(clone, hit)
   }
 
   function cleanup() {
