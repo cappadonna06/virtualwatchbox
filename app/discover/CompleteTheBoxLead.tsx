@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { CatalogWatch } from '@/types/watch'
 import { brand } from '@/lib/brand'
@@ -27,6 +28,13 @@ const PANEL_BG = '#1e1b16'
 export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, personalized, refreshSeedKey }: Props) {
   const headlineNoun = headlineNounFor(gapType)
   const headlineTail = headlineTailFor(gapType, personalized)
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   return (
     <section id="lead" style={{ background: PANEL_BG, color: brand.colors.slot, position: 'relative' }}>
@@ -146,26 +154,28 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
                   textDecoration: 'none',
                 }}
               >
-                Find on market
+                {isMobile ? 'On market' : 'Find on market'}
               </a>
-              <Link
-                href={`/playground?lead=${encodeURIComponent(watch.id)}`}
-                style={{
-                  fontFamily: brand.font.sans,
-                  fontSize: 10.5,
-                  fontWeight: 500,
-                  letterSpacing: '0.14em',
-                  textTransform: 'uppercase',
-                  padding: '11px 18px',
-                  background: 'transparent',
-                  color: brand.colors.slot,
-                  border: '1px solid rgba(250,248,244,0.28)',
-                  borderRadius: 2,
-                  textDecoration: 'none',
-                }}
-              >
-                Add to Playground
-              </Link>
+              {!isMobile && (
+                <Link
+                  href={`/playground?lead=${encodeURIComponent(watch.id)}`}
+                  style={{
+                    fontFamily: brand.font.sans,
+                    fontSize: 10.5,
+                    fontWeight: 500,
+                    letterSpacing: '0.14em',
+                    textTransform: 'uppercase',
+                    padding: '11px 18px',
+                    background: 'transparent',
+                    color: brand.colors.slot,
+                    border: '1px solid rgba(250,248,244,0.28)',
+                    borderRadius: 2,
+                    textDecoration: 'none',
+                  }}
+                >
+                  Add to Playground
+                </Link>
+              )}
             </div>
           </div>
 
