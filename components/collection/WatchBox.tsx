@@ -837,6 +837,16 @@ export default function WatchBox({
                     opacity: isBeingDragged ? 0.5 : isSourceInPreview ? 0.4 : 1,
                     transform: 'translateY(0)',
                     transition: 'transform 0.18s ease, opacity 0.15s ease',
+                    // iOS Safari intercepts long-press on the slot image with
+                    // its native callout menu / image-drag gesture before our
+                    // custom long-press timer can fire. These CSS knobs
+                    // suppress Safari's gestures so the wrapper's pointer
+                    // events get through cleanly. Cascade to the <img> via
+                    // child styles below.
+                    WebkitTouchCallout: 'none',
+                    WebkitUserSelect: 'none',
+                    userSelect: 'none',
+                    ...({ WebkitUserDrag: 'none' } as Record<string, string>),
                   }}
                   onMouseEnter={e => {
                     if (draggedIndex !== null) return
@@ -931,7 +941,16 @@ export default function WatchBox({
                       watch={w}
                       fill
                       sizes="(max-width: 768px) 20vw, 10vw"
-                      imageStyle={{ objectFit: 'contain', objectPosition: 'center center' }}
+                      imageStyle={{
+                        objectFit: 'contain',
+                        objectPosition: 'center center',
+                        // The wrapper's onPointerDown owns long-press reorder.
+                        // Make the <img> non-interactive so Safari's image
+                        // gestures don't get a target to act on.
+                        pointerEvents: 'none',
+                        ...({ WebkitUserDrag: 'none', WebkitTouchCallout: 'none' } as Record<string, string>),
+                      }}
+                      draggable={false}
                       dialSize={Math.round((slotWidth ?? 90) * 0.58)}
                     />
                     {shouldShowJewel(w.watchId) && (
