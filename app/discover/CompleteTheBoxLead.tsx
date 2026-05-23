@@ -146,7 +146,7 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
                   textDecoration: 'none',
                 }}
               >
-                Find on Chrono24 ↗
+                Find on market
               </a>
               <Link
                 href={`/playground?lead=${encodeURIComponent(watch.id)}`}
