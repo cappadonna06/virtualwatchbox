@@ -33,6 +33,7 @@ export default function WatchTray({
   const [tab, setTab] = useState<Tab>('followed')
   const [collapsed, setCollapsed] = useState(false)
   const [isTouchDevice, setIsTouchDevice] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(false)
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
   const [armedId, setArmedId] = useState<string | null>(null)
   const [hoverSlot, setHoverSlot] = useState<number | null>(null)
@@ -50,12 +51,17 @@ export default function WatchTray({
 
   useEffect(() => {
     setIsTouchDevice(window.matchMedia('(hover: none) and (pointer: coarse)').matches)
+    const desktopQuery = window.matchMedia('(min-width: 768px)')
+    const updateDesktop = () => setIsDesktop(desktopQuery.matches)
+    updateDesktop()
+    desktopQuery.addEventListener('change', updateDesktop)
     try {
       const c = sessionStorage.getItem(COLLAPSE_KEY)
       if (c === '1') setCollapsed(true)
       const t = sessionStorage.getItem(TAB_KEY)
       if (t === 'collection' || t === 'followed') setTab(t)
     } catch {}
+    return () => desktopQuery.removeEventListener('change', updateDesktop)
   }, [])
 
   useEffect(() => {
@@ -134,17 +140,19 @@ export default function WatchTray({
       clientY,
       ghostWidth: 72,
       ghostHeight: 96,
-      watchId,
-      targetSelector: slotSelector,
-      onHover: idx => {
+      payload: watchId,
+      dropZones: [{ kind: 'slot', selector: slotSelector }],
+      onHover: hit => {
+        const idx = hit && hit.kind === 'slot' ? hit.index : null
         setHoverSlot(idx)
         onTouchHoverChange?.(idx)
       },
-      onDrop: (slotIndex, id) => {
+      onDrop: (hit, id) => {
         setActiveDragId(null)
         setArmedId(null)
         setHoverSlot(null)
         onTouchHoverChange?.(null)
+        const slotIndex = hit && hit.kind === 'slot' ? hit.index : null
         onWatchDropped(slotIndex, id)
       },
     })
@@ -260,8 +268,8 @@ export default function WatchTray({
         <div
           style={{
             display: 'flex',
-            gap: 10,
-            padding: '12px 12px 14px',
+            gap: isDesktop ? 14 : 10,
+            padding: isDesktop ? '16px 16px 18px' : '12px 12px 14px',
             overflowX: 'auto',
             overflowY: 'hidden',
             scrollbarWidth: 'thin',
@@ -296,14 +304,14 @@ export default function WatchTray({
                   title={`${item.brand} ${item.model}`}
                   style={{
                     flexShrink: 0,
-                    width: 76,
+                    width: isDesktop ? 128 : 76,
                     cursor: 'grab',
                     background: brand.colors.bg,
                     border: isArmed
                       ? `1px solid ${brand.colors.gold}`
                       : `1px solid ${brand.colors.borderMid}`,
                     borderRadius: brand.radius.md,
-                    padding: 6,
+                    padding: isDesktop ? 9 : 6,
                     opacity: isActive ? 0.45 : 1,
                     boxShadow: isArmed ? brand.shadow.gold : undefined,
                     transition: 'opacity 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease',
@@ -320,22 +328,22 @@ export default function WatchTray({
                       borderRadius: brand.radius.sm,
                       overflow: 'hidden',
                       background: brand.colors.paper,
-                      marginBottom: 4,
+                      marginBottom: isDesktop ? 7 : 4,
                       pointerEvents: 'none',
                     }}
                   >
                     <WatchImageOrDial
                       watch={item}
                       fill
-                      sizes="76px"
+                      sizes={isDesktop ? '128px' : '76px'}
                       imageStyle={{ objectFit: 'contain', objectPosition: 'center center' }}
-                      dialSize={42}
+                      dialSize={isDesktop ? 64 : 42}
                     />
                   </div>
                   <div
                     style={{
                       fontFamily: brand.font.sans,
-                      fontSize: 8.5,
+                      fontSize: isDesktop ? 10 : 8.5,
                       fontWeight: 600,
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
@@ -351,7 +359,7 @@ export default function WatchTray({
                   <div
                     style={{
                       fontFamily: brand.font.serif,
-                      fontSize: 11,
+                      fontSize: isDesktop ? 14 : 11,
                       color: brand.colors.ink,
                       lineHeight: 1.15,
                       whiteSpace: 'nowrap',

@@ -28,7 +28,7 @@ import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import WatchTray from '@/components/playground/WatchTray'
 import { PLAYGROUND_BOXES_STORAGE_KEY } from '@/lib/storageKeys'
-import { getOverflowSummary, packToSlotCount } from '@/lib/watchboxOverflow'
+import { packToSlotCount } from '@/lib/watchboxOverflow'
 import WatchBox from '@/components/collection/WatchBox'
 import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarSheet'
 import WatchSidebar from '@/components/collection/WatchSidebar'
@@ -183,12 +183,6 @@ function PlaygroundPageInner() {
   const activeSlot = selectedItem ? selectedItem.slot : -1
 
   const sc = SLOT_COUNTS.find(slot => slot.n === (activeBox?.slotCount ?? 6)) ?? SLOT_COUNTS[1]
-  const sparseOverflowCount = useMemo(() => {
-    let n = 0
-    for (const r of resolvedEntries) if (r.slot >= sc.n) n++
-    return n
-  }, [resolvedEntries, sc.n])
-  const overflowSummary = getOverflowSummary(sc.n, sparseOverflowCount)
   const isMobile = screenW > 0 && screenW < 768
   const watchboxContainerW = isMobile ? screenW - 40 : Math.max(200, screenW - 444)
   const watchboxMaxH = isMobile ? 300 : 480
@@ -235,6 +229,19 @@ function PlaygroundPageInner() {
     // watches by accident, which was the v1 complaint.
     if (!activeBoxId || slotIndex === null) return
     setBoxes(prev => placeWatchInPlaygroundSlot(prev, activeBoxId, slotIndex, watchId))
+  }
+
+  function handleTrashDrop(slotIndex: number) {
+    // Playground: instant remove. Owned-watch state is untouched; this only
+    // strips the entry from the dream-box. No confirm modal (per v3 decision).
+    if (!activeBoxId) return
+    const item = resolvedEntries.find(r => r.slot === slotIndex)
+    if (!item) return
+    updateActiveBox(box => ({
+      ...box,
+      entries: box.entries.filter(e => e.id !== item.entry.id),
+    }))
+    if (selectedEntryId === item.entry.id) setSelectedEntryId(null)
   }
 
   async function handleShareBox() {
@@ -730,11 +737,11 @@ function PlaygroundPageInner() {
                   onFrameChange={value => handleBoxConfigChange('frame', value)}
                   onLiningChange={value => handleBoxConfigChange('lining', value)}
                   onSlotCountChange={value => handleBoxConfigChange('slotCount', value)}
-                  overflowSummary={overflowSummary}
                   onReorder={(fromSlot, toSlot) => {
                     setBoxes(prev => moveEntryToSlot(prev, activeBoxId, fromSlot, toSlot))
                   }}
                   onExternalDrop={handleExternalDrop}
+                  onTrashDrop={handleTrashDrop}
                   externalHoverIndex={touchHoverSlot}
                   collectionWatchCount={collectionWatches.length}
                   onImportCollection={handleImportCollection}
@@ -1130,9 +1137,9 @@ interface WatchboxViewProps {
   onFrameChange: (value: string) => void
   onLiningChange: (value: string) => void
   onSlotCountChange: (value: number) => void
-  overflowSummary: string | null
   onReorder?: (fromSlot: number, toSlot: number) => void
   onExternalDrop?: (slotIndex: number, watchId: string) => void
+  onTrashDrop?: (slotIndex: number) => void
   externalHoverIndex?: number | null
   collectionWatchCount: number
   onImportCollection: () => void
@@ -1151,9 +1158,9 @@ function WatchboxView({
   onFrameChange,
   onLiningChange,
   onSlotCountChange,
-  overflowSummary,
   onReorder,
   onExternalDrop,
+  onTrashDrop,
   externalHoverIndex,
   collectionWatchCount,
   onImportCollection,
@@ -1296,6 +1303,7 @@ function WatchboxView({
           onEmptySlotClick={onEmptySlotClick}
           onReorder={onReorder}
           onExternalDrop={onExternalDrop}
+          onTrashDrop={onTrashDrop}
           externalHoverIndex={externalHoverIndex}
           frame={box.frame}
           lining={box.lining}
@@ -1308,7 +1316,6 @@ function WatchboxView({
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, color: '#A89880' }}>
               {fr.label} · {ln.label} · {sc.n} slots
-              {overflowSummary ? ` · ${overflowSummary}` : ''}
             </span>
             <button
               onClick={() => setCustomizerOpen(value => !value)}
