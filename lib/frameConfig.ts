@@ -90,3 +90,38 @@ export const SLOT_COUNTS: SlotCount[] = [
   { n: 8,  cols: 4, label: '8' },
   { n: 10, cols: 5, label: '10' },
 ]
+
+// Watchbox frame + inner-lining padding/gap, shared between the slot-px
+// calculation in parents and the WatchBox renderer so the layout math stays
+// in lockstep with the CSS. Mobile uses thinner wood and a tighter gap so
+// the box fits the viewport and watches read larger.
+export const WATCHBOX_FRAME_DESKTOP = {
+  outerPaddingTop: 22,
+  outerPaddingSide: 22,
+  outerPaddingBottom: 24,
+  innerPadding: 10,
+  slotGap: 6,
+}
+
+export const WATCHBOX_FRAME_MOBILE = {
+  outerPaddingTop: 10,
+  outerPaddingSide: 10,
+  outerPaddingBottom: 11,
+  innerPadding: 5,
+  slotGap: 4,
+}
+
+export function watchboxFrameMetrics(isMobile: boolean) {
+  return isMobile ? WATCHBOX_FRAME_MOBILE : WATCHBOX_FRAME_DESKTOP
+}
+
+// Width/height "padding" used by calcSlotPx in parents — the slot grid math
+// subtracts these from the container before dividing by columns/rows. The
+// extra ~12px buffer over (2*outer + 2*inner) covers slot borders, focus
+// rings, and rounding so the rendered box width never beats the container.
+export function watchboxSlotPadding(isMobile: boolean) {
+  const m = watchboxFrameMetrics(isMobile)
+  const horiz = 2 * m.outerPaddingSide + 2 * m.innerPadding
+  return { widthPadding: horiz, heightPadding: isMobile ? 30 : 72, gap: m.slotGap }
+}
+

@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { PlaygroundBox, PlaygroundBoxEntry, ResolvedWatch } from '@/types/watch'
-import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
+import { FRAMES, LININGS, SLOT_COUNTS, watchboxSlotPadding } from '@/lib/frameConfig'
 import {
   buildAbsoluteProfileDemoUrl,
   buildBoxShareUrl,
@@ -42,9 +42,6 @@ import SyncRibbon from '@/components/collection/SyncRibbon'
 import WatchboxHeader from '@/components/collection/WatchboxHeader'
 import { brand } from '@/lib/brand'
 
-const WB_W_PAD = 64
-const WB_H_PAD = 72
-const WB_GAP = 6
 const PV_W_PAD = 38
 const PV_H_PAD = 45
 const PV_GAP = 5
@@ -188,11 +185,12 @@ function PlaygroundPageInner() {
   const isMobile = screenW > 0 && screenW < 768
   const watchboxContainerW = isMobile ? screenW - 40 : Math.max(200, screenW - 444)
   const watchboxMaxH = isMobile ? 300 : 480
+  const slotPad = watchboxSlotPadding(isMobile)
   const watchboxSlotPx = screenW > 0
-    ? Math.floor(calcSlotPx(watchboxContainerW, watchboxMaxH, sc.cols, WB_W_PAD, WB_H_PAD, WB_GAP))
+    ? Math.floor(calcSlotPx(watchboxContainerW, watchboxMaxH, sc.cols, slotPad.widthPadding, slotPad.heightPadding, slotPad.gap))
     : undefined
   const watchboxMaxW = watchboxSlotPx !== undefined
-    ? WB_W_PAD + (sc.cols - 1) * WB_GAP + sc.cols * watchboxSlotPx
+    ? slotPad.widthPadding + (sc.cols - 1) * slotPad.gap + sc.cols * watchboxSlotPx
     : undefined
 
   function updateActiveBox(mutator: (box: PlaygroundBox) => PlaygroundBox) {
@@ -765,14 +763,12 @@ function PlaygroundPageInner() {
                   onImportCollection={handleImportCollection}
                 />
                 {(followedWatches.length > 0 || collectionWatches.length > 0) && (
-                  <div style={{ maxWidth: watchboxMaxW, width: '100%', margin: '0 auto' }}>
-                    <WatchTray
-                      followedWatches={followedWatches}
-                      collectionWatches={collectionWatches}
-                      onWatchDropped={handleTrayDrop}
-                      onTouchHoverChange={setTouchHoverSlot}
-                    />
-                  </div>
+                  <WatchTray
+                    followedWatches={followedWatches}
+                    collectionWatches={collectionWatches}
+                    onWatchDropped={handleTrayDrop}
+                    onTouchHoverChange={setTouchHoverSlot}
+                  />
                 )}
               </>
             ) : (

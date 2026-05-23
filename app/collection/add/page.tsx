@@ -942,7 +942,7 @@ function AddWatchSearchInner() {
     : 'Search by brand, model, or reference number'
 
   return (
-    <div style={{ padding: '56px 56px 120px', borderTop: '1px solid #EAE5DC' }}>
+    <div style={{ padding: isMobile ? '28px 20px 80px' : '56px 56px 120px', borderTop: '1px solid #EAE5DC' }}>
       <button
         onClick={() => router.push(backHref)}
         style={{
@@ -1148,10 +1148,13 @@ function AddWatchSearchInner() {
                       display: 'flex',
                       gap: 6,
                       overflowX: 'auto',
-                      flex: 1,
+                      flex: '1 1 0',
+                      minWidth: 0,
                       alignItems: 'center',
                       WebkitOverflowScrolling: 'touch',
                       scrollbarWidth: 'none',
+                      WebkitMaskImage: 'linear-gradient(to right, black calc(100% - 18px), transparent 100%)',
+                      maskImage: 'linear-gradient(to right, black calc(100% - 18px), transparent 100%)',
                     }}
                   >
                     {facetChips.map(chip => (
@@ -1312,7 +1315,7 @@ function AddWatchSearchInner() {
             )
           })()}
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 360px))', gap: 16, justifyContent: 'start' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, minmax(0, 1fr))' : 'repeat(auto-fit, minmax(280px, 360px))', gap: isMobile ? 12 : 16, justifyContent: 'start' }}>
             {filteredResults.map(watch => (
               <AddSearchWatchCard key={watch.id} watch={watch} dest={dest} boxId={boxId} />
             ))}

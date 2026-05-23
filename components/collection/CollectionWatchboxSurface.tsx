@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
+import { FRAMES, LININGS, SLOT_COUNTS, watchboxSlotPadding } from '@/lib/frameConfig'
 import type { ResolvedOwnedWatch } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
@@ -10,9 +10,6 @@ import ResponsiveSidebarSheet from './ResponsiveSidebarSheet'
 import WatchBox from './WatchBox'
 import WatchSidebar from './WatchSidebar'
 
-const WATCHBOX_WIDTH_PADDING = 64
-const WATCHBOX_HEIGHT_PADDING = 72
-const WATCHBOX_GAP = 6
 const PREVIEW_WIDTH_PADDING = 38
 const PREVIEW_HEIGHT_PADDING = 45
 const PREVIEW_GAP = 5
@@ -354,20 +351,21 @@ export default function CollectionWatchboxSurface({
   const isMobile = screenWidth > 0 && screenWidth < 768
   const watchboxContainerWidth = isMobile ? screenWidth - 40 : Math.max(200, screenWidth - 444)
   const watchboxMaxHeight = isMobile ? 300 : 480
+  const slotPad = watchboxSlotPadding(isMobile)
   const watchboxSlotWidth = screenWidth > 0
     ? Math.floor(
         calcSlotPx(
           watchboxContainerWidth,
           watchboxMaxHeight,
           slotConfig.cols,
-          WATCHBOX_WIDTH_PADDING,
-          WATCHBOX_HEIGHT_PADDING,
-          WATCHBOX_GAP,
+          slotPad.widthPadding,
+          slotPad.heightPadding,
+          slotPad.gap,
         ),
       )
     : undefined
   const watchboxMaxWidth = watchboxSlotWidth !== undefined
-    ? WATCHBOX_WIDTH_PADDING + ((slotConfig.cols - 1) * WATCHBOX_GAP) + (slotConfig.cols * watchboxSlotWidth)
+    ? slotPad.widthPadding + ((slotConfig.cols - 1) * slotPad.gap) + (slotConfig.cols * watchboxSlotWidth)
     : undefined
 
   const previewSlotWidth = useMemo(() => {

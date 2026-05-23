@@ -37,6 +37,9 @@ export default function WatchTray({
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
   const [armedId, setArmedId] = useState<string | null>(null)
   const [hoverSlot, setHoverSlot] = useState<number | null>(null)
+  const [showLeftFade, setShowLeftFade] = useState(false)
+  const [showRightFade, setShowRightFade] = useState(false)
+  const scrollRef = useRef<HTMLDivElement | null>(null)
   const cleanupRef = useRef<(() => void) | null>(null)
   const longPressRef = useRef<{
     timer: ReturnType<typeof setTimeout> | null
@@ -84,6 +87,30 @@ export default function WatchTray({
     cleanupRef.current?.()
     cancelLongPress()
   }, [])
+
+  // Show fade affordance when there's offscreen tray content. Recompute on
+  // scroll, resize, tab/collapse changes, and whenever the item list shifts.
+  useEffect(() => {
+    if (collapsed) {
+      setShowLeftFade(false)
+      setShowRightFade(false)
+      return
+    }
+    const el = scrollRef.current
+    if (!el) return
+    const sync = () => {
+      const overflow = el.scrollWidth - el.clientWidth
+      setShowLeftFade(el.scrollLeft > 2)
+      setShowRightFade(overflow - el.scrollLeft > 2)
+    }
+    sync()
+    el.addEventListener('scroll', sync, { passive: true })
+    window.addEventListener('resize', sync)
+    return () => {
+      el.removeEventListener('scroll', sync)
+      window.removeEventListener('resize', sync)
+    }
+  }, [collapsed, tab, followedWatches.length, collectionWatches.length, isDesktop])
 
   const items = useMemo(() => {
     if (tab === 'followed') {
@@ -265,7 +292,9 @@ export default function WatchTray({
       </div>
 
       {!collapsed && (
+        <div style={{ position: 'relative' }}>
         <div
+          ref={scrollRef}
           style={{
             display: 'flex',
             gap: isDesktop ? 14 : 10,
@@ -374,6 +403,43 @@ export default function WatchTray({
               )
             })
           )}
+        </div>
+        {showLeftFade && (
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: 28,
+              background: `linear-gradient(to right, ${brand.colors.white}, rgba(255,255,255,0))`,
+              pointerEvents: 'none',
+            }}
+          />
+        )}
+        {showRightFade && (
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              right: 0,
+              top: 0,
+              bottom: 0,
+              width: 36,
+              background: `linear-gradient(to left, ${brand.colors.white}, rgba(255,255,255,0))`,
+              pointerEvents: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              paddingRight: 4,
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke={brand.colors.muted} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="5,3 9,7 5,11" />
+            </svg>
+          </div>
+        )}
         </div>
       )}
 
