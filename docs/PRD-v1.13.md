@@ -1,8 +1,8 @@
-# Virtual Watchbox PRD — v1.12
+# Virtual Watchbox PRD — v1.13
 
 **Site:** virtualwatchbox.com  
 **Tagline:** *Showcase Your Timepieces. Discover What's Next.*  
-**Updated:** May 2026 — v1.12
+**Updated:** May 2026 — v1.13
 
 | Version | Change |
 |---|---|
@@ -19,6 +19,7 @@
 | v1.10 | Added Collection Jewel, tightened ownership rules for Target/Grail/Jewel intent states, and added profile hero selection between Grail and Jewel. |
 | v1.11 | Added Feature 6 — Settings & Account Controls, including account deletion/data controls, privacy/sharing controls, and legal transparency surfaces. |
 | v1.12 | Shipped Feature 9 — AI Photo Identification ("Watchbox Concierge") end-to-end with verify vs intake split, market-value capture, and dial-bbox cropping. Added Feature 2D — Per-Watch Photo Gallery (sidebar + owned-watch detail page + lightbox + drag-reorder). Added Feature 2E — Owned Watch Detail Page (`/collection/watch/[id]`). Updated Feature 3 with duplicate-aware add page and add-from-photo for not-in-catalog watches. Added Feature 13 — Admin Catalog & Submissions Tooling. Documented `/news` (Feature 11) and `/discover` (new Feature 14) which were already shipped but listed as pending in v1.11. **Intent fix:** Grail no longer has a planned `/collection` surface — by definition Grail is unowned, so its home is the FeaturedProfileWatch picker on `/profile`. The earlier "Grail surface on /collection" planning was dropped. The `/collection` UI pass now scopes to Next Targets treatment + header / stats / cards / mobile polish. |
+| v1.13 | **Catalog scale-up:** 35,659 catalog watches in Supabase with 4,000+ imaged; server-side search via pg_trgm full-text index + curated nicknames; heat-score algorithm rework. **Discover editorial redesign:** magazine-style layout with LLM-personalized hero, daily-rotated recommendations, per-section refresh, model-family filtering, mobile compact dark hero. **Playground upgrades:** import collection on empty box, drag-from-tray with long-press reorder + sparse slots + drag-to-trash, Supabase persistence for logged-in users. **Admin image-review tool** at `/admin/image-review` with failure-mode tagging. **Collection improvements:** empty-state CTA with auth-nudge layer, stability fix decoupling owned-set from heat-score cache. Updated Feature 3 search infrastructure, Feature 4 shipped scope, Feature 13 with image-review, Feature 14 with editorial redesign. Cleaned Phase 3 of already-shipped duplicates. |
 
 ---
 
@@ -516,14 +517,21 @@ Both routes maintain the nav bar.
 
 #### Search Page (`/collection/add`)
 
-**On load:** search bar with a camera icon, no filters, no results.
+**On load:** search bar with a camera icon, default browse state showing top watches by heat score with pagination.
 
 Helper line:
 > Search by brand, model, or reference number — or tap the camera to identify by photo
 
+**Search infrastructure:**
+- Server-side full-text search via `pg_trgm` GIN index on generated `search_text` column (concatenates brand, model, reference, model_family, nickname, watch_type, complications)
+- Curated collector nicknames (e.g. "Pepsi", "Hulk", "Speedy") searchable via `data/catalog-nicknames.json`
+- CatalogProvider paginates top 2,000 by heat score into memory; remaining watches fetched on demand
+- Brand filter with photos-only inner-join for browsing
+- Debounced search with ILIKE matching
+
 **As the user types:**
 - Live results appear
-- Each result card shows SVG dial render, brand, model, reference, case size/material, estimated value
+- Each result card shows SVG dial render or catalog image, brand, model, reference, case size/material, estimated value
 - Filter chips appear contextually below search
 - Chips show match counts
 - Zero-count chips are grayed out, not hidden
@@ -533,6 +541,7 @@ Helper line:
   - Case Size
 - Watch Type chips are intentionally excluded from this flow
 - Already owned watches show `In Collection`
+- Sort controls for relevance, heat score, price
 
 **Camera icon** (right side of the search bar):
 - Opens the camera capture / file picker for AI photo identification (Feature 9)
@@ -697,6 +706,8 @@ Actions:
 - Add-watch detail page defaults to Playground when entered from Playground
 - Originating box is preselected
 - User can still switch destination before confirming
+- **Import collection on empty box** — one-click "Start from your collection" CTA copies all owned watches with condition/notes into the active box
+- **Drag from tray** — browse/search tray below the watchbox, drag watches into specific slots with visual hover feedback
 
 #### Sharing a Box
 
@@ -710,7 +721,7 @@ Playground sharing is part of the broader profile/share system, not a standalone
 
 #### Drag to Reorder
 
-Still planned. No draft workflow is required for Playground reorder interactions.
+Shipped for Playground. Long-press to initiate drag on mobile (iOS Safari compatible), HTML5 drag on desktop. Sparse slot support — drops land where you aim, gaps preserved. Drag-to-trash to remove watches. No draft workflow required.
 
 #### Current shipped scope
 
@@ -730,7 +741,11 @@ Still planned. No draft workflow is required for Playground reorder interactions
 | Per-box stats section | P0 |
 | Per-entry Playground edit flow | P0 |
 | Clipboard box share action | P0 |
-| Drag to reorder within box | P1 |
+| Drag to reorder within box | P0 (shipped) |
+| Import collection on empty box | P0 (shipped) |
+| Drag watches from tray into slots | P0 (shipped) |
+| Drag-to-trash for removal | P0 (shipped) |
+| Supabase persistence for logged-in users | P0 (shipped) |
 
 ---
 
@@ -1095,7 +1110,32 @@ User-photo submissions land here for review.
 - **✎ Edit fields** opens an inline editor for brand, model, reference, dial color, watch type, case size/material, est. value, movement (PATCH `/api/admin/catalog/[id]`)
 - **⤴ Replace photo** → `/admin/images?watchId={id}` (verify mode)
 
-#### 13.4 Security Boundary
+#### 13.4 Image Review (`/admin/image-review`)
+
+Quality control surface for curated catalog images after processing.
+
+- **Side-by-side comparison** — raw source image vs processed output
+- **Failure-mode tag chips** — 10 tags grouped by pipeline stage:
+  - Missing parts (crown, bracelet, case edge, etc.)
+  - Edge quality (halo, fringing, rough edges)
+  - Background (remnants, transparency issues)
+- **One-click actions:** Approve / Needs Reprocess / Wrong Watch
+- Ticking any failure tag auto-stages "Needs reprocess"
+- Reviews persisted to `watch_image_reviews` table (migrations 021 + 022)
+- Search and bulk operations supported
+- Image exclusion mechanism via `data/excluded-image-ids.json` for wrong-watch entries
+
+| Feature | Priority |
+|---|---|
+| Side-by-side raw vs processed comparison | P0 (shipped) |
+| Failure-mode tag chips (10 tags, 3 categories) | P0 (shipped) |
+| Approve / Needs Reprocess / Wrong Watch actions | P0 (shipped) |
+| Search within review queue | P0 (shipped) |
+| Image exclusion list | P0 (shipped) |
+
+---
+
+#### 13.5 Security Boundary
 
 - All admin routes gated by `requireAdmin()` (email allowlist)
 - Admin server routes use a **service-role Supabase client** (`SUPABASE_SECRET_KEY` or legacy `SUPABASE_SERVICE_ROLE_KEY`) to:
@@ -1120,33 +1160,47 @@ User-photo submissions land here for review.
 
 Commerce + editorial hub. Personalized to the user's collection and followed watches when available, with a stable demo experience for guests. Collection-aware suggestions feed an affiliate revenue path.
 
+#### Design
+
+Magazine-style editorial layout replacing the earlier utility-stack design. Seven sections with a sticky section TOC for navigation.
+
 #### Sections (top to bottom)
 
+- **Hero** — LLM-personalized editorial headline and byline tailored to the user's collection; daily-rotated watch pick with large image, brand kicker, heart action in image well, and `Find on Market →` CTA. Mobile: compact dark "Discover" banner instead of tall light editorial hero
+- **"Complete the Box" lead** — dark-background section surfacing collection gaps and next-slot recommendations with per-section refresh button
 - **Box insight cards** — analytical read of the user's collection (gaps, dial-color skew, brand concentration). Designed to surface "what might round out the box"
 - **Next slot recommendations** — watch cards keyed to the user's empty slot count + spend pattern, with `Find on Market →` deep links (Chrono24)
-- **Upgrade suggestions** — for each owned watch, surface plausible upgrade paths within the same brand family (e.g. Tudor Pelagos → Black Bay Pro)
-- **Strap suggestions** *(TODO — not yet shipped; placeholder removed 2026-05, pending redesign)* — lug-width-aware strap recommendations across the owned collection, with affiliate CTAs
-- **Box upgrade card** *(TODO — not yet shipped; placeholder removed 2026-05, pending redesign)* — surface physical watchbox affiliate matches sized to the user's slot count (Wolf1834, Rapport, Holme & Hadfield)
+- **Upgrade suggestions** — from-to upgrade spreads per owned watch, surfacing plausible upgrade paths using model-family filtering for dedup/exclusion (no same-model upgrades, prefers different brands). LLM-generated per-pair rationale
+- **Alternate next watches** — three sections of daily-rotated recommendations from ranked top-10 pools, with per-section refresh buttons. Deterministic daily index (seeded by UTC day + section key) picks one watch per pool for stable intra-day viewing
 - **Discover Reads strip** — curated editorial pulls (typically the top-tagged articles from the news feed for the user's brands of interest)
+
+**Deferred sections** *(placeholders removed 2026-05, pending redesign):*
+- **Strap suggestions** — lug-width-aware strap recommendations across the owned collection, with affiliate CTAs
+- **Box upgrade card** — surface physical watchbox affiliate matches sized to the user's slot count (Wolf1834, Rapport, Holme & Hadfield)
 
 #### Personalization
 
 - Real users: pulls from `useCollectionSession()` — their owned + followed + targets feed every section
-- Guests / demo: a stable seed (`DISCOVER_DEMO_COLLECTION_IDS`) produces consistent suggestions so the page is never empty
+- Guests / demo: a stable seed anchored on Supabase catalog produces consistent suggestions so the page is never empty (no longer depends on static seed)
 - All affiliate CTAs route through `buildChrono24URL` (or strap/box partner equivalents) with the user's brand/spec hints baked in
+- Daily rotation uses a deterministic seed so recommendations are stable within a day but fresh across days
 
 #### Functional Requirements
 
 | Feature | Priority |
 |---|---|
 | `/discover` route shell | P0 (shipped) |
+| Magazine-style editorial redesign | P0 (shipped) |
+| LLM-personalized hero + lead section | P0 (shipped) |
+| Daily-rotated recommendations with refresh buttons | P0 (shipped) |
 | Box insight cards | P0 (shipped) |
 | Next slot recommendations with Chrono24 deep links | P0 (shipped) |
-| Upgrade cards (per-owned-watch upgrade paths) | P0 (shipped) |
+| From-to upgrade spreads with model-family filtering | P0 (shipped) |
+| Mobile compact dark hero | P0 (shipped) |
+| Sticky section TOC | P0 (shipped) |
 | Strap suggestions (lug-width aware) | P0 (TODO — placeholder removed 2026-05, pending redesign) |
 | Box upgrade affiliate card | P0 (TODO — placeholder removed 2026-05, pending redesign) |
 | Discover Reads strip | P0 (shipped) |
-| UI / spacing / typography polish pass | P1 |
 | Smart Suggestions engine integration (Feature 8) | P1 |
 | Live pricing on recommendations (WatchCharts) | P2 |
 | Personalized digest emails | P2 |
@@ -1330,7 +1384,7 @@ Behavior requirements:
 
 ### Backend
 
-- **Supabase** (PostgreSQL) for persistence — auth, user profiles, watches, watch_states, watchbox_config, playground_boxes, catalog_watches, watch_images, user_watch_photos
+- **Supabase** (PostgreSQL) for persistence — auth, user profiles, watches, watch_states, watchbox_config, playground_boxes (synced for logged-in users), catalog_watches, catalog_watch_market (heat scores), watch_images, watch_image_reviews, user_watch_photos
 - **Supabase Auth** for accounts (Google OAuth + magic link)
 - **Supabase Storage** for all user-uploaded imagery — buckets:
   - `watch-photos` (user uploads — gallery, profile, watchbox photos, AI flow uploads)
@@ -1361,7 +1415,7 @@ Behavior requirements:
 - Shared sidebar detail panel
 - 5 default owned watches in collection
 - Shared watchbox overflow handling (`+N more`, desktop flyout, mobile sheet)
-- Watch catalog (50+ references across multiple brands)
+- Watch catalog (35,659 references across 100+ brands; 4,000+ with curated images in Supabase Storage)
 - Add-watch search route plus redesigned detail/confirm page
 - Followed Watches heart interaction + toast
 - `/playground` page with box switching, customization, cards view, stats, share action, delete flow, and per-entry editing
@@ -1373,6 +1427,10 @@ Behavior requirements:
 - Edit Watch modal wired to the sidebar pencil for owned-watch metadata
 - Real Watchbox Photo view (Feature 2A View C) — third icon in the ViewSwitcher with upload + camera + crop, persisting to `watchbox_config.watchbox_photo_url`
 - Collection Jewel state — sidebar badge, WatchStateControl picker action for owned watches, FeaturedProfileWatch picker on `/profile` toggling between Grail and Jewel
+- Collection empty state — watch silhouette CTA, layered auth-nudge for cross-device sync
+- Catalog search — server-side full-text search via `pg_trgm` GIN index on `search_text` column, curated collector nicknames
+- Heat score algorithm — 0–1000 scoring with brand-prestige flattening, market activity weighting; static bridge via `data/catalog-heat-scores.json`
+- Admin image-review tool (`/admin/image-review`) — side-by-side comparison, 10 failure-mode tags, approve/reprocess/wrong-watch workflow
 
 ### Phase 2 — Shipped
 
@@ -1388,6 +1446,9 @@ Behavior requirements:
 - **Admin Submissions Queue** with dedupe + inline edit + curated photo replacement
 - **`/news`** — Cloudflare Worker–backed RSS feed with hero featured article, source pills, mode tabs, sponsored slot framework
 - **`/discover`** — collection-aware commerce hub with box insights, slot recommendations, upgrade cards, strap suggestions, box upgrade affiliate card, and a curated reads strip
+- **`/discover` editorial redesign** — magazine-style layout with LLM-personalized hero + lead, daily-rotated recommendations with per-section refresh, from-to upgrade spreads, model-family filtering for dedup/exclusion, mobile compact dark hero
+- **Playground Supabase persistence** — playground boxes sync to Supabase for logged-in users via debounced auto-sync and reload on session start
+- **Playground drag + import** — import collection on empty box via one-click CTA, drag watches from tray into slots, long-press reorder within slots, sparse slot support, drag-to-trash
 
 ### Phase 3 — Next Product Surface Work
 
@@ -1399,10 +1460,8 @@ Behavior requirements:
 - Followed Watches section on profile
 - Clipboard profile and box share links
 - Save as Playground from Collection drafts
-- Drag-to-reorder in Collection and Playground
-- `/settings` route + privacy/sharing controls
-- `/discover` route (commerce + editorial hub)
-- `/news` RSS aggregation
+- Drag-to-reorder in Collection (Playground drag shipped in Phase 2)
+- `/collection` UI pass (Next Targets treatment + header / stats / cards / mobile polish)
 
 ### Phase 4 — Public Identity + Discovery
 
@@ -1426,12 +1485,12 @@ Behavior requirements:
 The items below are intentionally tracked as pending even if placeholders or toasts exist in the UI.
 
 ### Navigation & Surfaces
-*(Both `/news` and `/discover` are shipped; `/settings` is shipped at P0 scope — see open P1/P2 items below.)*
+*(All primary routes shipped: `/news`, `/discover` (with editorial redesign), `/settings` at P0 scope, `/playground` with Supabase persistence and drag support. See open P1/P2 items below.)*
 
 ### Collection
 - `/collection` UI pass (Next Targets treatment + header / stats / cards / mobile polish — see Feature 2A "Near-Term Expansion")
 - Save as Playground from Collection drafts
-- Drag-to-reorder parity across all Collection surface modes
+- Drag-to-reorder in Collection (Playground drag-to-reorder is shipped)
 
 ### Settings (`/settings` shipped at P0; remaining items)
 - `Download my data` (currently "Coming soon")
@@ -1443,8 +1502,12 @@ The items below are intentionally tracked as pending even if placeholders or toa
 - Account-backed public profile routes (`/u/[handle]`)
 - Account-backed public box routes
 
+### Discover (shipped; pending sections)
+- Strap suggestions — lug-width-aware strap recommendations (placeholder removed 2026-05, pending redesign)
+- Box upgrade affiliate card — physical watchbox matching (placeholder removed 2026-05, pending redesign)
+
 ### Intelligence & Commerce
-- Smart Suggestions engine (Feature 8) — `/discover` ships with rule-based recommendations today; the personalized engine is the upgrade path
+- Smart Suggestions engine (Feature 8) — `/discover` ships with LLM-personalized + rule-based recommendations today; the fully personalized engine is the upgrade path
 - Physical box affiliate matching at scale (the affiliate card on `/discover` is the entry point)
 - Strap customization
 - Virtual try-on
@@ -1492,4 +1555,4 @@ The items below are intentionally tracked as pending even if placeholders or toa
 
 ---
 
-*Virtual Watchbox · virtualwatchbox.com · PRD v1.12 · May 2026*
+*Virtual Watchbox · virtualwatchbox.com · PRD v1.13 · May 2026*
