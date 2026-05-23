@@ -89,9 +89,30 @@ export default function DiscoverPreview() {
     return pickFromPool(boxInsight.suggestionPool, heroSeedKey, 0) ?? boxInsight.suggestion
   }, [boxInsight, heroSeedKey])
 
-  if (!leadWatch) return null
+  const fallbackWatch = useMemo(() => {
+    if (leadWatch) return null
+    const withImg = catalogWatches
+      .filter(w => hasImage(w))
+      .sort((a, b) => (b.market?.heatScore ?? 0) - (a.market?.heatScore ?? 0))
+    return withImg[0] ?? null
+  }, [leadWatch, catalogWatches, hasImage])
 
+  const displayWatch = leadWatch ?? fallbackWatch
+  if (!displayWatch) return null
+
+  const hasCollection = realCollection.length > 0
   const headlineNoun = headlineNounFor(boxInsight?.missingType ?? null)
+  const kickerLabel = personalized ? 'Personalized For You' : hasCollection ? 'Your Next Move' : 'Your First Move'
+  const headline = personalized
+    ? <>A <em style={{ fontStyle: 'italic' }}>{headlineNoun}</em> to round out the box.</>
+    : hasCollection
+      ? <>A <em style={{ fontStyle: 'italic' }}>{headlineNoun}</em>, to lead the week.</>
+      : <>Start your collection.</>
+  const description = personalized
+    ? (boxInsight?.copy || "Based on what you own and what's missing.")
+    : hasCollection
+      ? "Something new for a collection that already covers the fundamentals."
+      : "A curated editor's pick for the week."
 
   return (
     <section
@@ -116,7 +137,7 @@ export default function DiscoverPreview() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
               <GoldKicker>Discover</GoldKicker>
               <div style={{ height: 1, width: 24, background: 'rgba(201,168,76,0.6)' }} />
-              <GoldKicker>{personalized ? 'Personalized For You' : 'Your Next Move'}</GoldKicker>
+              <GoldKicker>{kickerLabel}</GoldKicker>
             </div>
 
             <h2
@@ -131,7 +152,7 @@ export default function DiscoverPreview() {
                 color: brand.colors.slot,
               }}
             >
-              A <em style={{ fontStyle: 'italic' }}>{headlineNoun}</em>{isGuest ? ', to lead the week.' : ' to round out the box.'}
+              {headline}
             </h2>
 
             <p
@@ -147,7 +168,7 @@ export default function DiscoverPreview() {
                 textWrap: 'pretty',
               }}
             >
-              {personalized ? (boxInsight?.copy || "Based on what you own and what’s missing.") : "A curated editor’s pick for the week."}
+              {description}
             </p>
 
             <div
@@ -161,9 +182,9 @@ export default function DiscoverPreview() {
                 marginBottom: 24,
               }}
             >
-              <SpecCell label="Brand" value={leadWatch.brand} />
-              <SpecCell label="Reference" value={leadWatch.reference} />
-              <SpecCell label="Market" value={fmt(leadWatch.estimatedValue)} />
+              <SpecCell label="Brand" value={displayWatch.brand} />
+              <SpecCell label="Reference" value={displayWatch.reference} />
+              <SpecCell label="Market" value={fmt(displayWatch.estimatedValue)} />
             </div>
 
             <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -187,7 +208,7 @@ export default function DiscoverPreview() {
                 View on Discover →
               </Link>
               <Link
-                href={`/collection/add/${leadWatch.id}?from=home`}
+                href={`/collection/add/${displayWatch.id}?from=home`}
                 style={{
                   fontFamily: brand.font.sans,
                   fontSize: 10.5,
@@ -209,7 +230,7 @@ export default function DiscoverPreview() {
 
           <div style={{ position: 'relative', textAlign: 'center' }}>
             <Link
-              href={`/collection/add/${leadWatch.id}?from=home`}
+              href={`/collection/add/${displayWatch.id}?from=home`}
               style={{
                 position: 'relative',
                 zIndex: 1,
@@ -225,7 +246,7 @@ export default function DiscoverPreview() {
               }}
             >
               <WatchImageOrDial
-                watch={leadWatch}
+                watch={displayWatch}
                 fill
                 sizes="(max-width: 768px) 70vw, 300px"
                 imageStyle={{ objectFit: 'contain' }}
@@ -244,10 +265,10 @@ export default function DiscoverPreview() {
                   marginBottom: 4,
                 }}
               >
-                {leadWatch.brand}
+                {displayWatch.brand}
               </div>
               <div style={{ fontFamily: brand.font.serif, fontStyle: 'italic', fontSize: 20, color: brand.colors.slot }}>
-                {leadWatch.model}
+                {displayWatch.model}
               </div>
             </div>
           </div>

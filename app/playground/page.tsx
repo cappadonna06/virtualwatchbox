@@ -9,7 +9,6 @@ import {
   buildBoxShareUrl,
   getPlaygroundBoxSlug,
   getProfileDemoState,
-  syncPublicProfileSnapshot,
 } from '@/lib/profileDemo'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { watches as catalogWatches } from '@/lib/watches'
@@ -19,7 +18,6 @@ import {
   getEntrySlot,
   importCollectionToPlaygroundBox,
   moveEntryToSlot,
-  normalizePlaygroundBoxes,
   placeWatchInPlaygroundSlot,
   resolvePlaygroundWatches,
   tryAddOrGrowPlaygroundBox,
@@ -28,7 +26,6 @@ import {
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import WatchTray from '@/components/playground/WatchTray'
-import { PLAYGROUND_BOXES_STORAGE_KEY } from '@/lib/storageKeys'
 import { packToSlotCount } from '@/lib/watchboxOverflow'
 import WatchBox from '@/components/collection/WatchBox'
 import ResponsiveSidebarSheet from '@/components/collection/ResponsiveSidebarSheet'
@@ -96,13 +93,18 @@ function PlaygroundPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user } = useAuth()
-  const { collectionWatches, followedWatches } = useCollectionSession()
+  const {
+    collectionWatches,
+    followedWatches,
+    playgroundBoxes: boxes,
+    setPlaygroundBoxes: setBoxes,
+    playgroundHydrated: hydrated,
+  } = useCollectionSession()
   const requestedBoxId = searchParams.get('boxId')
   const requestedEntryId = searchParams.get('entryId')
   const [shareDisplayName, setShareDisplayName] = useState('')
 
-  const [boxes, setBoxes] = useState<PlaygroundBox[]>(SEEDED_PLAYGROUND_BOXES)
-  const [activeBoxId, setActiveBoxId] = useState<string>(SEEDED_PLAYGROUND_BOXES[0].id)
+  const [activeBoxId, setActiveBoxId] = useState<string>(boxes[0]?.id ?? '')
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null)
   const [activeView, setActiveView] = useState<View>('watchbox')
   const [sortBy, setSortBy] = useState<SortMode>('manual')
@@ -114,44 +116,25 @@ function PlaygroundPageInner() {
   const [editingNameValue, setEditingNameValue] = useState('')
   const [renameModalOpen, setRenameModalOpen] = useState(false)
   const [mobileStatsOpen, setMobileStatsOpen] = useState(false)
-  const [hydrated, setHydrated] = useState(false)
   const [screenW, setScreenW] = useState(0)
   const [touchHoverSlot, setTouchHoverSlot] = useState<number | null>(null)
   const [wobbling, setWobbling] = useState(false)
   const [playgroundConfigOpen, setPlaygroundConfigOpen] = useState(false)
   const nameInputRef = useRef<HTMLInputElement>(null)
-  // Measure the actual rendered column width so the slot-grid math
-  // doesn't overflow when the column shrinks below screenW (e.g. when
-  // `minWidth: 0` lets the grid track shrink to fit available space).
   const columnRef = useRef<HTMLDivElement>(null)
   const [columnW, setColumnW] = useState(0)
+  const initialHydrationDone = useRef(false)
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(PLAYGROUND_BOXES_STORAGE_KEY)
-      const normalized = normalizePlaygroundBoxes(raw ? JSON.parse(raw) : null, SEEDED_PLAYGROUND_BOXES)
-      setBoxes(normalized)
-
-      const initialBoxId = normalized.some(box => box.id === requestedBoxId) ? requestedBoxId! : normalized[0]?.id
-      setActiveBoxId(initialBoxId ?? SEEDED_PLAYGROUND_BOXES[0].id)
-
-      if (requestedEntryId) setSelectedEntryId(requestedEntryId)
-    } catch {
-      setBoxes(SEEDED_PLAYGROUND_BOXES)
-    } finally {
-      setHydrated(true)
+    if (!hydrated || initialHydrationDone.current) return
+    initialHydrationDone.current = true
+    if (requestedBoxId && boxes.some(b => b.id === requestedBoxId)) {
+      setActiveBoxId(requestedBoxId)
+    } else if (boxes.length > 0) {
+      setActiveBoxId(boxes[0].id)
     }
-  }, [requestedBoxId, requestedEntryId])
-
-  useEffect(() => {
-    if (!hydrated) return
-    localStorage.setItem(PLAYGROUND_BOXES_STORAGE_KEY, JSON.stringify(boxes))
-  }, [boxes, hydrated])
-
-  useEffect(() => {
-    if (!hydrated) return
-    syncPublicProfileSnapshot({ playgroundBoxes: boxes })
-  }, [boxes, hydrated])
+    if (requestedEntryId) setSelectedEntryId(requestedEntryId)
+  }, [hydrated, requestedBoxId, requestedEntryId, boxes])
 
   useLayoutEffect(() => {
     const update = () => setScreenW(window.innerWidth)
