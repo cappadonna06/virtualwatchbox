@@ -1,8 +1,8 @@
-# Virtual Watchbox PRD — v1.13
+# Virtual Watchbox PRD — v1.14
 
 **Site:** virtualwatchbox.com  
 **Tagline:** *Showcase Your Timepieces. Discover What's Next.*  
-**Updated:** May 2026 — v1.13
+**Updated:** May 2026 — v1.14
 
 | Version | Change |
 |---|---|
@@ -20,6 +20,7 @@
 | v1.11 | Added Feature 6 — Settings & Account Controls, including account deletion/data controls, privacy/sharing controls, and legal transparency surfaces. |
 | v1.12 | Shipped Feature 9 — AI Photo Identification ("Watchbox Concierge") end-to-end with verify vs intake split, market-value capture, and dial-bbox cropping. Added Feature 2D — Per-Watch Photo Gallery (sidebar + owned-watch detail page + lightbox + drag-reorder). Added Feature 2E — Owned Watch Detail Page (`/collection/watch/[id]`). Updated Feature 3 with duplicate-aware add page and add-from-photo for not-in-catalog watches. Added Feature 13 — Admin Catalog & Submissions Tooling. Documented `/news` (Feature 11) and `/discover` (new Feature 14) which were already shipped but listed as pending in v1.11. **Intent fix:** Grail no longer has a planned `/collection` surface — by definition Grail is unowned, so its home is the FeaturedProfileWatch picker on `/profile`. The earlier "Grail surface on /collection" planning was dropped. The `/collection` UI pass now scopes to Next Targets treatment + header / stats / cards / mobile polish. |
 | v1.13 | **Catalog scale-up:** 35,659 catalog watches in Supabase with 4,000+ imaged; server-side search via pg_trgm full-text index + curated nicknames; heat-score algorithm rework. **Discover editorial redesign:** magazine-style layout with LLM-personalized hero, daily-rotated recommendations, per-section refresh, model-family filtering, mobile compact dark hero. **Playground upgrades:** import collection on empty box, drag-from-tray with long-press reorder + sparse slots + drag-to-trash, Supabase persistence for logged-in users. **Admin image-review tool** at `/admin/image-review` with failure-mode tagging. **Collection improvements:** empty-state CTA with auth-nudge layer, stability fix decoupling owned-set from heat-score cache. Updated Feature 3 search infrastructure, Feature 4 shipped scope, Feature 13 with image-review, Feature 14 with editorial redesign. Cleaned Phase 3 of already-shipped duplicates. |
+| v1.14 | **Next Targets moved from `/collection` to `/discover`** — aspirational watches belong on the discovery surface, not the owned-watches surface (same principle that moved Grail to `/profile`). Added Targets/Grail section to Feature 14 (Discover) as § 03 between Upgrade and Next Slot. **Feature 2D photo categories promoted from P2 to P0** — photo type picker (wrist shot, receipt, warranty card, case back, etc.) surfaced in upload and lightbox. Added document-oriented types: `receipt`, `warranty_card`, `service_record`. **Feature 2F — Service History** — new per-watch service tracking with timeline, next-due estimates, and cost tracking. Added "Papers & Provenance" and "Service History" sections to Feature 2E detail page. Updated data model with `WatchServiceRecord` type. Updated `/collection` UI pass scope to remove Targets (now on Discover) and add ownership detail fields. |
 
 ---
 
@@ -168,13 +169,13 @@ Unsaved changes bar:
 
 **`/collection` UI pass.** A cohesive visual + structural review of the working surface, scoped to:
 
-- **Next Targets treatment** (max 3) — dedicated panel or strip with intent type, target price, desired condition, optional linked Playground box, and per-target `Track Listings →` affiliate CTA. Data already wired (`nextTargets[]`) — surface is what's missing. This is the single highest-ROI affiliate hook on the page.
 - **Header / value pill / action button** spacing and hierarchy review
 - **Stats section** typography and density pass (portfolio value, dial colors, watch types, complications, brand breakdown)
 - **Cards view** spacing + status badge consistency
 - **Mobile reflow** for sidebar → bottom sheet transitions and overflow behavior
+- **Surface existing ownership detail fields in EditWatchModal** — `has_box`, `has_papers`, `acquisition_method`, `warranty_expires_at`, `last_serviced_at`, `service_notes`. These columns exist in Supabase (migration 017) but aren't exposed in the edit UI yet.
 
-> Grail is intentionally **not** part of the `/collection` surface. By the rules in Feature 2B (Category 5), Grail is unowned by definition; its home is the FeaturedProfileWatch picker on `/profile`. Earlier roadmap drafts had a "Grail surface on /collection" item — that was a category error and is dropped.
+> Both Grail and Next Targets are intentionally **not** on `/collection`. `/collection` is the truth about what the user owns. Aspirational/intent surfaces belong on `/discover` (Targets/Grail section) and `/profile` (FeaturedProfileWatch picker). See Feature 14 § 03 for the Targets/Grail treatment.
 
 **Other near-term:**
 - Save as Playground flow
@@ -303,8 +304,8 @@ Up to 3 followed watches the user plans to acquire next. This is a curated short
 - Target date (optional)
 
 **UI**
-- Dedicated panel or strip on `/collection`
-- Public profile surfacing is possible later, but `/collection` is the primary working surface
+- Dedicated section on `/discover` (§ 03 — see Feature 14). Targets and Grail are aspirational/intent state — they belong on the discovery surface alongside algorithmic recommendations, not on `/collection` (owned-watches truth).
+- Public profile surfacing is possible later
 - Each target includes `Track Listings →` affiliate CTA
 
 **Data:** `nextTargets: WatchTarget[]` (max 3)
@@ -363,7 +364,7 @@ Exactly one owned watch designated as the centerpiece or pride of the user's act
 | In My Collection | Unlimited | Homepage + `/collection` + `/collection/watch/[id]` | Full ownership + photo gallery | Yes | Find For Sale, Sell, Swap Strap, Manage gallery |
 | Playground Watches | Unlimited | `/playground` | Per-box config + optional per-entry overrides | Box-level only | Find For Sale, Add to Collection, Edit, Delete |
 | Followed Watches | Unlimited | Dedicated surface pending; profile section later | None | No | Add to Collection, Promote to Target, Set as Grail |
-| Next Targets | 3 | `/collection` panel | Target metadata on followed watches | No | Track Listings |
+| Next Targets | 3 | `/discover` § 03 | Target metadata on followed watches | No | Track Listings |
 | Grail | 1 | Profile card (FeaturedProfileWatch picker on `/profile`) | Special designation on unowned followed watch | No | Find on Market |
 | Collection Jewel | 1 | Collection watchbox/cards + profile hero | Special designation on owned watch | No | View in Collection, Swap Strap, Service, Insure |
 
@@ -438,6 +439,32 @@ Admin curation upgrades the watchbox slot but never hides user photos — they a
 - Owner-only on collection / playground (when owned)
 - Hidden in `mode='public'` and `mode='followed'`
 
+#### Photo Categories
+
+Each gallery photo has an optional `photoType` that classifies it for filtering and section grouping on the detail page. The column exists in Supabase (migration 018) but is not yet exposed in the UI.
+
+**Photo types:**
+
+| Type | Label | Use |
+|---|---|---|
+| `wrist_shot` | Wrist shot | On-wrist photo |
+| `dial` | Dial | Close-up of the dial face |
+| `case_back` | Case back | Movement or serial view |
+| `macro` | Macro | Detail shot (bezel, crown, lume, etc.) |
+| `lifestyle` | Lifestyle | Watch in context (desk, travel, etc.) |
+| `receipt` | Receipt | Purchase receipt or invoice |
+| `warranty_card` | Warranty card | Manufacturer warranty / guarantee card |
+| `service_record` | Service record | Service invoice or receipt |
+| `box_papers` | Box & papers | Photo of original box, papers, hang tags |
+| `other` | Other | Anything else |
+
+**UI for type selection:**
+- **On upload:** optional type picker chips below the file drop zone (defaults to no type / auto-detect later)
+- **In lightbox toolbar:** type selector pill next to the caption edit action. Tap to cycle or pick from a dropdown
+- **Gallery filtering:** detail page gallery groups photos by type when more than ~6 photos exist — "Wrist shots", "Documents & Papers", "Detail" sections. Below 6, flat grid with type badge overlay
+
+**Documents & Papers grouping:** `receipt`, `warranty_card`, `service_record`, `box_papers` are surfaced together as a "Papers & Provenance" section on the detail page (Feature 2E). This gives collectors a single place to store proof of purchase, warranty status, and service history alongside the watch record.
+
 #### Data
 
 ```typescript
@@ -449,20 +476,36 @@ export interface UserWatchPhoto {
   sortOrder: number
   isPrimary: boolean
   createdAt: string
+  photoType?: PhotoType
+  takenAt?: string        // date when photo was taken
 }
+
+export type PhotoType =
+  | 'wrist_shot'
+  | 'dial'
+  | 'case_back'
+  | 'macro'
+  | 'lifestyle'
+  | 'receipt'
+  | 'warranty_card'
+  | 'service_record'
+  | 'box_papers'
+  | 'other'
 ```
 
-Backed by `public.user_watch_photos` with RLS scoped to the owner. Backfilled from the legacy single `watches.photo_url` on migration.
+Backed by `public.user_watch_photos` with RLS scoped to the owner. Backfilled from the legacy single `watches.photo_url` on migration. `photo_type` and `taken_at` columns added in migration 018.
 
 | Feature | Priority |
 |---|---|
-| Sidebar thumbnail strip + lightbox | P0 |
-| Grid variant on owned watch detail page | P0 |
-| Upload (file picker + drag-drop) + camera | P0 |
-| Set-primary + delete + captions | P0 |
-| Drag-to-reorder | P0 |
-| AI photo flow auto-add | P0 |
-| Photo categories (wrist / service / receipt) | P2 |
+| Sidebar thumbnail strip + lightbox | P0 (shipped) |
+| Grid variant on owned watch detail page | P0 (shipped) |
+| Upload (file picker + drag-drop) + camera | P0 (shipped) |
+| Set-primary + delete + captions | P0 (shipped) |
+| Drag-to-reorder | P0 (shipped) |
+| AI photo flow auto-add | P0 (shipped) |
+| Photo type picker in upload + lightbox | P0 |
+| Photo type badge on gallery thumbnails | P0 |
+| "Papers & Provenance" grouped section on detail page | P0 |
 | In-app crop for gallery photos | P2 |
 
 ---
@@ -475,8 +518,11 @@ Focused, full-page surface for a specific owned watch instance. Distinct from th
 
 - **Sticky image column** (desktop) using the standard image fallback chain
 - **Specs column** with full grid: brand, model, reference, watch type, est. market value, case size, material, dial color, movement, complications, condition, ownership status, purchase date, price paid, notes
+- **Ownership detail strip** — below specs: acquisition method, has box, has papers, warranty expiry. Compact chip/badge layout. Values come from existing Supabase columns (migration 017) surfaced through `EditWatchModal`.
 - **Edit + Delete** icon buttons in the specs header — Edit opens the existing `EditWatchModal`
-- **Bottom gallery section** — Feature 2D in grid variant (large tiles, captions, drag-reorder, lightbox)
+- **Papers & Provenance section** — filtered gallery view showing only document-type photos (`receipt`, `warranty_card`, `service_record`, `box_papers`). Appears between specs and the main gallery when document photos exist. Compact horizontal strip with type label badges. Gives collectors a single place to find proof of purchase, warranty cards, and service receipts without scrolling through wrist shots.
+- **Service History section** (Feature 2F) — service timeline card below Papers & Provenance. Shows past services, next service due estimate, and total service cost.
+- **Bottom gallery section** — Feature 2D in grid variant (large tiles, captions, drag-reorder, lightbox). When >6 photos, groups by type ("Wrist shots", "Detail", "Documents") with section headers.
 
 Mobile: image and specs stack; gallery becomes 2-up.
 
@@ -490,11 +536,94 @@ The watchbox slot and card view continue to open the sidebar — the detail page
 
 | Feature | Priority |
 |---|---|
-| `/collection/watch/[id]` route | P0 |
-| Edit modal integration | P0 |
-| Delete with confirm | P0 |
-| Bottom gallery section | P0 |
+| `/collection/watch/[id]` route | P0 (shipped) |
+| Edit modal integration | P0 (shipped) |
+| Delete with confirm | P0 (shipped) |
+| Bottom gallery section | P0 (shipped) |
+| Ownership detail strip (box, papers, acquisition, warranty) | P0 |
+| Papers & Provenance section (document photo grouping) | P0 |
+| Service History section (Feature 2F) | P0 |
+| Photo type grouping in gallery (>6 photos) | P1 |
 | Per-instance ownership + sharing visibility (multi-instance owners) | P1 |
+
+---
+
+### Feature 2F — Service History
+
+Per-watch service tracking. Collectors need to know when each watch was last serviced, what was done, what it cost, and when service is next due. Mechanical watches typically need full service every 5–7 years; this feature surfaces that cadence.
+
+#### Why
+
+"Needs Service" is already an ownership status (OwnershipStatus), but there's no structured record of *what* was serviced, *when*, or *what's coming next*. Service history is one of the most valuable records a collector maintains — it directly affects resale value, warranty status, and long-term ownership cost.
+
+#### Service Record
+
+Each owned watch can have zero or more service records, ordered by date.
+
+```typescript
+export interface WatchServiceRecord {
+  id: string
+  watchId: string           // owned-watch id
+  serviceDate: string       // ISO date
+  serviceType: ServiceType
+  provider?: string         // "Rolex Service Center", "local watchmaker", etc.
+  cost?: number             // in user's currency
+  currency?: string         // default 'USD'
+  notes?: string            // free text
+  createdAt: string
+}
+
+export type ServiceType =
+  | 'full_service'           // complete movement overhaul
+  | 'partial_service'        // targeted repair
+  | 'battery_replacement'    // quartz only
+  | 'crystal_replacement'
+  | 'bracelet_service'       // link adjustment, clasp repair, polish
+  | 'water_resistance_test'
+  | 'polishing'
+  | 'regulation'             // timing adjustment
+  | 'other'
+```
+
+#### UI — Detail Page Section
+
+Appears on the owned-watch detail page (`/collection/watch/[id]`) between Papers & Provenance and the photo gallery.
+
+**Empty state:**
+- Muted card: "No service history yet" with `+ Log a service` CTA
+
+**With records:**
+- **Service timeline** — compact vertical timeline, most recent first. Each entry shows: date, service type badge, provider (if set), cost (if set), and notes excerpt
+- **Next service estimate** — computed from the most recent `full_service` date + 5 years (configurable per movement type later). Shows as a subtle "Next full service: ~March 2029" line above the timeline when a full service exists. If overdue, shows in a warm amber treatment.
+- **Total service cost** — sum of all recorded costs, shown as a running total at the bottom of the timeline
+- **`+ Log a service` CTA** — opens an inline form or modal with: date, service type (pill selector), provider (text), cost (number), notes (textarea)
+
+**Sidebar hint:**
+- When service records exist, the sidebar specs section shows a "Last serviced: [date]" line. Pulls from the most recent `WatchServiceRecord.serviceDate` (or falls back to `lastServicedAt` on the watch if no records exist yet).
+- "Needs Service" ownership status + overdue service estimate together surface a gentle amber nudge
+
+#### Persistence
+
+New Supabase table: `public.watch_service_records`
+- RLS scoped to the owner (same pattern as `user_watch_photos`)
+- Columns mirror `WatchServiceRecord` type above
+- Indexed on `watch_id` for per-watch queries
+
+The existing `watches.last_serviced_at` and `watches.service_notes` fields (migration 017) serve as a lightweight fallback for users who don't want to log structured records. The detail page checks `watch_service_records` first; if empty, falls back to `last_serviced_at` for the sidebar hint.
+
+#### Functional Requirements
+
+| Feature | Priority |
+|---|---|
+| `watch_service_records` Supabase table + RLS | P0 |
+| Log a service form (date, type, provider, cost, notes) | P0 |
+| Service timeline on detail page | P0 |
+| Next service estimate (5yr from last full service) | P0 |
+| Total service cost running total | P0 |
+| Sidebar "Last serviced" hint | P0 |
+| Service record photo linking (attach `service_record` photos to a record) | P1 |
+| Movement-type-aware service interval (manual vs quartz vs spring drive) | P1 |
+| Service reminder notifications | P2 |
 
 ---
 
@@ -1171,6 +1300,7 @@ Magazine-style editorial layout replacing the earlier utility-stack design. Seve
 - **Box insight cards** — analytical read of the user's collection (gaps, dial-color skew, brand concentration). Designed to surface "what might round out the box"
 - **Next slot recommendations** — watch cards keyed to the user's empty slot count + spend pattern, with `Find on Market →` deep links (Chrono24)
 - **Upgrade suggestions** — from-to upgrade spreads per owned watch, surfacing plausible upgrade paths using model-family filtering for dedup/exclusion (no same-model upgrades, prefers different brands). LLM-generated per-pair rationale
+- **My Targets / Grail** (§ 03) — user-curated aspirational watches. Shows up to 3 Next Targets with intent type, target price, desired condition, and per-target `Track Listings →` affiliate CTA. If a Grail is set, it appears as a featured card above the targets with crown-icon treatment and `Find on Market →` CTA. This section is the user-curated counterpart to the algorithmic suggestions in the surrounding sections. Only renders for logged-in users with at least one target or grail set. Entry point for setting targets: sidebar `Set as Target` action on any followed watch. The section includes an inline `+ Add a target` CTA linking to followed watches. This is the single highest-ROI affiliate surface — each target represents explicit purchase intent.
 - **Alternate next watches** — three sections of daily-rotated recommendations from ranked top-10 pools, with per-section refresh buttons. Deterministic daily index (seeded by UTC day + section key) picks one watch per pool for stable intra-day viewing
 - **Discover Reads strip** — curated editorial pulls (typically the top-tagged articles from the news feed for the user's brands of interest)
 
@@ -1196,6 +1326,7 @@ Magazine-style editorial layout replacing the earlier utility-stack design. Seve
 | Box insight cards | P0 (shipped) |
 | Next slot recommendations with Chrono24 deep links | P0 (shipped) |
 | From-to upgrade spreads with model-family filtering | P0 (shipped) |
+| My Targets / Grail section (§ 03) with affiliate CTAs | P0 |
 | Mobile compact dark hero | P0 (shipped) |
 | Sticky section TOC | P0 (shipped) |
 | Strap suggestions (lug-width aware) | P0 (TODO — placeholder removed 2026-05, pending redesign) |
@@ -1347,7 +1478,32 @@ export interface UserWatchPhoto {
   sortOrder: number
   isPrimary: boolean
   createdAt: string
+  photoType?: PhotoType
+  takenAt?: string
 }
+
+export type PhotoType =
+  | 'wrist_shot' | 'dial' | 'case_back' | 'macro' | 'lifestyle'
+  | 'receipt' | 'warranty_card' | 'service_record' | 'box_papers'
+  | 'other'
+
+// Per-watch service record (Feature 2F)
+export interface WatchServiceRecord {
+  id: string
+  watchId: string
+  serviceDate: string
+  serviceType: ServiceType
+  provider?: string
+  cost?: number
+  currency?: string
+  notes?: string
+  createdAt: string
+}
+
+export type ServiceType =
+  | 'full_service' | 'partial_service' | 'battery_replacement'
+  | 'crystal_replacement' | 'bracelet_service' | 'water_resistance_test'
+  | 'polishing' | 'regulation' | 'other'
 
 export type UserCollectionState = {
   collectionWatches: Watch[]
@@ -1384,7 +1540,7 @@ Behavior requirements:
 
 ### Backend
 
-- **Supabase** (PostgreSQL) for persistence — auth, user profiles, watches, watch_states, watchbox_config, playground_boxes (synced for logged-in users), catalog_watches, catalog_watch_market (heat scores), watch_images, watch_image_reviews, user_watch_photos
+- **Supabase** (PostgreSQL) for persistence — auth, user profiles, watches, watch_states, watchbox_config, playground_boxes (synced for logged-in users), catalog_watches, catalog_watch_market (heat scores), watch_images, watch_image_reviews, user_watch_photos, watch_service_records
 - **Supabase Auth** for accounts (Google OAuth + magic link)
 - **Supabase Storage** for all user-uploaded imagery — buckets:
   - `watch-photos` (user uploads — gallery, profile, watchbox photos, AI flow uploads)
@@ -1452,16 +1608,20 @@ Behavior requirements:
 
 ### Phase 3 — Next Product Surface Work
 
+- **Targets/Grail section on `/discover`** (§ 03) — user-curated aspirational watches with affiliate CTAs (Feature 14)
+- **Photo type picker + document grouping** — surface `photoType` in upload/lightbox, "Papers & Provenance" section on detail page (Feature 2D/2E)
+- **Ownership detail fields in EditWatchModal** — has_box, has_papers, acquisition_method, warranty_expires_at, last_serviced_at (Feature 2A)
+- **Service History** — `watch_service_records` table, service timeline on detail page, next-due estimate (Feature 2F)
+- `/collection` UI pass (header / stats / cards / mobile polish — Targets moved to Discover)
+- Drag-to-reorder in Collection (Playground drag shipped in Phase 2)
+- Save as Playground from Collection drafts
 - `/profile` demo page backed by localStorage
 - Public readonly box pages
-- Followed → Next Targets → Grail/Jewel integration
+- Followed → Next Targets → Grail/Jewel integration across surfaces
 - Static My Collection section on profile
 - Playground carousel on profile
 - Followed Watches section on profile
 - Clipboard profile and box share links
-- Save as Playground from Collection drafts
-- Drag-to-reorder in Collection (Playground drag shipped in Phase 2)
-- `/collection` UI pass (Next Targets treatment + header / stats / cards / mobile polish)
 
 ### Phase 4 — Public Identity + Discovery
 
@@ -1487,8 +1647,17 @@ The items below are intentionally tracked as pending even if placeholders or toa
 ### Navigation & Surfaces
 *(All primary routes shipped: `/news`, `/discover` (with editorial redesign), `/settings` at P0 scope, `/playground` with Supabase persistence and drag support. See open P1/P2 items below.)*
 
-### Collection
-- `/collection` UI pass (Next Targets treatment + header / stats / cards / mobile polish — see Feature 2A "Near-Term Expansion")
+### Discover (next priority)
+- **Targets/Grail section (§ 03)** — user-curated aspirational watches between Upgrade and Next Slot sections, with affiliate CTAs (Feature 14)
+- Strap suggestions — lug-width-aware strap recommendations (placeholder removed 2026-05, pending redesign)
+- Box upgrade affiliate card — physical watchbox matching (placeholder removed 2026-05, pending redesign)
+
+### Collection — Ownership Depth
+- **Photo type picker** in upload flow + lightbox (Feature 2D). DB columns exist (migration 018), UI not wired.
+- **Papers & Provenance section** on detail page — filtered gallery view for document photos (Feature 2E)
+- **Ownership detail fields in EditWatchModal** — has_box, has_papers, acquisition_method, warranty_expires_at, last_serviced_at, service_notes. Columns exist (migration 017), UI not wired.
+- **Service History** — new `watch_service_records` table, timeline + next-due estimate on detail page (Feature 2F)
+- `/collection` UI pass (header / stats / cards / mobile polish — see Feature 2A "Near-Term Expansion")
 - Save as Playground from Collection drafts
 - Drag-to-reorder in Collection (Playground drag-to-reorder is shipped)
 
@@ -1501,10 +1670,6 @@ The items below are intentionally tracked as pending even if placeholders or toa
 ### Profile & Public
 - Account-backed public profile routes (`/u/[handle]`)
 - Account-backed public box routes
-
-### Discover (shipped; pending sections)
-- Strap suggestions — lug-width-aware strap recommendations (placeholder removed 2026-05, pending redesign)
-- Box upgrade affiliate card — physical watchbox matching (placeholder removed 2026-05, pending redesign)
 
 ### Intelligence & Commerce
 - Smart Suggestions engine (Feature 8) — `/discover` ships with LLM-personalized + rule-based recommendations today; the fully personalized engine is the upgrade path
@@ -1555,4 +1720,4 @@ The items below are intentionally tracked as pending even if placeholders or toa
 
 ---
 
-*Virtual Watchbox · virtualwatchbox.com · PRD v1.13 · May 2026*
+*Virtual Watchbox · virtualwatchbox.com · PRD v1.14 · May 2026*

@@ -75,12 +75,24 @@ Mark `[x]` when done.
 - [x] **RM** ~~Edit owned watch metadata from sidebar~~ — **Done.** EditWatchModal exists for condition / ownership status / purchase price / purchase date / notes. Available from sidebar pencil icon and the new owned-watch detail page (`/collection/watch/[id]`).
 - [x] **RM** ~~Collection Jewel state~~ — **Done.** PRD v1.12 Feature 2B Category 6. Sidebar Jewel badge, WatchStateControl picker offers `[followed, jewel]` for owned watches, profile hero selector (FeaturedProfileWatch) toggles between Grail and Jewel. Watch cards show the jewel badge.
 - [ ] **RM** `/collection` UI pass — broader visual / structural polish on the working surface, including:
-  - **Next Targets treatment** (max 3) — dedicated panel or strip with intent type, target price, desired condition, optional linked Playground box, and per-target `Track Listings →` affiliate CTA. Data already wired (`nextTargets[]`); the surface is what's missing. Monetization hook.
   - **Header / value pill / action button** spacing and hierarchy review
   - **Stats section** typography and density pass (portfolio value, dial colors, watch types, complications, brands)
   - **Cards view** spacing + status badge consistency
   - **Mobile reflow** for sidebar → bottom sheet transitions and overflow behavior
-  - *Note: Grail does NOT belong on `/collection`. By definition Grail is unowned (must not be in My Collection). Grail's home is `/profile` as part of the FeaturedProfileWatch picker. The earlier "Grail surface on /collection" item was a category error and is dropped.*
+  - **Surface existing ownership fields in EditWatchModal** — has_box, has_papers, acquisition_method, warranty_expires_at, last_serviced_at, service_notes (columns exist in migration 017, not in UI)
+  - *Note: Both Targets and Grail are intentionally NOT on `/collection`. `/collection` is the truth about what the user owns. Targets moved to `/discover` § 03 (PRD v1.14). Grail's home is `/profile`.*
+
+---
+
+## Phase 1.5 — Ownership Depth
+*Make the collection page the definitive record of what you own — not just the watches, but the provenance, papers, and service history.*
+
+- [ ] **RM** Targets/Grail section on `/discover` (§ 03) — user-curated aspirational watches between Upgrade and Next Slot sections. Up to 3 targets with intent type, target price, `Track Listings →` affiliate CTA. Grail card with crown treatment above targets when set. Highest-ROI affiliate surface — explicit purchase intent. Data already wired (`nextTargets[]`, `grailWatchId`).
+- [ ] **RM** Photo type picker — surface `photoType` in upload flow (optional chips) and lightbox toolbar (type selector pill). DB column exists (migration 018, `user_watch_photos.photo_type`), not wired in UI.
+- [ ] **RM** Papers & Provenance section on detail page — filtered gallery view for document-type photos (`receipt`, `warranty_card`, `service_record`, `box_papers`). Compact horizontal strip between specs and main gallery.
+- [ ] **RM** Ownership detail strip on detail page — acquisition method, has box, has papers, warranty expiry. Compact chips below specs. Data exists (migration 017), needs `EditWatchModal` UI + detail page display.
+- [ ] **RM** Service History (Feature 2F) — new `watch_service_records` Supabase table. Service timeline on detail page with past services, next-due estimate (5yr from last full service), running cost total. `+ Log a service` form. Sidebar "Last serviced" hint.
+- [ ] **RM** Expand `EditWatchModal` — add has_box, has_papers, acquisition_method, warranty_expires_at, last_serviced_at tabs/sections to the existing modal.
 
 ---
 
@@ -122,4 +134,4 @@ Mark `[x]` when done.
 
 ---
 
-*Last updated: May 23, 2026 · PRD reference: v1.13*
+*Last updated: May 23, 2026 · PRD reference: v1.14*

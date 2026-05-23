@@ -9,7 +9,7 @@ Read this file before writing any code for this project.
 Virtual Watchbox is a luxury-tech web app for watch collectors to showcase, manage, and explore their collections through a realistic virtual watch box experience.
 
 **Tagline:** *Showcase Your Timepieces. Discover What's Next.*
-**Current PRD:** `docs/PRD-v1.13.md`
+**Current PRD:** `docs/PRD-v1.14.md`
 
 Read the PRD before implementing any feature. It defines the product vision, watch data model, feature scope, roadmap, and what is/isn't built yet. Do not implement roadmap features that aren't explicitly assigned.
 
@@ -32,6 +32,9 @@ Current user-backed persistence includes:
   - `frame`, `lining`, `slot_count`
   - `watchbox_photo_url`, `watchbox_photo_crop`
 - `public.playground_boxes`
+- `public.user_watch_photos`
+  - `photo_type` (migration 018, not yet surfaced in UI)
+- `public.watch_service_records` (planned — Feature 2F)
 
 If a new user-based field is added in UI state (`ProfileDemoState`, collection session state, playground state, etc.), you must update all of:
 1. Supabase migration(s)
