@@ -20,7 +20,7 @@
 | v1.11 | Added Feature 6 — Settings & Account Controls, including account deletion/data controls, privacy/sharing controls, and legal transparency surfaces. |
 | v1.12 | Shipped Feature 9 — AI Photo Identification ("Watchbox Concierge") end-to-end with verify vs intake split, market-value capture, and dial-bbox cropping. Added Feature 2D — Per-Watch Photo Gallery (sidebar + owned-watch detail page + lightbox + drag-reorder). Added Feature 2E — Owned Watch Detail Page (`/collection/watch/[id]`). Updated Feature 3 with duplicate-aware add page and add-from-photo for not-in-catalog watches. Added Feature 13 — Admin Catalog & Submissions Tooling. Documented `/news` (Feature 11) and `/discover` (new Feature 14) which were already shipped but listed as pending in v1.11. **Intent fix:** Grail no longer has a planned `/collection` surface — by definition Grail is unowned, so its home is the FeaturedProfileWatch picker on `/profile`. The earlier "Grail surface on /collection" planning was dropped. The `/collection` UI pass now scopes to Next Targets treatment + header / stats / cards / mobile polish. |
 | v1.13 | **Catalog scale-up:** 35,659 catalog watches in Supabase with 4,000+ imaged; server-side search via pg_trgm full-text index + curated nicknames; heat-score algorithm rework. **Discover editorial redesign:** magazine-style layout with LLM-personalized hero, daily-rotated recommendations, per-section refresh, model-family filtering, mobile compact dark hero. **Playground upgrades:** import collection on empty box, drag-from-tray with long-press reorder + sparse slots + drag-to-trash, Supabase persistence for logged-in users. **Admin image-review tool** at `/admin/image-review` with failure-mode tagging. **Collection improvements:** empty-state CTA with auth-nudge layer, stability fix decoupling owned-set from heat-score cache. Updated Feature 3 search infrastructure, Feature 4 shipped scope, Feature 13 with image-review, Feature 14 with editorial redesign. Cleaned Phase 3 of already-shipped duplicates. |
-| v1.14 | **Next Targets moved from `/collection` to `/discover`** — aspirational watches belong on the discovery surface, not the owned-watches surface (same principle that moved Grail to `/profile`). Added Targets/Grail section to Feature 14 (Discover) as § 03 between Upgrade and Next Slot. **Feature 2D photo categories promoted from P2 to P0** — photo type picker (wrist shot, receipt, warranty card, case back, etc.) surfaced in upload and lightbox. Added document-oriented types: `receipt`, `warranty_card`, `service_record`. **Feature 2F — Service History** — new per-watch service tracking with timeline, next-due estimates, and cost tracking. Added "Papers & Provenance" and "Service History" sections to Feature 2E detail page. Updated data model with `WatchServiceRecord` type. Updated `/collection` UI pass scope to remove Targets (now on Discover) and add ownership detail fields. |
+| v1.14 | **Next Targets moved from `/collection` to `/discover`** — aspirational watches belong on the discovery surface, not the owned-watches surface (same principle that moved Grail to `/profile`). Added Targets/Grail section to Feature 14 (Discover) as § 03 between Upgrade and Next Slot. **Feature 2D photo categories promoted from P2 to P0** — photo type picker (wrist shot, receipt, warranty card, case back, etc.) surfaced in upload and lightbox. Added document-oriented types: `receipt`, `warranty_card`, `service_record`. **Feature 2F — Service History** — new per-watch service tracking with timeline, next-due estimates, and cost tracking. Added "Papers & Provenance" and "Service History" sections to Feature 2E detail page. **Feature 7 rewritten as "The Strap Drawer"** — first-class strap inventory at `/collection/straps` with `UserStrap` + `StrapWatchOverride` data models, auto-match by lug width, manual overrides, combo stats, compatibility matrix. Replaces old one-liner stub + VW-17/VW-18. Updated data model with `UserStrap`, `StrapWatchOverride`, `StrapMaterial`, `StrapStyle`, `WatchServiceRecord` types. Updated `/collection` UI pass scope to remove Targets (now on Discover) and add ownership detail fields. |
 
 ---
 
@@ -1034,9 +1034,192 @@ A dedicated settings surface where collectors manage account, privacy, data, and
 
 ---
 
-### Feature 7 — Strap Customization & Matchmaking
+### Feature 7 — The Strap Drawer
 
-Virtually swap straps with compatibility filtering by lug width. Affiliate-linked purchase CTAs.
+A first-class strap inventory within the collection. Collectors don't just own watches — they own straps, and the interplay between the two is a core part of the hobby. The Strap Drawer makes straps a real entity with their own collection, compatibility logic, and stats.
+
+#### Why
+
+Straps are currently commerce-only in the product (affiliate suggestions on Discover). But collectors accumulate straps, swap them between watches, and think about compatibility constantly. Making straps an inventory item turns a transactional surface into a collector tool — and makes the commerce suggestions dramatically more targeted because the system knows what the user already owns vs. what they're missing.
+
+#### 7.1 Strap as a Data Entity
+
+Unlike watches, straps don't come from a universal catalog. Users add them manually — there's no Chrono24 or WatchBase for straps. The data model is intentionally simple.
+
+```typescript
+export type StrapMaterial =
+  | 'leather'
+  | 'rubber'
+  | 'nylon'         // NATO, ZULU, seatbelt
+  | 'canvas'
+  | 'fabric'        // perlon, sailcloth
+  | 'metal'         // mesh, milanese, aftermarket bracelet
+  | 'silicone'
+  | 'ceramic'
+  | 'exotic'        // alligator, ostrich, shark
+  | 'other'
+
+export type StrapStyle =
+  | 'dressy'
+  | 'sporty'
+  | 'casual'
+  | 'rugged'
+  | 'vintage'
+
+export interface UserStrap {
+  id: string
+  userId: string
+  name?: string               // "Brown Hirsch Rally", "OEM Tudor fabric"
+  brand?: string              // "Hirsch", "Barton", "OEM", etc.
+  material: StrapMaterial
+  color: string               // free text — "cognac", "navy", "olive"
+  lugWidthMm: number          // THE compatibility key — required
+  style?: StrapStyle
+  tapieredToMm?: number       // buckle-end width if tapered (e.g. 20mm → 16mm)
+  lengthMm?: number           // total length
+  claspType?: string          // "pin buckle", "deployant", "hook"
+  purchasePrice?: number
+  purchaseUrl?: string        // where they bought it (for re-purchase)
+  photoUrl?: string           // user photo of the strap
+  notes?: string
+  sortOrder: number
+  createdAt: string
+}
+```
+
+**Design choice — `lugWidthMm` is required.** Unlike watches where lug width is optional catalog data, a strap without a lug width is useless for compatibility. The add-strap flow makes this the only required field besides material.
+
+#### 7.2 Strap-Watch Compatibility
+
+**Auto-match rule:** A strap is compatible with a watch when `strap.lugWidthMm === watch.lugWidthMm`. Simple, correct for 95% of cases.
+
+**Manual overrides:** Users can mark a strap as "also fits" a specific watch even when lug widths don't match (adapter, force-fit, tapered strap that works ±1mm). Conversely, they can exclude a pairing (proprietary integrated bracelet, aesthetic mismatch they don't want suggested).
+
+```typescript
+export interface StrapWatchOverride {
+  id: string
+  strapId: string
+  watchId: string             // owned-watch id
+  override: 'fits' | 'excluded'
+  notes?: string
+}
+```
+
+**Effective compatibility** for a given strap-watch pair:
+1. If an override exists, use it (`fits` → compatible, `excluded` → incompatible)
+2. If watch `braceletType === 'integrated'`, incompatible (integrated bracelet watches can't take aftermarket straps)
+3. If both `lugWidthMm` values exist and match, compatible
+4. If either `lugWidthMm` is missing, unknown (shown in a separate "check fit" state)
+
+#### 7.3 Route & UI
+
+**Route:** `/collection/straps`
+
+A sub-route of `/collection` rather than a ViewSwitcher icon, so straps have room to breathe without crowding the watch views. Nav: the collection page header gets a secondary link or tab — "Watches" | "Straps" — making it clear both are part of the collection.
+
+**Page layout:**
+
+**Header**
+- Title: "Strap Drawer"
+- Subtitle: "{N} straps · {M} compatible watches · {P} possible combinations"
+- `+ Add Strap` CTA
+
+**Strap grid**
+- Card-based grid (not a watchbox — straps aren't slot-based)
+- Each card shows: color swatch or photo, name/brand, material badge, lug width, compatible watch count
+- Sort: by material, by lug width, by color, by date added
+- Filter chips: material type, lug width, style
+
+**Strap detail sidebar** (reuses the sidebar pattern from watches)
+- Strap photo or CSS-rendered material swatch (design prototype exists in `docs/design-system/`)
+- Full specs: material, color, lug width, taper, clasp, brand
+- **"Fits these watches"** section — list of compatible owned watches (auto-matched + manual overrides), each with a small watch thumbnail
+- **"Also fits" / "Doesn't fit"** toggle to add manual overrides per watch
+- Actions: Edit / Delete / `Buy another ↗` (affiliate link if `purchaseUrl` set, else generic search)
+
+**Add Strap flow**
+- Inline modal or sheet (not a dedicated route — straps are simpler than watches)
+- Fields: material (required, pill selector), lug width (required, common widths as presets: 18, 19, 20, 21, 22, 24mm), color (required, text), name (optional), brand (optional), style (optional pill selector), photo (optional upload), notes (optional)
+- Lug width presets highlight widths that match watches in the user's collection: "You have 3 watches with 20mm lugs"
+
+#### 7.4 Compatibility Matrix
+
+A visual surface showing which straps fit which watches — the "combo planner."
+
+**Route:** `/collection/straps/combos` or a toggle on the Strap Drawer page
+
+**Layout:** Grid/matrix with watches as columns and straps as rows (or vice versa on mobile). Cells show: green check (compatible), red X (excluded), gray question (unknown lug width). Clicking a cell could toggle override state.
+
+**Stats bar** (always visible on the Strap Drawer):
+- "Your {W} watches and {S} straps create **{C} possible combinations**"
+- C = sum of compatible straps per watch (accounts for overrides and integrated-bracelet exclusions)
+- Additional fun stats: "Most versatile strap: {name} (fits {N} watches)" · "Most options: {watch} ({N} straps)"
+
+#### 7.5 Collection Stats Integration
+
+The existing `/collection` stats section gains a strap dimension:
+- **Lug width distribution** — chip row showing lug widths across owned watches with counts (already partially computed by `computeStrapSummary()` in `lib/discover.ts`)
+- **Strap coverage** — "5 of 6 watches have at least one compatible strap"
+- **Material breakdown** — what strap materials the user owns
+
+#### 7.6 Discover Integration
+
+Once the Strap Drawer exists, the deferred strap suggestions on `/discover` become dramatically more targeted:
+
+- **"Missing strap" suggestions** — "You have 4 watches with 20mm lugs but no rubber strap in that size" → affiliate CTA
+- **"New watch, no strap" alert** — when a watch is added to collection and the user has no compatible straps, surface a suggestion
+- **Strap upgrade paths** — "Your leather strap is 2 years old — here are replacements" (if service tracking shows strap age)
+
+This replaces the earlier planned § 04 "Upgrade This Strap" section on Discover with something grounded in the user's actual strap inventory rather than generic suggestions. The design prototype in `docs/design-system/` can be adapted — the swatch cards and material textures are reusable.
+
+#### 7.7 Sidebar "Swap Strap" Action
+
+The existing stub button in `WatchSidebar.tsx` (currently shows "Coming soon" toast) gets wired to:
+1. If the user has straps: show a quick-pick list of compatible straps from their drawer, with "View all in Strap Drawer →" link
+2. If the user has no straps: "Start your Strap Drawer →" CTA linking to `/collection/straps`
+3. If the watch has an integrated bracelet: button is hidden or disabled with tooltip "Integrated bracelet — not strap-compatible"
+
+#### 7.8 Playground Integration
+
+Playground boxes could optionally show strap pairings — "this watch on this strap" — but this is a P2 stretch. The core feature is the owned-strap inventory on `/collection/straps`.
+
+#### Persistence
+
+New Supabase tables:
+
+**`public.user_straps`**
+- Columns mirror `UserStrap` type above
+- RLS scoped to owner (same pattern as `watches`, `user_watch_photos`)
+- Indexed on `user_id` and `lug_width_mm`
+
+**`public.strap_watch_overrides`**
+- Columns mirror `StrapWatchOverride` type above
+- RLS scoped to owner
+- Unique constraint on `(strap_id, watch_id)`
+- Foreign keys to `user_straps(id)` and `watches(id)` with `ON DELETE CASCADE`
+
+#### Functional Requirements
+
+| Feature | Priority |
+|---|---|
+| `user_straps` Supabase table + RLS | P0 |
+| Add Strap modal with material + lug width + color | P0 |
+| `/collection/straps` page with card grid | P0 |
+| Strap detail sidebar with specs + compatible watches | P0 |
+| Auto-match compatibility by lug width | P0 |
+| "Fits these watches" list in strap sidebar | P0 |
+| Combo count in page header stats | P0 |
+| Sort and filter (material, lug width, style) | P0 |
+| Manual fit overrides (also fits / excluded) | P0 |
+| `strap_watch_overrides` table | P0 |
+| Strap photo upload | P1 |
+| CSS-rendered material swatches (from design prototype) | P1 |
+| Compatibility matrix view | P1 |
+| Lug width distribution in collection stats | P1 |
+| Discover "missing strap" suggestions | P1 |
+| Sidebar "Swap Strap" quick-pick list | P1 |
+| Playground strap pairing | P2 |
+| Strap affiliate URL builders (WatchWarehouse, Etsy) | P2 |
 
 ---
 
@@ -1505,6 +1688,41 @@ export type ServiceType =
   | 'crystal_replacement' | 'bracelet_service' | 'water_resistance_test'
   | 'polishing' | 'regulation' | 'other'
 
+// Strap inventory (Feature 7)
+export type StrapMaterial =
+  | 'leather' | 'rubber' | 'nylon' | 'canvas' | 'fabric'
+  | 'metal' | 'silicone' | 'ceramic' | 'exotic' | 'other'
+
+export type StrapStyle = 'dressy' | 'sporty' | 'casual' | 'rugged' | 'vintage'
+
+export interface UserStrap {
+  id: string
+  userId: string
+  name?: string
+  brand?: string
+  material: StrapMaterial
+  color: string
+  lugWidthMm: number          // required — the compatibility key
+  style?: StrapStyle
+  taperedToMm?: number
+  lengthMm?: number
+  claspType?: string
+  purchasePrice?: number
+  purchaseUrl?: string
+  photoUrl?: string
+  notes?: string
+  sortOrder: number
+  createdAt: string
+}
+
+export interface StrapWatchOverride {
+  id: string
+  strapId: string
+  watchId: string
+  override: 'fits' | 'excluded'
+  notes?: string
+}
+
 export type UserCollectionState = {
   collectionWatches: Watch[]
   followedWatchIds: string[]
@@ -1515,6 +1733,7 @@ export type UserCollectionState = {
   selectedWatchId: string | null
   publicProfile: PublicProfileState
   photosByWatchId: Map<string, UserWatchPhoto[]>
+  straps: UserStrap[]
 }
 ```
 
@@ -1540,7 +1759,7 @@ Behavior requirements:
 
 ### Backend
 
-- **Supabase** (PostgreSQL) for persistence — auth, user profiles, watches, watch_states, watchbox_config, playground_boxes (synced for logged-in users), catalog_watches, catalog_watch_market (heat scores), watch_images, watch_image_reviews, user_watch_photos, watch_service_records
+- **Supabase** (PostgreSQL) for persistence — auth, user profiles, watches, watch_states, watchbox_config, playground_boxes (synced for logged-in users), catalog_watches, catalog_watch_market (heat scores), watch_images, watch_image_reviews, user_watch_photos, watch_service_records, user_straps, strap_watch_overrides
 - **Supabase Auth** for accounts (Google OAuth + magic link)
 - **Supabase Storage** for all user-uploaded imagery — buckets:
   - `watch-photos` (user uploads — gallery, profile, watchbox photos, AI flow uploads)

@@ -35,6 +35,8 @@ Current user-backed persistence includes:
 - `public.user_watch_photos`
   - `photo_type` (migration 018, not yet surfaced in UI)
 - `public.watch_service_records` (planned — Feature 2F)
+- `public.user_straps` (planned — Feature 7)
+- `public.strap_watch_overrides` (planned — Feature 7)
 
 If a new user-based field is added in UI state (`ProfileDemoState`, collection session state, playground state, etc.), you must update all of:
 1. Supabase migration(s)

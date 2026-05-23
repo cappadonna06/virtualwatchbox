@@ -28,6 +28,7 @@ Mark `[x]` when done.
 | May 2026 | **`/discover` editorial redesign** (PRs #57, #59, #61, #64): replaced utility-stack layout with magazine-style editorial design. LLM-personalized hero + lead section with daily-rotated recommendations. Seven sections: hero, sticky TOC, dark "Complete the Box" lead, from-to upgrade spreads, three alternate next-watch sections. Per-section refresh buttons. Model-family filtering for dedup/exclusion. Mobile: compact dark "Discover" banner replacing tall light editorial hero, sticky nav fix (top: 56px). Strap and Box editorial sections removed (not production-quality); remaining sections tightened. |
 | May 2026 | **Playground major upgrades** (PRs #62, #63, #65): (1) Import collection on empty box via one-click CTA. (2) Drag watches from tray into slots with long-press reorder, sparse slot support, drag-to-trash. (3) Mobile UI cleanup. (4) **Playground Supabase persistence** — playground boxes now sync to Supabase for logged-in users via debounced auto-sync (`public.playground_boxes`). |
 | May 2026 | **Seed script safety** (PR #56): seed script aborts instead of writing local-path URLs when `SUPABASE_URL` is unset. |
+| May 2026 | **PRD v1.14:** Next Targets moved from `/collection` to `/discover` § 03. Photo type picker promoted to P0. Feature 2F (Service History) added. Feature 7 rewritten as "The Strap Drawer" — first-class strap inventory with auto-match compatibility and combo stats. Replaces old VW-17/VW-18 stubs. Added Phase 1.5 "Ownership Depth." |
 
 ---
 
@@ -108,8 +109,8 @@ Mark `[x]` when done.
 - [ ] **RM** Save as Playground from Collection draft state — unsaved changes bar "Save as Playground" is a placeholder, wire it up.
 - [x] **RM** ~~Drag-to-reorder in Playground~~ — **Done.** PR #62 shipped long-press drag-to-reorder within playground watchbox slots, drag-from-tray into slots, sparse slot support (drops land where you aim), and drag-to-trash. Desktop HTML5 drag also supported.
 - [ ] **RM** Drag-to-reorder in Collection — still pending. Playground has full drag support; Collection needs parity.
-- [ ] **RM** `VW-18` Strap Viewer — display watch with alternate straps. Foundation for strap affiliate CTAs.
-- [ ] **RM** `VW-17` Strap Swap / matchmaking with affiliate links (Feature 7) — filter by lug width, link to WatchWarehouse / Etsy. Monetization surface.
+- [ ] **RM** `VW-17` The Strap Drawer (Feature 7) — first-class strap inventory at `/collection/straps`. Add Strap modal (material + lug width + color required). Card grid with material badges + compatible watch count. Strap detail sidebar with "Fits these watches" list. Auto-match by lug width + manual `fits`/`excluded` overrides. Combo stats in header ("X watches and Y straps create Z combinations"). New Supabase tables: `user_straps` + `strap_watch_overrides`. **Replaces** the old VW-17 (strap swap affiliate links) and VW-18 (strap viewer) — the Strap Drawer is the foundation both depend on.
+- [ ] **RM** Strap Drawer phase 2 — CSS material swatches (design prototype in `docs/design-system/`), compatibility matrix view, sidebar "Swap Strap" quick-pick wired to drawer, lug width distribution in collection stats. Discover "missing strap" suggestions grounded in actual strap inventory.
 - [ ] **RM** Shop This Box — physical box affiliate matching. When user configures virtual box, surface Wolf1834 / Rapport / Holme & Hadfield matches. Direct revenue.
 
 ---
