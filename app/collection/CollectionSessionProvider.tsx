@@ -14,6 +14,8 @@ import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { remapLegacyCatalogId } from '@/lib/catalog/legacyIdRemap'
 import { createCatalogWatchMap, resolveCatalogWatchId, resolveOwnedWatches } from '@/lib/watchData'
 import { getEffectiveSlotCount, packToSlotCount } from '@/lib/watchboxOverflow'
+import { migratePlaygroundBox, normalizePlaygroundBoxes } from '@/lib/playground'
+import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { createClient } from '@/lib/supabase/client'
 import type {
@@ -21,6 +23,7 @@ import type {
   OwnedWatch,
   OwnershipStatus,
   PlaygroundBox,
+  PlaygroundBoxEntry,
   ResolvedOwnedWatch,
   UserWatchPhoto,
   WatchCondition,
@@ -93,6 +96,7 @@ type SessionSnapshot = {
   collectionJewelWatchId: string | null
   watchboxConfig: WatchboxConfig
   photosByWatchId?: Map<string, UserWatchPhoto[]>
+  playgroundBoxes?: PlaygroundBox[]
 }
 
 type LegacyWatchSnapshot = {
@@ -181,6 +185,10 @@ interface CollectionSessionContextValue {
   deleteWatchPhoto: (ownedWatchId: string, photoId: string) => Promise<void>
   reorderWatchPhotos: (ownedWatchId: string, orderedIds: string[]) => Promise<void>
   refreshWatchPhotos: (ownedWatchId?: string) => Promise<void>
+  // Playground boxes (synced to Supabase for logged-in users)
+  playgroundBoxes: PlaygroundBox[]
+  setPlaygroundBoxes: (boxes: PlaygroundBox[] | ((prev: PlaygroundBox[]) => PlaygroundBox[])) => void
+  playgroundHydrated: boolean
   // Discover rotation
   discoverRefreshOffsets: Record<string, number>
   bumpDiscoverRefresh: (seedKey: string) => void
@@ -539,17 +547,19 @@ async function loadFromSupabase(
   try {
     const supabase = createClient()
 
-    const [watchesRes, statesRes, configRes, photosRes] = await Promise.all([
+    const [watchesRes, statesRes, configRes, photosRes, playgroundRes] = await Promise.all([
       supabase.from('watches').select('*').eq('user_id', userId).order('sort_order'),
       supabase.from('watch_states').select('*').eq('user_id', userId),
       supabase.from('watchbox_config').select('*').eq('user_id', userId).maybeSingle(),
       supabase.from('user_watch_photos').select('*').eq('user_id', userId)
         .order('watch_id').order('sort_order').order('created_at'),
+      supabase.from('playground_boxes').select('*').eq('user_id', userId).order('sort_order'),
     ])
 
     if (watchesRes.error) console.error('[vwb] loadFromSupabase watches error', watchesRes.error)
     if (statesRes.error) console.error('[vwb] loadFromSupabase watch_states error', statesRes.error)
     if (configRes.error) console.error('[vwb] loadFromSupabase watchbox_config error', configRes.error)
+    if (playgroundRes.error) console.error('[vwb] loadFromSupabase playground_boxes error', playgroundRes.error)
 
     const dbWatches: DbWatch[] = watchesRes.data ?? []
     const dbStates: DbWatchState[] = statesRes.data ?? []
@@ -651,6 +661,24 @@ async function loadFromSupabase(
       )).catch(err => console.warn('[vwb] legacy catalog_id backfill (watch_states) failed', err))
     }
 
+    const dbPlaygroundBoxes = (playgroundRes.data ?? []) as Array<Record<string, unknown>>
+    const playgroundBoxes: PlaygroundBox[] = dbPlaygroundBoxes
+      .map(row => {
+        const entries = Array.isArray(row.entries) ? row.entries as PlaygroundBoxEntry[] : []
+        const tags = Array.isArray(row.tags) ? (row.tags as string[]).filter(Boolean) : []
+        return migratePlaygroundBox({
+          id: String(row.id),
+          name: String(row.name ?? 'Untitled'),
+          tags,
+          entries,
+          frame: typeof row.frame === 'string' ? row.frame : undefined,
+          lining: typeof row.lining === 'string' ? row.lining : undefined,
+          slotCount: typeof row.slot_count === 'number' ? row.slot_count : undefined,
+          createdAt: typeof row.created_at === 'string' ? row.created_at : undefined,
+        })
+      })
+      .filter((box): box is PlaygroundBox => box !== null)
+
     return {
       collectionWatches,
       followedWatchIds: [...new Set(followedWatchIds)],
@@ -659,6 +687,7 @@ async function loadFromSupabase(
       collectionJewelWatchId,
       watchboxConfig,
       photosByWatchId,
+      playgroundBoxes: playgroundBoxes.length > 0 ? playgroundBoxes : undefined,
     }
   } catch (err) {
     console.error('[vwb] loadFromSupabase failed', err)
@@ -715,7 +744,16 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   const [hydrated, setHydrated] = useState(false)
   const [dataLoading, setDataLoading] = useState(false)
   const [migrationPending, setMigrationPending] = useState(false)
+  const [playgroundBoxes, setPlaygroundBoxesState] = useState<PlaygroundBox[]>(SEEDED_PLAYGROUND_BOXES)
+  const [playgroundHydrated, setPlaygroundHydrated] = useState(false)
   const [discoverRefreshOffsets, setDiscoverRefreshOffsets] = useState<Record<string, number>>({})
+
+  const setPlaygroundBoxes = useCallback(
+    (update: PlaygroundBox[] | ((prev: PlaygroundBox[]) => PlaygroundBox[])) => {
+      setPlaygroundBoxesState(update)
+    },
+    [],
+  )
 
   const bumpDiscoverRefresh = useCallback((seedKey: string) => {
     setDiscoverRefreshOffsets(prev => ({ ...prev, [seedKey]: (prev[seedKey] ?? 0) + 1 }))
@@ -795,6 +833,14 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     setGrailWatchId(snapshot.grailWatchId)
     setCollectionJewelWatchId(snapshot.collectionJewelWatchId)
     setWatchboxConfig(snapshot.watchboxConfig)
+
+    if (snapshot.playgroundBoxes && snapshot.playgroundBoxes.length > 0) {
+      setPlaygroundBoxesState(snapshot.playgroundBoxes)
+      try {
+        localStorage.setItem(PLAYGROUND_BOXES_STORAGE_KEY, JSON.stringify(snapshot.playgroundBoxes))
+      } catch {}
+    }
+    setPlaygroundHydrated(true)
 
     // Owned-set catalog hydration — independent of heat score. Every id the
     // user references gets its catalog row fetched directly and stored in
@@ -921,15 +967,29 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
 
     try {
       const rawConfig = localStorage.getItem(WATCHBOX_CONFIG_STORAGE_KEY)
-      if (!rawConfig) return
-
-      const parsedConfig = JSON.parse(rawConfig)
-      if (isValidWatchboxConfig(parsedConfig)) {
-        setWatchboxConfig(parsedConfig)
+      if (rawConfig) {
+        const parsedConfig = JSON.parse(rawConfig)
+        if (isValidWatchboxConfig(parsedConfig)) {
+          setWatchboxConfig(parsedConfig)
+        }
       }
-    } finally {
-      setHydrated(true)
+    } catch {
+      // Ignore malformed config data.
     }
+
+    try {
+      const rawPg = localStorage.getItem(PLAYGROUND_BOXES_STORAGE_KEY)
+      const pgNormalized = normalizePlaygroundBoxes(
+        rawPg ? JSON.parse(rawPg) : null,
+        SEEDED_PLAYGROUND_BOXES,
+      )
+      setPlaygroundBoxesState(pgNormalized)
+    } catch {
+      // Ignore malformed playground data.
+    }
+
+    setPlaygroundHydrated(true)
+    setHydrated(true)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, user])
 
@@ -957,6 +1017,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       loadFromSupabase(currentId).then(snapshot => {
         loadInFlightRef.current = false
         if (snapshot) applyServerSnapshot(snapshot)
+        else setPlaygroundHydrated(true)
         setDataLoading(false)
         setHydrated(true)
       })
@@ -977,6 +1038,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     if (hasLocalState) {
       // Offer migration — don't load from Supabase yet
       setMigrationPending(true)
+      setPlaygroundHydrated(true)
       setHydrated(true)
     } else {
       // No local state — load from Supabase directly
@@ -985,6 +1047,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       loadFromSupabase(currentId).then(snapshot => {
         loadInFlightRef.current = false
         if (snapshot) applyServerSnapshot(snapshot)
+        else setPlaygroundHydrated(true)
         setDataLoading(false)
         setHydrated(true)
         markMigrationDone()
@@ -1155,6 +1218,26 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       watchboxConfig,
     })
   }, [hydrated, collectionWatches, followedWatches, nextTargets, grailWatch, collectionJewelWatch, watchboxConfig])
+
+  // Playground: persist to localStorage for guests, debounced Supabase sync for logged-in users
+  useEffect(() => {
+    if (!playgroundHydrated) return
+    if (!user) {
+      try {
+        localStorage.setItem(PLAYGROUND_BOXES_STORAGE_KEY, JSON.stringify(playgroundBoxes))
+      } catch {}
+      return
+    }
+    const handle = setTimeout(() => {
+      void trackedSync(syncPlaygroundBoxes(playgroundBoxes, user.id))
+    }, 1000)
+    return () => clearTimeout(handle)
+  }, [playgroundBoxes, playgroundHydrated, user, trackedSync])
+
+  useEffect(() => {
+    if (!playgroundHydrated) return
+    syncPublicProfileSnapshot({ playgroundBoxes })
+  }, [playgroundBoxes, playgroundHydrated])
 
   useEffect(() => {
     setWatchboxConfig(prev => {
@@ -1965,6 +2048,9 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     deleteWatchPhoto,
     reorderWatchPhotos,
     refreshWatchPhotos,
+    playgroundBoxes,
+    setPlaygroundBoxes,
+    playgroundHydrated,
     discoverRefreshOffsets,
     bumpDiscoverRefresh,
   }

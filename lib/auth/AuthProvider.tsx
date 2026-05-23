@@ -37,7 +37,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     supabase.auth.getSession()
       .then(({ data: { session }, error }) => {
-        if (error) console.error('[vwb] getSession failed', error)
+        if (error) {
+          console.error('[vwb] getSession failed', error)
+          // Don't clear state on transient errors — keep previous session
+          // until the next successful auth event resolves identity.
+          if (!session) return
+        }
         if (!isMounted) return
         setSession(session)
         setUser(session?.user ?? null)
@@ -51,6 +56,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (!isMounted) return
+      if (process.env.NODE_ENV !== 'production') {
+        console.debug('[vwb] auth event:', event, session?.user?.id ?? 'no-user')
+      }
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
