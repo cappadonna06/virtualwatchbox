@@ -38,7 +38,7 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
 
   return (
     <section id="lead" style={{ background: PANEL_BG, color: brand.colors.slot, position: 'relative' }}>
-      <div style={{ position: 'absolute', top: 20, right: 20, zIndex: 3 }}>
+      <div className="discover-lead-refresh-corner" style={{ position: 'absolute', top: 20, right: 20, zIndex: 3 }}>
         <RefreshButton section="hero" seedKey={refreshSeedKey} variant="corner" tone="dark" />
       </div>
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '64px 56px' }}>
@@ -200,6 +200,12 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
             className="discover-complete-image"
             style={{ position: 'relative', textAlign: 'center' }}
           >
+            <div
+              className="discover-lead-refresh-image"
+              style={{ display: 'none', position: 'absolute', top: 0, right: 0, zIndex: 3 }}
+            >
+              <RefreshButton section="hero" seedKey={refreshSeedKey} variant="corner" tone="dark" />
+            </div>
             <div
               aria-hidden
               style={{

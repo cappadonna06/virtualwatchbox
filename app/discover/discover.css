@@ -25,6 +25,10 @@
   /* Mobile-only "Your next move." heading in lead section */
   .discover-mobile-ynm { display: block !important; }
 
+  /* Move refresh button from section corner to beside the watch image */
+  .discover-lead-refresh-corner { display: none !important; }
+  .discover-lead-refresh-image { display: block !important; }
+
   /* ── Hero / Complete the Box ─────────────────────────────────────────── */
   .discover-complete-row { grid-template-columns: 1fr !important; gap: 24px !important; }
   .discover-complete-h2 { font-size: 28px !important; line-height: 1.1 !important; margin-bottom: 16px !important; }

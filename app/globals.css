@@ -344,8 +344,10 @@ body {
   .hero-actions { flex-direction: column !important; align-items: stretch !important; }
   .hero-action  { width: 100% !important; }
 
-  /* Collection */
-  .collection-section { padding: 28px 0 40px !important; }
+  /* Collection — homepage section keeps 20px horizontal to match other sections */
+  .collection-section { padding: 28px 20px 40px !important; }
+  /* Collection page (/collection) — tighter horizontal for wider watchbox */
+  .collection-page-section { padding: 28px 0 40px !important; }
   .collection-grid    { grid-template-columns: 1fr !important; }
   .collection-toolbar-row { padding-right: 0 !important; }
   .box-configurator   { flex-wrap: wrap !important; gap: 20px !important; }

@@ -133,7 +133,7 @@ export default function CollectionPage() {
 
   return (
     <div
-      className="collection-section"
+      className="collection-page-section"
       style={{ padding: '0 0 120px', borderTop: `1px solid ${brand.colors.border}` }}
     >
       <div style={{ padding: isMobile ? '24px 16px 0' : '56px 56px 0' }}>
