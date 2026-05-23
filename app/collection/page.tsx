@@ -64,6 +64,7 @@ export default function CollectionPage() {
   const [screenWidth, setScreenWidth] = useState(0)
   const [mobileStatsOpen, setMobileStatsOpen] = useState(true)
   const [shareModalOpen, setShareModalOpen] = useState(false)
+  const [collectionConfigOpen, setCollectionConfigOpen] = useState(false)
   const [displayName, setDisplayName] = useState<string>('')
 
   useEffect(() => {
@@ -159,6 +160,10 @@ export default function CollectionPage() {
             onViewChange={setActiveView}
             menuItems={[
               {
+                label: 'Customize Watchbox',
+                onSelect: () => setCollectionConfigOpen(true),
+              },
+              {
                 label: 'Share Collection',
                 onSelect: () => {
                   void handleShareCollection()
@@ -237,6 +242,8 @@ export default function CollectionPage() {
               watches={collectionWatches}
               onEmptySlotClick={slot => router.push(`/collection/add?slot=${slot}`)}
               onReorder={handleReorder}
+              configOpen={collectionConfigOpen}
+              onConfigOpenChange={setCollectionConfigOpen}
             />
             {collectionWatches.length === 0 ? (
               <CollectionEmptyState variant="collection" />

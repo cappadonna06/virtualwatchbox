@@ -118,7 +118,13 @@ function PlaygroundPageInner() {
   const [screenW, setScreenW] = useState(0)
   const [touchHoverSlot, setTouchHoverSlot] = useState<number | null>(null)
   const [wobbling, setWobbling] = useState(false)
+  const [playgroundConfigOpen, setPlaygroundConfigOpen] = useState(false)
   const nameInputRef = useRef<HTMLInputElement>(null)
+  // Measure the actual rendered column width so the slot-grid math
+  // doesn't overflow when the column shrinks below screenW (e.g. when
+  // `minWidth: 0` lets the grid track shrink to fit available space).
+  const columnRef = useRef<HTMLDivElement>(null)
+  const [columnW, setColumnW] = useState(0)
 
   useEffect(() => {
     try {
@@ -154,6 +160,18 @@ function PlaygroundPageInner() {
     return () => window.removeEventListener('resize', update)
   }, [])
 
+  useLayoutEffect(() => {
+    const el = columnRef.current
+    if (!el) return
+    const ro = new ResizeObserver(entries => {
+      const w = entries[0]?.contentRect.width ?? 0
+      setColumnW(w)
+    })
+    ro.observe(el)
+    setColumnW(el.getBoundingClientRect().width)
+    return () => ro.disconnect()
+  }, [])
+
   const activeBox = boxes.find(box => box.id === activeBoxId) ?? boxes[0]
   const boxOptions = useMemo(
     () => boxes.map(box => ({ value: box.id, label: `${box.name} · ${box.entries.length}` })),
@@ -183,7 +201,11 @@ function PlaygroundPageInner() {
 
   const sc = SLOT_COUNTS.find(slot => slot.n === (activeBox?.slotCount ?? 6)) ?? SLOT_COUNTS[1]
   const isMobile = screenW > 0 && screenW < 768
-  const watchboxContainerW = isMobile ? screenW - 40 : Math.max(200, screenW - 444)
+  // Prefer the measured column width; fall back to the viewport-based estimate
+  // until the ResizeObserver has fired (first paint).
+  const watchboxContainerW = columnW > 0
+    ? columnW
+    : (isMobile ? screenW - 40 : Math.max(200, screenW - 444))
   const watchboxMaxH = isMobile ? 300 : 480
   const slotPad = watchboxSlotPadding(isMobile)
   const watchboxSlotPx = screenW > 0
@@ -369,6 +391,10 @@ function PlaygroundPageInner() {
             onViewChange={setActiveView}
             availableViews={['watchbox', 'cards']}
             menuItems={[
+              {
+                label: 'Customize Watchbox',
+                onSelect: () => setPlaygroundConfigOpen(true),
+              },
               {
                 label: 'New Box',
                 onSelect: () => setNewBoxModalOpen(true),
@@ -746,8 +772,10 @@ function PlaygroundPageInner() {
           {/* minWidth:0 — grid tracks default to min-width:auto, which
               lets `flex-shrink:0` descendants (e.g. WatchTray items) push
               the 1fr track wider than the viewport. Without this the
-              whole page scrolls horizontally on mobile. */}
-          <div style={{ minWidth: 0 }}>
+              whole page scrolls horizontally on mobile. The ref +
+              ResizeObserver lets the slot-grid math use the column's
+              actual rendered width instead of guessing from viewport. */}
+          <div ref={columnRef} style={{ minWidth: 0 }}>
             {activeView === 'watchbox' ? (
               <>
                 <WatchboxView
@@ -776,6 +804,8 @@ function PlaygroundPageInner() {
                   wobble={wobbling}
                   collectionWatchCount={collectionWatches.length}
                   onImportCollection={handleImportCollection}
+                  configOpen={playgroundConfigOpen}
+                  onConfigOpenChange={setPlaygroundConfigOpen}
                 />
                 {(followedWatches.length > 0 || collectionWatches.length > 0) && (
                   <div style={{ maxWidth: trayMaxW, width: '100%', margin: '0 auto' }}>
@@ -1180,6 +1210,8 @@ interface WatchboxViewProps {
   wobble?: boolean
   collectionWatchCount: number
   onImportCollection: () => void
+  configOpen?: boolean
+  onConfigOpenChange?: (open: boolean) => void
 }
 
 function WatchboxView({
@@ -1202,10 +1234,14 @@ function WatchboxView({
   wobble = false,
   collectionWatchCount,
   onImportCollection,
+  configOpen: configOpenProp,
+  onConfigOpenChange,
 }: WatchboxViewProps) {
   const [importDismissed, setImportDismissed] = useState(false)
   const [customizerOpen, setCustomizerOpen] = useState(false)
-  const [configOpen, setConfigOpen] = useState(false)
+  const [configOpenLocal, setConfigOpenLocal] = useState(false)
+  const configOpen = configOpenProp ?? configOpenLocal
+  const setConfigOpen = onConfigOpenChange ?? setConfigOpenLocal
   const customizerRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {

@@ -8,6 +8,7 @@ import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import { normalizePlaygroundBoxes } from '@/lib/playground'
 import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
 import { brand } from '@/lib/brand'
+import { dialColorToHex } from '@/lib/dialColors'
 import AddSearchWatchCard from '@/components/collection/AddSearchWatchCard'
 import PhotoSearch, { type PhotoSearchHandle } from '@/components/PhotoSearch'
 import SortDropdown from '@/components/collection/SortDropdown'
@@ -97,6 +98,7 @@ function FacetChip({
   disabled,
   onClick,
   size = 'md',
+  swatchColor,
 }: {
   label: string
   count?: number
@@ -104,6 +106,7 @@ function FacetChip({
   disabled?: boolean
   onClick?: () => void
   size?: 'sm' | 'md'
+  swatchColor?: string
 }) {
   const padY = size === 'sm' ? 4 : 6
   const padX = size === 'sm' ? 10 : 12
@@ -116,7 +119,7 @@ function FacetChip({
         display: 'inline-flex',
         alignItems: 'center',
         gap: 6,
-        padding: `${padY}px ${padX}px`,
+        padding: `${padY}px ${swatchColor ? padX - 4 : padX}px ${padY}px ${padX}px`,
         borderRadius: brand.radius.pill,
         fontFamily: brand.font.sans,
         fontSize: fs,
@@ -131,6 +134,17 @@ function FacetChip({
         transition: 'all 0.15s',
       }}
     >
+      {swatchColor ? (
+        <span style={{
+          display: 'inline-block',
+          width: 14,
+          height: 14,
+          borderRadius: '50%',
+          background: swatchColor,
+          boxShadow: active ? 'inset 0 0 0 1px rgba(255,255,255,0.3)' : 'inset 0 0 0 1px rgba(255,255,255,0.18)',
+          flexShrink: 0,
+        }} />
+      ) : null}
       <span>{label}</span>
       {count != null && (
         <span
@@ -303,6 +317,7 @@ function FacetGroup({
               disabled={count === 0 && !active}
               onClick={() => onSelect(option)}
               size={chipSize}
+              swatchColor={facetKey === 'color' ? dialColorToHex(option) : undefined}
             />
           )
         })}

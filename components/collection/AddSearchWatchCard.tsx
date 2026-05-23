@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import type { CatalogWatch } from '@/types/watch'
 import { brand } from '@/lib/brand'
+import { dialColorToHex } from '@/lib/dialColors'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
@@ -88,7 +89,19 @@ export default function AddSearchWatchCard({ watch, dest = null, boxId = null }:
           Ref. {watch.reference}
         </div>
         <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginTop: 2 }}>
-          {watch.caseSizeMm}mm · {watch.caseMaterial} · {watch.dialColor}
+          {watch.caseSizeMm}mm · {watch.caseMaterial} ·{' '}
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, verticalAlign: 'middle' }}>
+            <span style={{
+              display: 'inline-block',
+              width: 12,
+              height: 12,
+              borderRadius: '50%',
+              background: dialColorToHex(watch.dialColor),
+              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.18)',
+              flexShrink: 0,
+            }} />
+            {watch.dialColor}
+          </span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
           <span style={{ fontFamily: brand.font.sans, fontSize: 15, fontWeight: 600, color: brand.colors.ink }}>
