@@ -344,8 +344,10 @@ body {
   .hero-actions { flex-direction: column !important; align-items: stretch !important; }
   .hero-action  { width: 100% !important; }
 
-  /* Collection */
-  .collection-section { padding: 36px 20px 40px !important; }
+  /* Collection — homepage section keeps 20px horizontal to match other sections */
+  .collection-section { padding: 28px 20px 40px !important; }
+  /* Collection page (/collection) — tighter horizontal for wider watchbox */
+  .collection-page-section { padding: 28px 0 40px !important; }
   .collection-grid    { grid-template-columns: 1fr !important; }
   .collection-toolbar-row { padding-right: 0 !important; }
   .box-configurator   { flex-wrap: wrap !important; gap: 20px !important; }
@@ -490,6 +492,11 @@ body {
     flex: 0 0 280px;
     scroll-snap-align: start;
   }
+
+  /* Homepage discover preview */
+  .discover-preview > div { padding: 36px 20px 40px !important; }
+  .discover-preview-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+  .discover-preview-specs { gap: 16px !important; }
 }
 
 @media (min-width: 768px) {

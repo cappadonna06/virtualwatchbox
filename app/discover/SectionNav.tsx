@@ -35,7 +35,7 @@ export default function SectionNav() {
     const el = document.getElementById(id)
     if (!el) return
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
-    const offset = isMobile ? 100 : 110
+    const offset = isMobile ? 130 : 110
     const top = el.getBoundingClientRect().top + window.scrollY - offset
     try { window.scrollTo({ top, behavior: 'smooth' }) }
     catch { window.scrollTo(0, top) }
@@ -92,6 +92,7 @@ export default function SectionNav() {
             <a
               key={s.id}
               href={`#${s.id}`}
+              data-active={isActive || undefined}
               onClick={(e) => handleClick(e, s.id)}
               style={{
                 display: 'inline-flex',

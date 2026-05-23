@@ -2,6 +2,7 @@
 
 import HeroCarousel from '@/components/HeroCarousel'
 import CollectionSection from '@/components/collection/CollectionSection'
+import DiscoverPreview from '@/components/DiscoverPreview'
 import FeaturesSection from '@/components/FeaturesSection'
 import OnYourRadar from '@/components/OnYourRadar'
 import { useCollectionSession } from './collection/CollectionSessionProvider'
@@ -17,6 +18,7 @@ export default function HomePage() {
     <>
       <HeroCarousel />
       <CollectionSection />
+      <DiscoverPreview />
       <FeaturesSection />
       <OnYourRadar followedWatchIds={followedWatchIdSet} />
     </>

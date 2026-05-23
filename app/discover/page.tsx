@@ -49,6 +49,7 @@ function ownedToCatalog(owned: ReturnType<typeof useCollectionSession>['collecti
     imageSourceUrl: w.imageSourceUrl,
     dialConfig: w.dialConfig,
     watchType: w.watchType,
+    modelFamily: (w as any).modelFamily,
   }))
 }
 
@@ -276,7 +277,7 @@ export default function DiscoverPage() {
       {leadWatch && (
         <CompleteTheBoxLead
           watch={leadWatch}
-          gapLabel={personalized ? (boxInsight?.missingType ?? 'This week') : 'Featured this week'}
+          gapLabel={personalized ? (boxInsight?.missingType ?? 'This week') : 'Editor\'s Choice'}
           gapType={boxInsight?.missingType ?? null}
           insight={leadInsight || `A ${(boxInsight?.missingType ?? 'next pick').toLowerCase()} would round out the box.`}
           personalized={personalized}

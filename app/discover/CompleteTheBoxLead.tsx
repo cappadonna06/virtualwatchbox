@@ -38,7 +38,7 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
 
   return (
     <section id="lead" style={{ background: PANEL_BG, color: brand.colors.slot, position: 'relative' }}>
-      <div style={{ position: 'absolute', top: 20, right: 20, zIndex: 3 }}>
+      <div className="discover-lead-refresh-corner" style={{ position: 'absolute', top: 20, right: 20, zIndex: 3 }}>
         <RefreshButton section="hero" seedKey={refreshSeedKey} variant="corner" tone="dark" />
       </div>
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '64px 56px' }}>
@@ -52,6 +52,23 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
           }}
         >
           <div>
+            <h2
+              className="discover-mobile-ynm"
+              style={{
+                display: 'none',
+                fontFamily: brand.font.serif,
+                fontWeight: 300,
+                fontSize: 32,
+                lineHeight: 1,
+                letterSpacing: '-0.018em',
+                margin: 0,
+                marginBottom: 20,
+                color: brand.colors.slot,
+              }}
+            >
+              Your next move.
+            </h2>
+
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
               <GoldKicker>{personalized ? 'Complete the Box' : 'This Week’s Pick'}</GoldKicker>
               <div style={{ height: 1, width: 24, background: 'rgba(201,168,76,0.6)' }} />
@@ -183,6 +200,12 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
             className="discover-complete-image"
             style={{ position: 'relative', textAlign: 'center' }}
           >
+            <div
+              className="discover-lead-refresh-image"
+              style={{ display: 'none', position: 'absolute', top: 0, right: 0, zIndex: 3 }}
+            >
+              <RefreshButton section="hero" seedKey={refreshSeedKey} variant="corner" tone="dark" />
+            </div>
             <div
               aria-hidden
               style={{

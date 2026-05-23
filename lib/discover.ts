@@ -204,6 +204,7 @@ export function getBoxInsight(
   options: SelectionOptions = {},
 ): BoxInsight | null {
   const ownedTypes = new Set(collectionWatches.map(w => w.watchType))
+  const ownedFamilies = new Set(collectionWatches.map(w => modelFamilyKey(w)))
   const anchor = options.priceAnchor ?? collectionPriceAnchor(collectionWatches)
 
   for (const type of MISSING_TYPE_PRIORITY) {
@@ -212,6 +213,7 @@ export function getBoxInsight(
     let candidates = allWatches
       .filter(w => w.watchType === type)
       .filter(w => passesImage(w, options.hasImage))
+      .filter(w => !ownedFamilies.has(modelFamilyKey(w)))
 
     if (anchor) {
       const inBand = candidates.filter(w => w.estimatedValue >= anchor.floor && w.estimatedValue <= anchor.ceiling)
@@ -269,12 +271,12 @@ function findHardcodedUpgrade(
 ): CatalogWatch | null {
   const chain = UPGRADE_PATHS[owned.id]
   if (!chain) return null
-  const ownedModelNorm = normalizeModel(owned.model)
+  const ownedFamily = modelFamilyKey(owned)
   for (const candidateId of chain) {
     if (ownedIds.has(candidateId)) continue
     const watch = watchById.get(candidateId)
     if (!watch || !passesImage(watch, hasImage)) continue
-    if (normalizeModel(watch.model) === ownedModelNorm) continue
+    if (modelFamilyKey(watch) === ownedFamily) continue
     return watch
   }
   return null
@@ -288,13 +290,13 @@ function findHardcodedUpgradePool(
 ): CatalogWatch[] {
   const chain = UPGRADE_PATHS[owned.id]
   if (!chain) return []
-  const ownedModelNorm = normalizeModel(owned.model)
+  const ownedFamily = modelFamilyKey(owned)
   const out: CatalogWatch[] = []
   for (const candidateId of chain) {
     if (ownedIds.has(candidateId)) continue
     const watch = watchById.get(candidateId)
     if (!watch || !passesImage(watch, hasImage)) continue
-    if (normalizeModel(watch.model) === ownedModelNorm) continue
+    if (modelFamilyKey(watch) === ownedFamily) continue
     out.push(watch)
   }
   return out
@@ -302,6 +304,12 @@ function findHardcodedUpgradePool(
 
 function normalizeModel(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
+}
+
+export function modelFamilyKey(watch: CatalogWatch): string {
+  const family = watch.modelFamily?.trim()
+  if (family) return `${watch.brand.toLowerCase()}::${family.toLowerCase()}`
+  return `${watch.brand.toLowerCase()}::${normalizeModel(watch.model)}`
 }
 
 function findAlgorithmicUpgrade(
@@ -326,7 +334,7 @@ function findAlgorithmicUpgradePool(
   const sameTypeOwnedCount = collectionWatches.filter(w => w.watchType === owned.watchType).length
   if (sameTypeOwnedCount > 2) return []
 
-  const ownedModelNorm = normalizeModel(owned.model)
+  const ownedFamily = modelFamilyKey(owned)
   const ownedBrandLower = owned.brand.toLowerCase()
 
   const idealTarget = owned.estimatedValue * 2
@@ -338,7 +346,7 @@ function findAlgorithmicUpgradePool(
     passesImage(w, hasImage) &&
     w.watchType === owned.watchType &&
     (BRAND_TIERS[w.brand] ?? 1) >= ownedTier &&
-    normalizeModel(w.model) !== ownedModelNorm
+    modelFamilyKey(w) !== ownedFamily
 
   // Hard cap at 4x — better to show no upgrade card than recommend an 8x stretch
   // ("upgrade your $4K Aqua Terra to a $36K Patek" is not useful advice).
@@ -446,8 +454,8 @@ export function getNextSlotPools(
   options: SelectionOptions = {},
 ): NextSlotPool[] {
   const ownedIds = new Set(collectionWatches.map(w => w.id))
-  const ownedModelKeys = new Set(
-    collectionWatches.map(w => `${w.brand.toLowerCase()}::${normalizeModel(w.model)}`),
+  const ownedFamilyKeys = new Set(
+    collectionWatches.map(w => modelFamilyKey(w)),
   )
   const followedIds = new Set(followedWatchIds)
   const anchor = options.priceAnchor ?? collectionPriceAnchor(collectionWatches)
@@ -462,7 +470,7 @@ export function getNextSlotPools(
 
   const notOwned = (w: CatalogWatch) =>
     !ownedIds.has(w.id) &&
-    !ownedModelKeys.has(`${w.brand.toLowerCase()}::${normalizeModel(w.model)}`)
+    !ownedFamilyKeys.has(modelFamilyKey(w))
 
   const eligible = allWatches
     .filter(notOwned)
@@ -498,7 +506,7 @@ export function getNextSlotPools(
   const seenModels = new Set<string>()
   const buckets = new Map<WatchType | 'Other', CatalogWatch[]>()
   for (const s of scored) {
-    const key = `${s.watch.brand.toLowerCase()}::${normalizeModel(s.watch.model)}`
+    const key = modelFamilyKey(s.watch)
     if (seenModels.has(key)) continue
     seenModels.add(key)
     const t: WatchType | 'Other' = s.watch.watchType ?? 'Other'
@@ -533,8 +541,8 @@ export function getNextSlotRecommendations(
   options: SelectionOptions = {},
 ): CatalogWatch[] {
   const ownedIds = new Set(collectionWatches.map(w => w.id))
-  const ownedModelKeys = new Set(
-    collectionWatches.map(w => `${w.brand.toLowerCase()}::${normalizeModel(w.model)}`),
+  const ownedFamilyKeys = new Set(
+    collectionWatches.map(w => modelFamilyKey(w)),
   )
   const followedIds = new Set(followedWatchIds)
   const anchor = options.priceAnchor ?? collectionPriceAnchor(collectionWatches)
@@ -549,7 +557,7 @@ export function getNextSlotRecommendations(
 
   const notOwned = (w: CatalogWatch) =>
     !ownedIds.has(w.id) &&
-    !ownedModelKeys.has(`${w.brand.toLowerCase()}::${normalizeModel(w.model)}`)
+    !ownedFamilyKeys.has(modelFamilyKey(w))
 
   const eligible = allWatches
     .filter(notOwned)
@@ -592,7 +600,7 @@ export function getNextSlotRecommendations(
   const seenModels = new Set<string>()
   const dedupedRanked: { watch: CatalogWatch; score: number }[] = []
   for (const s of scored) {
-    const key = `${s.watch.brand.toLowerCase()}::${normalizeModel(s.watch.model)}`
+    const key = modelFamilyKey(s.watch)
     if (seenModels.has(key)) continue
     seenModels.add(key)
     dedupedRanked.push(s)
