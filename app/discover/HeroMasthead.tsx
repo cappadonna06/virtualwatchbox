@@ -70,7 +70,7 @@ export default function HeroMasthead({ personalized, bylineRight, bylineLeft, in
           >
             {personalized ? (
               <>
-                Your collection reads <em style={{ fontStyle: 'italic' }}>{insightRead.toLowerCase()}</em>. Recommendations, upgrades, and reads shaped around what it&rsquo;s missing.
+                Personalized picks based on your collection. It reads <em style={{ fontStyle: 'italic' }}>{insightRead.toLowerCase()}</em> &mdash; here&rsquo;s what&rsquo;s missing.
               </>
             ) : (
               <>Recommendations, upgrades, and reads for any thoughtful collector. Sign in to make these your own.</>
@@ -110,7 +110,7 @@ export default function HeroMasthead({ personalized, bylineRight, bylineLeft, in
             }}
           >
             {personalized ? (
-              <>Recommendations shaped around your collection.</>
+              <>Personalized picks based on your collection.</>
             ) : (
               <>Recommendations for any thoughtful collector.</>
             )}

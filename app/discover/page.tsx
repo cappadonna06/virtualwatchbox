@@ -277,7 +277,7 @@ export default function DiscoverPage() {
       {leadWatch && (
         <CompleteTheBoxLead
           watch={leadWatch}
-          gapLabel={personalized ? (boxInsight?.missingType ?? 'This week') : 'Featured this week'}
+          gapLabel={personalized ? (boxInsight?.missingType ?? 'This week') : 'Editor\'s Pick'}
           gapType={boxInsight?.missingType ?? null}
           insight={leadInsight || `A ${(boxInsight?.missingType ?? 'next pick').toLowerCase()} would round out the box.`}
           personalized={personalized}

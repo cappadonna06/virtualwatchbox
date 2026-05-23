@@ -74,6 +74,7 @@ export default function DiscoverPreview() {
     () => pickDemoCollection(catalogWatches, { hasImage, count: 4 }),
     [catalogWatches, hasImage],
   )
+  const personalized = !isGuest && realCollection.length > 0
   const collection = realCollection.length > 0 ? realCollection : demoCollection
 
   const priceAnchor = useMemo(() => collectionPriceAnchor(collection), [collection])
@@ -115,7 +116,7 @@ export default function DiscoverPreview() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
               <GoldKicker>Discover</GoldKicker>
               <div style={{ height: 1, width: 24, background: 'rgba(201,168,76,0.6)' }} />
-              <GoldKicker>Your Next Move</GoldKicker>
+              <GoldKicker>{personalized ? 'Personalized For You' : 'Your Next Move'}</GoldKicker>
             </div>
 
             <h2
@@ -146,7 +147,7 @@ export default function DiscoverPreview() {
                 textWrap: 'pretty',
               }}
             >
-              {boxInsight?.copy || 'A curated pick for your collection.'}
+              {personalized ? (boxInsight?.copy || "Based on what you own and what’s missing.") : "A curated editor’s pick for the week."}
             </p>
 
             <div
