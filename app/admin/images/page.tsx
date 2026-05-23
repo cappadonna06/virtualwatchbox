@@ -199,12 +199,14 @@ function FieldRow({ label, value, editing, onChange }: { label: string; value: s
           style={{
             flex: 1,
             fontFamily: brand.font.sans,
-            fontSize: 12,
+            // 16px is the iOS Safari focus-zoom threshold — anything smaller
+            // triggers an auto-zoom that persists and breaks the layout.
+            fontSize: 16,
             color: brand.colors.ink,
             background: brand.colors.bg,
             border: `1px solid ${brand.colors.borderMid}`,
             borderRadius: brand.radius.sm,
-            padding: '4px 8px',
+            padding: '6px 10px',
             outline: 'none',
           }}
         />
@@ -683,12 +685,12 @@ function QueueCard({
                     style={{
                       flex: 1,
                       fontFamily: brand.font.sans,
-                      fontSize: 12,
+                      fontSize: 16,
                       color: brand.colors.gold,
                       background: brand.colors.bg,
                       border: `1px solid ${brand.colors.borderMid}`,
                       borderRadius: brand.radius.sm,
-                      padding: '4px 8px',
+                      padding: '6px 10px',
                       outline: 'none',
                     }}
                   />

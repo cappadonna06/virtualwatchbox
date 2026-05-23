@@ -808,11 +808,13 @@ export default function AddWatchConfirmPage() {
 
 const inputStyle: CSSProperties = {
   width: '100%',
-  padding: '10px 12px',
+  padding: '12px',
   border: '1px solid #E8E2D8',
   borderRadius: 6,
   fontFamily: 'var(--font-dm-sans)',
-  fontSize: 13,
+  // 16px is the iOS Safari focus-zoom threshold — anything smaller
+  // triggers an auto-zoom that persists and breaks the layout.
+  fontSize: 16,
   color: '#1A1410',
   background: '#FFFFFF',
   outline: 'none',

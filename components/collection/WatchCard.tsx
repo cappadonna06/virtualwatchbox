@@ -2,6 +2,7 @@
 
 import type { OwnershipStatus, ResolvedOwnedWatch, ResolvedWatch, WatchCondition } from '@/types/watch'
 import { brand } from '@/lib/brand'
+import { dialColorToHex } from '@/lib/dialColors'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import WatchStateControl from './WatchStateControl'
@@ -137,7 +138,19 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
             marginBottom: 10,
           }}
         >
-          {watch.caseSizeMm}mm · {watch.dialColor}
+          {watch.caseSizeMm}mm ·{' '}
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, verticalAlign: 'middle' }}>
+            <span style={{
+              display: 'inline-block',
+              width: 12,
+              height: 12,
+              borderRadius: '50%',
+              background: dialColorToHex(watch.dialColor),
+              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.18)',
+              flexShrink: 0,
+            }} />
+            {watch.dialColor}
+          </span>
         </div>
 
         {/* Type badge */}

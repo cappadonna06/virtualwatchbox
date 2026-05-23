@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
+import { FRAMES, LININGS, SLOT_COUNTS, watchboxSlotPadding } from '@/lib/frameConfig'
 import type { ResolvedOwnedWatch } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
@@ -10,9 +10,6 @@ import ResponsiveSidebarSheet from './ResponsiveSidebarSheet'
 import WatchBox from './WatchBox'
 import WatchSidebar from './WatchSidebar'
 
-const WATCHBOX_WIDTH_PADDING = 64
-const WATCHBOX_HEIGHT_PADDING = 72
-const WATCHBOX_GAP = 6
 const PREVIEW_WIDTH_PADDING = 38
 const PREVIEW_HEIGHT_PADDING = 45
 const PREVIEW_GAP = 5
@@ -286,6 +283,8 @@ interface CollectionWatchboxSurfaceProps {
   onEmptySlotClick: (slotIndex: number) => void
   onReorder?: (from: number, to: number) => void
   topToolbar?: ReactNode
+  configOpen?: boolean
+  onConfigOpenChange?: (open: boolean) => void
 }
 
 export default function CollectionWatchboxSurface({
@@ -293,6 +292,8 @@ export default function CollectionWatchboxSurface({
   onEmptySlotClick,
   onReorder,
   topToolbar,
+  configOpen: configOpenProp,
+  onConfigOpenChange,
 }: CollectionWatchboxSurfaceProps) {
   const {
     selectedWatchId,
@@ -327,16 +328,35 @@ export default function CollectionWatchboxSurface({
       document.removeEventListener('keydown', onKey)
     }
   }, [customizerOpen])
-  const [configOpen, setConfigOpen] = useState(false)
+  const [configOpenLocal, setConfigOpenLocal] = useState(false)
+  const configOpen = configOpenProp ?? configOpenLocal
+  const setConfigOpen = onConfigOpenChange ?? setConfigOpenLocal
   const [deleteTarget, setDeleteTarget] = useState<ResolvedOwnedWatch | null>(null)
   const [editTarget, setEditTarget] = useState<ResolvedOwnedWatch | null>(null)
   const [screenWidth, setScreenWidth] = useState(0)
+  // Measure the actual column width so the slot-grid math doesn't
+  // overflow when the column shrinks below viewport width (e.g. when
+  // `minWidth: 0` lets the grid track shrink to fit available space).
+  const columnRef = useRef<HTMLDivElement | null>(null)
+  const [columnWidth, setColumnWidth] = useState(0)
 
   useLayoutEffect(() => {
     const updateWidth = () => setScreenWidth(window.innerWidth)
     updateWidth()
     window.addEventListener('resize', updateWidth)
     return () => window.removeEventListener('resize', updateWidth)
+  }, [])
+
+  useLayoutEffect(() => {
+    const el = columnRef.current
+    if (!el) return
+    const ro = new ResizeObserver(entries => {
+      const w = entries[0]?.contentRect.width ?? 0
+      setColumnWidth(w)
+    })
+    ro.observe(el)
+    setColumnWidth(el.getBoundingClientRect().width)
+    return () => ro.disconnect()
   }, [])
 
   const watchBySlot = useMemo(() => {
@@ -352,22 +372,27 @@ export default function CollectionWatchboxSurface({
   const slotConfig = SLOT_COUNTS.find(item => item.n === watchboxConfig.slotCount) ?? SLOT_COUNTS[1]
 
   const isMobile = screenWidth > 0 && screenWidth < 768
-  const watchboxContainerWidth = isMobile ? screenWidth - 40 : Math.max(200, screenWidth - 444)
+  // Prefer the measured column width; fall back to the viewport estimate
+  // until the ResizeObserver has fired (first paint).
+  const watchboxContainerWidth = columnWidth > 0
+    ? columnWidth
+    : (isMobile ? screenWidth - 40 : Math.max(200, screenWidth - 444))
   const watchboxMaxHeight = isMobile ? 300 : 480
+  const slotPad = watchboxSlotPadding(isMobile)
   const watchboxSlotWidth = screenWidth > 0
     ? Math.floor(
         calcSlotPx(
           watchboxContainerWidth,
           watchboxMaxHeight,
           slotConfig.cols,
-          WATCHBOX_WIDTH_PADDING,
-          WATCHBOX_HEIGHT_PADDING,
-          WATCHBOX_GAP,
+          slotPad.widthPadding,
+          slotPad.heightPadding,
+          slotPad.gap,
         ),
       )
     : undefined
   const watchboxMaxWidth = watchboxSlotWidth !== undefined
-    ? WATCHBOX_WIDTH_PADDING + ((slotConfig.cols - 1) * WATCHBOX_GAP) + (slotConfig.cols * watchboxSlotWidth)
+    ? slotPad.widthPadding + ((slotConfig.cols - 1) * slotPad.gap) + (slotConfig.cols * watchboxSlotWidth)
     : undefined
 
   const previewSlotWidth = useMemo(() => {
@@ -497,7 +522,12 @@ export default function CollectionWatchboxSurface({
         className="collection-grid"
         style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}
       >
-        <div>
+        {/* minWidth:0 keeps a fixed-width descendant from blowing out
+            the 1fr track; without it, the page scrolls horizontally
+            on mobile. The ref + ResizeObserver lets the slot-grid math
+            use the column's actual rendered width instead of estimating
+            from window.innerWidth. */}
+        <div ref={columnRef} style={{ minWidth: 0 }}>
           <div
             style={{
               position: 'relative',

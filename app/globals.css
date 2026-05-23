@@ -350,9 +350,10 @@ body {
   .collection-toolbar-row { padding-right: 0 !important; }
   .box-configurator   { flex-wrap: wrap !important; gap: 20px !important; }
 
-  /* Inline configurator hidden on mobile; edit button shown */
+  /* Inline configurator + edit button hidden on mobile — customize
+     is triggered from the overflow "…" menu instead.  */
   .configurator-wrap { display: none !important; }
-  .edit-box-btn      { display: flex !important; align-items: center; gap: 6px; }
+  .edit-box-btn      { display: none !important; }
   .mobile-hint       { display: block !important; }
 
   /* Config modal bottom sheet — enter animation only */

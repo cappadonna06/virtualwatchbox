@@ -4,7 +4,7 @@ import { useLayoutEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { brand } from '@/lib/brand'
-import { SLOT_COUNTS } from '@/lib/frameConfig'
+import { SLOT_COUNTS, watchboxSlotPadding } from '@/lib/frameConfig'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { useIsMobile } from './useResponsiveState'
 import WatchBox from './WatchBox'
@@ -13,9 +13,6 @@ interface Props {
   variant: 'home' | 'collection'
 }
 
-const WATCHBOX_WIDTH_PADDING = 64
-const WATCHBOX_HEIGHT_PADDING = 72
-const WATCHBOX_GAP = 6
 const ROWS = 2
 
 function calcSlotPx(
@@ -56,11 +53,12 @@ function HomeEmptyState() {
     ? Math.max(200, screenWidth - 40)
     : Math.max(200, screenWidth - 444)
   const maxHeight = isMobile ? 300 : 480
+  const slotPad = watchboxSlotPadding(isMobile)
   const slotWidth = screenWidth > 0
-    ? Math.floor(calcSlotPx(containerWidth, maxHeight, slotConfig.cols, WATCHBOX_WIDTH_PADDING, WATCHBOX_HEIGHT_PADDING, WATCHBOX_GAP))
+    ? Math.floor(calcSlotPx(containerWidth, maxHeight, slotConfig.cols, slotPad.widthPadding, slotPad.heightPadding, slotPad.gap))
     : undefined
   const boxWidth = slotWidth !== undefined
-    ? WATCHBOX_WIDTH_PADDING + (slotConfig.cols - 1) * WATCHBOX_GAP + slotConfig.cols * slotWidth
+    ? slotPad.widthPadding + (slotConfig.cols - 1) * slotPad.gap + slotConfig.cols * slotWidth
     : undefined
 
   function handleAdd() {

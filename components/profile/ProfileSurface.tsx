@@ -729,7 +729,9 @@ function ProfileTextEditModal({
               background: brand.colors.white,
               color: brand.colors.ink,
               fontFamily: brand.font.sans,
-              fontSize: 14,
+              // 16px is the iOS Safari focus-zoom threshold — anything smaller
+              // triggers an auto-zoom that persists and breaks the layout.
+              fontSize: 16,
               outline: 'none',
             }}
           />
@@ -751,7 +753,7 @@ function ProfileTextEditModal({
               background: brand.colors.white,
               color: brand.colors.ink,
               fontFamily: brand.font.sans,
-              fontSize: 14,
+              fontSize: 16,
               lineHeight: 1.6,
               outline: 'none',
               resize: 'vertical',
@@ -1602,11 +1604,13 @@ function BoxPreviewVisual({
   const hasOverflow = overflowCount > 0
   const isFeature = variant === 'feature'
 
+  const framePadding = isMobile && isFeature ? '10px 10px 11px' : isFeature ? '18px 18px 20px' : '14px 14px 16px'
+  const liningPadding = isMobile && isFeature ? 5 : isFeature ? 10 : 7
   return (
     <div
       style={{
-        borderRadius: brand.radius.lg,
-        padding: isFeature ? '18px 18px 20px' : '14px 14px 16px',
+        borderRadius: isMobile && isFeature ? 7 : brand.radius.lg,
+        padding: framePadding,
         background: frame.css,
         boxShadow: isMobile && isFeature ? brand.shadow.md : frame.shadow,
       }}
@@ -1615,7 +1619,7 @@ function BoxPreviewVisual({
         style={{
           background: lining.color,
           borderRadius: 5,
-          padding: isFeature ? 10 : 7,
+          padding: liningPadding,
           boxShadow: 'inset 0 4px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04)',
         }}
       >
@@ -1678,24 +1682,13 @@ function BoxPreviewVisual({
                   overflow: 'hidden',
                 }}
               >
-                {box.source === 'playground' ? (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                    <DialSVG
-                      dialColor={watch.dialConfig.dialColor}
-                      markerColor={watch.dialConfig.markerColor}
-                      handColor={watch.dialConfig.handColor}
-                      size={isFeature ? 42 : 28}
-                    />
-                  </div>
-                ) : (
-                  <WatchImageOrDial
-                    watch={watch}
-                    fill
-                    sizes={isFeature ? '140px' : '90px'}
-                    imageStyle={{ objectFit: 'contain', objectPosition: 'center center' }}
-                    dialSize={isFeature ? 42 : 28}
-                  />
-                )}
+                <WatchImageOrDial
+                  watch={watch}
+                  fill
+                  sizes={isFeature ? '140px' : '90px'}
+                  imageStyle={{ objectFit: 'contain', objectPosition: 'center center' }}
+                  dialSize={isFeature ? 42 : 28}
+                />
               </div>
             )
           })}
@@ -2585,10 +2578,10 @@ function PublicBoxFeatureCard({
       >
         <div
           style={{
-            background: brand.colors.bg,
-            border: `1px solid ${brand.colors.border}`,
-            borderRadius: brand.radius.xl,
-            padding: 16,
+            background: isMobile ? 'transparent' : brand.colors.bg,
+            border: isMobile ? 'none' : `1px solid ${brand.colors.border}`,
+            borderRadius: isMobile ? 0 : brand.radius.xl,
+            padding: isMobile ? 0 : 16,
           }}
         >
           <BoxPreviewVisual box={box} variant="feature" />
@@ -2625,7 +2618,7 @@ function PublicDreamBoxesSection({
       />
 
       {boxes.length > 0 ? (
-        <div style={{ display: 'grid', gridAutoFlow: 'column', gridAutoColumns: isMobile ? 'minmax(240px, 82vw)' : 'minmax(280px, 340px)', gap: 16, overflowX: 'auto', paddingBottom: 4 }}>
+        <div style={{ display: 'grid', gridAutoFlow: 'column', gridAutoColumns: isMobile ? 'minmax(280px, 92vw)' : 'minmax(280px, 340px)', gap: 16, overflowX: 'auto', paddingBottom: 4 }}>
           {boxes.map(box => (
             <Link
               key={box.slug}
@@ -2636,14 +2629,14 @@ function PublicDreamBoxesSection({
                 display: 'block',
                 textDecoration: 'none',
                 color: 'inherit',
-                background: brand.colors.bg,
-                border: `1px solid ${brand.colors.border}`,
-                borderRadius: brand.radius.xl,
-                padding: 16,
+                background: isMobile ? 'transparent' : brand.colors.bg,
+                border: isMobile ? 'none' : `1px solid ${brand.colors.border}`,
+                borderRadius: isMobile ? 0 : brand.radius.xl,
+                padding: isMobile ? 0 : 16,
                 scrollMarginTop: 88,
               }}
             >
-              <div style={{ position: 'absolute', top: 14, right: 14, zIndex: 2 }}>
+              <div style={{ position: 'absolute', top: isMobile ? 0 : 14, right: isMobile ? 0 : 14, zIndex: 2 }}>
                 <ShareIconButton onClick={() => onShareBox(box)} label={`Share ${box.title}`} />
               </div>
 
@@ -2656,7 +2649,7 @@ function PublicDreamBoxesSection({
                 </div>
               </div>
 
-              <BoxPreviewVisual box={box} />
+              <BoxPreviewVisual box={box} variant={isMobile ? 'feature' : 'card'} />
             </Link>
           ))}
         </div>

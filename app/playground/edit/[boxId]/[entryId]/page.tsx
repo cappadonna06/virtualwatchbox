@@ -310,8 +310,10 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 
 const inputStyle: CSSProperties = {
   fontFamily: 'var(--font-dm-sans)',
-  fontSize: 13,
-  padding: '9px 12px',
+  // 16px is the iOS Safari focus-zoom threshold — anything smaller
+  // triggers an auto-zoom that persists and breaks the layout.
+  fontSize: 16,
+  padding: '11px 12px',
   border: '1px solid #E0DAD0',
   borderRadius: 6,
   width: '100%',

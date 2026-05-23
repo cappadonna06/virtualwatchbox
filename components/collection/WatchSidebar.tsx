@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { ResolvedOwnedWatch, ResolvedWatch, WatchCondition } from '@/types/watch'
 import { brand } from '@/lib/brand'
+import { dialColorToHex } from '@/lib/dialColors'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import WatchPhotoGallery from './WatchPhotoGallery'
@@ -301,7 +302,20 @@ export default function WatchSidebar({
             }}
           >
             <span style={{ color: brand.colors.muted, fontWeight: 400 }}>{label}</span>
-            <span style={{ color: brand.colors.ink, fontWeight: 500, textAlign: 'right', maxWidth: '55%' }}>{value}</span>
+            <span style={{ color: brand.colors.ink, fontWeight: 500, textAlign: 'right', maxWidth: '55%', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              {label === 'Dial Color' && value !== '—' ? (
+                <span style={{
+                  display: 'inline-block',
+                  width: 14,
+                  height: 14,
+                  borderRadius: '50%',
+                  background: dialColorToHex(value),
+                  boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.18)',
+                  flexShrink: 0,
+                }} />
+              ) : null}
+              {value}
+            </span>
           </div>
         ))}
       </div>

@@ -246,10 +246,12 @@ export default function AdminImageReviewPage() {
           onChange={e => setSearchTerm(e.target.value)}
           style={{
             width: '100%',
-            padding: '10px 14px 10px 38px',
+            padding: '11px 14px 11px 38px',
             border: `1px solid ${brand.colors.border}`,
             borderRadius: brand.radius.md,
-            fontFamily: brand.font.sans, fontSize: 13,
+            // 16px is the iOS Safari focus-zoom threshold — anything smaller
+            // triggers an auto-zoom that persists and breaks the layout.
+            fontFamily: brand.font.sans, fontSize: 16,
             background: '#FFFFFF',
             color: brand.colors.ink,
             outline: 'none',

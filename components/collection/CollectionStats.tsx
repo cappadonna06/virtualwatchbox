@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import type { WatchType } from '@/types/watch'
 import { brand } from '@/lib/brand'
+import { dialColorToHex } from '@/lib/dialColors'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -18,20 +19,35 @@ const ALL_COMPLICATIONS = [
   'Annual Calendar', 'Perpetual Calendar', 'Power Reserve', 'Tourbillon',
 ]
 
-const ALL_DIAL_COLORS: { name: string; hex: string }[] = [
-  { name: 'Black',     hex: '#1A1410' },
-  { name: 'White',     hex: '#F5F0E8' },
-  { name: 'Blue',      hex: '#1B2A4A' },
-  { name: 'Grey',      hex: '#7A7A7A' },
-  { name: 'Green',     hex: '#2A4A2E' },
-  { name: 'Silver',    hex: '#D4CDC0' },
-  { name: 'Champagne', hex: '#E8D9B0' },
-  { name: 'Salmon',    hex: '#E8C8B8' },
-  { name: 'Brown',     hex: '#7A5A3A' },
-  { name: 'Red',       hex: '#A83838' },
-]
+// Canonical dial-color names; hex values come from lib/dialColors.ts
+// via `dialColorToHex` so there's one source of truth.
+const ALL_DIAL_COLOR_NAMES = [
+  'Black', 'White', 'Blue', 'Grey', 'Green',
+  'Silver', 'Champagne', 'Salmon', 'Brown', 'Red',
+] as const
+const ALL_DIAL_COLORS: { name: string; hex: string }[] = ALL_DIAL_COLOR_NAMES.map(name => ({
+  name,
+  hex: dialColorToHex(name),
+}))
 
 const LIGHT_COLORS = new Set(['White', 'Champagne', 'Silver'])
+
+function DialSwatch({ hex, light, size = 22 }: { hex: string; light?: boolean; size?: number }) {
+  return (
+    <span
+      style={{
+        display: 'inline-block',
+        width: size,
+        height: size,
+        borderRadius: '50%',
+        background: hex,
+        border: light ? `1px solid ${brand.colors.borderLight}` : 'none',
+        boxShadow: light ? undefined : 'inset 0 0 0 1px rgba(255,255,255,0.18)',
+        flexShrink: 0,
+      }}
+    />
+  )
+}
 
 const SUCCESS_GREEN = '#2D6A2D'
 const SUCCESS_BG = '#E8F4E8'
@@ -79,6 +95,13 @@ interface Props {
 
 export default function CollectionStats({ watches, mode = 'collection' }: Props) {
   const [view, setView] = useState<'overview' | 'graphical'>('overview')
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   if (watches.length === 0 && mode === 'collection') {
     return (
@@ -172,9 +195,9 @@ export default function CollectionStats({ watches, mode = 'collection' }: Props)
       <PortfolioValueRow watches={watches} mode={mode} />
 
       {view === 'overview' ? (
-        <DataSheet watches={watches} />
+        <DataSheet watches={watches} isMobile={isMobile} />
       ) : (
-        <GraphicalView watches={watches} />
+        <GraphicalView watches={watches} isMobile={isMobile} />
       )}
     </section>
   )
@@ -351,28 +374,30 @@ function Cell({
   )
 }
 
-function DataSheet({ watches }: { watches: Props['watches'] }) {
+function DataSheet({ watches, isMobile }: { watches: Props['watches']; isMobile: boolean }) {
   return (
     <div
       style={{
         background: brand.colors.slot,
         border: `1px solid ${brand.colors.border}`,
         borderRadius: brand.radius.xl,
-        padding: '0 24px',
+        padding: isMobile ? '0 16px' : '0 24px',
       }}
     >
-      <DialColorsRow watches={watches} />
+      <DialColorsRow watches={watches} isMobile={isMobile} />
       <ChipRow
         label="Watch Types"
         items={ALL_WATCH_TYPES.map(name => ({ name }))}
         getCount={item => watches.filter(w => w.watchType === item.name).length}
+        isMobile={isMobile}
       />
       <ChipRow
         label="Complications"
         items={ALL_COMPLICATIONS.map(name => ({ name }))}
         getCount={item => watches.filter(w => w.complications.includes(item.name)).length}
+        isMobile={isMobile}
       />
-      <BrandsRow watches={watches} />
+      <BrandsRow watches={watches} isMobile={isMobile} />
     </div>
   )
 }
@@ -383,6 +408,7 @@ function DataRow({
   open,
   setOpen,
   hiddenCount,
+  isMobile,
   children,
 }: {
   label: string
@@ -390,8 +416,33 @@ function DataRow({
   open?: boolean
   setOpen?: (next: boolean) => void
   hiddenCount?: number
+  isMobile?: boolean
   children: ReactNode
 }) {
+  const hasToggle = typeof open === 'boolean' && setOpen && typeof hiddenCount === 'number' && hiddenCount > 0
+
+  if (isMobile) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 10,
+          padding: '16px 0',
+          borderBottom: isLast ? 'none' : `1px solid ${brand.colors.border}`,
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={microLabel}>{label}</div>
+          {hasToggle ? (
+            <RevealToggle open={open} setOpen={setOpen} hiddenCount={hiddenCount} />
+          ) : null}
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>{children}</div>
+      </div>
+    )
+  }
+
   return (
     <div
       style={{
@@ -405,7 +456,7 @@ function DataRow({
     >
       <div style={{ ...microLabel, paddingTop: 4 }}>{label}</div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>{children}</div>
-      {typeof open === 'boolean' && setOpen && typeof hiddenCount === 'number' && hiddenCount > 0 ? (
+      {hasToggle ? (
         <RevealToggle open={open} setOpen={setOpen} hiddenCount={hiddenCount} />
       ) : (
         <span />
@@ -458,7 +509,7 @@ function RevealToggle({
   )
 }
 
-function DialColorsRow({ watches }: { watches: Props['watches'] }) {
+function DialColorsRow({ watches, isMobile }: { watches: Props['watches']; isMobile: boolean }) {
   const [open, setOpen] = useState(false)
   const counts = ALL_DIAL_COLORS.map(c => ({
     ...c,
@@ -469,7 +520,7 @@ function DialColorsRow({ watches }: { watches: Props['watches'] }) {
   const list = open ? counts : nonzero
 
   return (
-    <DataRow label="Dial Colors" open={open} setOpen={setOpen} hiddenCount={zero.length}>
+    <DataRow label="Dial Colors" open={open} setOpen={setOpen} hiddenCount={zero.length} isMobile={isMobile}>
       {list.length === 0 ? (
         <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>None recorded yet.</span>
       ) : (
@@ -486,16 +537,7 @@ function DialColorsRow({ watches }: { watches: Props['watches'] }) {
               opacity: c.count === 0 ? 0.45 : 1,
             }}
           >
-            <span
-              style={{
-                width: 18,
-                height: 18,
-                borderRadius: brand.radius.circle,
-                background: c.hex,
-                border: LIGHT_COLORS.has(c.name) ? `1px solid ${brand.colors.borderLight}` : 'none',
-                flexShrink: 0,
-              }}
-            />
+            <DialSwatch hex={c.hex} light={LIGHT_COLORS.has(c.name)} size={22} />
             <span
               style={{
                 fontFamily: brand.font.sans,
@@ -520,10 +562,12 @@ function ChipRow({
   label,
   items,
   getCount,
+  isMobile,
 }: {
   label: string
   items: { name: string }[]
   getCount: (item: { name: string }) => number
+  isMobile: boolean
 }) {
   const [open, setOpen] = useState(false)
   const withCounts = items.map(it => ({ ...it, count: getCount(it) }))
@@ -532,7 +576,7 @@ function ChipRow({
   const list = open ? withCounts : nonzero
 
   return (
-    <DataRow label={label} open={open} setOpen={setOpen} hiddenCount={zero.length}>
+    <DataRow label={label} open={open} setOpen={setOpen} hiddenCount={zero.length} isMobile={isMobile}>
       {list.length === 0 ? (
         <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>None recorded yet.</span>
       ) : (
@@ -566,7 +610,7 @@ function StatChip({ label, count, dim }: { label: string; count: number; dim?: b
   )
 }
 
-function BrandsRow({ watches }: { watches: Props['watches'] }) {
+function BrandsRow({ watches, isMobile }: { watches: Props['watches']; isMobile: boolean }) {
   const counts: Record<string, number> = {}
   watches.forEach(w => {
     counts[w.brand] = (counts[w.brand] ?? 0) + 1
@@ -574,7 +618,7 @@ function BrandsRow({ watches }: { watches: Props['watches'] }) {
   const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1])
 
   return (
-    <DataRow label="Brands" isLast>
+    <DataRow label="Brands" isLast isMobile={isMobile}>
       {sorted.length === 0 ? (
         <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>None yet.</span>
       ) : (
@@ -603,7 +647,7 @@ function BrandsRow({ watches }: { watches: Props['watches'] }) {
   )
 }
 
-function GraphicalView({ watches }: { watches: Props['watches'] }) {
+function GraphicalView({ watches, isMobile }: { watches: Props['watches']; isMobile: boolean }) {
   const byBrand: Record<string, number> = {}
   watches.forEach(w => {
     byBrand[w.brand] = (byBrand[w.brand] ?? 0) + w.estimatedValue
@@ -612,54 +656,187 @@ function GraphicalView({ watches }: { watches: Props['watches'] }) {
   const max = Math.max(...entries.map(([, v]) => v), 1)
   const total = entries.reduce((s, [, v]) => s + v, 0)
 
+  // Dial color counts for the donut chart
+  const dialCounts = ALL_DIAL_COLORS.map(c => ({
+    ...c,
+    count: watches.filter(w => matchDialColor(w.dialColor) === c.name).length,
+  })).filter(c => c.count > 0)
+
+  // Watch type counts for horizontal bars
+  const typeCounts = ALL_WATCH_TYPES
+    .map(name => ({ name, count: watches.filter(w => w.watchType === name).length }))
+    .filter(t => t.count > 0)
+    .sort((a, b) => b.count - a.count)
+  const typeMax = Math.max(...typeCounts.map(t => t.count), 1)
+
+  // Complication counts
+  const compCounts = ALL_COMPLICATIONS
+    .map(name => ({ name, count: watches.filter(w => w.complications.includes(name)).length }))
+    .filter(c => c.count > 0)
+    .sort((a, b) => b.count - a.count)
+  const compMax = Math.max(...compCounts.map(c => c.count), 1)
+
+  const cardStyle = {
+    background: brand.colors.slot,
+    border: `1px solid ${brand.colors.border}`,
+    borderRadius: brand.radius.xl,
+    padding: isMobile ? 18 : 24,
+  }
+
   return (
-    <div
-      style={{
-        background: brand.colors.slot,
-        border: `1px solid ${brand.colors.border}`,
-        borderRadius: brand.radius.xl,
-        padding: 24,
-      }}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 18 }}>
-        <div style={microLabel}>Value By Brand</div>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted }}>
-          {entries.length} {entries.length === 1 ? 'brand' : 'brands'} · {fmt(total)} total
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      {/* Value by brand */}
+      <div style={cardStyle}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 18, flexWrap: 'wrap', gap: 8 }}>
+          <div style={microLabel}>Value By Brand</div>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted }}>
+            {entries.length} {entries.length === 1 ? 'brand' : 'brands'} · {fmt(total)} total
+          </div>
         </div>
+        {entries.length === 0 ? (
+          <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>No data yet.</div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {entries.map(([brandName, value]) => (
+              <div key={brandName}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5, flexWrap: 'wrap', gap: 4 }}>
+                  <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink, fontWeight: 500 }}>
+                    {brandName}
+                  </span>
+                  <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
+                    {fmt(value)} · {Math.round((value / total) * 100)}%
+                  </span>
+                </div>
+                <div style={{ height: 6, borderRadius: 3, background: '#F0EBE3', overflow: 'hidden' }}>
+                  <div
+                    style={{
+                      width: `${(value / max) * 100}%`,
+                      height: '100%',
+                      background: 'linear-gradient(90deg, #C9A84C 0%, #B89535 100%)',
+                      borderRadius: 3,
+                      transition: 'width 0.4s ease',
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        <span style={{ display: 'none' }} aria-hidden data-success-bg={SUCCESS_BG} />
       </div>
 
-      {entries.length === 0 ? (
-        <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>No data yet.</div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {entries.map(([brandName, value]) => (
-            <div key={brandName}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink, fontWeight: 500 }}>
-                  {brandName}
-                </span>
-                <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
-                  {fmt(value)} · {Math.round((value / total) * 100)}%
-                </span>
-              </div>
-              <div style={{ height: 6, borderRadius: 3, background: '#F0EBE3', overflow: 'hidden' }}>
-                <div
-                  style={{
-                    width: `${(value / max) * 100}%`,
-                    height: '100%',
-                    background: 'linear-gradient(90deg, #C9A84C 0%, #B89535 100%)',
-                    borderRadius: 3,
-                    transition: 'width 0.4s ease',
-                  }}
-                />
-              </div>
+      {/* Dial colors donut */}
+      {dialCounts.length > 0 && (
+        <div style={cardStyle}>
+          <div style={{ ...microLabel, marginBottom: 18 }}>Dial Colors</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 20 : 32, flexWrap: 'wrap' }}>
+            <DialDonut slices={dialCounts} size={isMobile ? 120 : 140} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1, minWidth: 120 }}>
+              {dialCounts.map(c => (
+                <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <DialSwatch hex={c.hex} light={LIGHT_COLORS.has(c.name)} size={16} />
+                  <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink, fontWeight: 500, flex: 1 }}>
+                    {c.name}
+                  </span>
+                  <span style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted }}>{c.count}</span>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       )}
 
-      {/* Success state token reference (not rendered) — keeps SUCCESS_BG referenced until copy-success surfaces here */}
-      <span style={{ display: 'none' }} aria-hidden data-success-bg={SUCCESS_BG} />
+      {/* Watch types horizontal bars */}
+      {typeCounts.length > 0 && (
+        <div style={cardStyle}>
+          <div style={{ ...microLabel, marginBottom: 18 }}>Watch Types</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {typeCounts.map(t => (
+              <div key={t.name} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink, fontWeight: 500, width: isMobile ? 80 : 120, flexShrink: 0 }}>
+                  {t.name}
+                </span>
+                <div style={{ flex: 1, height: 6, borderRadius: 3, background: '#F0EBE3', overflow: 'hidden' }}>
+                  <div style={{
+                    width: `${(t.count / typeMax) * 100}%`,
+                    height: '100%',
+                    background: brand.colors.ink,
+                    borderRadius: 3,
+                    transition: 'width 0.4s ease',
+                  }} />
+                </div>
+                <span style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, width: 20, textAlign: 'right' }}>
+                  {t.count}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Complications */}
+      {compCounts.length > 0 && (
+        <div style={cardStyle}>
+          <div style={{ ...microLabel, marginBottom: 18 }}>Complications</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {compCounts.map(c => (
+              <span
+                key={c.name}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  fontFamily: brand.font.sans,
+                  fontSize: 10 + Math.min(3, Math.round((c.count / compMax) * 3)),
+                  fontWeight: 500,
+                  padding: '5px 12px',
+                  borderRadius: brand.radius.pill,
+                  background: brand.colors.ink,
+                  color: brand.colors.bg,
+                }}
+              >
+                {c.name}
+                <span style={{ opacity: 0.6 }}>{c.count}</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
+  )
+}
+
+function DialDonut({ slices, size }: { slices: { hex: string; count: number }[]; size: number }) {
+  const total = slices.reduce((s, sl) => s + sl.count, 0)
+  if (total === 0) return null
+  const r = size / 2
+  const ir = r * 0.55
+  let cursor = -Math.PI / 2
+  const paths = slices.map(sl => {
+    const angle = (sl.count / total) * Math.PI * 2
+    const start = cursor
+    cursor += angle
+    const end = cursor
+    const large = angle > Math.PI ? 1 : 0
+    const x1 = r + r * Math.cos(start)
+    const y1 = r + r * Math.sin(start)
+    const x2 = r + r * Math.cos(end)
+    const y2 = r + r * Math.sin(end)
+    const ix1 = r + ir * Math.cos(end)
+    const iy1 = r + ir * Math.sin(end)
+    const ix2 = r + ir * Math.cos(start)
+    const iy2 = r + ir * Math.sin(start)
+    return (
+      <path
+        key={sl.hex}
+        d={`M${x1},${y1} A${r},${r} 0 ${large} 1 ${x2},${y2} L${ix1},${iy1} A${ir},${ir} 0 ${large} 0 ${ix2},${iy2} Z`}
+        fill={sl.hex}
+      />
+    )
+  })
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ flexShrink: 0 }}>
+      {paths}
+    </svg>
   )
 }

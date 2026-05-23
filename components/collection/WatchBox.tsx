@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type DragEvent as ReactDragEvent, type PointerEvent as ReactPointerEvent } from 'react'
 import type { ResolvedWatch } from '@/types/watch'
-import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
+import { FRAMES, LININGS, SLOT_COUNTS, watchboxFrameMetrics } from '@/lib/frameConfig'
 import { getWatchboxOverflow } from '@/lib/watchboxOverflow'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import { brand } from '@/lib/brand'
@@ -313,6 +313,7 @@ export default function WatchBox({
   // onClick so a release after drag doesn't also trigger "select watch."
   const didTouchDragRef = useRef(false)
   const [isTouchDevice, setIsTouchDevice] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const dragCounter = useRef(0)
   const ghostRef = useRef<HTMLDivElement | null>(null)
 
@@ -334,12 +335,19 @@ export default function WatchBox({
 
   useEffect(() => {
     setIsTouchDevice(window.matchMedia('(hover: none) and (pointer: coarse)').matches)
+    const mobileQuery = window.matchMedia('(max-width: 767px)')
+    const syncMobile = () => setIsMobile(mobileQuery.matches)
+    syncMobile()
+    mobileQuery.addEventListener('change', syncMobile)
     return () => {
+      mobileQuery.removeEventListener('change', syncMobile)
       ghostRef.current?.remove()
       cancelLongPressTouch()
       touchDragCleanupRef.current?.()
     }
   }, [])
+
+  const metrics = watchboxFrameMetrics(isMobile)
 
   function cancelLongPressTouch() {
     const lp = longPressTouchRef.current
@@ -534,8 +542,8 @@ export default function WatchBox({
       <div
         className={wobble ? 'watchbox-wobble' : undefined}
         style={{
-          borderRadius: 10,
-          padding: '22px 22px 24px',
+          borderRadius: isMobile ? 7 : 10,
+          padding: `${metrics.outerPaddingTop}px ${metrics.outerPaddingSide}px ${metrics.outerPaddingBottom}px`,
           background: fr.css,
           boxShadow: fr.shadow,
           position: 'relative',
@@ -545,7 +553,7 @@ export default function WatchBox({
           style={{
             background: ln.color,
             borderRadius: 5,
-            padding: 10,
+            padding: metrics.innerPadding,
             boxShadow: 'inset 0 4px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04)',
             transition: 'background 0.4s ease',
             position: 'relative',
@@ -557,7 +565,7 @@ export default function WatchBox({
               gridTemplateColumns: slotWidth
                 ? `repeat(${sc.cols}, ${slotWidth}px)`
                 : `repeat(${sc.cols}, 1fr)`,
-              gap: 6,
+              gap: metrics.slotGap,
             }}
           >
             {slots.map((slot, i) => {
