@@ -838,15 +838,22 @@ export default function WatchBox({
                     transform: 'translateY(0)',
                     transition: 'transform 0.18s ease, opacity 0.15s ease',
                     // iOS Safari intercepts long-press on the slot image with
-                    // its native callout menu / image-drag gesture before our
-                    // custom long-press timer can fire. These CSS knobs
-                    // suppress Safari's gestures so the wrapper's pointer
-                    // events get through cleanly. Cascade to the <img> via
-                    // child styles below.
+                    // its native callout menu before our custom long-press
+                    // timer can fire. These CSS knobs suppress that gesture
+                    // at the wrapper. NB: we do NOT set WebkitUserDrag:'none'
+                    // here — that would also nuke desktop HTML5 drag, which
+                    // is the wrapper-driven reorder source. The inner <img>
+                    // gets that suppression instead.
                     WebkitTouchCallout: 'none',
                     WebkitUserSelect: 'none',
                     userSelect: 'none',
-                    ...({ WebkitUserDrag: 'none' } as Record<string, string>),
+                    // Lock out native scroll/zoom on the slot when long-press
+                    // reorder is wired up. Without this, iOS fires
+                    // pointercancel the moment the user's finger trembles a
+                    // pixel, killing the timer before it can arm. Users can
+                    // still scroll the page by starting their touch outside
+                    // any slot (frame, configurator, tray, page margin).
+                    touchAction: (isTouchDevice && onReorder) ? 'none' : undefined,
                   }}
                   onMouseEnter={e => {
                     if (draggedIndex !== null) return
