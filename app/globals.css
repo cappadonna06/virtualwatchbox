@@ -490,6 +490,11 @@ body {
     flex: 0 0 280px;
     scroll-snap-align: start;
   }
+
+  /* Homepage discover preview */
+  .discover-preview > div { padding: 36px 20px 40px !important; }
+  .discover-preview-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+  .discover-preview-specs { gap: 16px !important; }
 }
 
 @media (min-width: 768px) {

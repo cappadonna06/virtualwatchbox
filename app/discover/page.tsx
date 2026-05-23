@@ -49,6 +49,7 @@ function ownedToCatalog(owned: ReturnType<typeof useCollectionSession>['collecti
     imageSourceUrl: w.imageSourceUrl,
     dialConfig: w.dialConfig,
     watchType: w.watchType,
+    modelFamily: (w as any).modelFamily,
   }))
 }
 

@@ -3,13 +3,26 @@
 .discover-section-nav-inner::-webkit-scrollbar { display: none; }
 
 @media (max-width: 767px) {
+  .discover-hero-desktop { display: none !important; }
+  .discover-mobile-hero { display: block !important; }
   .discover-masthead { display: none !important; }
   .discover-hero-h1 { font-size: 44px !important; }
+
+  /* Dark section nav on mobile — sits between dark hero and dark lead */
+  .discover-section-nav {
+    top: 56px !important;
+    background: rgba(30, 27, 22, 0.94) !important;
+    border-bottom-color: rgba(250, 248, 244, 0.12) !important;
+  }
+  .discover-section-nav-inner > a { color: rgba(250, 248, 244, 0.55) !important; }
+  .discover-section-nav-inner > a[data-active="true"] { color: rgba(250, 248, 244, 0.92) !important; }
   .discover-section-head { grid-template-columns: 1fr !important; }
-  .discover-section-head > div + div { text-align: left !important; max-width: none !important; }
   .discover-section-nav-label { display: none !important; }
   .discover-section-nav-inner { padding: 0 18px !important; gap: 16px !important; height: 40px !important; }
   .discover-section-nav-inner > a { height: 40px !important; }
+
+  /* Mobile-only "Your next move." heading in lead section */
+  .discover-mobile-ynm { display: block !important; }
 
   /* ── Hero / Complete the Box ─────────────────────────────────────────── */
   .discover-complete-row { grid-template-columns: 1fr !important; gap: 24px !important; }

@@ -52,6 +52,23 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
           }}
         >
           <div>
+            <h2
+              className="discover-mobile-ynm"
+              style={{
+                display: 'none',
+                fontFamily: brand.font.serif,
+                fontWeight: 300,
+                fontSize: 32,
+                lineHeight: 1,
+                letterSpacing: '-0.018em',
+                margin: 0,
+                marginBottom: 20,
+                color: brand.colors.slot,
+              }}
+            >
+              Your next move.
+            </h2>
+
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
               <GoldKicker>{personalized ? 'Complete the Box' : 'This Week’s Pick'}</GoldKicker>
               <div style={{ height: 1, width: 24, background: 'rgba(201,168,76,0.6)' }} />
