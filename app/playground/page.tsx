@@ -192,6 +192,16 @@ function PlaygroundPageInner() {
   const watchboxMaxW = watchboxSlotPx !== undefined
     ? slotPad.widthPadding + (sc.cols - 1) * slotPad.gap + sc.cols * watchboxSlotPx
     : undefined
+  // Tray width is pinned to the 10-slot box width so it stays stable
+  // when the user toggles between 4 / 6 / 8 / 10 — otherwise the tray
+  // would shrink/grow each time the box does.
+  const TRAY_COLS = SLOT_COUNTS[SLOT_COUNTS.length - 1].cols
+  const traySlotPx = screenW > 0
+    ? Math.floor(calcSlotPx(watchboxContainerW, watchboxMaxH, TRAY_COLS, slotPad.widthPadding, slotPad.heightPadding, slotPad.gap))
+    : undefined
+  const trayMaxW = traySlotPx !== undefined
+    ? slotPad.widthPadding + (TRAY_COLS - 1) * slotPad.gap + TRAY_COLS * traySlotPx
+    : undefined
 
   function updateActiveBox(mutator: (box: PlaygroundBox) => PlaygroundBox) {
     setBoxes(prev => prev.map(box => (box.id === activeBoxId ? mutator(box) : box)))
@@ -481,6 +491,7 @@ function PlaygroundPageInner() {
                   value={editingNameValue}
                   onChange={e => setEditingNameValue(e.target.value)}
                   onBlur={() => handleRenameBox(editingNameValue)}
+                  onFocus={e => e.currentTarget.select()}
                   onKeyDown={e => {
                     if (e.key === 'Enter') handleRenameBox(editingNameValue)
                     if (e.key === 'Escape') setEditingName(false)
@@ -732,7 +743,11 @@ function PlaygroundPageInner() {
           className="collection-grid"
           style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}
         >
-          <div>
+          {/* minWidth:0 — grid tracks default to min-width:auto, which
+              lets `flex-shrink:0` descendants (e.g. WatchTray items) push
+              the 1fr track wider than the viewport. Without this the
+              whole page scrolls horizontally on mobile. */}
+          <div style={{ minWidth: 0 }}>
             {activeView === 'watchbox' ? (
               <>
                 <WatchboxView
@@ -763,12 +778,14 @@ function PlaygroundPageInner() {
                   onImportCollection={handleImportCollection}
                 />
                 {(followedWatches.length > 0 || collectionWatches.length > 0) && (
-                  <WatchTray
-                    followedWatches={followedWatches}
-                    collectionWatches={collectionWatches}
-                    onWatchDropped={handleTrayDrop}
-                    onTouchHoverChange={setTouchHoverSlot}
-                  />
+                  <div style={{ maxWidth: trayMaxW, width: '100%', margin: '0 auto' }}>
+                    <WatchTray
+                      followedWatches={followedWatches}
+                      collectionWatches={collectionWatches}
+                      onWatchDropped={handleTrayDrop}
+                      onTouchHoverChange={setTouchHoverSlot}
+                    />
+                  </div>
                 )}
               </>
             ) : (
@@ -992,13 +1009,18 @@ function RenameBoxModal({
               if (event.key === 'Enter' && value.trim()) onSubmit()
             }}
             autoFocus
+            // Pre-select the existing name so a tap lets the user type a
+            // replacement immediately instead of caret-into-the-middle.
+            onFocus={event => event.currentTarget.select()}
             style={{
               width: '100%',
-              padding: '9px 12px',
+              padding: '11px 12px',
               border: `1px solid ${brand.colors.borderLight}`,
               borderRadius: brand.radius.sm,
               fontFamily: brand.font.sans,
-              fontSize: 13,
+              // 16px is the iOS Safari focus-zoom threshold — anything smaller
+              // triggers an auto-zoom that persists and breaks the layout.
+              fontSize: 16,
               color: brand.colors.ink,
               background: brand.colors.white,
               outline: 'none',
@@ -1714,11 +1736,13 @@ function NewBoxModal({ onClose, onCreate }: NewBoxModalProps) {
             autoFocus
             style={{
               width: '100%',
-              padding: '9px 12px',
+              padding: '11px 12px',
               border: '1px solid #E0DAD0',
               borderRadius: 6,
               fontFamily: 'var(--font-dm-sans)',
-              fontSize: 13,
+              // 16px is the iOS Safari focus-zoom threshold — anything smaller
+              // triggers an auto-zoom that persists and breaks the layout.
+              fontSize: 16,
               color: '#1A1410',
               background: '#FFFFFF',
               outline: 'none',

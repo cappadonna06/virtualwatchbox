@@ -48,7 +48,9 @@ export default function NewsFilterBar({
             borderRadius: brand.radius.md,
             background: brand.colors.white,
             fontFamily: brand.font.sans,
-            fontSize: 14,
+            // 16px is the iOS Safari focus-zoom threshold — anything smaller
+            // triggers an auto-zoom that persists and breaks the layout.
+            fontSize: 16,
             color: brand.colors.ink,
             outline: 'none',
             boxShadow: brand.shadow.xs,

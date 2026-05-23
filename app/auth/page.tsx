@@ -327,7 +327,9 @@ function AuthPageInner() {
                     borderRadius: brand.radius.md,
                     padding: '11px 14px',
                     fontFamily: brand.font.sans,
-                    fontSize: 14,
+                    // 16px is the iOS Safari focus-zoom threshold — anything smaller
+                    // triggers an auto-zoom that persists and breaks the layout.
+                    fontSize: 16,
                     color: brand.colors.ink,
                     background: brand.colors.bg,
                     outline: 'none',

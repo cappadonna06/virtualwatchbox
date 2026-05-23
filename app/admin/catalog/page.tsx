@@ -343,7 +343,9 @@ function AdminCatalogPageInner() {
   const inputStyle: React.CSSProperties = {
     width: '100%', boxSizing: 'border-box',
     border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.md,
-    padding: '9px 12px', fontFamily: brand.font.sans, fontSize: 13,
+    // 16px is the iOS Safari focus-zoom threshold — anything smaller
+    // triggers an auto-zoom that persists and breaks the layout.
+    padding: '10px 12px', fontFamily: brand.font.sans, fontSize: 16,
     color: brand.colors.ink, background: brand.colors.bg, outline: 'none',
   }
   const labelStyle: React.CSSProperties = {

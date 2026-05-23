@@ -417,11 +417,13 @@ function Field({
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  padding: '9px 12px',
+  padding: '11px 12px',
   border: `1px solid ${brand.colors.border}`,
   borderRadius: brand.radius.sm,
   fontFamily: brand.font.sans,
-  fontSize: 13,
+  // 16px is the iOS Safari focus-zoom threshold — anything smaller
+  // triggers an auto-zoom that persists and breaks the layout.
+  fontSize: 16,
   color: brand.colors.ink,
   background: brand.colors.white,
   outline: 'none',

@@ -1100,134 +1100,166 @@ function AddWatchSearchInner() {
               setShowAll(false)
               setShowAllZeros(false)
             }
-            return (
-              <div style={{ position: 'relative', marginBottom: 18 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 36 }}>
+            const filtersButton = (
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(o => !o)}
+                aria-expanded={filtersOpen}
+                data-filter-trigger="true"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '8px 14px',
+                  borderRadius: brand.radius.pill,
+                  background: activeCount > 0 ? brand.colors.ink : 'transparent',
+                  border: `1px solid ${activeCount > 0 ? brand.colors.ink : brand.colors.borderLight}`,
+                  color: activeCount > 0 ? brand.colors.bg : brand.colors.ink,
+                  fontFamily: brand.font.sans,
+                  fontSize: 12,
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  flexShrink: 0,
+                }}
+              >
+                <SlidersIcon />
+                <span>Filters</span>
+                {activeCount > 0 ? (
+                  <span style={{
+                    fontSize: 10,
+                    fontWeight: 600,
+                    background: brand.colors.gold,
+                    color: brand.colors.ink,
+                    padding: '1px 7px',
+                    borderRadius: brand.radius.pill,
+                    minWidth: 18,
+                    textAlign: 'center',
+                  }}>
+                    {activeCount}
+                  </span>
+                ) : null}
+              </button>
+            )
+
+            const sortControl = (
+              <div style={{ flexShrink: 0 }}>
+                <SortDropdown
+                  label="Sort"
+                  value={sortBy}
+                  options={SORT_OPTIONS}
+                  onChange={v => setSortBy(v as SortMode)}
+                  compact={isMobile}
+                />
+              </div>
+            )
+
+            // On mobile, the chip strip drops into its own full-width row
+            // below the Filters/Sort row so every active chip stays
+            // visible and tappable — hiding them under a fade was the wrong
+            // call. Desktop keeps the single-row layout with chips between
+            // the two controls.
+            const chipStrip = (
+              <div
+                className="filter-summary-scroll"
+                style={{
+                  display: 'flex',
+                  gap: 6,
+                  overflowX: 'auto',
+                  flex: isMobile ? '0 1 auto' : '1 1 0',
+                  minWidth: 0,
+                  width: isMobile ? '100%' : undefined,
+                  alignItems: 'center',
+                  WebkitOverflowScrolling: 'touch',
+                  scrollbarWidth: 'none',
+                  ...(isMobile ? {} : {
+                    WebkitMaskImage: 'linear-gradient(to right, black calc(100% - 18px), transparent 100%)',
+                    maskImage: 'linear-gradient(to right, black calc(100% - 18px), transparent 100%)',
+                  }),
+                }}
+              >
+                {facetChips.map(chip => (
                   <button
+                    key={chip.key}
                     type="button"
-                    onClick={() => setFiltersOpen(o => !o)}
-                    aria-expanded={filtersOpen}
-                    data-filter-trigger="true"
+                    onClick={chip.clear}
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: 8,
-                      padding: '8px 14px',
+                      gap: 6,
+                      padding: '5px 6px 5px 11px',
                       borderRadius: brand.radius.pill,
-                      background: activeCount > 0 ? brand.colors.ink : 'transparent',
-                      border: `1px solid ${activeCount > 0 ? brand.colors.ink : brand.colors.borderLight}`,
-                      color: activeCount > 0 ? brand.colors.bg : brand.colors.ink,
+                      background: CHIP_FILL,
+                      border: `1px solid ${brand.colors.border}`,
                       fontFamily: brand.font.sans,
-                      fontSize: 12,
+                      fontSize: 11.5,
                       fontWeight: 500,
+                      color: brand.colors.ink,
                       cursor: 'pointer',
+                      whiteSpace: 'nowrap',
                       flexShrink: 0,
                     }}
                   >
-                    <SlidersIcon />
-                    <span>Filters</span>
-                    {activeCount > 0 ? (
-                      <span style={{
-                        fontSize: 10,
-                        fontWeight: 600,
-                        background: brand.colors.gold,
-                        color: brand.colors.ink,
-                        padding: '1px 7px',
-                        borderRadius: brand.radius.pill,
-                        minWidth: 18,
-                        textAlign: 'center',
-                      }}>
-                        {activeCount}
-                      </span>
-                    ) : null}
-                  </button>
-
-                  <div
-                    className="filter-summary-scroll"
-                    style={{
-                      display: 'flex',
-                      gap: 6,
-                      overflowX: 'auto',
-                      flex: '1 1 0',
-                      minWidth: 0,
+                    <span>{chip.label}</span>
+                    <span style={{
+                      display: 'inline-flex',
                       alignItems: 'center',
-                      WebkitOverflowScrolling: 'touch',
-                      scrollbarWidth: 'none',
-                      WebkitMaskImage: 'linear-gradient(to right, black calc(100% - 18px), transparent 100%)',
-                      maskImage: 'linear-gradient(to right, black calc(100% - 18px), transparent 100%)',
+                      justifyContent: 'center',
+                      width: 16,
+                      height: 16,
+                      borderRadius: brand.radius.pill,
+                      background: 'rgba(26,20,16,0.08)',
+                      color: brand.colors.ink,
+                    }}>
+                      <CrossIcon size={9} />
+                    </span>
+                  </button>
+                ))}
+
+                {showResetLink ? (
+                  <button
+                    type="button"
+                    onClick={resetAll}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontFamily: brand.font.sans,
+                      fontSize: 11,
+                      color: brand.colors.muted,
+                      textDecoration: 'underline',
+                      textUnderlineOffset: 2,
+                      padding: '0 6px',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
                     }}
                   >
-                    {facetChips.map(chip => (
-                      <button
-                        key={chip.key}
-                        type="button"
-                        onClick={chip.clear}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          padding: '5px 6px 5px 11px',
-                          borderRadius: brand.radius.pill,
-                          background: CHIP_FILL,
-                          border: `1px solid ${brand.colors.border}`,
-                          fontFamily: brand.font.sans,
-                          fontSize: 11.5,
-                          fontWeight: 500,
-                          color: brand.colors.ink,
-                          cursor: 'pointer',
-                          whiteSpace: 'nowrap',
-                          flexShrink: 0,
-                        }}
-                      >
-                        <span>{chip.label}</span>
-                        <span style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          width: 16,
-                          height: 16,
-                          borderRadius: brand.radius.pill,
-                          background: 'rgba(26,20,16,0.08)',
-                          color: brand.colors.ink,
-                        }}>
-                          <CrossIcon size={9} />
-                        </span>
-                      </button>
-                    ))}
+                    Reset
+                  </button>
+                ) : null}
+              </div>
+            )
 
-                    {showResetLink ? (
-                      <button
-                        type="button"
-                        onClick={resetAll}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          fontFamily: brand.font.sans,
-                          fontSize: 11,
-                          color: brand.colors.muted,
-                          textDecoration: 'underline',
-                          textUnderlineOffset: 2,
-                          padding: '0 6px',
-                          whiteSpace: 'nowrap',
-                          flexShrink: 0,
-                        }}
-                      >
-                        Reset
-                      </button>
+            return (
+              <div style={{ position: 'relative', marginBottom: 18 }}>
+                {isMobile ? (
+                  <>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, minHeight: 36 }}>
+                      {filtersButton}
+                      {sortControl}
+                    </div>
+                    {facetChips.length > 0 ? (
+                      <div style={{ marginTop: 10, minWidth: 0 }}>
+                        {chipStrip}
+                      </div>
                     ) : null}
+                  </>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 36 }}>
+                    {filtersButton}
+                    {chipStrip}
+                    {sortControl}
                   </div>
-
-                  <div style={{ flexShrink: 0 }}>
-                    <SortDropdown
-                      label="Sort"
-                      value={sortBy}
-                      options={SORT_OPTIONS}
-                      onChange={v => setSortBy(v as SortMode)}
-                      compact={isMobile}
-                    />
-                  </div>
-                </div>
+                )}
 
                 {/* Desktop popover */}
                 {!isMobile && filtersOpen ? (

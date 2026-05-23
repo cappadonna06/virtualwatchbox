@@ -454,8 +454,10 @@ const fieldLabel: CSSProperties = {
 }
 
 const fieldInput: CSSProperties = {
-  padding: '7px 9px',
-  fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink,
+  padding: '10px 12px',
+  // 16px is the iOS Safari focus-zoom threshold — anything smaller
+  // triggers an auto-zoom that persists and breaks the layout.
+  fontFamily: brand.font.sans, fontSize: 16, color: brand.colors.ink,
   background: brand.colors.bg,
   border: `1px solid ${brand.colors.borderMid}`,
   borderRadius: brand.radius.sm,

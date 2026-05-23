@@ -301,7 +301,7 @@ export default function WatchTray({
             padding: isDesktop ? '16px 16px 18px' : '12px 12px 14px',
             overflowX: 'auto',
             overflowY: 'hidden',
-            scrollbarWidth: 'thin',
+            scrollbarWidth: isDesktop ? 'auto' : 'thin',
             touchAction: isTouchDevice ? 'pan-x' : undefined,
           }}
         >
@@ -426,13 +426,13 @@ export default function WatchTray({
               right: 0,
               top: 0,
               bottom: 0,
-              width: 36,
+              width: isTouchDevice ? 44 : 36,
               background: `linear-gradient(to left, ${brand.colors.white}, rgba(255,255,255,0))`,
               pointerEvents: 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'flex-end',
-              paddingRight: 4,
+              paddingRight: 6,
             }}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke={brand.colors.muted} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
