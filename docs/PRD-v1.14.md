@@ -1221,6 +1221,94 @@ New Supabase tables:
 | Playground strap pairing | P2 |
 | Strap affiliate URL builders (WatchWarehouse, Etsy) | P2 |
 
+#### 7.9 Strap Studio — Technical Architecture
+
+The Strap Studio is the visual configurator that lets users see their watch with different straps. This is the premium, interactive counterpart to the Strap Drawer inventory surface.
+
+**Rendering approach:** 2D layered compositing — the same technique Apple Watch Studio uses. Two transparent PNG layers stacked via CSS `position: absolute`: strap layer (z-bottom) + case-only layer (z-top). Strap swaps replace the bottom layer with a crossfade transition. No 3D models needed.
+
+**Why 2D, not 3D:** The catalog has 4,000+ watches. Creating individual 3D models is prohibitive ($200-500 per model). The existing image pipeline already produces high-quality transparent PNGs at 900px height. 2D compositing leverages that investment, loads instantly (no multi-MB model downloads), and Apple Watch Studio proves it delivers premium results with this exact technique.
+
+##### Asset Pipeline
+
+**Case-only images** (one per watch):
+- Source existing watch photos, find or download case-only images where available (many catalog/press photos exist without straps)
+- For watches with straps in the photo: use **SAM 3** (Segment Anything Model 3) via Ultralytics to auto-segment case from strap, producing a case-only mask
+- Apply mask via Sharp: `sharp(fullWatch).composite([{ input: caseMask, blend: 'dest-in' }])`
+- Manual QA via `/admin/image-review` pattern — expect ~70-80% auto-segmentation success rate
+- Store case-only images in Supabase Storage alongside existing `primary.png/webp`
+- Start with top ~100 watches by heat score, expand progressively
+
+**Strap images** (one per material x lug width x color):
+- High-quality transparent PNGs photographed or rendered from a consistent top-down angle matching the watch catalog's perspective
+- Standard canvas size aligned to lug attachment points
+- Common lug widths: 18, 19, 20, 21, 22, 24mm — each strap template rendered at each width
+- Material library (MVP):
+
+| Category | Variants |
+|---|---|
+| Leather smooth | Black, dark brown, brown, cognac/honey, tan, navy, burgundy, olive, grey |
+| Leather alligator | Black, dark brown, brown, cognac, navy, burgundy |
+| Rubber | Black, navy, grey, olive, orange |
+| NATO nylon | Solid: black, grey, navy, olive, khaki, orange, burgundy. Patterns: Bond (black/grey), RAF (grey/red/blue), French Marine (blue/white/red) |
+| Sailcloth | Black, navy, grey |
+| Metal bracelet | Oyster/3-link (steel, gold, two-tone), Jubilee (steel, gold, two-tone), President (gold), H-link/AP-style (steel), Milanese mesh (steel, gold, black), Engineer/beads-of-rice (steel) |
+
+Total MVP strap asset count: ~60-80 unique straps x 6 lug widths = ~360-480 images
+
+**Strap image creation approaches** (in priority order):
+1. **Photography** — photograph real straps flat on controlled background, rembg for background removal, align to standard canvas. Highest quality.
+2. **3D rendering** — model strap geometry in Blender, render top-down at each lug width with PBR materials (leather normal maps, metal roughness). Consistent, scalable, one-time setup.
+3. **AI generation** — use Stable Diffusion with ControlNet to generate photorealistic strap images from a reference shape template. Good for expanding the color palette quickly once the shape is right.
+4. **High-quality stock** — source strap photography from partner/affiliate strap vendors who may provide product images.
+
+##### Rendering Stack
+
+| Layer | Technology |
+|---|---|
+| Image compositing | CSS `position: absolute` + `z-index` in a fixed-dimension container |
+| Strap swap transitions | Framer Motion `AnimatePresence` crossfade (200-400ms, ease-out) + subtle scale pulse (1.0 → 1.02 → 1.0) on case |
+| Orchestrated animations | GSAP `Flip` plugin for multi-step sequences (strap slides out, new strap slides in) — optional premium tier |
+| Material swatches | CSS-rendered textures (existing `STRAP_TEXTURES` prototype) for the picker UI; real photos for the studio view |
+| Server-side compositing | Sharp `composite()` for pre-generating thumbnails and OG share images |
+| Segmentation pipeline | SAM 3 (via Ultralytics/Replicate API) + Sharp for mask application |
+
+##### Strap Studio UI
+
+**Route:** `/collection/straps/studio` (or modal overlay from Strap Drawer)
+
+**Layout — dark background, watch centered:**
+- Dark ambient background (`brand.colors.dark` or deeper) with subtle radial glow behind the watch
+- Watch + strap composite centered, large (500-600px on desktop)
+- Strap picker tray below — horizontal scrollable strip of strap swatches grouped by material category
+- Material category tabs above the tray: Leather / Rubber / NATO / Metal / Exotic
+- Active strap highlighted with gold border
+- Watch name + strap name displayed as elegant typography below the composite
+- "Find this strap ↗" affiliate CTA when a strap is selected
+
+**Interaction model:**
+- Click/tap a strap swatch → strap layer crossfades to the new strap
+- Swipe through straps on mobile (horizontal scroll with snap points)
+- Watch picker at top — switch between owned watches or browse catalog
+- Preload adjacent strap images for instant swap feel (no loading spinners)
+- Keyboard: arrow keys to cycle straps, number keys to switch material categories
+
+**Premium touches:**
+- Spring physics on transitions (Framer Motion `type: "spring"`)
+- Staggered timing: old strap fades 150ms before new strap appears
+- Subtle ambient shadow shifts when strap material changes (leather = warm shadow, metal = cool shadow)
+- Reduced motion media query respect
+- Share button generates a pre-composited image (via Sharp API route) for social sharing
+
+##### Fallback for watches without case-only images
+
+When a case-only image doesn't exist (the long tail beyond the top ~100):
+- Show the full watch photo alongside a strap swatch card (side-by-side layout)
+- Strap swatch uses the CSS-rendered texture (from `STRAP_TEXTURES` prototype) at full size with specs
+- "Fits this watch" compatibility badge based on lug width
+- Still useful, just not the full studio composite experience
+- Progressive: as more case-only images are created, watches graduate to the full studio view
+
 ---
 
 ### Feature 8 — Smart Suggestions Engine
