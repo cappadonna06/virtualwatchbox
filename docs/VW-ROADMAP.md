@@ -18,6 +18,17 @@ Mark `[x]` when done.
 | May 2026 | Second hygiene pass: VW-12 (`/settings`) had shipped at P0 scope (visibility controls, legal links, mailto deletion, sign-out) — marked done with P1/P2 follow-ups noted. OG image generation also shipped via Next.js edge route at `/api/og/box/[slug]` + unified ShareBoxModal — three stale roadmap/PRD references updated to reflect done state. |
 | May 2026 | Third hygiene pass after a deeper investigation: VW-1 (profile sync) was already fixed in `b3ddab6`; VW-9 (support email) was already done; Collection Jewel state was fully shipped (sidebar badge + state-control picker + profile hero selector); VW-10 (Real Watchbox Photo) was fully shipped. All marked done. **Dropped "Grail surface on /collection"** as a category error — Grail is by definition unowned and lives on `/profile`. **Replaced "Next Targets panel" with broader `/collection` UI pass** that includes the Targets treatment plus header/stats/cards/mobile polish so the working surface gets a cohesive review rather than a one-feature drop. |
 | May 2026 | Bug-backlog sweep: VW-2 (Grail desktop contrast) marked done. VW-3 (watchbox auto-shrink on delete) reviewed against the codebase and dropped — `getEffectiveSlotCount` is grow-only by design so the bug isn't structurally possible. VW-5 (profile watchbox sizing) dropped as no-longer-reproduces. VW-7 (general backlog sweep) dropped — backlog is clean. VW-6 split: the `/collection` half is now folded into the `/collection` UI pass; the `/playground` half remains as VW-6b. VW-4 annotated as a Google Cloud Console-side change (no code). |
+| May 2026 | **Catalog scale-up:** catalog grew from ~50 seed watches to **35,659 catalog watches** in Supabase with full specs, heat scores, and layered pricing. **4,000+ imaged watches** with WebP in Supabase Storage (PRs #48, #52, #60). Server-side search with brand filter, debounced, photos-only via inner-join. CatalogProvider paginates top 2,000 by heat into memory, rest fetched on demand. |
+| May 2026 | **Catalog search infrastructure:** full-text search via `pg_trgm` GIN index on generated `search_text` column (migration 023). Concatenates brand, model, reference, model_family, nickname, watch_type, complications. Curated collector nicknames in `data/catalog-nicknames.json` with `npm run catalog:enrich-nicknames` script. |
+| May 2026 | **Heat score algorithm rework** (PR #49): flattened brand-prestige dominance, rewards market activity, penalizes seven-figure paperweights. Static bridge via `data/catalog-heat-scores.json`. Add Watch UX improvements: default browse state, pagination, mobile layout, sort controls. |
+| May 2026 | **Admin image-review tool** shipped at `/admin/image-review` (PRs #50, #54): side-by-side raw vs processed comparison, tag chips for 10 failure modes grouped by pipeline stage (missing parts / edge quality / background), one-click approve/needs-reprocess/wrong-watch save. Reviews stored in `watch_image_reviews` table. Image exclusion mechanism via `data/excluded-image-ids.json`. |
+| May 2026 | **Image pipeline documentation + ops tooling** (PRs #51, #53): routed hero image paths through Supabase Storage, documented the full pipeline in `docs/WATCH_IMAGE_PIPELINE.md`, added `docs/adding-watches.md` runbook, added image-ops quality-of-life scripts. |
+| May 2026 | **Collection empty state + auth nudge** (PR #47): empty watchbox shows watch silhouette CTA instead of "+/ADD". Layered, dismissible auth-nudge system for cross-device sync without gating the demo-first experience. |
+| May 2026 | **Collection stability fix** (PR #58): decoupled owned-watch set from heat-score cache so user watches always render regardless of discovery-cache state, heat score, catalog ID migrations, or surface. |
+| May 2026 | **`/discover` editorial redesign** (PRs #57, #59, #61, #64): replaced utility-stack layout with magazine-style editorial design. LLM-personalized hero + lead section with daily-rotated recommendations. Seven sections: hero, sticky TOC, dark "Complete the Box" lead, from-to upgrade spreads, three alternate next-watch sections. Per-section refresh buttons. Model-family filtering for dedup/exclusion. Mobile: compact dark "Discover" banner replacing tall light editorial hero, sticky nav fix (top: 56px). Strap and Box editorial sections removed (not production-quality); remaining sections tightened. |
+| May 2026 | **Playground major upgrades** (PRs #62, #63, #65): (1) Import collection on empty box via one-click CTA. (2) Drag watches from tray into slots with long-press reorder, sparse slot support, drag-to-trash. (3) Mobile UI cleanup. (4) **Playground Supabase persistence** — playground boxes now sync to Supabase for logged-in users via debounced auto-sync (`public.playground_boxes`). |
+| May 2026 | **Seed script safety** (PR #56): seed script aborts instead of writing local-path URLs when `SUPABASE_URL` is unset. |
+| May 2026 | **PRD v1.14:** Next Targets moved from `/collection` to `/discover` § 03. Photo type picker promoted to P0. Feature 2F (Service History) added. Feature 7 rewritten as "The Strap Drawer" — first-class strap inventory with auto-match compatibility and combo stats. Replaces old VW-17/VW-18 stubs. Added Phase 1.5 "Ownership Depth." |
 
 ---
 
@@ -30,7 +41,7 @@ Mark `[x]` when done.
 - [x] **IF** ~~`VW-9` Update support email in Terms & Privacy~~ — **Done.** Both `app/terms/page.tsx` and `app/privacy/page.tsx` use `support@virtualwatchbox.com`.
 - [x] **IF** `VW-11` ~~Fix admin flow: watch detail completeness + reference data quality~~ — **Done.** Catalog Manager modal lets admins edit every catalog field (works for both static seed and dynamic rows; static edits create Supabase override). Submissions Queue dedupes pending rows + inline edit + curated photo replacement. Image Intake has verify-vs-intake split and before/after photo preview.
 - [x] **BUG** ~~`VW-2` Fix Grail contrast issue on desktop~~ — **Done.**
-- [ ] **BUG** `VW-6b` `/playground` UI polish pass — pair to the `/collection` UI pass in Phase 1. Tighten layout, spacing, and badge consistency on the Playground surface so it doesn't feel like the second-class citizen of the two box pages. *(The `/collection` half of the original VW-6 is folded into the `/collection` UI pass.)*
+- [x] **BUG** ~~`VW-6b` `/playground` UI polish pass~~ — **Substantially done.** PRs #62, #63, #65 delivered: import-collection CTA on empty boxes, drag-from-tray with long-press reorder and sparse slot support, tray constrained to watchbox width on mobile, padding/border fixes, and Supabase persistence for logged-in users. Remaining: badge consistency review and minor spacing tweaks can be folded into a future cross-surface polish pass.
 
 > **Dropped items (reviewed and not pursued):**
 > - ~~`VW-3` Fix watchbox auto-shrinking when deleting a watch~~ — Not a real bug. `getEffectiveSlotCount` in [lib/watchboxOverflow.ts](lib/watchboxOverflow.ts) is grow-only by design (`if (itemCount <= currentSlotCount) return currentSlotCount`); a delete can't shrink slot count.
@@ -65,12 +76,24 @@ Mark `[x]` when done.
 - [x] **RM** ~~Edit owned watch metadata from sidebar~~ — **Done.** EditWatchModal exists for condition / ownership status / purchase price / purchase date / notes. Available from sidebar pencil icon and the new owned-watch detail page (`/collection/watch/[id]`).
 - [x] **RM** ~~Collection Jewel state~~ — **Done.** PRD v1.12 Feature 2B Category 6. Sidebar Jewel badge, WatchStateControl picker offers `[followed, jewel]` for owned watches, profile hero selector (FeaturedProfileWatch) toggles between Grail and Jewel. Watch cards show the jewel badge.
 - [ ] **RM** `/collection` UI pass — broader visual / structural polish on the working surface, including:
-  - **Next Targets treatment** (max 3) — dedicated panel or strip with intent type, target price, desired condition, optional linked Playground box, and per-target `Track Listings →` affiliate CTA. Data already wired (`nextTargets[]`); the surface is what's missing. Monetization hook.
   - **Header / value pill / action button** spacing and hierarchy review
   - **Stats section** typography and density pass (portfolio value, dial colors, watch types, complications, brands)
   - **Cards view** spacing + status badge consistency
   - **Mobile reflow** for sidebar → bottom sheet transitions and overflow behavior
-  - *Note: Grail does NOT belong on `/collection`. By definition Grail is unowned (must not be in My Collection). Grail's home is `/profile` as part of the FeaturedProfileWatch picker. The earlier "Grail surface on /collection" item was a category error and is dropped.*
+  - **Surface existing ownership fields in EditWatchModal** — has_box, has_papers, acquisition_method, warranty_expires_at, last_serviced_at, service_notes (columns exist in migration 017, not in UI)
+  - *Note: Both Targets and Grail are intentionally NOT on `/collection`. `/collection` is the truth about what the user owns. Targets moved to `/discover` § 03 (PRD v1.14). Grail's home is `/profile`.*
+
+---
+
+## Phase 1.5 — Ownership Depth
+*Make the collection page the definitive record of what you own — not just the watches, but the provenance, papers, and service history.*
+
+- [ ] **RM** Targets/Grail section on `/discover` (§ 03) — user-curated aspirational watches between Upgrade and Next Slot sections. Up to 3 targets with intent type, target price, `Track Listings →` affiliate CTA. Grail card with crown treatment above targets when set. Highest-ROI affiliate surface — explicit purchase intent. Data already wired (`nextTargets[]`, `grailWatchId`).
+- [ ] **RM** Photo type picker — surface `photoType` in upload flow (optional chips) and lightbox toolbar (type selector pill). DB column exists (migration 018, `user_watch_photos.photo_type`), not wired in UI.
+- [ ] **RM** Papers & Provenance section on detail page — filtered gallery view for document-type photos (`receipt`, `warranty_card`, `service_record`, `box_papers`). Compact horizontal strip between specs and main gallery.
+- [ ] **RM** Ownership detail strip on detail page — acquisition method, has box, has papers, warranty expiry. Compact chips below specs. Data exists (migration 017), needs `EditWatchModal` UI + detail page display.
+- [ ] **RM** Service History (Feature 2F) — new `watch_service_records` Supabase table. Service timeline on detail page with past services, next-due estimate (5yr from last full service), running cost total. `+ Log a service` form. Sidebar "Last serviced" hint.
+- [ ] **RM** Expand `EditWatchModal` — add has_box, has_papers, acquisition_method, warranty_expires_at, last_serviced_at tabs/sections to the existing modal.
 
 ---
 
@@ -81,12 +104,13 @@ Mark `[x]` when done.
 - [x] **RM** ~~Per-watch user photo gallery~~ — **Done.** PRD v1.12 Feature 2D. Sidebar thumbnail strip + grid view on owned-watch detail page + lightbox + drag-reorder + captions + set-primary. AI photo flow auto-adds new uploads as primary. Backed by `public.user_watch_photos` with RLS.
 - [x] **RM** ~~Owned-watch detail page~~ — **Done.** PRD v1.12 Feature 2E. New route `/collection/watch/[id]` with sticky image, full specs, edit/delete affordances, full-width gallery at the bottom.
 - [x] **RM** ~~Duplicate-aware add page~~ — **Done.** PRD v1.12 Feature 3. Single + multi-instance treatments. "Manage your watch" + "Add another" CTAs.
-- [ ] **RM** Discover page UI cleanup pass — `/discover` shipped with most feature scope; **Strap and Box sections were removed 2026-05** because the placeholder UIs weren't production-quality (re-build pending, tracked under `VW-17` Strap Swap and `Shop This Box` below). Remaining polish: tighten visual hierarchy between Box Insight / Recommendations / Upgrades / Reads sections; consistent card sizing within each section; mobile reflow review; surface affiliate CTAs more confidently without making the page feel salesy.
+- [x] **RM** ~~Discover page editorial redesign~~ — **Done.** PRs #57, #59, #61, #64 replaced the utility-stack layout with a magazine-style editorial design: LLM-personalized hero + lead, daily-rotated recommendations with per-section refresh, from-to upgrade spreads, model-family filtering, mobile compact dark hero. **Strap and Box affiliate sections remain pending** — tracked under `VW-17` Strap Swap and `Shop This Box` below.
 - [x] **IF** ~~OG image generation for profile + box share links~~ — **Done.** Dynamic OG cards via `/api/og/box/[slug]` (Next.js edge route, see Phase 0.5). Wired into the unified ShareBoxModal so profile and box share links render rich previews on iMessage / Slack / Twitter / etc.
 - [ ] **RM** Save as Playground from Collection draft state — unsaved changes bar "Save as Playground" is a placeholder, wire it up.
-- [ ] **RM** Drag-to-reorder in Collection and Playground — P1 per PRD. No draft workflow needed for Playground. Adds tactile feel to both core surfaces.
-- [ ] **RM** `VW-18` Strap Viewer — display watch with alternate straps. Foundation for strap affiliate CTAs.
-- [ ] **RM** `VW-17` Strap Swap / matchmaking with affiliate links (Feature 7) — filter by lug width, link to WatchWarehouse / Etsy. Monetization surface.
+- [x] **RM** ~~Drag-to-reorder in Playground~~ — **Done.** PR #62 shipped long-press drag-to-reorder within playground watchbox slots, drag-from-tray into slots, sparse slot support (drops land where you aim), and drag-to-trash. Desktop HTML5 drag also supported.
+- [ ] **RM** Drag-to-reorder in Collection — still pending. Playground has full drag support; Collection needs parity.
+- [ ] **RM** `VW-17` The Strap Drawer (Feature 7) — first-class strap inventory at `/collection/straps`. Add Strap modal (material + lug width + color required). Card grid with material badges + compatible watch count. Strap detail sidebar with "Fits these watches" list. Auto-match by lug width + manual `fits`/`excluded` overrides. Combo stats in header ("X watches and Y straps create Z combinations"). New Supabase tables: `user_straps` + `strap_watch_overrides`. **Replaces** the old VW-17 (strap swap affiliate links) and VW-18 (strap viewer) — the Strap Drawer is the foundation both depend on.
+- [ ] **RM** Strap Drawer phase 2 — CSS material swatches (design prototype in `docs/design-system/`), compatibility matrix view, sidebar "Swap Strap" quick-pick wired to drawer, lug width distribution in collection stats. Discover "missing strap" suggestions grounded in actual strap inventory.
 - [ ] **RM** Shop This Box — physical box affiliate matching. When user configures virtual box, surface Wolf1834 / Rapport / Holme & Hadfield matches. Direct revenue.
 
 ---
@@ -111,4 +135,4 @@ Mark `[x]` when done.
 
 ---
 
-*Last updated: May 2026 · PRD reference: v1.12*
+*Last updated: May 23, 2026 · PRD reference: v1.14*
