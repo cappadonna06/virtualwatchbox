@@ -1,0 +1,991 @@
+id,brand,model,reference,dialColor,watchType,sourceUrl,communitySignal,verificationStatus
+rolex-124300-0001,Rolex,Oyster Perpetual 41,124300-0001,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-124300-0002,Rolex,Oyster Perpetual 41,124300-0002,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-124300-0003,Rolex,Oyster Perpetual 41,124300-0003,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-124300-0004,Rolex,Oyster Perpetual 41,124300-0004,Yellow,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-124300-0005,Rolex,Oyster Perpetual 41,124300-0005,Green,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-124300-0006,Rolex,Oyster Perpetual 41,124300-0006,Turquoise,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-124300-0007,Rolex,Oyster Perpetual 41,124300-0007,Coral Red,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126000-0001,Rolex,Oyster Perpetual 36,126000-0001,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126000-0002,Rolex,Oyster Perpetual 36,126000-0002,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126000-0003,Rolex,Oyster Perpetual 36,126000-0003,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126000-0004,Rolex,Oyster Perpetual 36,126000-0004,Yellow,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126000-0005,Rolex,Oyster Perpetual 36,126000-0005,Green,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126000-0006,Rolex,Oyster Perpetual 36,126000-0006,Turquoise,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126000-0007,Rolex,Oyster Perpetual 36,126000-0007,Coral Red,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126000-0008,Rolex,Oyster Perpetual 36,126000-0008,Candy Pink,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-124200-0001,Rolex,Oyster Perpetual 34,124200-0001,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-124200-0002,Rolex,Oyster Perpetual 34,124200-0002,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-124200-0003,Rolex,Oyster Perpetual 34,124200-0003,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-124200-0004,Rolex,Oyster Perpetual 34,124200-0004,Red Grape,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-124200-0005,Rolex,Oyster Perpetual 34,124200-0005,Green,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126300-0001,Rolex,Datejust 41,126300-0001,White,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126300-0002,Rolex,Datejust 41,126300-0002,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126300-0003,Rolex,Datejust 41,126300-0003,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126300-0004,Rolex,Datejust 41,126300-0004,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126300-0005,Rolex,Datejust 41,126300-0005,Slate,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126300-0006,Rolex,Datejust 41,126300-0006,Mint Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126300-0007,Rolex,Datejust 41,126300-0007,Bright Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126300-0009,Rolex,Datejust 41,126300-0009,Azzurro Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126300-0010,Rolex,Datejust 41,126300-0010,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126300-0011,Rolex,Datejust 41,126300-0011,Olive Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126300-0012,Rolex,Datejust 41,126300-0012,Black Fluted,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126300-0014,Rolex,Datejust 41,126300-0014,Blue Fluted,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126300-0015,Rolex,Datejust 41,126300-0015,Silver Fluted,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126300-0016,Rolex,Datejust 41,126300-0016,Slate Fluted,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126300-0017,Rolex,Datejust 41,126300-0017,White Fluted,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126300-0018,Rolex,Datejust 41,126300-0018,Bright Blue Fluted,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126334-0001,Rolex,Datejust 41,126334-0001,White,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126334-0002,Rolex,Datejust 41,126334-0002,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126334-0003,Rolex,Datejust 41,126334-0003,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126334-0004,Rolex,Datejust 41,126334-0004,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126334-0005,Rolex,Datejust 41,126334-0005,Slate,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126334-0006,Rolex,Datejust 41,126334-0006,Rhodium,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126334-0009,Rolex,Datejust 41,126334-0009,Azzurro Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126334-0010,Rolex,Datejust 41,126334-0010,Mint Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126334-0012,Rolex,Datejust 41,126334-0012,Blue Fluted,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126334-0014,Rolex,Datejust 41,126334-0014,Black Fluted,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126334-0015,Rolex,Datejust 41,126334-0015,Silver Fluted,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126334-0016,Rolex,Datejust 41,126334-0016,Bright Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126334-0018,Rolex,Datejust 41,126334-0018,Olive Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126334-0025,Rolex,Datejust 41,126334-0025,Palm Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126333-0001,Rolex,Datejust 41,126333-0001,Champagne,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126333-0002,Rolex,Datejust 41,126333-0002,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126333-0004,Rolex,Datejust 41,126333-0004,White,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126333-0006,Rolex,Datejust 41,126333-0006,Golden,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126333-0009,Rolex,Datejust 41,126333-0009,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126333-0010,Rolex,Datejust 41,126333-0010,Slate,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126333-0012,Rolex,Datejust 41,126333-0012,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126333-0014,Rolex,Datejust 41,126333-0014,Black Fluted,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126331-0001,Rolex,Datejust 41,126331-0001,Chocolate,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126331-0002,Rolex,Datejust 41,126331-0002,Slate,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126331-0003,Rolex,Datejust 41,126331-0003,White,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126331-0004,Rolex,Datejust 41,126331-0004,Sundust,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126331-0005,Rolex,Datejust 41,126331-0005,Everose,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126331-0007,Rolex,Datejust 41,126331-0007,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126331-0014,Rolex,Datejust 41,126331-0014,Chocolate Fluted,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126234-0027,Rolex,Datejust 36,126234-0027,Palm Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126234-0028,Rolex,Datejust 36,126234-0028,Mint Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126234-0031,Rolex,Datejust 36,126234-0031,Olive Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126234-0035,Rolex,Datejust 36,126234-0035,Azzurro Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126234-0050,Rolex,Datejust 36,126234-0050,Silver Palm,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126234-0052,Rolex,Datejust 36,126234-0052,Pink Fluted,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-326934-0001,Rolex,Sky-Dweller,326934-0001,White,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-326934-0002,Rolex,Sky-Dweller,326934-0002,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-326934-0003,Rolex,Sky-Dweller,326934-0003,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-326934-0004,Rolex,Sky-Dweller,326934-0004,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-326934-0005,Rolex,Sky-Dweller,326934-0005,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-326935-0001,Rolex,Sky-Dweller,326935-0001,White,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-326935-0002,Rolex,Sky-Dweller,326935-0002,Chocolate,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-326935-0003,Rolex,Sky-Dweller,326935-0003,Slate,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-326935-0004,Rolex,Sky-Dweller,326935-0004,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-326935-0006,Rolex,Sky-Dweller,326935-0006,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-336934-0001,Rolex,Sky-Dweller,336934-0001,White,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-336934-0002,Rolex,Sky-Dweller,336934-0002,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-336934-0003,Rolex,Sky-Dweller,336934-0003,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-336934-0004,Rolex,Sky-Dweller,336934-0004,Mint Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-336934-0005,Rolex,Sky-Dweller,336934-0005,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-326238-0001,Rolex,Sky-Dweller,326238-0001,Champagne,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-326238-0002,Rolex,Sky-Dweller,326238-0002,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-326238-0004,Rolex,Sky-Dweller,326238-0004,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126621-0001,Rolex,Yacht-Master 40,126621-0001,Chocolate,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126621-0002,Rolex,Yacht-Master 40,126621-0002,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126621-0003,Rolex,Yacht-Master 40,126621-0003,Slate,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126621-0004,Rolex,Yacht-Master 40,126621-0004,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126622-0003,Rolex,Yacht-Master 40,126622-0003,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126622-0004,Rolex,Yacht-Master 40,126622-0004,Slate,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126622-0005,Rolex,Yacht-Master 40,126622-0005,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-226627-0001,Rolex,Yacht-Master 42,226627-0001,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-226627-0002,Rolex,Yacht-Master 42,226627-0002,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-226627-0003,Rolex,Yacht-Master 42,226627-0003,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-268622-0001,Rolex,Yacht-Master 37,268622-0001,Rhodium,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-268622-0002,Rolex,Yacht-Master 37,268622-0002,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-268622-0003,Rolex,Yacht-Master 37,268622-0003,Chocolate,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126506-0001,Rolex,Cosmograph Daytona,126506-0001,Ice Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-126506-0002,Rolex,Cosmograph Daytona,126506-0002,Ice Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-126509-0001,Rolex,Cosmograph Daytona,126509-0001,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-126509-0003,Rolex,Cosmograph Daytona,126509-0003,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-126509-0005,Rolex,Cosmograph Daytona,126509-0005,Green,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-126515ln-0001,Rolex,Cosmograph Daytona,126515LN-0001,Pink,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-126515ln-0003,Rolex,Cosmograph Daytona,126515LN-0003,Chocolate,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-126515ln-0006,Rolex,Cosmograph Daytona,126515LN-0006,Meteorite,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-126518ln-0001,Rolex,Cosmograph Daytona,126518LN-0001,Champagne,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-126518ln-0002,Rolex,Cosmograph Daytona,126518LN-0002,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-126518ln-0010,Rolex,Cosmograph Daytona,126518LN-0010,Green,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-126519ln-0001,Rolex,Cosmograph Daytona,126519LN-0001,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-126519ln-0002,Rolex,Cosmograph Daytona,126519LN-0002,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-126519ln-0006,Rolex,Cosmograph Daytona,126519LN-0006,Meteorite,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-52509-0001,Rolex,1908,52509-0001,White,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-52509-0002,Rolex,1908,52509-0002,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-52509-0006,Rolex,1908,52509-0006,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-52508-0001,Rolex,1908,52508-0001,White,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-52508-0002,Rolex,1908,52508-0002,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-52508-0006,Rolex,1908,52508-0006,Ice Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126610lv-0002,Rolex,Submariner Date,126610LV-0002,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+rolex-124060-0001,Rolex,Submariner,124060-0001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+rolex-126720vtnr-0003,Rolex,GMT-Master II,126720VTNR-0003,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+rolex-126710grnr-0001,Rolex,GMT-Master II,126710GRNR-0001,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+rolex-126710grnr-0002,Rolex,GMT-Master II,126710GRNR-0002,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+rolex-128238-0001,Rolex,Day-Date 36,128238-0001,Champagne,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-128238-0002,Rolex,Day-Date 36,128238-0002,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-128238-0003,Rolex,Day-Date 36,128238-0003,Carnelian,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-128238-0005,Rolex,Day-Date 36,128238-0005,Onyx,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-128238-0008,Rolex,Day-Date 36,128238-0008,Turquoise,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-128238-0071,Rolex,Day-Date 36,128238-0071,Diamond,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-128239-0001,Rolex,Day-Date 36,128239-0001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-128239-0002,Rolex,Day-Date 36,128239-0002,White,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-128239-0003,Rolex,Day-Date 36,128239-0003,Ice Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-128239-0005,Rolex,Day-Date 36,128239-0005,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-128239-0006,Rolex,Day-Date 36,128239-0006,Olive Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-128239-0034,Rolex,Day-Date 36,128239-0034,Meteorite,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-128239-0055,Rolex,Day-Date 36,128239-0055,Turquoise,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-279178-0001,Rolex,Lady-Datejust,279178-0001,Champagne,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-279178-0002,Rolex,Lady-Datejust,279178-0002,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-279178-0003,Rolex,Lady-Datejust,279178-0003,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-279178-0009,Rolex,Lady-Datejust,279178-0009,Olive Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-279174-0001,Rolex,Lady-Datejust,279174-0001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-279174-0002,Rolex,Lady-Datejust,279174-0002,White,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-279174-0003,Rolex,Lady-Datejust,279174-0003,Pink,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-279174-0009,Rolex,Lady-Datejust,279174-0009,Mint Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-279174-0011,Rolex,Lady-Datejust,279174-0011,Azzurro Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-210-30-42-20-01-002,Omega,Seamaster Diver 300M,210.30.42.20.01.002,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-30-42-20-03-004,Omega,Seamaster Diver 300M,210.30.42.20.03.004,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-30-42-20-04-002,Omega,Seamaster Diver 300M,210.30.42.20.04.002,White,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-30-42-20-09-001,Omega,Seamaster Diver 300M,210.30.42.20.09.001,Green,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-30-42-20-11-001,Omega,Seamaster Diver 300M,210.30.42.20.11.001,Grey,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-32-42-20-01-002,Omega,Seamaster Diver 300M,210.32.42.20.01.002,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-32-42-20-06-002,Omega,Seamaster Diver 300M,210.32.42.20.06.002,Grey,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-32-42-20-03-003,Omega,Seamaster Diver 300M,210.32.42.20.03.003,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-32-42-20-04-002,Omega,Seamaster Diver 300M,210.32.42.20.04.002,White,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-22-42-20-01-001,Omega,Seamaster Diver 300M,210.22.42.20.01.001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-22-42-20-03-001,Omega,Seamaster Diver 300M,210.22.42.20.03.001,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-22-42-20-04-001,Omega,Seamaster Diver 300M,210.22.42.20.04.001,White,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-92-42-20-01-001,Omega,Seamaster Diver 300M,210.92.42.20.01.001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-92-42-20-03-001,Omega,Seamaster Diver 300M,210.92.42.20.03.001,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-215-30-44-21-03-002,Omega,Seamaster Planet Ocean 600M,215.30.44.21.03.002,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-215-30-44-21-04-002,Omega,Seamaster Planet Ocean 600M,215.30.44.21.04.002,White,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-215-30-44-21-09-001,Omega,Seamaster Planet Ocean 600M,215.30.44.21.09.001,Green,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-215-32-44-21-01-002,Omega,Seamaster Planet Ocean 600M,215.32.44.21.01.002,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-215-32-44-21-04-001,Omega,Seamaster Planet Ocean 600M,215.32.44.21.04.001,White,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-215-92-46-21-01-001,Omega,Seamaster Planet Ocean Ultra Deep,215.92.46.21.01.001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-215-92-46-21-03-001,Omega,Seamaster Planet Ocean Ultra Deep,215.92.46.21.03.001,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-215-30-46-21-01-001,Omega,Seamaster Planet Ocean Ultra Deep,215.30.46.21.01.001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-215-30-46-21-03-001,Omega,Seamaster Planet Ocean Ultra Deep,215.30.46.21.03.001,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-215-30-46-21-04-001,Omega,Seamaster Planet Ocean Ultra Deep,215.30.46.21.04.001,White,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-220-10-41-21-02-001,Omega,Seamaster Aqua Terra 150M,220.10.41.21.02.001,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-220-10-41-21-02-002,Omega,Seamaster Aqua Terra 150M,220.10.41.21.02.002,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-220-10-41-21-03-002,Omega,Seamaster Aqua Terra 150M,220.10.41.21.03.002,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-220-10-41-21-06-001,Omega,Seamaster Aqua Terra 150M,220.10.41.21.06.001,Grey,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-220-10-41-21-06-003,Omega,Seamaster Aqua Terra 150M,220.10.41.21.06.003,Grey,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-220-10-41-21-10-002,Omega,Seamaster Aqua Terra 150M,220.10.41.21.10.002,Green,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-220-12-41-21-01-001,Omega,Seamaster Aqua Terra 150M,220.12.41.21.01.001,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-220-12-41-21-02-001,Omega,Seamaster Aqua Terra 150M,220.12.41.21.02.001,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-220-12-41-21-03-002,Omega,Seamaster Aqua Terra 150M,220.12.41.21.03.002,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-220-12-41-21-06-001,Omega,Seamaster Aqua Terra 150M,220.12.41.21.06.001,Grey,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-220-12-41-21-10-001,Omega,Seamaster Aqua Terra 150M,220.12.41.21.10.001,Green,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-220-10-38-20-03-001,Omega,Seamaster Aqua Terra 150M,220.10.38.20.03.001,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-220-10-38-20-09-001,Omega,Seamaster Aqua Terra 150M,220.10.38.20.09.001,Green,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-220-10-38-20-10-001,Omega,Seamaster Aqua Terra 150M,220.10.38.20.10.001,Green,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-220-10-38-20-06-001,Omega,Seamaster Aqua Terra 150M,220.10.38.20.06.001,Grey,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-220-10-43-22-03-002,Omega,Seamaster Aqua Terra Worldtimer,220.10.43.22.03.002,Blue,GMT,,reddit_popular,identity_seeded_specs_pending
+omega-220-12-43-22-03-002,Omega,Seamaster Aqua Terra Worldtimer,220.12.43.22.03.002,Blue,GMT,,reddit_popular,identity_seeded_specs_pending
+omega-220-10-43-22-10-001,Omega,Seamaster Aqua Terra GMT,220.10.43.22.10.001,Green,GMT,,reddit_popular,identity_seeded_specs_pending
+omega-310-32-42-50-01-001,Omega,Speedmaster Professional Moonwatch,310.32.42.50.01.001,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-310-32-42-50-01-002,Omega,Speedmaster Professional Moonwatch,310.32.42.50.01.002,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-310-30-42-50-04-001,Omega,Speedmaster Professional Moonwatch,310.30.42.50.04.001,White,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-310-32-42-50-04-001,Omega,Speedmaster Professional Moonwatch,310.32.42.50.04.001,White,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-310-30-42-50-06-001,Omega,Speedmaster Professional Moonwatch,310.30.42.50.06.001,Grey,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-310-32-42-50-06-001,Omega,Speedmaster Professional Moonwatch,310.32.42.50.06.001,Grey,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-310-30-42-50-01-003,Omega,Speedmaster Professional Moonwatch,310.30.42.50.01.003,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-332-10-41-51-01-002,Omega,Speedmaster '57,332.10.41.51.01.002,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-332-10-41-51-03-002,Omega,Speedmaster '57,332.10.41.51.03.002,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-332-10-41-51-06-001,Omega,Speedmaster '57,332.10.41.51.06.001,Green,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-332-12-41-51-01-002,Omega,Speedmaster '57,332.12.41.51.01.002,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-332-12-41-51-03-001,Omega,Speedmaster '57,332.12.41.51.03.001,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-332-12-41-51-06-001,Omega,Speedmaster '57,332.12.41.51.06.001,Green,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-329-30-44-51-01-003,Omega,Speedmaster Super Racing,329.30.44.51.01.003,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-329-30-44-51-03-001,Omega,Speedmaster Super Racing,329.30.44.51.03.001,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-329-30-44-51-04-001,Omega,Speedmaster Super Racing,329.30.44.51.04.001,White,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-329-32-44-51-01-001,Omega,Speedmaster Super Racing,329.32.44.51.01.001,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-329-32-44-51-01-003,Omega,Speedmaster Super Racing,329.32.44.51.01.003,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-329-32-44-51-01-002,Omega,Speedmaster Racing,329.32.44.51.01.002,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-329-30-43-51-02-001,Omega,Speedmaster Chronoscope,329.30.43.51.02.001,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-329-30-43-51-03-001,Omega,Speedmaster Chronoscope,329.30.43.51.03.001,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-329-30-43-51-06-001,Omega,Speedmaster Chronoscope,329.30.43.51.06.001,Green,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-329-30-43-51-09-001,Omega,Speedmaster Chronoscope,329.30.43.51.09.001,Bronze,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-329-32-43-51-02-001,Omega,Speedmaster Chronoscope,329.32.43.51.02.001,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-329-32-43-51-06-001,Omega,Speedmaster Chronoscope,329.32.43.51.06.001,Green,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-234-30-41-21-01-002,Omega,Seamaster 300,234.30.41.21.01.002,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-234-30-41-21-03-001,Omega,Seamaster 300,234.30.41.21.03.001,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-234-30-41-21-03-002,Omega,Seamaster 300,234.30.41.21.03.002,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-234-30-41-21-10-001,Omega,Seamaster 300,234.30.41.21.10.001,Green,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-234-32-41-21-01-001,Omega,Seamaster 300,234.32.41.21.01.001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-234-32-41-21-03-001,Omega,Seamaster 300,234.32.41.21.03.001,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-234-32-41-21-10-001,Omega,Seamaster 300,234.32.41.21.10.001,Green,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-424-10-40-20-01-001,Omega,De Ville Prestige,424.10.40.20.01.001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-424-10-40-20-02-001,Omega,De Ville Prestige,424.10.40.20.02.001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-424-10-40-20-03-001,Omega,De Ville Prestige,424.10.40.20.03.001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-424-10-40-20-06-001,Omega,De Ville Prestige,424.10.40.20.06.001,Grey,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-424-10-40-20-02-003,Omega,De Ville Prestige,424.10.40.20.02.003,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-424-13-40-20-01-001,Omega,De Ville Prestige,424.13.40.20.01.001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-424-13-40-20-02-001,Omega,De Ville Prestige,424.13.40.20.02.001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-424-13-40-20-03-001,Omega,De Ville Prestige,424.13.40.20.03.001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-424-10-37-20-01-001,Omega,De Ville Prestige,424.10.37.20.01.001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-424-10-37-20-02-001,Omega,De Ville Prestige,424.10.37.20.02.001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-424-10-37-20-03-001,Omega,De Ville Prestige,424.10.37.20.03.001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-428-10-39-60-02-001,Omega,De Ville Tresor,428.10.39.60.02.001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-428-10-39-60-03-001,Omega,De Ville Tresor,428.10.39.60.03.001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-428-10-39-60-06-001,Omega,De Ville Tresor,428.10.39.60.06.001,Grey,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-428-13-39-60-01-001,Omega,De Ville Tresor,428.13.39.60.01.001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-428-17-39-60-02-001,Omega,De Ville Tresor,428.17.39.60.02.001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-435-13-40-21-02-001,Omega,De Ville Tresor,435.13.40.21.02.001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-435-13-40-21-06-001,Omega,De Ville Tresor,435.13.40.21.06.001,Grey,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-41-21-01-001,Omega,Constellation,131.10.41.21.01.001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-41-21-02-001,Omega,Constellation,131.10.41.21.02.001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-41-21-03-001,Omega,Constellation,131.10.41.21.03.001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-41-21-06-001,Omega,Constellation,131.10.41.21.06.001,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-12-41-21-01-001,Omega,Constellation,131.12.41.21.01.001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-12-41-21-02-001,Omega,Constellation,131.12.41.21.02.001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-12-41-21-03-001,Omega,Constellation,131.12.41.21.03.001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-20-41-21-01-001,Omega,Constellation,131.20.41.21.01.001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-20-41-21-02-001,Omega,Constellation,131.20.41.21.02.001,Champagne,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-20-41-21-03-001,Omega,Constellation,131.20.41.21.03.001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-39-20-01-001,Omega,Constellation,131.10.39.20.01.001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-39-20-02-001,Omega,Constellation,131.10.39.20.02.001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-39-20-03-001,Omega,Constellation,131.10.39.20.03.001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-39-20-06-001,Omega,Constellation,131.10.39.20.06.001,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-12-39-20-02-001,Omega,Constellation,131.12.39.20.02.001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-12-39-20-03-001,Omega,Constellation,131.12.39.20.03.001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m79540-0001,Tudor,Black Bay 41,M79540-0001,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m79540-0003,Tudor,Black Bay 41,M79540-0003,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m79540-0004,Tudor,Black Bay 41,M79540-0004,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m79540-0005,Tudor,Black Bay 41,M79540-0005,Champagne,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m79540-0007,Tudor,Black Bay 41,M79540-0007,Red,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m79540-0008,Tudor,Black Bay 41,M79540-0008,Brown,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-79230b-0001,Tudor,Black Bay,79230B-0001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-79230r-0001,Tudor,Black Bay,79230R-0001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-79230r-0003,Tudor,Black Bay,79230R-0003,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-79230n-0001,Tudor,Black Bay,79230N-0001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-79230n-0003,Tudor,Black Bay,79230N-0003,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-79230b-0008,Tudor,Black Bay,79230B-0008,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-79230dk-0001,Tudor,Black Bay,79230DK-0001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m79030b-0004,Tudor,Black Bay 58,M79030B-0004,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m79030n-0004,Tudor,Black Bay 58,M79030N-0004,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m79030b-0005,Tudor,Black Bay 58,M79030B-0005,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m79012m-0001,Tudor,Black Bay 58 Bronze,M79012M-0001,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m79012m-0002,Tudor,Black Bay 58 Bronze,M79012M-0002,Brown,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m79000n-0003,Tudor,Black Bay 54,M79000N-0003,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m79000n-0004,Tudor,Black Bay 54,M79000N-0004,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m79210cnu-0001,Tudor,Black Bay Ceramic,M79210CNU-0001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m79210cnu-0002,Tudor,Black Bay Ceramic,M79210CNU-0002,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m79470-0002,Tudor,Black Bay Pro,M79470-0002,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+tudor-m79470-0003,Tudor,Black Bay Pro,M79470-0003,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+tudor-m79470-0010,Tudor,Black Bay Pro,M79470-0010,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+tudor-m79830rb-0003,Tudor,Black Bay GMT,M79830RB-0003,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+tudor-m79830rb-0004,Tudor,Black Bay GMT,M79830RB-0004,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+tudor-m79833mn-0002,Tudor,Black Bay GMT S&G,M79833MN-0002,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+tudor-m79833mn-0003,Tudor,Black Bay GMT S&G,M79833MN-0003,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+tudor-m25407n-0002,Tudor,Pelagos 39,M25407N-0002,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m25407n-0003,Tudor,Pelagos 39,M25407N-0003,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m25707b-21-0001,Tudor,Pelagos FXD,M25707B/21-0001,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m25707kn-0002,Tudor,Pelagos FXD,M25707KN-0002,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m25707kn-0003,Tudor,Pelagos FXD,M25707KN-0003,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m79360n-0003,Tudor,Black Bay Chrono,M79360N-0003,White,Chronograph,,reddit_popular,identity_seeded_specs_pending
+tudor-m79360n-0004,Tudor,Black Bay Chrono,M79360N-0004,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+tudor-m79360dk-0002,Tudor,Black Bay Chrono,M79360DK-0002,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+tudor-m79360dk-0003,Tudor,Black Bay Chrono,M79360DK-0003,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+tudor-m79363n-0001,Tudor,Black Bay Chrono S&G,M79363N-0001,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+tudor-m79363n-0002,Tudor,Black Bay Chrono S&G,M79363N-0002,White,Chronograph,,reddit_popular,identity_seeded_specs_pending
+tudor-m91350-0001,Tudor,1926,M91350-0001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91350-0002,Tudor,1926,M91350-0002,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91350-0003,Tudor,1926,M91350-0003,White,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91350-0004,Tudor,1926,M91350-0004,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91350-0005,Tudor,1926,M91350-0005,Champagne,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91350-0006,Tudor,1926,M91350-0006,Black Diamond,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91350-0007,Tudor,1926,M91350-0007,Silver Diamond,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91350-0009,Tudor,1926,M91350-0009,Opaline,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91350-0010,Tudor,1926,M91350-0010,Blue Diamond,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91450-0001,Tudor,1926,M91450-0001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91450-0002,Tudor,1926,M91450-0002,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91450-0003,Tudor,1926,M91450-0003,White,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91450-0004,Tudor,1926,M91450-0004,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91450-0005,Tudor,1926,M91450-0005,Champagne,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91450-0006,Tudor,1926,M91450-0006,Black Diamond,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91450-0009,Tudor,1926,M91450-0009,Opaline,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91550-0001,Tudor,1926,M91550-0001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91550-0002,Tudor,1926,M91550-0002,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91550-0003,Tudor,1926,M91550-0003,White,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91550-0004,Tudor,1926,M91550-0004,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91550-0005,Tudor,1926,M91550-0005,Champagne,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91550-0006,Tudor,1926,M91550-0006,Black Diamond,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91650-0001,Tudor,1926,M91650-0001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91650-0002,Tudor,1926,M91650-0002,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91650-0003,Tudor,1926,M91650-0003,White,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91650-0004,Tudor,1926,M91650-0004,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m79950-0003,Tudor,Ranger,M79950-0003,Black,Field,,reddit_popular,identity_seeded_specs_pending
+tudor-m79950-0004,Tudor,Ranger,M79950-0004,Black,Field,,reddit_popular,identity_seeded_specs_pending
+tudor-m79950-0005,Tudor,Ranger,M79950-0005,Black,Field,,reddit_popular,identity_seeded_specs_pending
+tudor-m28600-0001,Tudor,Royal,M28600-0001,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m28600-0002,Tudor,Royal,M28600-0002,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m28600-0003,Tudor,Royal,M28600-0003,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m28600-0004,Tudor,Royal,M28600-0004,Champagne,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m28600-0006,Tudor,Royal,M28600-0006,Green,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m28600-0007,Tudor,Royal,M28600-0007,Salmon,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m28500-0001,Tudor,Royal,M28500-0001,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m28500-0002,Tudor,Royal,M28500-0002,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m28500-0003,Tudor,Royal,M28500-0003,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m28500-0004,Tudor,Royal,M28500-0004,Champagne,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m28300-0005,Tudor,Royal,M28300-0005,Green,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m28300-0006,Tudor,Royal,M28300-0006,Salmon,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m28300-0007,Tudor,Royal,M28300-0007,Silver Diamond,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m28300-0008,Tudor,Royal,M28300-0008,Blue Diamond,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m76214-0001,Tudor,Prince Date Day,M76214-0001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m76214-0002,Tudor,Prince Date Day,M76214-0002,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m76214-0003,Tudor,Prince Date Day,M76214-0003,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m76214-0004,Tudor,Prince Date Day,M76214-0004,Champagne,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m57103-0001,Tudor,Glamour Double Date,M57103-0001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m57103-0002,Tudor,Glamour Double Date,M57103-0002,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m57103-0003,Tudor,Glamour Double Date,M57103-0003,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m12710-0001,Tudor,Style,M12710-0001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m12710-0002,Tudor,Style,M12710-0002,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m12710-0003,Tudor,Style,M12710-0003,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m12710-0004,Tudor,Style,M12710-0004,Champagne,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m12710-0005,Tudor,Style,M12710-0005,Black Diamond,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw358303,IWC,Portugieser Automatic 40,IW358303,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw358304,IWC,Portugieser Automatic 40,IW358304,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw358305,IWC,Portugieser Automatic 40,IW358305,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw358306,IWC,Portugieser Automatic 40,IW358306,Grey,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw358307,IWC,Portugieser Automatic 40,IW358307,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw358308,IWC,Portugieser Automatic 40,IW358308,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw358310,IWC,Portugieser Automatic 40,IW358310,Moon White,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw358312,IWC,Portugieser Automatic 40,IW358312,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw500705,IWC,Portugieser Automatic,IW500705,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw500710,IWC,Portugieser Automatic,IW500710,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw500712,IWC,Portugieser Automatic,IW500712,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw500714,IWC,Portugieser Automatic,IW500714,Ardoise,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw500715,IWC,Portugieser Automatic,IW500715,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw500716,IWC,Portugieser Automatic,IW500716,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw371604,IWC,Portugieser Chronograph,IW371604,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw371605,IWC,Portugieser Chronograph,IW371605,Green,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw371607,IWC,Portugieser Chronograph,IW371607,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw371609,IWC,Portugieser Chronograph,IW371609,Grey,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw371610,IWC,Portugieser Chronograph,IW371610,Burgundy,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw371611,IWC,Portugieser Chronograph,IW371611,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw371613,IWC,Portugieser Chronograph,IW371613,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw371614,IWC,Portugieser Chronograph,IW371614,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw371615,IWC,Portugieser Chronograph,IW371615,Green,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw371616,IWC,Portugieser Chronograph,IW371616,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw371617,IWC,Portugieser Chronograph,IW371617,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw371620,IWC,Portugieser Chronograph,IW371620,Green,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw388101,IWC,Portugieser Chronograph 41,IW388101,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw388102,IWC,Portugieser Chronograph 41,IW388102,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw388103,IWC,Portugieser Chronograph 41,IW388103,Green,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw388104,IWC,Portugieser Chronograph 41,IW388104,Grey,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw388109,IWC,Portugieser Chronograph 41,IW388109,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw388110,IWC,Portugieser Chronograph 41,IW388110,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw503501,IWC,Portugieser Annual Calendar,IW503501,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw503502,IWC,Portugieser Annual Calendar,IW503502,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw503504,IWC,Portugieser Annual Calendar,IW503504,Ardoise,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw503510,IWC,Portugieser Annual Calendar,IW503510,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw503301,IWC,Portugieser Perpetual Calendar,IW503301,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw503302,IWC,Portugieser Perpetual Calendar,IW503302,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw503312,IWC,Portugieser Perpetual Calendar,IW503312,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw503401,IWC,Portugieser Perpetual Calendar,IW503401,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw328201,IWC,Pilot's Watch Mark XX,IW328201,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw328202,IWC,Pilot's Watch Mark XX,IW328202,Blue,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw328204,IWC,Pilot's Watch Mark XX,IW328204,Silver,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw328205,IWC,Pilot's Watch Mark XX,IW328205,White,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw328206,IWC,Pilot's Watch Mark XX,IW328206,Grey,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw328207,IWC,Pilot's Watch Mark XX,IW328207,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw328208,IWC,Pilot's Watch Mark XX,IW328208,Blue,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw324009,IWC,Pilot's Watch Automatic 36,IW324009,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw324010,IWC,Pilot's Watch Automatic 36,IW324010,Blue,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw324011,IWC,Pilot's Watch Automatic 36,IW324011,Green,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw324012,IWC,Pilot's Watch Automatic 36,IW324012,White,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw326801,IWC,Pilot's Watch Automatic Spitfire,IW326801,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw326802,IWC,Pilot's Watch Automatic Spitfire,IW326802,Blue,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw326803,IWC,Pilot's Watch Automatic Spitfire,IW326803,Green,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw388105,IWC,Pilot Chronograph 41,IW388105,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw388106,IWC,Pilot Chronograph 41,IW388106,Green,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw388107,IWC,Pilot Chronograph 41,IW388107,Blue,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw388108,IWC,Pilot Chronograph 41,IW388108,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw377710,IWC,Pilot's Watch Chronograph,IW377710,Blue,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw377724,IWC,Pilot's Watch Chronograph,IW377724,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw377725,IWC,Pilot's Watch Chronograph,IW377725,Green,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw377726,IWC,Pilot's Watch Chronograph,IW377726,Blue,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw377727,IWC,Pilot's Watch Chronograph,IW377727,Silver,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw377728,IWC,Pilot's Watch Chronograph,IW377728,Brown,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw377729,IWC,Pilot's Watch Chronograph,IW377729,Green,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw329302,IWC,Big Pilot's Watch 43,IW329302,Blue,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw329303,IWC,Big Pilot's Watch 43,IW329303,Green,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw329304,IWC,Big Pilot's Watch 43,IW329304,Grey,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw329305,IWC,Big Pilot's Watch 43,IW329305,Silver,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw329306,IWC,Big Pilot's Watch 43,IW329306,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw501001,IWC,Big Pilot's Watch,IW501001,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw501002,IWC,Big Pilot's Watch,IW501002,Blue,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw501004,IWC,Big Pilot's Watch,IW501004,Slate,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw501005,IWC,Big Pilot's Watch,IW501005,Green,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw501012,IWC,Big Pilot's Watch,IW501012,Blue,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw501015,IWC,Big Pilot's Watch,IW501015,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw328902,IWC,Ingenieur Automatic 40,IW328902,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+iwc-iw328903,IWC,Ingenieur Automatic 40,IW328903,Green,Sport,,reddit_popular,identity_seeded_specs_pending
+iwc-iw328904,IWC,Ingenieur Automatic 40,IW328904,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+iwc-iw328905,IWC,Ingenieur Automatic 40,IW328905,Grey,Sport,,reddit_popular,identity_seeded_specs_pending
+iwc-iw328802,IWC,Aquatimer Automatic,IW328802,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+iwc-iw328803,IWC,Aquatimer Automatic,IW328803,Green,Diver,,reddit_popular,identity_seeded_specs_pending
+iwc-iw328804,IWC,Aquatimer Automatic,IW328804,White,Diver,,reddit_popular,identity_seeded_specs_pending
+iwc-iw376803,IWC,Aquatimer Chronograph,IW376803,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+iwc-iw376804,IWC,Aquatimer Chronograph,IW376804,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+iwc-iw376805,IWC,Aquatimer Chronograph,IW376805,Green,Diver,,reddit_popular,identity_seeded_specs_pending
+iwc-iw389101,IWC,Pilot's Watch Chronograph Top Gun,IW389101,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw389103,IWC,Pilot's Watch Chronograph Top Gun,IW389103,Blue,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw389104,IWC,Pilot's Watch Chronograph Top Gun,IW389104,Green,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw389105,IWC,Pilot's Watch Chronograph Top Gun,IW389105,Blue,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw389106,IWC,Pilot's Watch Chronograph Top Gun,IW389106,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw389109,IWC,Pilot's Watch Chronograph Top Gun,IW389109,Woodland,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw389110,IWC,Pilot's Watch Chronograph Top Gun,IW389110,Mojave Desert,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw371815,IWC,Pilot's Watch Double Chronograph Top Gun Ceratanium,IW371815,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw356501,IWC,Portofino Automatic,IW356501,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw356502,IWC,Portofino Automatic,IW356502,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw356504,IWC,Portofino Automatic,IW356504,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw356506,IWC,Portofino Automatic,IW356506,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw356517,IWC,Portofino Automatic,IW356517,Grey,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw356518,IWC,Portofino Automatic,IW356518,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw356519,IWC,Portofino Automatic,IW356519,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw356522,IWC,Portofino Automatic,IW356522,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw356523,IWC,Portofino Automatic,IW356523,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw391036,IWC,Portofino Chronograph,IW391036,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw391037,IWC,Portofino Chronograph,IW391037,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw391038,IWC,Portofino Chronograph,IW391038,Green,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw391039,IWC,Portofino Chronograph,IW391039,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+longines-l3-788-4-96-6,Longines,HydroConquest,L3.788.4.96.6,Blue,Diver,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-788-4-56-6,Longines,HydroConquest,L3.788.4.56.6,Black,Diver,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-788-4-06-6,Longines,HydroConquest,L3.788.4.06.6,Green,Diver,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-788-4-76-6,Longines,HydroConquest,L3.788.4.76.6,Grey,Diver,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-788-4-96-9,Longines,HydroConquest,L3.788.4.96.9,Blue,Diver,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-788-4-56-9,Longines,HydroConquest,L3.788.4.56.9,Black,Diver,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-788-4-06-9,Longines,HydroConquest,L3.788.4.06.9,Green,Diver,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-790-4-96-6,Longines,HydroConquest,L3.790.4.96.6,Blue,Diver,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-790-4-56-6,Longines,HydroConquest,L3.790.4.56.6,Black,Diver,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-790-4-06-6,Longines,HydroConquest,L3.790.4.06.6,Green,Diver,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-790-4-96-9,Longines,HydroConquest,L3.790.4.96.9,Blue,Diver,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-790-4-56-9,Longines,HydroConquest,L3.790.4.56.9,Black,Diver,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-790-4-96-2,Longines,HydroConquest GMT,L3.790.4.96.2,Blue,GMT,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-790-4-56-2,Longines,HydroConquest GMT,L3.790.4.56.2,Black,GMT,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-790-4-06-2,Longines,HydroConquest GMT,L3.790.4.06.2,Green,GMT,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-810-4-03-6,Longines,Spirit,L3.810.4.03.6,Green,Field,,reddit_popular,identity_seeded_specs_pending
+longines-l3-810-4-03-2,Longines,Spirit,L3.810.4.03.2,Green,Field,,reddit_popular,identity_seeded_specs_pending
+longines-l3-810-4-63-6,Longines,Spirit,L3.810.4.63.6,Black,Field,,reddit_popular,identity_seeded_specs_pending
+longines-l3-811-4-03-6,Longines,Spirit,L3.811.4.03.6,Green,Field,,reddit_popular,identity_seeded_specs_pending
+longines-l3-811-4-93-2,Longines,Spirit,L3.811.4.93.2,Blue,Field,,reddit_popular,identity_seeded_specs_pending
+longines-l3-812-4-93-6,Longines,Spirit Zulu Time,L3.812.4.93.6,Blue,GMT,,reddit_popular,identity_seeded_specs_pending
+longines-l3-812-4-93-2,Longines,Spirit Zulu Time,L3.812.4.93.2,Blue,GMT,,reddit_popular,identity_seeded_specs_pending
+longines-l3-812-4-63-6,Longines,Spirit Zulu Time,L3.812.4.63.6,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+longines-l3-812-4-03-6,Longines,Spirit Zulu Time,L3.812.4.03.6,Green,GMT,,reddit_popular,identity_seeded_specs_pending
+longines-l3-812-4-03-2,Longines,Spirit Zulu Time,L3.812.4.03.2,Green,GMT,,reddit_popular,identity_seeded_specs_pending
+longines-l3-812-4-53-6,Longines,Spirit Zulu Time,L3.812.4.53.6,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+longines-l3-812-4-53-2,Longines,Spirit Zulu Time,L3.812.4.53.2,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+longines-l3-821-4-03-6,Longines,Spirit Flyback,L3.821.4.03.6,Green,Chronograph,,reddit_popular,identity_seeded_specs_pending
+longines-l2-836-4-52-2,Longines,Ultra-Chron,L2.836.4.52.2,Black,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l2-836-4-72-6,Longines,Ultra-Chron,L2.836.4.72.6,Silver,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l2-836-4-92-6,Longines,Ultra-Chron,L2.836.4.92.6,Blue,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l2-821-4-11-6,Longines,Record,L2.821.4.11.6,White,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-821-4-56-6,Longines,Record,L2.821.4.56.6,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-821-4-96-6,Longines,Record,L2.821.4.96.6,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-821-4-96-2,Longines,Record,L2.821.4.96.2,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-820-4-11-6,Longines,Record,L2.820.4.11.6,White,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-820-4-56-6,Longines,Record,L2.820.4.56.6,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-820-4-96-6,Longines,Record,L2.820.4.96.6,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l1-645-4-52-4,Longines,Conquest Heritage,L1.645.4.52.4,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+longines-l1-645-4-75-4,Longines,Conquest Heritage,L1.645.4.75.4,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+longines-l1-648-4-78-2,Longines,Conquest Heritage,L1.648.4.78.2,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+longines-l1-648-4-52-2,Longines,Conquest Heritage,L1.648.4.52.2,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+longines-l2-828-4-73-2,Longines,Heritage Classic,L2.828.4.73.2,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-828-4-53-2,Longines,Heritage Classic,L2.828.4.53.2,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-828-4-93-2,Longines,Heritage Classic,L2.828.4.93.2,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-828-4-53-6,Longines,Heritage Classic Sector Dial,L2.828.4.53.6,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-828-4-73-6,Longines,Heritage Classic Sector Dial,L2.828.4.73.6,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-815-4-78-2,Longines,Flagship Heritage,L4.815.4.78.2,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-815-4-11-2,Longines,Flagship Heritage,L4.815.4.11.2,White,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-815-4-52-0,Longines,Flagship Heritage,L4.815.4.52.0,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-817-4-76-2,Longines,Flagship Heritage,L4.817.4.76.2,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-793-4-78-6,Longines,Master Collection,L2.793.4.78.6,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-793-4-92-6,Longines,Master Collection,L2.793.4.92.6,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-793-4-97-6,Longines,Master Collection,L2.793.4.97.6,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-628-4-78-6,Longines,Master Collection,L2.628.4.78.6,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-628-4-92-6,Longines,Master Collection,L2.628.4.92.6,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-919-4-78-3,Longines,Master Collection,L2.919.4.78.3,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-919-4-78-6,Longines,Master Collection,L2.919.4.78.6,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-919-4-92-6,Longines,Master Collection,L2.919.4.92.6,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-909-4-92-6,Longines,Master Collection Moonphase,L2.909.4.92.6,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-909-4-97-6,Longines,Master Collection Moonphase,L2.909.4.97.6,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-755-2-11-7,Longines,La Grande Classique,L4.755.2.11.7,White,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-755-2-31-7,Longines,La Grande Classique,L4.755.2.31.7,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-755-4-11-6,Longines,La Grande Classique,L4.755.4.11.6,White,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-755-4-71-6,Longines,La Grande Classique,L4.755.4.71.6,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-755-4-95-6,Longines,La Grande Classique,L4.755.4.95.6,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l3-830-4-72-6,Longines,Conquest,L3.830.4.72.6,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+longines-l3-830-4-92-6,Longines,Conquest,L3.830.4.92.6,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+longines-l3-830-4-52-6,Longines,Conquest,L3.830.4.52.6,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+longines-l3-830-4-96-6,Longines,Conquest,L3.830.4.96.6,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+longines-l3-830-4-56-6,Longines,Conquest,L3.830.4.56.6,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+longines-l3-830-4-22-6,Longines,Conquest,L3.830.4.22.6,White,Sport,,reddit_popular,identity_seeded_specs_pending
+longines-l3-774-4-90-2,Longines,Legend Diver,L3.774.4.90.2,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+longines-l3-774-1-50-2,Longines,Legend Diver,L3.774.1.50.2,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+longines-l3-374-4-40-2,Longines,Legend Diver,L3.374.4.40.2,Bronze,Diver,,reddit_popular,identity_seeded_specs_pending
+longines-l3-374-4-50-6,Longines,Legend Diver,L3.374.4.50.6,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+longines-l3-374-4-70-6,Longines,Legend Diver,L3.374.4.70.6,Grey,Diver,,reddit_popular,identity_seeded_specs_pending
+longines-l5-512-4-71-6,Longines,DolceVita,L5.512.4.71.6,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l5-512-4-75-2,Longines,DolceVita,L5.512.4.75.2,White,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l5-512-0-71-0,Longines,DolceVita,L5.512.0.71.0,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+sinn-556-0104,Sinn,556 I,556.0104,Black,Field,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-556-011,Sinn,556 I,556.011,Black,Field,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-556-014,Sinn,556 A,556.014,Black,Field,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-556-0141,Sinn,556 A,556.0141,Black,Field,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-556-010-b,Sinn,556 I B,556.010.B,Black,Field,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-556-0144,Sinn,556 A RS,556.0144,Black,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-556-0106,Sinn,556 I RS,556.0106,Silver,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-556-0147,Sinn,556 A Red Seconds,556.0147,Anthracite,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-556-012,Sinn,556 I Perlmutt,556.012,Mother of Pearl,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-556-013,Sinn,556 I Perlmutt,556.013,Mother of Pearl,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-556-060,Sinn,556 MF,556.060,Silver,Field,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-104-011,Sinn,104 St Sa I,104.011,Black,Pilot,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-104-013,Sinn,104 St Sa I,104.013,White,Pilot,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-104-014,Sinn,104 St Sa I,104.014,Blue,Pilot,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-104-020,Sinn,104 St Sa A,104.020,Black,Pilot,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-104-010-b,Sinn,104 St Sa I B,104.010.B,Black,Pilot,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-104-010-g,Sinn,104 St Sa I G,104.010.G,Black,Pilot,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-104-010-w,Sinn,104 St Sa I W,104.010.W,White,Pilot,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-104-020-b,Sinn,104 St Sa A B,104.020.B,Black,Pilot,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-105-010,Sinn,105 St Sa,105.010,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-105-011,Sinn,105 St Sa,105.011,White,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-206-010,Sinn,206 St Ar,206.010,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-206-014,Sinn,206 St Ar,206.014,White,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-240-010,Sinn,240 St,240.010,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-240-011,Sinn,240 St,240.011,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-242-010,Sinn,242 St,242.010,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-242-011,Sinn,242 St,242.011,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-356-070,Sinn,356 Sa,356.070,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-356-071,Sinn,356 Sa,356.071,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-356-073,Sinn,356 Sa Flieger III,356.073,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-358-061,Sinn,358 Sa,358.061,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-358-062,Sinn,358 Sa,358.062,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-836-010,Sinn,836,836.010,Black,Field,,reddit_popular,identity_seeded_specs_pending
+sinn-836-011,Sinn,836,836.011,Silver,Field,,reddit_popular,identity_seeded_specs_pending
+sinn-836-015,Sinn,836,836.015,Green,Field,,reddit_popular,identity_seeded_specs_pending
+sinn-856-010,Sinn,856,856.010,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-856-011,Sinn,856,856.011,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-856-012,Sinn,856,856.012,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-856-020,Sinn,856 UTC,856.020,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+sinn-857-010,Sinn,857,857.010,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-857-020,Sinn,857 UTC,857.020,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+sinn-857-012,Sinn,857 S,857.012,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-903-040,Sinn,903 St,903.040,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-903-041,Sinn,903 St,903.041,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-903-042,Sinn,903 St,903.042,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-903-044,Sinn,903 St Be,903.044,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-910-010,Sinn,910 Anniversary,910.010,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-140-020,Sinn,140 St,140.020,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-140-030,Sinn,140 A,140.030,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-142-010,Sinn,142 St,142.010,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-142-011,Sinn,142 St,142.011,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-603-010,Sinn,EZM 3,603.010,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-603-020,Sinn,EZM 3F,603.020,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-949-010,Sinn,EZM 9 TESTAF,949.010,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-613-010,Sinn,EZM 13,613.010,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-613-040,Sinn,EZM 13.1,613.040,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-u1-010,Sinn,U1,U1.010,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-u1-012,Sinn,U1 S,U1.012,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-u1-013,Sinn,U1 S E,U1.013,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-u1-014,Sinn,U1 Camouflage,U1.014,Green,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-u1-020,Sinn,U1 B,U1.020,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-u2-010,Sinn,U2,U2.010,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+sinn-u2-012,Sinn,U2 S,U2.012,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+sinn-u2-020,Sinn,U2 EZM 5,U2.020,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+sinn-u50-011,Sinn,U50,U50.011,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-u50-020,Sinn,U50 S,U50.020,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-u50-021,Sinn,U50 S,U50.021,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-u212-010,Sinn,U212 SDR,U212.010,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-u212-020,Sinn,U212,U212.020,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-6000-010,Sinn,6000,6000.010,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+sinn-6000-011,Sinn,6000,6000.011,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+sinn-6012-010,Sinn,6012,6012.010,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+sinn-6012-011,Sinn,6012,6012.011,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+sinn-6033-010,Sinn,6033,6033.010,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+sinn-6060-010,Sinn,6060,6060.010,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-6060-011,Sinn,6060,6060.011,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-6096-010,Sinn,6096,6096.010,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-6099-010,Sinn,6099,6099.010,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-717-010,Sinn,717,717.010,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-3006-010,Sinn,3006,3006.010,Green,Field,,reddit_popular,identity_seeded_specs_pending
+rolex-126200-0008,Rolex,Datejust 36,126200-0008,Mint Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126200-0009,Rolex,Datejust 36,126200-0009,Azzurro Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126200-0010,Rolex,Datejust 36,126200-0010,Olive Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126200-0012,Rolex,Datejust 36,126200-0012,Silver Fluted,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126200-0013,Rolex,Datejust 36,126200-0013,Black Fluted,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126200-0014,Rolex,Datejust 36,126200-0014,Bright Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126200-0015,Rolex,Datejust 36,126200-0015,Palm Motif,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126200-0016,Rolex,Datejust 36,126200-0016,Blue Palm,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126200-0018,Rolex,Datejust 36,126200-0018,White,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126200-0019,Rolex,Datejust 36,126200-0019,Pink,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126200-0020,Rolex,Datejust 36,126200-0020,Chocolate,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126200-0021,Rolex,Datejust 36,126200-0021,Slate,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126200-0024,Rolex,Datejust 36,126200-0024,Silver Diamonds,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126200-0025,Rolex,Datejust 36,126200-0025,Blue Diamonds,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126200-0027,Rolex,Datejust 36,126200-0027,Palm Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-278240-0001,Rolex,Datejust 31,278240-0001,Mint Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-278240-0002,Rolex,Datejust 31,278240-0002,Coral Red,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-278240-0003,Rolex,Datejust 31,278240-0003,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-278240-0004,Rolex,Datejust 31,278240-0004,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-278240-0005,Rolex,Datejust 31,278240-0005,Yellow,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-278240-0006,Rolex,Datejust 31,278240-0006,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-278240-0007,Rolex,Datejust 31,278240-0007,Orchid Pink,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-278274-0001,Rolex,Datejust 31,278274-0001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-278274-0002,Rolex,Datejust 31,278274-0002,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-278274-0003,Rolex,Datejust 31,278274-0003,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-278274-0005,Rolex,Datejust 31,278274-0005,Mint Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-278274-0006,Rolex,Datejust 31,278274-0006,Pink,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-277200-0001,Rolex,Oyster Perpetual 31,277200-0001,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-277200-0002,Rolex,Oyster Perpetual 31,277200-0002,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-277200-0003,Rolex,Oyster Perpetual 31,277200-0003,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-277200-0004,Rolex,Oyster Perpetual 31,277200-0004,Yellow,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-277200-0005,Rolex,Oyster Perpetual 31,277200-0005,Green,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-277200-0006,Rolex,Oyster Perpetual 31,277200-0006,Coral Red,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-277200-0007,Rolex,Oyster Perpetual 31,277200-0007,Turquoise,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-228206-0001,Rolex,Day-Date 40,228206-0001,Ice Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228206-0002,Rolex,Day-Date 40,228206-0002,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228206-0003,Rolex,Day-Date 40,228206-0003,Olive Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228206-0005,Rolex,Day-Date 40,228206-0005,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228206-0027,Rolex,Day-Date 40,228206-0027,Ice Blue Motif,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228206-0028,Rolex,Day-Date 40,228206-0028,Meteorite,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228238-0001,Rolex,Day-Date 40,228238-0001,Champagne,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228238-0002,Rolex,Day-Date 40,228238-0002,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228238-0003,Rolex,Day-Date 40,228238-0003,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228238-0006,Rolex,Day-Date 40,228238-0006,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228238-0008,Rolex,Day-Date 40,228238-0008,Olive Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228238-0010,Rolex,Day-Date 40,228238-0010,Turquoise,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228238-0042,Rolex,Day-Date 40,228238-0042,Bright Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228239-0001,Rolex,Day-Date 40,228239-0001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228239-0002,Rolex,Day-Date 40,228239-0002,White,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228239-0007,Rolex,Day-Date 40,228239-0007,Meteorite,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228239-0040,Rolex,Day-Date 40,228239-0040,Olive Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228239-0045,Rolex,Day-Date 40,228239-0045,Bright Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228239-0046,Rolex,Day-Date 40,228239-0046,Ice Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-50535-0002,Rolex,Cellini Moonphase,50535-0002,White,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-50509-0008,Rolex,Cellini Time,50509-0008,White,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-50509-0016,Rolex,Cellini Time,50509-0016,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-50519-0001,Rolex,Cellini Date,50519-0001,White,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-50519-0006,Rolex,Cellini Date,50519-0006,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-50515-0001,Rolex,Cellini Date,50515-0001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-116400gv-0001,Rolex,Milgauss,116400GV-0001,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-116400gv-0002,Rolex,Milgauss,116400GV-0002,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-124270-0002,Rolex,Explorer,124270-0002,Black,Field,,reddit_popular,identity_seeded_specs_pending
+rolex-124273-0002,Rolex,Explorer,124273-0002,Black,Field,,reddit_popular,identity_seeded_specs_pending
+rolex-226570-0002,Rolex,Explorer II,226570-0002,White,GMT,,reddit_popular,identity_seeded_specs_pending
+rolex-226570-0003,Rolex,Explorer II,226570-0003,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+rolex-126603-0001,Rolex,Sea-Dweller,126603-0001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+rolex-126603-0002,Rolex,Sea-Dweller,126603-0002,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+rolex-136660-0001,Rolex,Deepsea,136660-0001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+rolex-136660-0003,Rolex,Deepsea,136660-0003,D-Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+rolex-136660-0004,Rolex,Deepsea,136660-0004,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-30-44-51-03-002,Omega,Seamaster Diver 300M Chronograph,210.30.44.51.03.002,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-210-30-44-51-06-001,Omega,Seamaster Diver 300M Chronograph,210.30.44.51.06.001,Grey,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-210-32-44-51-01-002,Omega,Seamaster Diver 300M Chronograph,210.32.44.51.01.002,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-210-32-44-51-03-001,Omega,Seamaster Diver 300M Chronograph,210.32.44.51.03.001,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-215-30-40-20-04-001,Omega,Seamaster Planet Ocean 600M,215.30.40.20.04.001,White,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-215-30-40-20-09-001,Omega,Seamaster Planet Ocean 600M,215.30.40.20.09.001,Green,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-215-32-40-20-01-001,Omega,Seamaster Planet Ocean 600M,215.32.40.20.01.001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-215-32-40-20-04-001,Omega,Seamaster Planet Ocean 600M,215.32.40.20.04.001,White,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-215-30-44-22-01-002,Omega,Seamaster Planet Ocean 600M GMT,215.30.44.22.01.002,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+omega-215-30-44-22-03-001,Omega,Seamaster Planet Ocean 600M GMT,215.30.44.22.03.001,Blue,GMT,,reddit_popular,identity_seeded_specs_pending
+omega-215-32-44-22-01-001,Omega,Seamaster Planet Ocean 600M GMT,215.32.44.22.01.001,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+omega-304-30-44-52-01-001,Omega,Speedmaster Moonphase,304.30.44.52.01.001,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-304-33-44-52-01-001,Omega,Speedmaster Moonphase,304.33.44.52.01.001,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-304-33-44-52-03-001,Omega,Speedmaster Moonphase,304.33.44.52.03.001,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-433-10-41-21-02-001,Omega,De Ville Hour Vision,433.10.41.21.02.001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-433-10-41-21-03-001,Omega,De Ville Hour Vision,433.10.41.21.03.001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-433-13-41-21-02-001,Omega,De Ville Hour Vision,433.13.41.21.02.001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-433-13-41-21-03-001,Omega,De Ville Hour Vision,433.13.41.21.03.001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-130-30-39-21-03-001,Omega,Constellation Globemaster,130.30.39.21.03.001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-130-33-39-21-03-001,Omega,Constellation Globemaster,130.33.39.21.03.001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-130-30-39-21-02-002,Omega,Constellation Globemaster,130.30.39.21.02.002,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-130-33-39-21-02-001,Omega,Constellation Globemaster,130.33.39.21.02.001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-220-10-43-22-02-001,Omega,Seamaster Aqua Terra GMT,220.10.43.22.02.001,Silver,GMT,,reddit_popular,identity_seeded_specs_pending
+omega-220-12-43-22-02-001,Omega,Seamaster Aqua Terra GMT,220.12.43.22.02.001,Silver,GMT,,reddit_popular,identity_seeded_specs_pending
+omega-220-10-43-22-06-001,Omega,Seamaster Aqua Terra GMT,220.10.43.22.06.001,Grey,GMT,,reddit_popular,identity_seeded_specs_pending
+omega-324-30-38-50-01-001,Omega,Speedmaster 38,324.30.38.50.01.001,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-324-30-38-50-02-001,Omega,Speedmaster 38,324.30.38.50.02.001,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-324-30-38-50-03-001,Omega,Speedmaster 38,324.30.38.50.03.001,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-324-30-38-50-06-001,Omega,Speedmaster 38,324.30.38.50.06.001,Grey,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-36-20-01-001,Omega,Constellation,131.10.36.20.01.001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-36-20-02-001,Omega,Constellation,131.10.36.20.02.001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-36-20-03-001,Omega,Constellation,131.10.36.20.03.001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-36-20-06-001,Omega,Constellation,131.10.36.20.06.001,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m79500-0001,Tudor,Black Bay 36,M79500-0001,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m79500-0003,Tudor,Black Bay 36,M79500-0003,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m79500-0004,Tudor,Black Bay 36,M79500-0004,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m79500-0005,Tudor,Black Bay 36,M79500-0005,Champagne,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m79733n-0001,Tudor,Black Bay S&G,M79733N-0001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m79733n-0002,Tudor,Black Bay S&G,M79733N-0002,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m79733n-0006,Tudor,Black Bay S&G,M79733N-0006,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m25600tn-0002,Tudor,Pelagos,M25600TN-0002,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m25600tb-0002,Tudor,Pelagos,M25600TB-0002,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m25600tb-0003,Tudor,Pelagos,M25600TB-0003,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m53003-0001,Tudor,Glamour Date,M53003-0001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m53003-0002,Tudor,Glamour Date,M53003-0002,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m53003-0003,Tudor,Glamour Date,M53003-0003,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m53003-0004,Tudor,Glamour Date,M53003-0004,Champagne,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m12510-0001,Tudor,Style,M12510-0001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m12510-0002,Tudor,Style,M12510-0002,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m12510-0003,Tudor,Style,M12510-0003,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m12510-0004,Tudor,Style,M12510-0004,Champagne,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m12310-0001,Tudor,Style,M12310-0001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m12310-0002,Tudor,Style,M12310-0002,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m12310-0003,Tudor,Style,M12310-0003,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m12310-0004,Tudor,Style,M12310-0004,Champagne,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91350-0011,Tudor,1926,M91350-0011,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91350-0012,Tudor,1926,M91350-0012,White Rose,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91250-0001,Tudor,1926,M91250-0001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91250-0002,Tudor,1926,M91250-0002,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91250-0003,Tudor,1926,M91250-0003,White,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91250-0004,Tudor,1926,M91250-0004,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91250-0005,Tudor,1926,M91250-0005,Champagne,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw545401,IWC,Portugieser Hand-Wound,IW545401,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw545403,IWC,Portugieser Hand-Wound,IW545403,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw545404,IWC,Portugieser Hand-Wound,IW545404,Ardoise,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw545405,IWC,Portugieser Hand-Wound,IW545405,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw545406,IWC,Portugieser Hand-Wound,IW545406,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw545407,IWC,Portugieser Hand-Wound,IW545407,White,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw356601,IWC,Da Vinci Automatic,IW356601,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw356602,IWC,Da Vinci Automatic,IW356602,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw356605,IWC,Da Vinci Automatic,IW356605,Ardoise,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw327006,IWC,Pilot's Watch Heritage,IW327006,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw327010,IWC,Pilot's Watch Heritage,IW327010,Silver,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw327012,IWC,Pilot's Watch Heritage,IW327012,Green,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw327001,IWC,Pilot's Watch Mark XVIII,IW327001,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw327002,IWC,Pilot's Watch Mark XVIII,IW327002,Silver,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw327004,IWC,Pilot's Watch Mark XVIII,IW327004,Blue,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw327009,IWC,Pilot's Watch Mark XVIII,IW327009,White,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw327015,IWC,Pilot's Watch Mark XVIII,IW327015,Blue,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw328805,IWC,Pilot's Watch Automatic 40,IW328805,Silver,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw326901,IWC,Pilot's Watch Automatic Top Gun,IW326901,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw326906,IWC,Pilot's Watch Automatic Top Gun,IW326906,Green,Pilot,,reddit_popular,identity_seeded_specs_pending
+longines-l3-726-4-56-6,Longines,Conquest V.H.P.,L3.726.4.56.6,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+longines-l3-726-4-96-6,Longines,Conquest V.H.P.,L3.726.4.96.6,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+longines-l3-726-4-76-6,Longines,Conquest V.H.P.,L3.726.4.76.6,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+longines-l3-716-4-56-6,Longines,Conquest V.H.P.,L3.716.4.56.6,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+longines-l3-716-4-96-6,Longines,Conquest V.H.P.,L3.716.4.96.6,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+longines-l3-716-4-76-6,Longines,Conquest V.H.P.,L3.716.4.76.6,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+longines-l4-911-4-72-6,Longines,Elegant Collection,L4.911.4.72.6,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-911-4-92-6,Longines,Elegant Collection,L4.911.4.92.6,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-911-4-52-6,Longines,Elegant Collection,L4.911.4.52.6,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-910-4-11-6,Longines,Elegant Collection,L4.910.4.11.6,White,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-910-4-72-6,Longines,Elegant Collection,L4.910.4.72.6,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-922-4-11-6,Longines,Presence,L4.922.4.11.6,White,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-922-4-52-6,Longines,Presence,L4.922.4.52.6,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-922-2-11-7,Longines,Presence,L4.922.2.11.7,White,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-642-4-73-4,Longines,Evidenza,L2.642.4.73.4,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-642-4-51-4,Longines,Evidenza,L2.642.4.51.4,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-642-4-51-6,Longines,Evidenza,L2.642.4.51.6,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l3-781-4-06-6,Longines,HydroConquest,L3.781.4.06.6,Green,Diver,,reddit_popular,identity_seeded_specs_pending
+longines-l3-782-4-06-6,Longines,HydroConquest,L3.782.4.06.6,Green,Diver,,reddit_popular,identity_seeded_specs_pending
+longines-l3-782-4-06-9,Longines,HydroConquest,L3.782.4.06.9,Green,Diver,,reddit_popular,identity_seeded_specs_pending
+longines-l3-781-4-56-2,Longines,HydroConquest,L3.781.4.56.2,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+longines-l3-781-4-96-2,Longines,HydroConquest,L3.781.4.96.2,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+longines-l2-826-4-53-2,Longines,Heritage Military,L2.826.4.53.2,Black,Field,,reddit_popular,identity_seeded_specs_pending
+longines-l2-826-4-53-6,Longines,Heritage Military,L2.826.4.53.6,Black,Field,,reddit_popular,identity_seeded_specs_pending
+sinn-358-065,Sinn,358 Sa Flieger,358.065,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-144-060,Sinn,144 St Sa,144.060,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-144-066,Sinn,144 St Sa,144.066,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-144-068,Sinn,144 St,144.068,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-256-010,Sinn,256 St,256.010,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-256-014,Sinn,256 St,256.014,Blue,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-356-074,Sinn,356 Sa Flieger II,356.074,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-103-060,Sinn,103 St Sa,103.060,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-103-061,Sinn,103 St Sa,103.061,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-103-062,Sinn,103 St,103.062,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-103-070,Sinn,103 Ti Ar,103.070,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-501-010,Sinn,EZM 1,501.010,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-403-030,Sinn,EZM 2,403.030,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-950-010,Sinn,EZM 10,950.010,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-613-012,Sinn,EZM 12,613.012,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-u1-015,Sinn,U1 SE,U1.015,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-u1-016,Sinn,U1 SE,U1.016,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-u1-1010,Sinn,U1 Professional,U1.1010,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-u200-010,Sinn,U200,U200.010,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-u200-020,Sinn,U200 S,U200.020,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-t1-010,Sinn,T1,T1.010,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-t1-020,Sinn,T1 B,T1.020,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-t2-010,Sinn,T2,T2.010,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-t2-020,Sinn,T2 B,T2.020,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+sinn-1746-010,Sinn,1746,1746.010,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+sinn-1746-011,Sinn,1746,1746.011,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126613lb-0001,Rolex,Submariner Date,126613LB-0001,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+rolex-126613ln-0001,Rolex,Submariner Date,126613LN-0001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+rolex-126618lb-0001,Rolex,Submariner Date,126618LB-0001,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+rolex-126618ln-0001,Rolex,Submariner Date,126618LN-0001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+rolex-126619lb-0001,Rolex,Submariner Date,126619LB-0001,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+rolex-126619lb-0002,Rolex,Submariner Date,126619LB-0002,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+rolex-126900-0002,Rolex,Air-King,126900-0002,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126900-0003,Rolex,Air-King,126900-0003,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126500ln-0001,Rolex,Cosmograph Daytona,126500LN-0001,White,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-126500ln-0002,Rolex,Cosmograph Daytona,126500LN-0002,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-126500ln-0003,Rolex,Cosmograph Daytona,126500LN-0003,White,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-126500ln-0004,Rolex,Cosmograph Daytona,126500LN-0004,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-268655-0001,Rolex,Yacht-Master 37,268655-0001,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-268655-0002,Rolex,Yacht-Master 37,268655-0002,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126655-0001,Rolex,Yacht-Master 40,126655-0001,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-126655-0002,Rolex,Yacht-Master 40,126655-0002,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+rolex-336935-0001,Rolex,Sky-Dweller,336935-0001,Chocolate,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-336935-0002,Rolex,Sky-Dweller,336935-0002,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-336935-0003,Rolex,Sky-Dweller,336935-0003,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126233-0020,Rolex,Datejust 36,126233-0020,Palm Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126233-0022,Rolex,Datejust 36,126233-0022,Black Fluted,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126233-0024,Rolex,Datejust 36,126233-0024,Blue Fluted,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126233-0030,Rolex,Datejust 36,126233-0030,Olive Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126233-0033,Rolex,Datejust 36,126233-0033,White,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-431-10-41-22-01-001,Omega,De Ville Annual Calendar,431.10.41.22.01.001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-431-10-41-22-02-001,Omega,De Ville Annual Calendar,431.10.41.22.02.001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-431-10-41-22-03-001,Omega,De Ville Annual Calendar,431.10.41.22.03.001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-431-13-41-22-01-001,Omega,De Ville Annual Calendar,431.13.41.22.01.001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-431-13-41-22-03-001,Omega,De Ville Annual Calendar,431.13.41.22.03.001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-311-30-42-30-01-005,Omega,Speedmaster Professional Moonwatch,311.30.42.30.01.005,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-311-30-42-30-01-006,Omega,Speedmaster Professional Moonwatch,311.30.42.30.01.006,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-311-33-42-30-01-001,Omega,Speedmaster Professional Moonwatch,311.33.42.30.01.001,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-311-33-42-30-01-002,Omega,Speedmaster Professional Moonwatch,311.33.42.30.01.002,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-210-30-36-20-01-001,Omega,Seamaster Diver 300M,210.30.36.20.01.001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-30-36-20-03-001,Omega,Seamaster Diver 300M,210.30.36.20.03.001,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-30-36-20-04-001,Omega,Seamaster Diver 300M,210.30.36.20.04.001,White,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-32-36-20-01-001,Omega,Seamaster Diver 300M,210.32.36.20.01.001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-210-32-36-20-03-001,Omega,Seamaster Diver 300M,210.32.36.20.03.001,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-29-20-01-001,Omega,Constellation,131.10.29.20.01.001,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-29-20-02-001,Omega,Constellation,131.10.29.20.02.001,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-29-20-03-001,Omega,Constellation,131.10.29.20.03.001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-29-20-55-001,Omega,Constellation,131.10.29.20.55.001,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m79580-0001,Tudor,Black Bay 32,M79580-0001,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m79580-0003,Tudor,Black Bay 32,M79580-0003,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m79580-0004,Tudor,Black Bay 32,M79580-0004,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m79580-0006,Tudor,Black Bay 31,M79580-0006,Champagne,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m79640-0001,Tudor,Black Bay 36,M79640-0001,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m79640-0002,Tudor,Black Bay 36,M79640-0002,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m79640-0003,Tudor,Black Bay 36,M79640-0003,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m79640-0004,Tudor,Black Bay 36,M79640-0004,Champagne,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m25707kn-0004,Tudor,Pelagos FXD Alinghi,M25707KN-0004,Red,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m76214-0005,Tudor,Prince Oysterdate,M76214-0005,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m76214-0006,Tudor,Prince Oysterdate,M76214-0006,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m28400-0001,Tudor,Royal,M28400-0001,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m28400-0002,Tudor,Royal,M28400-0002,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m28400-0003,Tudor,Royal,M28400-0003,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m28400-0004,Tudor,Royal,M28400-0004,Champagne,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m28400-0005,Tudor,Royal,M28400-0005,Green,Sport,,reddit_popular,identity_seeded_specs_pending
+tudor-m79030b-0006,Tudor,Black Bay 58,M79030B-0006,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m79030b-0007,Tudor,Black Bay 58,M79030B-0007,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+iwc-iw390701,IWC,Portugieser Yacht Club Chronograph,IW390701,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw390702,IWC,Portugieser Yacht Club Chronograph,IW390702,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw390704,IWC,Portugieser Yacht Club Chronograph,IW390704,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw326903,IWC,Pilot's Watch Automatic Top Gun,IW326903,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw326905,IWC,Pilot's Watch Automatic Top Gun,IW326905,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw510103,IWC,Portofino Hand-Wound,IW510103,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw510104,IWC,Portofino Hand-Wound,IW510104,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw510106,IWC,Portofino Hand-Wound,IW510106,Ardoise,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw510108,IWC,Portofino Hand-Wound,IW510108,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw387901,IWC,Pilot's Watch Chronograph Spitfire,IW387901,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw387902,IWC,Pilot's Watch Chronograph Spitfire,IW387902,Green,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw387903,IWC,Pilot's Watch Chronograph Spitfire,IW387903,Blue,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw327101,IWC,Pilot's Watch UTC Spitfire,IW327101,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+iwc-iw327102,IWC,Pilot's Watch UTC Spitfire,IW327102,Green,GMT,,reddit_popular,identity_seeded_specs_pending
+longines-l2-386-4-72-6,Longines,Conquest Classic,L2.386.4.72.6,Silver,Sport,,reddit_popular,identity_seeded_specs_pending
+longines-l2-386-4-92-6,Longines,Conquest Classic,L2.386.4.92.6,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+longines-l2-386-4-56-6,Longines,Conquest Classic,L2.386.4.56.6,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+longines-l2-910-4-78-6,Longines,Master Collection Annual Calendar,L2.910.4.78.6,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-984-4-72-6,Longines,Flagship,L4.984.4.72.6,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l3-783-4-96-6,Longines,HydroConquest Chronograph,L3.783.4.96.6,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+longines-l3-783-4-56-6,Longines,HydroConquest Chronograph,L3.783.4.56.6,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+longines-l3-783-4-96-9,Longines,HydroConquest Chronograph,L3.783.4.96.9,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+longines-l3-783-4-56-9,Longines,HydroConquest Chronograph,L3.783.4.56.9,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+longines-l3-374-4-40-6,Longines,Legend Diver,L3.374.4.40.6,Brown,Diver,,reddit_popular,identity_seeded_specs_pending
+longines-l3-374-4-70-2,Longines,Legend Diver,L3.374.4.70.2,Grey,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-836-012,Sinn,836,836.012,Blue,Field,,reddit_popular,identity_seeded_specs_pending
+sinn-856-013,Sinn,856 B-Uhr,856.013,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-856-014,Sinn,856 I,856.014,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-900-010,Sinn,900 Flieger,900.010,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-900-011,Sinn,900 Flieger,900.011,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-933-010,Sinn,933 St,933.010,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-240-015,Sinn,240 St IFR,240.015,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-857-040,Sinn,EZM 7,857.040,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-857-041,Sinn,EZM 7S,857.041,Black,Pilot,,reddit_popular,identity_seeded_specs_pending
+sinn-u50-030,Sinn,U50 SDR,U50.030,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-6200-010,Sinn,6200 Meisterbund I,6200.010,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+sinn-6200-011,Sinn,6200 Meisterbund I,6200.011,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-16610-0001,Rolex,Submariner Date,16610-0001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+rolex-16613-0001,Rolex,Submariner Date,16613-0001,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+rolex-14060-0001,Rolex,Submariner,14060-0001,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+rolex-16710-0001,Rolex,GMT-Master II,16710-0001,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+rolex-16234-0001,Rolex,Datejust 36,16234-0001,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-16234-0002,Rolex,Datejust 36,16234-0002,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-16233-0001,Rolex,Datejust 36,16233-0001,Champagne,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-16233-0002,Rolex,Datejust 36,16233-0002,White,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126300-0019,Rolex,Datejust 41,126300-0019,Wimbledon,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-126334-0019,Rolex,Datejust 41,126334-0019,Wimbledon,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228235-0007,Rolex,Day-Date 40,228235-0007,Olive Green,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228235-0008,Rolex,Day-Date 40,228235-0008,Chocolate,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228235-0010,Rolex,Day-Date 40,228235-0010,Slate,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-228235-0012,Rolex,Day-Date 40,228235-0012,Sundust,Dress,,reddit_popular,identity_seeded_specs_pending
+rolex-116500ln-0001,Rolex,Cosmograph Daytona,116500LN-0001,White,Chronograph,,reddit_popular,identity_seeded_specs_pending
+rolex-116500ln-0002,Rolex,Cosmograph Daytona,116500LN-0002,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-220-10-41-21-01-003,Omega,Seamaster Aqua Terra 150M,220.10.41.21.01.003,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-220-10-41-21-03-005,Omega,Seamaster Aqua Terra 150M,220.10.41.21.03.005,Blue,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-220-12-41-21-01-002,Omega,Seamaster Aqua Terra 150M,220.12.41.21.01.002,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+omega-424-10-40-20-01-002,Omega,De Ville Prestige,424.10.40.20.01.002,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-424-10-40-20-03-002,Omega,De Ville Prestige,424.10.40.20.03.002,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-424-13-40-20-02-002,Omega,De Ville Prestige,424.13.40.20.02.002,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-424-13-40-20-03-002,Omega,De Ville Prestige,424.13.40.20.03.002,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-310-30-42-50-01-004,Omega,Speedmaster Moonwatch,310.30.42.50.01.004,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-310-32-42-50-04-002,Omega,Speedmaster Moonwatch,310.32.42.50.04.002,White,Chronograph,,reddit_popular,identity_seeded_specs_pending
+omega-210-30-42-20-03-005,Omega,Seamaster 300M,210.30.42.20.03.005,Summer Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-41-21-01-002,Omega,Constellation,131.10.41.21.01.002,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+omega-131-10-41-21-02-002,Omega,Constellation,131.10.41.21.02.002,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m79030n-0005,Tudor,Black Bay 58,M79030N-0005,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m79030n-0006,Tudor,Black Bay 58,M79030N-0006,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m79830rb-0005,Tudor,Black Bay GMT,M79830RB-0005,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+tudor-m79830rb-0006,Tudor,Black Bay GMT,M79830RB-0006,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+tudor-m79470-0004,Tudor,Black Bay Pro,M79470-0004,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+tudor-m79470-0005,Tudor,Black Bay Pro,M79470-0005,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+tudor-m79000n-0005,Tudor,Black Bay 54,M79000N-0005,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m25407n-0004,Tudor,Pelagos 39,M25407N-0004,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+tudor-m91650-0005,Tudor,1926,M91650-0005,Champagne,Dress,,reddit_popular,identity_seeded_specs_pending
+tudor-m91650-0006,Tudor,1926,M91650-0006,Rose,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw358309,IWC,Portugieser Automatic 40,IW358309,Burgundy,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw358311,IWC,Portugieser Automatic 40,IW358311,Grey,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw371618,IWC,Portugieser Chronograph,IW371618,Burgundy,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw371619,IWC,Portugieser Chronograph,IW371619,Black,Chronograph,,reddit_popular,identity_seeded_specs_pending
+iwc-iw356524,IWC,Portofino Automatic,IW356524,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw356525,IWC,Portofino Automatic,IW356525,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+iwc-iw329307,IWC,Big Pilot's Watch 43,IW329307,Blue,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw329308,IWC,Big Pilot's Watch 43,IW329308,Green,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw328209,IWC,Pilot's Watch Mark XX,IW328209,Brown,Pilot,,reddit_popular,identity_seeded_specs_pending
+iwc-iw328210,IWC,Pilot's Watch Mark XX,IW328210,Olive,Pilot,,reddit_popular,identity_seeded_specs_pending
+longines-l3-810-4-73-0,Longines,Spirit,L3.810.4.73.0,Silver,Field,,reddit_popular,identity_seeded_specs_pending
+longines-l3-810-4-93-6,Longines,Spirit,L3.810.4.93.6,Blue,Field,,reddit_popular,identity_seeded_specs_pending
+longines-l3-812-4-93-0,Longines,Spirit Zulu Time,L3.812.4.93.0,Blue,GMT,,reddit_popular,identity_seeded_specs_pending
+longines-l3-788-4-76-9,Longines,HydroConquest,L3.788.4.76.9,Grey,Diver,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-790-4-76-6,Longines,HydroConquest,L3.790.4.76.6,Grey,Diver,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l3-790-4-76-9,Longines,HydroConquest,L3.790.4.76.9,Grey,Diver,https://www.longines.com/en-us/hydroconquest,reddit_under_5k_signal,identity_seeded_specs_pending
+longines-l2-793-4-51-6,Longines,Master Collection,L2.793.4.51.6,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-628-4-78-3,Longines,Master Collection,L2.628.4.78.3,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-821-4-06-6,Longines,Record,L2.821.4.06.6,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l2-820-4-06-6,Longines,Record,L2.820.4.06.6,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-815-4-78-6,Longines,Flagship Heritage,L4.815.4.78.6,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
+longines-l4-815-4-92-2,Longines,Flagship Heritage,L4.815.4.92.2,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+sinn-556-0105,Sinn,556 I,556.0105,Silver,Field,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-556-0142,Sinn,556 A,556.0142,Blue,Field,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-556-010-b2,Sinn,556 I B,556.010.B2,Black,Field,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-104-015,Sinn,104 St Sa I,104.015,Green,Pilot,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-104-016,Sinn,104 St Sa I,104.016,Anthracite,Pilot,,reddit_under_5k_signal,identity_seeded_specs_pending
+sinn-u1-017,Sinn,U1 S,U1.017,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-u50-022,Sinn,U50 S,U50.022,Green,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-u50-012,Sinn,U50,U50.012,Green,Diver,,reddit_popular,identity_seeded_specs_pending
+sinn-903-043,Sinn,903 St,903.043,Silver,Chronograph,,reddit_popular,identity_seeded_specs_pending
+sinn-856-021,Sinn,856 UTC DIAPAL,856.021,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+sinn-857-021,Sinn,857 UTC VFR,857.021,Black,GMT,,reddit_popular,identity_seeded_specs_pending
+sinn-6000-020,Sinn,6000 Meisterbund II,6000.020,Silver,Dress,,reddit_popular,identity_seeded_specs_pending
