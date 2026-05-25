@@ -55,7 +55,7 @@ Mark `[x]` when done.
 
 > **Storage update (May 2026):** the Cloudinary / R2 / Cloudflare Images items below were originally planned to handle user-uploaded watch photos. We now use **Supabase Storage** (`watch-photos` and `watch-images` buckets) for that purpose because (a) it lives next to the auth/RLS layer that gates access, (b) eliminates the cross-provider auth dance, and (c) is already in production for the photo gallery + admin curated images. The R2 / Cloudflare Images items below remain as **deferred / optional** — only revisit if Supabase Storage becomes a cost or performance bottleneck.
 
-- [ ] **IF** Enable Cloudflare Analytics — free, privacy-friendly, no cookie banner required. Replace or supplement any GA setup. Dashboard → Analytics & Logs → Web Analytics.
+- [x] **IF** Enable Cloudflare Analytics — free, privacy-friendly, no cookie banner required. Replace or supplement any GA setup. Dashboard → Analytics & Logs → Web Analytics.
 - [ ] **IF** Configure Cloudflare caching rules for Next.js static assets — cache `/_next/static/*` at edge, set long TTLs. Cuts origin load and speeds global delivery.
 - [ ] **IF** Set up Cloudflare WAF rules — block common attack patterns (SQLi, XSS, bad bots) on the free plan. Especially important once auth + user data is live.
 - [ ] **IF** Enable Cloudflare Turnstile on auth pages — replaces reCAPTCHA with a privacy-respecting, invisible bot check. Wire into `/auth` sign-in flow. Free tier is generous.
