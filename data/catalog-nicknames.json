@@ -124,6 +124,47 @@
     { "brand": "Sinn", "reference": "856.010",          "nicknames": ["856 Tegimented"] },
     { "brand": "Sinn", "reference": "903.040",          "nicknames": ["903 Navigationschronograph"] },
 
+    { "brand": "Seiko", "reference": "SARB033",          "nicknames": ["Baby Grand Seiko"] },
+    { "brand": "Seiko", "reference": "SARB035",          "nicknames": ["Baby Grand Seiko Cream"] },
+    { "brand": "Seiko", "reference": "SARB017",          "nicknames": ["Green Alpinist", "OG Alpinist"] },
+    { "brand": "Seiko", "reference": "SARB065",          "nicknames": ["Cocktail Time"] },
+    { "brand": "Seiko", "reference": "SRP777",           "nicknames": ["Turtle"] },
+    { "brand": "Seiko", "reference": "SRPE03",           "nicknames": ["King Turtle"] },
+    { "brand": "Seiko", "reference": "SPB143",           "nicknames": ["62MAS Reissue", "Baby MM"] },
+    { "brand": "Seiko", "reference": "SPB151",           "nicknames": ["Willard", "Captain Willard"] },
+    { "brand": "Seiko", "reference": "SBDX017",          "nicknames": ["MM300", "Marinemaster 300"] },
+    { "brand": "Seiko", "reference": "SRPB43",           "nicknames": ["Blue Moon", "Cocktail Time"] },
+    { "brand": "Seiko", "reference": "SRPD55",           "nicknames": ["Seiko 5 Mod Platform"] },
+    { "brand": "Seiko", "reference": "SNK809",           "nicknames": ["SNK", "Seiko Field"] },
+    { "brand": "Seiko", "reference": "SSK001",           "nicknames": ["Seiko 5 GMT"] },
+
+    { "brand": "Casio", "reference": "GA-2100-1A1",      "nicknames": ["CasiOak"] },
+    { "brand": "Casio", "reference": "DW-5600E-1V",      "nicknames": ["The Square", "OG G-Shock"] },
+    { "brand": "Casio", "reference": "GMW-B5000D-1",     "nicknames": ["Full Metal", "Silver Square"] },
+    { "brand": "Casio", "reference": "F-91W-1",          "nicknames": ["F-91W"] },
+    { "brand": "Casio", "reference": "MDV-106-1A",       "nicknames": ["Duro", "Marlin Diver"] },
+    { "brand": "Casio", "reference": "GW-9400-1",        "nicknames": ["Rangeman"] },
+    { "brand": "Casio", "reference": "GWF-A1000-1A",     "nicknames": ["Frogman"] },
+
+    { "brand": "Hamilton", "reference": "H69439931",      "nicknames": ["Khaki Mech", "Hamilton Field Mech"] },
+    { "brand": "Hamilton", "reference": "H70405730",      "nicknames": ["Murph", "Interstellar Watch"] },
+    { "brand": "Hamilton", "reference": "H24411232",      "nicknames": ["Ventura", "Elvis Watch"] },
+
+    { "brand": "Orient", "reference": "FAC00004W0",       "nicknames": ["Bambino"] },
+
+    { "brand": "Citizen", "reference": "BN0150-28E",      "nicknames": ["Promaster Diver", "Citizen Diver"] },
+    { "brand": "Citizen", "reference": "NY0040-09E",      "nicknames": ["Fugu"] },
+
+    { "brand": "Tissot", "reference": "T137.407.11.041.00", "nicknames": ["PRX Auto", "PRX Powermatic"] },
+
+    { "brand": "Timex", "reference": "TW2U61500",         "nicknames": ["Q Timex"] },
+
+    { "brand": "Junghans", "reference": "027/3400.04",     "nicknames": ["Max Bill"] },
+
+    { "brand": "Zenith", "reference": "03.3200.3600/21.C901", "nicknames": ["El Primero", "Chronomaster"] },
+
+    { "brand": "Bell & Ross", "reference": "BR05A-BL-ST/SST", "nicknames": ["BR 05"] },
+
     { "brand": "Heuer", "reference": "1153",             "nicknames": ["Monaco"] },
     { "brand": "TAG Heuer", "reference": "CAW211P.FC6356", "nicknames": ["Monaco"] },
     { "brand": "Heuer", "reference": "2447",             "nicknames": ["Carrera"] },

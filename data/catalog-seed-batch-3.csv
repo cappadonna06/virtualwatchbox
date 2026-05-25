@@ -1,0 +1,871 @@
+id,brand,model,reference,dialColor,watchType,sourceUrl,communitySignal,verificationStatus
+seiko-srpe93,Seiko,Prospex Turtle,SRPE93,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpe95,Seiko,Prospex Turtle,SRPE95,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpe99,Seiko,Prospex Turtle,SRPE99,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srp773,Seiko,Prospex Turtle,SRP773,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srp775,Seiko,Prospex Turtle,SRP775,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srp777,Seiko,Prospex Turtle,SRP777,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpe99k1,Seiko,Prospex Turtle PADI,SRPE99K1,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpf77,Seiko,Prospex Turtle PADI,SRPF77,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpe03,Seiko,Prospex King Turtle,SRPE03,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpe05,Seiko,Prospex King Turtle,SRPE05,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpe07,Seiko,Prospex King Turtle,SRPE07,Green,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb117,Seiko,Prospex Alpinist,SPB117,Green,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb119,Seiko,Prospex Alpinist,SPB119,Blue,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb121,Seiko,Prospex Alpinist,SPB121,Cream,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb157,Seiko,Prospex Alpinist,SPB157,Green,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb159,Seiko,Prospex Alpinist,SPB159,Blue,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb199,Seiko,Prospex Alpinist,SPB199,Green,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb201,Seiko,Prospex Alpinist,SPB201,Cream,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb209,Seiko,Prospex Alpinist,SPB209,Green,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb211,Seiko,Prospex Alpinist,SPB211,Black,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb213,Seiko,Prospex Alpinist,SPB213,Blue,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb241,Seiko,Prospex Alpinist,SPB241,Cream,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb243,Seiko,Prospex Alpinist,SPB243,Green,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpb43,Seiko,Presage Cocktail Time,SRPB43,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpb77,Seiko,Presage Cocktail Time,SRPB77,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpe43,Seiko,Presage Cocktail Time,SRPE43,White,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpe45,Seiko,Presage Cocktail Time,SRPE45,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpe47,Seiko,Presage Cocktail Time,SRPE47,Green,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpe49,Seiko,Presage Cocktail Time,SRPE49,Grey,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-ssa346,Seiko,Presage Cocktail Time,SSA346,Power Reserve,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-ssa347,Seiko,Presage Cocktail Time,SSA347,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb167,Seiko,Presage Sharp Edged,SPB167,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb169,Seiko,Presage Sharp Edged,SPB169,White,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb165,Seiko,Presage Sharp Edged,SPB165,Green,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb203,Seiko,Presage Sharp Edged,SPB203,White,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb221,Seiko,Presage Sharp Edged GMT,SPB221,White,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb223,Seiko,Presage Sharp Edged GMT,SPB223,Blue,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb225,Seiko,Presage Sharp Edged GMT,SPB225,Green,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb279,Seiko,King Seiko,SPB279,White,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb281,Seiko,King Seiko,SPB281,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb283,Seiko,King Seiko,SPB283,Black,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb285,Seiko,King Seiko,SPB285,Green,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb287,Seiko,King Seiko,SPB287,Brown,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb289,Seiko,King Seiko,SPB289,Silver,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb291,Seiko,King Seiko,SPB291,Champagne,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-sdks001,Seiko,King Seiko,SDKS001,White,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-sdks003,Seiko,King Seiko,SDKS003,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-sdks005,Seiko,King Seiko,SDKS005,Black,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-sdks007,Seiko,King Seiko,SDKS007,Green,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb143j1,Seiko,Prospex 1965 Diver,SPB143J1,White,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb145,Seiko,Prospex 1965 Diver,SPB145,Grey,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb147,Seiko,Prospex 1965 Diver,SPB147,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb149,Seiko,Prospex 1965 Diver,SPB149,Green,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb239,Seiko,Prospex 1965 Diver,SPB239,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb313,Seiko,Prospex 1965 Diver,SPB313,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb315,Seiko,Prospex 1965 Diver,SPB315,Cream,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb151j1,Seiko,Prospex Captain Willard,SPB151J1,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb153,Seiko,Prospex Captain Willard,SPB153,Green,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-ssk003,Seiko,5 Sports GMT,SSK003,Blue,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-ssk005,Seiko,5 Sports GMT,SSK005,Black,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-ssk007,Seiko,5 Sports GMT,SSK007,Red,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-ssk009,Seiko,5 Sports GMT,SSK009,Green,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-ssk011,Seiko,5 Sports GMT,SSK011,Black,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-ssk013,Seiko,5 Sports GMT,SSK013,Blue,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-ssk015,Seiko,5 Sports GMT,SSK015,Red,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-ssk017,Seiko,5 Sports GMT,SSK017,Blue,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-ssk037,Seiko,5 Sports GMT,SSK037,Cream,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-ssc813p1,Seiko,Prospex Speedtimer,SSC813P1,White,Chronograph,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-ssc815,Seiko,Prospex Speedtimer,SSC815,Black,Chronograph,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-ssc817,Seiko,Prospex Speedtimer,SSC817,Blue,Chronograph,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-ssc819,Seiko,Prospex Speedtimer,SSC819,Green,Chronograph,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srq035,Seiko,Prospex Speedtimer Mechanical,SRQ035,White,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+seiko-srq037,Seiko,Prospex Speedtimer Mechanical,SRQ037,Black,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+seiko-srpd63,Seiko,5 Sports,SRPD63,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpd65,Seiko,5 Sports,SRPD65,Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpd67,Seiko,5 Sports,SRPD67,Silver,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpd69,Seiko,5 Sports,SRPD69,Gold,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpd71,Seiko,5 Sports,SRPD71,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpd73,Seiko,5 Sports,SRPD73,Green,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpd76,Seiko,5 Sports,SRPD76,Grey,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srph29,Seiko,5 Sports Field,SRPH29,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srph31,Seiko,5 Sports Field,SRPH31,Green,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srph33,Seiko,5 Sports Field,SRPH33,Khaki,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-spb101,Seiko,Prospex Sumo,SPB101,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb103,Seiko,Prospex Sumo,SPB103,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb367,Seiko,Prospex Sumo GMT,SPB367,Black,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb369,Seiko,Prospex Sumo GMT,SPB369,Blue,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb371,Seiko,Prospex Sumo GMT,SPB371,Green,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-snr029,Seiko,Prospex LX,SNR029,Black,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+seiko-sla039,Seiko,Prospex,SLA039,Blue,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+seiko-sla049,Seiko,Prospex,SLA049,Black,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+seiko-sla051,Seiko,Prospex,SLA051,Green,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+casio-ga-2100-1a1,Casio,G-Shock CasiOak,GA-2100-1A1,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ga-2100-1a,Casio,G-Shock CasiOak,GA-2100-1A,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ga-2100-4a,Casio,G-Shock CasiOak,GA-2100-4A,Red,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ga-2100-7a,Casio,G-Shock CasiOak,GA-2100-7A,White,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ga-2110su-3a,Casio,G-Shock CasiOak,GA-2110SU-3A,Green,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ga-b2100-1a,Casio,G-Shock CasiOak,GA-B2100-1A,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ga-b2100-1a1,Casio,G-Shock CasiOak,GA-B2100-1A1,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ga-b2100-3a,Casio,G-Shock CasiOak,GA-B2100-3A,Green,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gae-2100gc-7a,Casio,G-Shock CasiOak,GAE-2100GC-7A,White,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gm-2100-1a,Casio,G-Shock CasiOak Metal,GM-2100-1A,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gm-2100b-3a,Casio,G-Shock CasiOak Metal,GM-2100B-3A,Green,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gm-2100b-4a,Casio,G-Shock CasiOak Metal,GM-2100B-4A,Red,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gm-b2100d-1a,Casio,G-Shock CasiOak Full Metal,GM-B2100D-1A,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gm-b2100gd-5a,Casio,G-Shock CasiOak Full Metal,GM-B2100GD-5A,Rose Gold,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-dw-5600e-1v,Casio,G-Shock Square,DW-5600E-1V,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-dw-5600bb-1,Casio,G-Shock Square,DW-5600BB-1,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-dw-5600ske-7,Casio,G-Shock Square,DW-5600SKE-7,Clear,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-dw-5610su-8,Casio,G-Shock Square,DW-5610SU-8,Grey,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gw-m5610-1,Casio,G-Shock Square Solar,GW-M5610-1,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gw-m5610u-1b,Casio,G-Shock Square Solar,GW-M5610U-1B,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gmw-b5000gd-1,Casio,G-Shock Full Metal,GMW-B5000GD-1,Black,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+casio-gmw-b5000gd-9,Casio,G-Shock Full Metal,GMW-B5000GD-9,Gold,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+casio-gmw-b5000tva-1,Casio,G-Shock Full Metal,GMW-B5000TVA-1,Black Titanium,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+casio-gmw-b5000tb-1,Casio,G-Shock Full Metal,GMW-B5000TB-1,Black Titanium,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+casio-gmw-b5000cs-1,Casio,G-Shock Full Metal,GMW-B5000CS-1,Laser Etched,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+casio-ga-110-1a,Casio,G-Shock,GA-110-1A,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ga-110-1b,Casio,G-Shock,GA-110-1B,Black/Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ga-110gb-1a,Casio,G-Shock,GA-110GB-1A,Black/Gold,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ga-100-1a1,Casio,G-Shock,GA-100-1A1,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ga-100-1a4,Casio,G-Shock,GA-100-1A4,Black/Red,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gwg-2000-1a1,Casio,G-Shock Mudmaster,GWG-2000-1A1,Black,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+casio-gwg-2000-1a3,Casio,G-Shock Mudmaster,GWG-2000-1A3,Green,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+casio-gw-9400-1,Casio,G-Shock Rangeman,GW-9400-1,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gpr-h1000-1,Casio,G-Shock Rangeman,GPR-H1000-1,Black,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+casio-gwf-a1000-1a,Casio,G-Shock Frogman,GWF-A1000-1A,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+casio-gwf-a1000-1a4,Casio,G-Shock Frogman,GWF-A1000-1A4,Red,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+casio-gr-b200-1a,Casio,G-Shock Gravitymaster,GR-B200-1A,Black,Pilot,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gr-b300-1a,Casio,G-Shock Gravitymaster,GR-B300-1A,Black,Pilot,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-a158wa-1,Casio,Classic,A158WA-1,Silver,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-a168wa-1,Casio,Classic,A168WA-1,Silver,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-f-91w-1,Casio,Classic,F-91W-1,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ae-1200wh-1a,Casio,Classic,AE-1200WH-1A,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ca-53w-1,Casio,Classic,CA-53W-1,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-mdv-106-1a,Casio,Duro,MDV-106-1A,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-mdv-107-1a1,Casio,Duro,MDV-107-1A1,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-mdv-107-1a3,Casio,Duro,MDV-107-1A3,Green,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-efr-s108d-1a,Casio,Edifice,EFR-S108D-1A,Black,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-efb-108d-1a,Casio,Edifice,EFB-108D-1A,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ocw-t200s-1a,Casio,Oceanus,OCW-T200S-1A,Black,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+casio-ocw-t200s-2a,Casio,Oceanus,OCW-T200S-2A,Blue,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+casio-ocw-s5000-1a,Casio,Oceanus Manta,OCW-S5000-1A,Black,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+casio-ocw-s6000-1a,Casio,Oceanus Manta,OCW-S6000-1A,Black,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+orient-ra-ac0m03s,Orient,Bambino Version 1,RA-AC0M03S,Silver,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-ac0m04y,Orient,Bambino Version 1,RA-AC0M04Y,Champagne,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-fac00004b0,Orient,Bambino Version 2,FAC00004B0,Black,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-fac00005w0,Orient,Bambino Version 2,FAC00005W0,White,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-fac00009n0,Orient,Bambino Version 2,FAC00009N0,Cream,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-ac0m01s,Orient,Bambino Version 2,RA-AC0M01S,Silver,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-fac0000ca0,Orient,Bambino Version 3,FAC0000CA0,Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-fac0000db0,Orient,Bambino Version 3,FAC0000DB0,Grey,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-fac08001t0,Orient,Bambino Version 4,FAC08001T0,Green,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-fac08002f0,Orient,Bambino Version 4,FAC08002F0,Burgundy,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-ac0018e,Orient,Bambino Version 5,RA-AC0018E,Green,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-ac0021l,Orient,Bambino Version 5,RA-AC0021L,Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-faa02004b9,Orient,Ray II,FAA02004B9,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-faa02005d9,Orient,Ray II,FAA02005D9,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-aa0814r,Orient,Mako III,RA-AA0814R,Red,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-aa0815l,Orient,Mako III,RA-AA0815L,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-aa0810n,Orient,Mako III,RA-AA0810N,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-aa0003r19b,Orient,Kamasu,RA-AA0003R19B,Red,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-aa0004e19a,Orient,Kamasu,RA-AA0004E19A,Green,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-aa0006l19b,Orient,Kamasu,RA-AA0006L19B,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-el0001b00b,Orient,Triton,RA-EL0001B00B,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-el0002l00b,Orient,Triton,RA-EL0002L00B,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-ak0401l,Orient,Defender II,RA-AK0401L,Blue,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-ak0403n,Orient,Defender II,RA-AK0403N,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-ak0404b,Orient,Defender II,RA-AK0404B,Green,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-re-at0002e00b,Orient,Orient Star Semi-Skeleton,RE-AT0002E00B,Green,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+orient-re-at0006l00b,Orient,Orient Star Semi-Skeleton,RE-AT0006L00B,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+orient-re-ay0107n,Orient,Orient Star Classic,RE-AY0107N,Black,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+orient-re-ay0106s,Orient,Orient Star Classic,RE-AY0106S,White,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+orient-re-bx0002s,Orient,Orient Star M34 F8,RE-BX0002S,Silver,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+orient-re-au0302l,Orient,Orient Star Diver,RE-AU0302L,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+orient-re-au0302b,Orient,Orient Star Diver,RE-AU0302B,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+citizen-bn0151-17l,Citizen,Promaster Diver,BN0151-17L,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-bn0150-61e,Citizen,Promaster Diver,BN0150-61E,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-bn0191-55l,Citizen,Promaster Diver,BN0191-55L,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-bn0227-09l,Citizen,Promaster Diver,BN0227-09L,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-bn0200-56e,Citizen,Promaster Diver Titanium,BN0200-56E,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-ny0086-16l,Citizen,Promaster Diver Mechanical,NY0086-16L,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-ny0100-50m,Citizen,Promaster Diver Mechanical,NY0100-50M,Green,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-ny0120-01z,Citizen,Promaster Diver Mechanical,NY0120-01Z,Yellow,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-bn0211-50e,Citizen,Promaster Tough,BN0211-50E,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-bj7100-23e,Citizen,Promaster Land,BJ7100-23E,Black,Pilot,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-cb5001-57e,Citizen,Promaster Sky,CB5001-57E,Black,Pilot,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-jy8078-01l,Citizen,Promaster Skyhawk A-T,JY8078-01L,Blue,Pilot,,reddit_under_1k_signal,identity_seeded_specs_pending
+citizen-nj0150-81z,Citizen,Tsuyosa,NJ0150-81Z,Yellow,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-nj0150-81e,Citizen,Tsuyosa,NJ0150-81E,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-nj0150-81x,Citizen,Tsuyosa,NJ0150-81X,Green,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-nj0150-81a,Citizen,Tsuyosa,NJ0150-81A,White,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-nj0154-80h,Citizen,Tsuyosa,NJ0154-80H,Salmon,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-nj0150-56a,Citizen,Tsuyosa,NJ0150-56A,White,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-nj0150-56e,Citizen,Tsuyosa,NJ0150-56E,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-nj0150-56x,Citizen,Tsuyosa,NJ0150-56X,Green,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-nb6060-58l,Citizen,Series 8 870,NB6060-58L,Blue,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+citizen-nb6060-58e,Citizen,Series 8 870,NB6060-58E,Black,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+citizen-nb6021-68e,Citizen,Series 8 880,NB6021-68E,Black,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+citizen-nb6021-68l,Citizen,Series 8 880,NB6021-68L,Blue,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+citizen-nb6030-59l,Citizen,Series 8 GMT,NB6030-59L,Blue,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+citizen-nb6030-59e,Citizen,Series 8 GMT,NB6030-59E,Black,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+citizen-aw1361-10h,Citizen,Eco-Drive Avion,AW1361-10H,Black,Pilot,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-bm7330-67l,Citizen,Eco-Drive Corso,BM7330-67L,Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-cb5880-54l,Citizen,PCAT,CB5880-54L,Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-cb5880-54e,Citizen,PCAT,CB5880-54E,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+hamilton-h69439933,Hamilton,Khaki Field Mechanical,H69439933,Black,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h69439411,Hamilton,Khaki Field Mechanical,H69439411,White,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h69409930,Hamilton,Khaki Field Mechanical,H69409930,Black,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h69529933,Hamilton,Khaki Field Mechanical,H69529933,Black,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h70455133,Hamilton,Khaki Field Auto 38mm,H70455133,Black,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h70455533,Hamilton,Khaki Field Auto 38mm,H70455533,Black,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h70455733,Hamilton,Khaki Field Auto 38mm,H70455733,Green,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h70455553,Hamilton,Khaki Field Auto 38mm,H70455553,Black,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h70605731,Hamilton,Khaki Field Auto 42mm,H70605731,Black,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h70605163,Hamilton,Khaki Field Auto 42mm,H70605163,Black,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h70545540,Hamilton,Khaki Field Titanium Auto,H70545540,Green,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h76615130,Hamilton,Khaki Aviation Converter,H76615130,Black,Pilot,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h76615530,Hamilton,Khaki Aviation Converter,H76615530,Black,Pilot,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h24411232,Hamilton,Ventura,H24411232,Black,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h24401731,Hamilton,Ventura,H24401731,Black,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h24585731,Hamilton,Ventura Elvis80,H24585731,Black,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h24615331,Hamilton,Ventura XXL,H24615331,Black,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h32215890,Hamilton,Jazzmaster Open Heart,H32215890,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h32705151,Hamilton,Jazzmaster Open Heart,H32705151,Silver,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h32705731,Hamilton,Jazzmaster Open Heart,H32705731,Black,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h32515555,Hamilton,Jazzmaster Viewmatic,H32515555,Silver,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h32515735,Hamilton,Jazzmaster Viewmatic,H32515735,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h38416741,Hamilton,Intra-Matic Auto Chrono,H38416741,Black,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+hamilton-h52414130,Hamilton,American Classic PSR,H52414130,Black,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h52434130,Hamilton,American Classic PSR,H52434130,Gold,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h13431553,Hamilton,Boulton,H13431553,White,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h13431733,Hamilton,Boulton,H13431733,Black,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h82505140,Hamilton,Khaki Navy Scuba,H82505140,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h82505160,Hamilton,Khaki Navy Scuba,H82505160,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h82515130,Hamilton,Khaki Navy Scuba,H82515130,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t137-407-11-051-00,Tissot,PRX Powermatic 80,T137.407.11.051.00,Green,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t137-407-11-091-01,Tissot,PRX Powermatic 80,T137.407.11.091.01,Silver,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t137-407-11-091-00,Tissot,PRX Powermatic 80,T137.407.11.091.00,Ice Blue,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t137-407-16-041-00,Tissot,PRX Powermatic 80,T137.407.16.041.00,Blue,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t137-407-36-041-00,Tissot,PRX Powermatic 80,T137.407.36.041.00,Blue,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t137-210-11-041-00,Tissot,PRX 35mm,T137.210.11.041.00,Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t137-210-11-091-00,Tissot,PRX 35mm,T137.210.11.091.00,Ice Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t137-210-11-051-00,Tissot,PRX 35mm,T137.210.11.051.00,Green,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t137-210-11-331-00,Tissot,PRX 35mm,T137.210.11.331.00,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t137-427-11-011-00,Tissot,PRX Automatic Chronograph,T137.427.11.011.00,White,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+tissot-t137-427-11-041-00,Tissot,PRX Automatic Chronograph,T137.427.11.041.00,Blue,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+tissot-t137-427-11-051-00,Tissot,PRX Automatic Chronograph,T137.427.11.051.00,Green,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+tissot-t137-427-11-091-00,Tissot,PRX Automatic Chronograph,T137.427.11.091.00,Silver,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+tissot-t127-407-11-051-00,Tissot,Gentleman Powermatic 80 Silicium,T127.407.11.051.00,Green,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t127-407-11-061-01,Tissot,Gentleman Powermatic 80 Silicium,T127.407.11.061.01,Grey,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t127-407-16-031-01,Tissot,Gentleman Powermatic 80 Silicium,T127.407.16.031.01,Silver,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t127-407-16-041-01,Tissot,Gentleman Powermatic 80 Silicium,T127.407.16.041.01,Blue,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t120-607-11-041-01,Tissot,Seastar 2000 Professional,T120.607.11.041.01,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t120-607-17-441-00,Tissot,Seastar 2000 Professional,T120.607.17.441.00,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t120-607-11-041-02,Tissot,Seastar 2000 Professional,T120.607.11.041.02,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t118-430-11-271-00,Tissot,Visodate Powermatic 80,T118.430.11.271.00,Silver,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t118-430-11-041-00,Tissot,Visodate Powermatic 80,T118.430.11.041.00,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t118-430-16-271-00,Tissot,Visodate Powermatic 80,T118.430.16.271.00,Silver,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t099-407-11-048-00,Tissot,Chemin des Tourelles,T099.407.11.048.00,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t099-407-11-058-00,Tissot,Chemin des Tourelles,T099.407.11.058.00,Green,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t125-617-11-031-00,Tissot,Supersport Chrono,T125.617.11.031.00,White,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t125-617-11-051-00,Tissot,Supersport Chrono,T125.617.11.051.00,Green,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2u61000,Timex,Q Timex Reissue,TW2U61000,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2u61200,Timex,Q Timex Reissue,TW2U61200,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2u61300,Timex,Q Timex Reissue,TW2U61300,Black/Orange,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2v18500,Timex,Q Timex Reissue,TW2V18500,Green,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2v38200,Timex,Q Timex GMT,TW2V38200,Black,GMT,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2w51600,Timex,Q Timex Chronograph,TW2W51600,White,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2w42000,Timex,Q Timex Diver,TW2W42000,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2t22700,Timex,Marlin Automatic,TW2T22700,Black,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2t22900,Timex,Marlin Automatic,TW2T22900,Silver,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2t23100,Timex,Marlin Automatic,TW2T23100,Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2u11800,Timex,Marlin Automatic,TW2U11800,Green,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2t23000,Timex,Marlin Automatic 40mm,TW2T23000,Silver,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2w49000,Timex,Marlin Jet Automatic,TW2W49000,Black,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2w51200,Timex,Marlin Moon Phase,TW2W51200,White,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2r25100,Timex,Waterbury Traditional,TW2R25100,White,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2r25500,Timex,Waterbury Traditional,TW2R25500,Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2r38400,Timex,Waterbury Traditional Chronograph,TW2R38400,White,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2v49700,Timex,Waterbury Dive,TW2V49700,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2v49900,Timex,Waterbury Dive,TW2V49900,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2v03600,Timex,Expedition North Field Solar,TW2V03600,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2v03800,Timex,Expedition North Field Solar,TW2V03800,Green,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2v22800,Timex,Expedition North Sierra,TW2V22800,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw4b04700,Timex,Expedition Scout,TW4B04700,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2t20100,Timex,Standard,TW2T20100,Silver,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2t20200,Timex,Standard,TW2T20200,Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2p97700,Timex,Weekender,TW2P97700,White,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2r68000,Timex,MK1,TW2R68000,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2w92400,Timex,MK1 Mechanical,TW2W92400,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2r30500,Timex,American Documents,TW2R30500,Silver,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2r30600,Timex,American Documents,TW2R30600,Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2w43900,Timex,Giorgio Galli S2,"?""TW2W43900",Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+tag-heuer-cbl2111-ba0644,TAG Heuer,Monaco,CBL2111.BA0644,Blue,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+tag-heuer-cbl2111-fc6453,TAG Heuer,Monaco,CBL2111.FC6453,Blue,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+tag-heuer-cbl2113-ba0644,TAG Heuer,Monaco,CBL2113.BA0644,Green,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+tag-heuer-cbl2113-fc6177,TAG Heuer,Monaco,CBL2113.FC6177,Green,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+tag-heuer-cbl2180-fc6497,TAG Heuer,Monaco,CBL2180.FC6497,Black,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+tag-heuer-ww2110-ft6005,TAG Heuer,Monaco,WW2110.FT6005,Black,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+tag-heuer-wbp1111-ba0627,TAG Heuer,Aquaracer Professional 200,WBP1111.BA0627,Blue,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+tag-heuer-wbp1112-ba0627,TAG Heuer,Aquaracer Professional 200,WBP1112.BA0627,Green,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+tag-heuer-wbp1113-ba0627,TAG Heuer,Aquaracer Professional 200,WBP1113.BA0627,Silver,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+tag-heuer-wbp201a-ba0632,TAG Heuer,Aquaracer Professional 300,WBP201A.BA0632,Black,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+tag-heuer-wbp201b-ba0632,TAG Heuer,Aquaracer Professional 300,WBP201B.BA0632,Blue,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+tag-heuer-wbp2010-ba0632,TAG Heuer,Aquaracer Professional 300 GMT,WBP2010.BA0632,Black,GMT,,reddit_under_5k_signal,identity_seeded_specs_pending
+tag-heuer-cbs2210-ba0637,TAG Heuer,Carrera Chronograph,CBS2210.BA0637,White,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+tag-heuer-cbs2210-fc6534,TAG Heuer,Carrera Chronograph,CBS2210.FC6534,White,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+tag-heuer-cbs2212-ba0637,TAG Heuer,Carrera Chronograph,CBS2212.BA0637,Blue,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+tag-heuer-wbn2110-ba0639,TAG Heuer,Carrera Date,WBN2110.BA0639,Black,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+tag-heuer-wbn2112-ba0639,TAG Heuer,Carrera Date,WBN2112.BA0639,Blue,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+tag-heuer-wbn2113-ba0639,TAG Heuer,Carrera Date,WBN2113.BA0639,Green,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+tag-heuer-cbn2a10-ba0643,TAG Heuer,Carrera Chronograph,CBN2A10.BA0643,Black,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+tag-heuer-cbn2a1b-ba0643,TAG Heuer,Carrera Chronograph,CBN2A1B.BA0643,Blue,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+tag-heuer-waz1110-ba0875,TAG Heuer,Formula 1,WAZ1110.BA0875,Black,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+tag-heuer-waz1110-ft8023,TAG Heuer,Formula 1,WAZ1110.FT8023,Black,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+tag-heuer-caz1011-ba0842,TAG Heuer,Formula 1 Chronograph,CAZ1011.BA0842,Black,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+tag-heuer-caz1014-ba0842,TAG Heuer,Formula 1 Chronograph,CAZ1014.BA0842,Blue,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+shinola-s0120089902,Shinola,Runwell 41mm,S0120089902,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+shinola-s0120089903,Shinola,Runwell 41mm,S0120089903,White,Dress,,reddit_popular,identity_seeded_specs_pending
+shinola-s0120089904,Shinola,Runwell 41mm,S0120089904,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+shinola-s0120089899,Shinola,Runwell 47mm,S0120089899,Black,Dress,,reddit_popular,identity_seeded_specs_pending
+shinola-s0120161942,Shinola,Runwell Automatic,S0120161942,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+shinola-s0120161944,Shinola,Runwell Automatic,S0120161944,Green,Dress,,reddit_popular,identity_seeded_specs_pending
+shinola-s0120089885,Shinola,Birdy 34mm,S0120089885,White,Dress,,reddit_popular,identity_seeded_specs_pending
+shinola-s0120089886,Shinola,Birdy 34mm,S0120089886,Blue,Dress,,reddit_popular,identity_seeded_specs_pending
+shinola-s0120161963,Shinola,Detrola 43mm,S0120161963,White,Sport,,reddit_popular,identity_seeded_specs_pending
+shinola-s0120161964,Shinola,Detrola 43mm,S0120161964,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+shinola-s0120109235,Shinola,Monster 43mm,S0120109235,Black,Diver,,reddit_popular,identity_seeded_specs_pending
+shinola-s0120109236,Shinola,Monster 43mm,S0120109236,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+shinola-s0120194487,Shinola,Duck 42mm,S0120194487,Green,Diver,,reddit_popular,identity_seeded_specs_pending
+shinola-s0120194488,Shinola,Duck 42mm,S0120194488,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+shinola-s0120141499,Shinola,Canfield Sport 45mm,S0120141499,Blue,Chronograph,,reddit_popular,identity_seeded_specs_pending
+shinola-s0120141501,Shinola,Canfield Sport 40mm,S0120141501,Black,Sport,,reddit_popular,identity_seeded_specs_pending
+shinola-s0120183137,Shinola,Lake Erie Monster Automatic,S0120183137,Blue,Diver,,reddit_popular,identity_seeded_specs_pending
+shinola-s0120183140,Shinola,Lake Erie Monster Automatic,S0120183140,Green,Diver,,reddit_popular,identity_seeded_specs_pending
+junghans-027-3400-04,Junghans,Max Bill Automatic,027/3400.04,White,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+junghans-027-3401-04,Junghans,Max Bill Automatic,027/3401.04,Black,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+junghans-027-4002-46,Junghans,Max Bill Automatic,027/4002.46,White,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+junghans-027-3700-04,Junghans,Max Bill Hand-Wound,027/3700.04,White,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+junghans-027-3701-04,Junghans,Max Bill Hand-Wound,027/3701.04,Black,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+junghans-027-4600-04,Junghans,Max Bill Chronoscope,027/4600.04,Silver,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+junghans-027-4601-04,Junghans,Max Bill Chronoscope,027/4601.04,Black,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+junghans-027-3200-04,Junghans,Meister Handaufzug,027/3200.04,Silver,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+junghans-027-4324-47,Junghans,Meister Chronoscope,027/4324.47,Silver,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+junghans-027-4734-00,Junghans,Form A,027/4734.00,White,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+junghans-027-4731-00,Junghans,Form A,027/4731.00,Black,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+marathon-ww194006,Marathon,GSAR Automatic,WW194006,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+marathon-ww194006-brace,Marathon,GSAR Automatic,WW194006-BRACE,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+marathon-ww194013,Marathon,MSAR Automatic,WW194013,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+marathon-ww194007,Marathon,TSAR Quartz,WW194007,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+marathon-ww194003,Marathon,GPM Field,WW194003,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+marathon-ww194003-sg,Marathon,GPM Field,WW194003-SG,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+marathon-ww194001,Marathon,Navigator,WW194001,Black,Pilot,,reddit_under_500_signal,identity_seeded_specs_pending
+marathon-ww194013nh,Marathon,Navigator Date,WW194013NH,Black,Pilot,,reddit_under_500_signal,identity_seeded_specs_pending
+marathon-ww194009,Marathon,General Purpose Quartz,WW194009,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+marathon-ww194003ss,Marathon,General Purpose Mechanical,WW194003SS,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+marathon-ww194014,Marathon,CSAR Automatic,WW194014,Black,Pilot,,reddit_under_1k_signal,identity_seeded_specs_pending
+dan-henry-1962-panda,Dan Henry,1962 Racing Chronograph,1962-PANDA,White,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+dan-henry-1962-evil-panda,Dan Henry,1962 Racing Chronograph,1962-EVIL-PANDA,Black,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+dan-henry-1964-black,Dan Henry,1964 Gran Turismo Chrono,1964-BLACK,Black,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+dan-henry-1964-silver,Dan Henry,1964 Gran Turismo Chrono,1964-SILVER,Silver,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+dan-henry-1970-44-orange,Dan Henry,1970 Automatic Diver,1970-44-ORANGE,Orange,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+dan-henry-1970-40-blue,Dan Henry,1970 Automatic Diver,1970-40-BLUE,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+dan-henry-1972-blue,Dan Henry,1972 Chrono-Diver,1972-BLUE,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+dan-henry-1937-silver,Dan Henry,1937 Dress,1937-SILVER,Silver,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+dan-henry-1939-black,Dan Henry,1939 Military Chrono,1939-BLACK,Black,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+glycine-gl0083,Glycine,Combat Sub,GL0083,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+glycine-gl0085,Glycine,Combat Sub,GL0085,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+glycine-gl0087,Glycine,Combat Sub,GL0087,Green,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+glycine-gl0260,Glycine,Combat Sub Vintage,GL0260,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+glycine-gl0060,Glycine,Airman,GL0060,Black,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+glycine-gl0062,Glycine,Airman,GL0062,Blue,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+glycine-gl0305,Glycine,Airman Vintage,GL0305,Black,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+glycine-gl0067,Glycine,Airman 44,GL0067,Black,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+glycine-gl0100,Glycine,Combat Classic,GL0100,Silver,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+glycine-gl0102,Glycine,Combat Classic,GL0102,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+squale-1521-026-a,Squale,1521,1521-026-A,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+squale-1521-026-m,Squale,1521,1521-026-M,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+squale-1521-026-blk,Squale,1521 Black,1521-026-BLK,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+squale-1521-026-ocn,Squale,1521 Ocean,1521-026-OCN,Teal,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+squale-maticxsa,Squale,Matic 60 ATM,MATICXSA,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+squale-maticxsg,Squale,Matic 60 ATM,MATICXSG,Grey,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+squale-1545-bkg,Squale,1545,1545-BKG,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+squale-1545-blu,Squale,1545,1545-BLU,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+squale-sub39gmt-cel,Squale,Sub-39 GMT,SUB39GMT-CEL,Blue,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+christopher-ward-c60-40ada3-s0kk0-rk,Christopher Ward,C60 Sealander Automatic,C60-40ADA3-S0KK0-RK,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+christopher-ward-c60-40ada3-s0bk0-b0,Christopher Ward,C60 Sealander Automatic,C60-40ADA3-S0BK0-B0,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+christopher-ward-c60-40agm3-s0kk0-rk,Christopher Ward,C60 Sealander GMT,C60-40AGM3-S0KK0-RK,Blue,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+christopher-ward-c60-40agm3-s0bk0-b0,Christopher Ward,C60 Sealander GMT,C60-40AGM3-S0BK0-B0,Black,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+christopher-ward-c63-39ada3-s0bb1-hb,Christopher Ward,C63 Sealander Automatic,C63-39ADA3-S0BB1-HB,Blue,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+christopher-ward-c63-39ada3-s0bk1-hb,Christopher Ward,C63 Sealander Automatic,C63-39ADA3-S0BK1-HB,Black,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+christopher-ward-c63-39ada3-s0wh1-hb,Christopher Ward,C63 Sealander Automatic,C63-39ADA3-S0WH1-HB,White,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+christopher-ward-c63-39agm3-s0bk1-vb,Christopher Ward,C63 Sealander GMT,C63-39AGM3-S0BK1-VB,Black,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+christopher-ward-c1-42amp1-s0kk0-1s,Christopher Ward,C1 Moonglow,C1-42AMP1-S0KK0-1S,Blue,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+christopher-ward-c65-38ada3-s0kk0-vk,Christopher Ward,C65 Aquitaine,C65-38ADA3-S0KK0-VK,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+christopher-ward-c65-38ada3-s0bk0-vk,Christopher Ward,C65 Aquitaine,C65-38ADA3-S0BK0-VK,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+bulova-96a225,Bulova,Lunar Pilot,96A225,Black,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+bulova-96b258,Bulova,Lunar Pilot,96B258,Black,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+bulova-96b158,Bulova,Precisionist,96B158,Silver,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+bulova-96b159,Bulova,Precisionist,96B159,Black,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+bulova-96b385,Bulova,Surveyor,96B385,Green,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+bulova-96b386,Bulova,Surveyor,96B386,Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+bulova-98a252,Bulova,Archive Series Surfboard,98A252,Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+bulova-98a253,Bulova,Archive Series Parking Meter,98A253,White,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+bulova-98b320,Bulova,Devil Diver,98B320,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+bulova-98b322,Bulova,Devil Diver,98B322,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+bulova-96b405,Bulova,Oceanographer,96B405,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+bulova-96b406,Bulova,Oceanographer,96B406,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+bulova-98a255,Bulova,Hack,98A255,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+bulova-98a257,Bulova,Hack,98A257,Green,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+frederique-constant-fc-303s5b6,Frederique Constant,Classics Index Automatic,FC-303S5B6,Silver,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+frederique-constant-fc-303nb5b6,Frederique Constant,Classics Index Automatic,FC-303NB5B6,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+frederique-constant-fc-310ms5b6,Frederique Constant,Classics Heart Beat,FC-310MS5B6,Silver,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+frederique-constant-fc-310nb5b6,Frederique Constant,Classics Heart Beat,FC-310NB5B6,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+frederique-constant-fc-303s4nh6b,Frederique Constant,Highlife Automatic,FC-303S4NH6B,Silver,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+frederique-constant-fc-303b4nh6b,Frederique Constant,Highlife Automatic,FC-303B4NH6B,Blue,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+frederique-constant-fc-303s3nh6,Frederique Constant,Highlife COSC,FC-303S3NH6,Silver,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+frederique-constant-fc-705s4s6,Frederique Constant,Slimline Moonphase,FC-705S4S6,Silver,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+frederique-constant-fc-705n4s6,Frederique Constant,Slimline Moonphase,FC-705N4S6,Blue,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+certina-c032-407-11-051-00,Certina,DS Action Diver,C032.407.11.051.00,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+certina-c032-407-11-041-00,Certina,DS Action Diver,C032.407.11.041.00,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+certina-c032-407-17-051-60,Certina,DS Action Diver,C032.407.17.051.60,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+certina-c029-807-11-031-02,Certina,DS-1 Powermatic 80,C029.807.11.031.02,Silver,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+certina-c029-807-11-041-02,Certina,DS-1 Powermatic 80,C029.807.11.041.02,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+certina-c036-407-11-050-00,Certina,DS PH200M,C036.407.11.050.00,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+certina-c036-407-11-040-00,Certina,DS PH200M,C036.407.11.040.00,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+certina-c032-429-11-051-00,Certina,DS Action GMT,C032.429.11.051.00,Black,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+grand-seiko-sbgh267,Grand Seiko,Heritage Hi-Beat,SBGH267,Blue,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-sbgh269,Grand Seiko,Heritage Hi-Beat,SBGH269,White,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-sbgh273,Grand Seiko,Heritage Hi-Beat,SBGH273,Black,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-slgh009,Grand Seiko,Evolution 9 Hi-Beat,SLGH009,Green,Sport,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-slgh013,Grand Seiko,Evolution 9 Hi-Beat,SLGH013,White,Sport,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-slga007,Grand Seiko,Evolution 9 Spring Drive,SLGA007,Blue,Sport,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-slga009,Grand Seiko,Evolution 9 Spring Drive,SLGA009,Green,Sport,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-sbge275,Grand Seiko,Evolution 9 Spring Drive GMT,SBGE275,Black,GMT,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-sbge279,Grand Seiko,Evolution 9 Spring Drive GMT,SBGE279,Green,GMT,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-sbga403,Grand Seiko,Sport Spring Drive,SBGA403,Black,Diver,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-sbga463,Grand Seiko,Sport Spring Drive,SBGA463,Blue,Diver,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-sbgn003,Grand Seiko,Sport Quartz GMT,SBGN003,Black,GMT,,reddit_under_5k_signal,identity_seeded_specs_pending
+grand-seiko-sbgn005,Grand Seiko,Sport Quartz GMT,SBGN005,Blue,GMT,,reddit_under_5k_signal,identity_seeded_specs_pending
+grand-seiko-sbga415,Grand Seiko,Heritage Spring Drive,SBGA415,Blue,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-sbgx259,Grand Seiko,Heritage 9F Quartz,SBGX259,White,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+grand-seiko-sbgx263,Grand Seiko,Heritage 9F Quartz,SBGX263,Black,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+grand-seiko-sbgw253,Grand Seiko,Elegance Mechanical,SBGW253,White,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-sbgw283,Grand Seiko,Elegance Mechanical,SBGW283,White,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+oris-01-733-7732-4135-07-4-21-63fc,Oris,Aquis Date 39.5mm,01 733 7732 4135-07 4 21 63FC,Blue,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+oris-01-733-7732-4155-07-4-21-63fc,Oris,Aquis Date 39.5mm,01 733 7732 4155-07 4 21 63FC,Green,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+oris-01-733-7732-4154-07-4-21-63fc,Oris,Aquis Date 39.5mm,01 733 7732 4154-07 4 21 63FC,Black,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+oris-01-400-7769-4154-07-8-22-09peb,Oris,Aquis Date Calibre 400,01 400 7769 4154-07 8 22 09PEB,Black,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+oris-01-400-7769-4135-07-8-22-09peb,Oris,Aquis Date Calibre 400,01 400 7769 4135-07 8 22 09PEB,Blue,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+oris-01-400-7769-4157-07-8-22-09peb,Oris,Aquis Date Calibre 400,01 400 7769 4157-07 8 22 09PEB,Green,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+oris-01-754-7741-4065-07-8-20-22,Oris,Big Crown Pointer Date,01 754 7741 4065-07 8 20 22,Blue,Field,,reddit_under_5k_signal,identity_seeded_specs_pending
+oris-01-754-7741-4065-07-5-20-64,Oris,Big Crown Pointer Date,01 754 7741 4065-07 5 20 64,Blue,Field,,reddit_under_5k_signal,identity_seeded_specs_pending
+oris-01-400-7774-4084-set,Oris,Divers 65 12H Calibre 400,01 400 7774 4084-Set,Bronze,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+oris-01-400-7774-4054-07-5-20-82,Oris,Divers 65 12H Calibre 400,01 400 7774 4054-07 5 20 82,Black,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+oris-01-733-7730-4081-set,Oris,Roberto Clemente Limited Edition,01 733 7730 4081-Set,Yellow,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+oris-01-400-7778-7153-07-7-20-01,Oris,ProPilot X Calibre 400,01 400 7778 7153-07 7 20 01,Titanium Grey,Pilot,,reddit_under_5k_signal,identity_seeded_specs_pending
+oris-01-400-7778-7153-07-8-20-01,Oris,ProPilot X Calibre 400,01 400 7778 7153-07 8 20 01,Titanium Grey,Pilot,,reddit_under_5k_signal,identity_seeded_specs_pending
+breitling-a17326211c1p1,Breitling,Navitimer Automatic 41,A17326211C1P1,Blue,Pilot,,reddit_under_10k_signal,identity_seeded_specs_pending
+breitling-a17326211b1p1,Breitling,Navitimer Automatic 41,A17326211B1P1,Black,Pilot,,reddit_under_10k_signal,identity_seeded_specs_pending
+breitling-a17326211g1p1,Breitling,Navitimer Automatic 41,A17326211G1P1,Green,Pilot,,reddit_under_10k_signal,identity_seeded_specs_pending
+breitling-ab0138211b1a1,Breitling,Navitimer B01 Chronograph 43,AB0138211B1A1,Black,Pilot,,reddit_under_10k_signal,identity_seeded_specs_pending
+breitling-ab0138241c1a1,Breitling,Navitimer B01 Chronograph 43,AB0138241C1A1,Blue,Pilot,,reddit_under_10k_signal,identity_seeded_specs_pending
+breitling-a10370121b1a1,Breitling,Superocean Heritage 57,A10370121B1A1,Black,Diver,,reddit_under_10k_signal,identity_seeded_specs_pending
+breitling-a10370121c1a1,Breitling,Superocean Heritage 57,A10370121C1A1,Blue,Diver,,reddit_under_10k_signal,identity_seeded_specs_pending
+breitling-ab2030161c1a1,Breitling,Superocean Heritage B20 42,AB2030161C1A1,Blue,Diver,,reddit_under_10k_signal,identity_seeded_specs_pending
+breitling-ab2030121b1a1,Breitling,Superocean Heritage B20 42,AB2030121B1A1,Black,Diver,,reddit_under_10k_signal,identity_seeded_specs_pending
+breitling-a37340351b1p1,Breitling,Premier Automatic 40,A37340351B1P1,Blue,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+breitling-a37340351g1p1,Breitling,Premier Automatic 40,A37340351G1P1,Green,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+breitling-ab0118a11b1p1,Breitling,Premier B01 Chronograph 42,AB0118A11B1P1,Black,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+breitling-a17328101b1x1,Breitling,Avenger Automatic 42,A17328101B1X1,Black,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+breitling-a17328101c1x1,Breitling,Avenger Automatic 42,A17328101C1X1,Blue,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+mondaine-a660-30360-11sbb,Mondaine,Classic,A660.30360.11SBB,White,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+mondaine-a660-30360-16sbb,Mondaine,Classic,A660.30360.16SBB,White,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+mondaine-mse-40110-lb,Mondaine,Evo2,MSE.40110.LB,White,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+mondaine-mse-40110-lc,Mondaine,Evo2,MSE.40110.LC,Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+mondaine-mst-4101b-lb,Mondaine,Stop2Go,MST.4101B.LB,White,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+luminox-xs-3001-evo,Luminox,Original Navy SEAL,XS.3001.EVO,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+luminox-xs-3001-bo,Luminox,Original Navy SEAL,XS.3001.BO,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+luminox-xs-3801-c,Luminox,Master Carbon SEAL,XS.3801.C,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+luminox-xb-3741,Luminox,Bear Grylls Survival,XB.3741,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+alpina-al-525s4s6,Alpina,Startimer Pilot Automatic,AL-525S4S6,Blue,Pilot,,reddit_under_1k_signal,identity_seeded_specs_pending
+alpina-al-525b4s6,Alpina,Startimer Pilot Automatic,AL-525B4S6,Black,Pilot,,reddit_under_1k_signal,identity_seeded_specs_pending
+alpina-al-525lbn4v6,Alpina,Seastrong Diver 300,AL-525LBN4V6,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+alpina-al-525lbn4v6b,Alpina,Seastrong Diver 300,AL-525LBN4V6B,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+rado-r32504153,Rado,Captain Cook,R32504153,Blue,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+rado-r32505203,Rado,Captain Cook,R32505203,Brown,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+rado-r32105153,Rado,Captain Cook,R32105153,Green,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+rado-r32105203,Rado,Captain Cook,R32105203,Black,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+rado-r32127162,Rado,Captain Cook High-Tech Ceramic,R32127162,Green,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+rado-r27073152,Rado,True Square,R27073152,Green,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+maurice-lacroix-ai6008-ss002-130-1,Maurice Lacroix,Aikon Automatic,AI6008-SS002-130-1,Blue,Integrated Bracelet,,reddit_under_5k_signal,identity_seeded_specs_pending
+maurice-lacroix-ai6008-ss002-430-1,Maurice Lacroix,Aikon Automatic,AI6008-SS002-430-1,Green,Integrated Bracelet,,reddit_under_5k_signal,identity_seeded_specs_pending
+maurice-lacroix-ai6008-ss002-330-1,Maurice Lacroix,Aikon Automatic,AI6008-SS002-330-1,Black,Integrated Bracelet,,reddit_under_5k_signal,identity_seeded_specs_pending
+maurice-lacroix-ai6007-ss002-130-1,Maurice Lacroix,Aikon Automatic,AI6007-SS002-130-1,Blue,Integrated Bracelet,,reddit_under_5k_signal,identity_seeded_specs_pending
+maurice-lacroix-ai6058-ss002-430-1,Maurice Lacroix,Aikon Venturer,AI6058-SS002-430-1,Green,Integrated Bracelet,,reddit_under_5k_signal,identity_seeded_specs_pending
+seiko-srpe35,Seiko,Prospex Samurai,SRPE35,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpe37,Seiko,Prospex Samurai,SRPE37,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpe39,Seiko,Prospex Samurai,SRPE39,Blue PADI,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpf79,Seiko,Prospex Samurai,SRPF79,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-snxs73,Seiko,5,SNXS73,Silver,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-snxs75,Seiko,5,SNXS75,Black,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-snxs77,Seiko,5,SNXS77,White,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-snxs79,Seiko,5,SNXS79,Gold,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-snk789,Seiko,5,SNK789,White,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-snk793,Seiko,5,SNK793,Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-snk795,Seiko,5,SNK795,Green,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-snk805,Seiko,5,SNK805,Green,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-snk807,Seiko,5,SNK807,Blue,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-snk809,Seiko,5,SNK809,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-spb185,Seiko,Prospex 1968 Diver,SPB185,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb187,Seiko,Prospex 1968 Diver,SPB187,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-sne497,Seiko,Prospex Solar Tuna,SNE497,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-sne498,Seiko,Prospex Solar Tuna,SNE498,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-sne541,Seiko,Prospex Solar Tuna,SNE541,Green,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-sne577,Seiko,Prospex Solar Tuna,SNE577,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpb44,Seiko,Presage Cocktail Time,SRPB44,White,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpb46,Seiko,Presage Cocktail Time,SRPB46,Brown,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpd37,Seiko,Presage Cocktail Time,SRPD37,Green,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-ssa343,Seiko,Presage,SSA343,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-ssa345,Seiko,Presage,SSA345,White,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+casio-gbd-200-1,Casio,G-Shock Move,GBD-200-1,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gbd-200-2,Casio,G-Shock Move,GBD-200-2,Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gbd-200-9,Casio,G-Shock Move,GBD-200-9,Yellow,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gbd-100-1a,Casio,G-Shock Move,GBD-100-1A,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gst-b400-1a,Casio,G-Shock G-Steel,GST-B400-1A,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gst-b400d-1a,Casio,G-Shock G-Steel,GST-B400D-1A,Silver,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gst-b300-1a,Casio,G-Shock G-Steel,GST-B300-1A,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gst-b300sd-1a,Casio,G-Shock G-Steel,GST-B300SD-1A,Silver,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gw-5000u-1,Casio,G-Shock Square,GW-5000U-1,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gw-5000-1jf,Casio,G-Shock Square,GW-5000-1JF,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ga-2100-2a,Casio,G-Shock CasiOak,GA-2100-2A,Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ga-2100su-1a,Casio,G-Shock CasiOak,GA-2100SU-1A,Black/Green,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-prw-6900y-1,Casio,Pro Trek,PRW-6900Y-1,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-prw-6900yl-5,Casio,Pro Trek,PRW-6900YL-5,Green,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-prw-61-1a,Casio,Pro Trek,PRW-61-1A,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+hamilton-h72515130,Hamilton,Khaki Field Expedition Auto,H72515130,Black,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h72515135,Hamilton,Khaki Field Expedition Auto,H72515135,Green,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h72515530,Hamilton,Khaki Field Expedition Auto,H72515530,Black,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h36215140,Hamilton,Jazzmaster Performer Auto,H36215140,Blue,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h36215130,Hamilton,Jazzmaster Performer Auto,H36215130,Black,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h36215110,Hamilton,Jazzmaster Performer Auto,H36215110,Silver,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h36616130,Hamilton,Jazzmaster Performer Auto Chrono,H36616130,Blue,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+hamilton-h36616530,Hamilton,Jazzmaster Performer Auto Chrono,H36616530,Black,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+hamilton-h76235131,Hamilton,Khaki Aviation Pilot Pioneer,H76235131,Black,Pilot,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h76235530,Hamilton,Khaki Aviation Pilot Pioneer,H76235530,Black,Pilot,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h77455330,Hamilton,Khaki Navy Frogman Auto,H77455330,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h77455360,Hamilton,Khaki Navy Frogman Auto,H77455360,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t137-410-11-031-00,Tissot,PRX Quartz,T137.410.11.031.00,Silver,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t137-410-11-041-00,Tissot,PRX Quartz,T137.410.11.041.00,Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t137-410-11-051-00,Tissot,PRX Quartz,T137.410.11.051.00,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t137-410-11-091-00,Tissot,PRX Quartz,T137.410.11.091.00,Ice Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t137-410-11-051-01,Tissot,PRX Quartz,T137.410.11.051.01,Green,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t137-410-33-041-00,Tissot,PRX Quartz,T137.410.33.041.00,Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t120-407-11-041-03,Tissot,Seastar 1000 Powermatic 80,T120.407.11.041.03,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t120-407-11-051-00,Tissot,Seastar 1000 Powermatic 80,T120.407.11.051.00,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t120-407-11-041-02,Tissot,Seastar 1000 Powermatic 80,T120.407.11.041.02,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t120-407-17-041-01,Tissot,Seastar 1000 Powermatic 80,T120.407.17.041.01,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t127-407-11-031-02,Tissot,Gentleman Powermatic 80 Open Heart,T127.407.11.031.02,Silver,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t127-407-11-041-02,Tissot,Gentleman Powermatic 80 Open Heart,T127.407.11.041.02,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t118-410-11-277-00,Tissot,Heritage Visodate Quartz,T118.410.11.277.00,Silver,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t118-410-11-047-00,Tissot,Heritage Visodate Quartz,T118.410.11.047.00,Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t108-408-22-037-00,Tissot,Ballade Powermatic 80 COSC,T108.408.22.037.00,Silver,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+tissot-t108-408-16-037-00,Tissot,Ballade Powermatic 80 COSC,T108.408.16.037.00,Silver,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+orient-ra-ag0005l,Orient,Bambino Open Heart,RA-AG0005L,Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-ag0004b,Orient,Bambino Open Heart,RA-AG0004B,Black,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-ak0803y,Orient,Sun & Moon,RA-AK0803Y,Champagne,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-ak0804y,Orient,Sun & Moon,RA-AK0804Y,Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-ak0010b,Orient,Sun & Moon,RA-AK0010B,Black,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-faa02002d9,Orient,Mako II,FAA02002D9,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-faa02003b9,Orient,Ray Raven,FAA02003B9,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-bn0211-09e,Citizen,Promaster Tough,BN0211-09E,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-aw1550-50e,Citizen,Eco-Drive Paradigm,AW1550-50E,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-ar5000-50e,Citizen,Eco-Drive One,AR5000-50E,Black,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+citizen-ar3070-55l,Citizen,Eco-Drive Stiletto,AR3070-55L,Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+grand-seiko-sbgr317,Grand Seiko,Heritage Automatic,SBGR317,Silver,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+grand-seiko-sbgr315,Grand Seiko,Heritage Automatic,SBGR315,Black,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+grand-seiko-sbga283,Grand Seiko,Heritage Spring Drive,SBGA283,Blue,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-sbgm235,Grand Seiko,Sport Automatic GMT,SBGM235,Black,GMT,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-sbgm237,Grand Seiko,Sport Automatic GMT,SBGM237,Green,GMT,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-sbgh289,Grand Seiko,Sport Hi-Beat Diver,SBGH289,Black,Diver,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-sbgh291,Grand Seiko,Sport Hi-Beat Diver,SBGH291,Green,Diver,,reddit_under_10k_signal,identity_seeded_specs_pending
+oris-01-798-7754-4175-set-mb,Oris,Aquis GMT Date,01 798 7754 4175-Set MB,Green,GMT,,reddit_under_5k_signal,identity_seeded_specs_pending
+oris-01-751-7761-4065-07-3-20-03lc,Oris,Big Crown ProPilot Big Date,01 751 7761 4065-07 3 20 03LC,Black,Pilot,,reddit_under_5k_signal,identity_seeded_specs_pending
+mido-m026-829-11-041-00,Mido,Ocean Star GMT,M026.829.11.041.00,Blue,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+mido-m026-829-11-051-00,Mido,Ocean Star GMT,M026.829.11.051.00,Black,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+mido-m026-807-11-031-00,Mido,Ocean Star Decompression Timer 1961,M026.807.11.031.00,Turquoise,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+mido-m042-430-11-041-00,Mido,Ocean Star 39,M042.430.11.041.00,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+mido-m042-430-11-051-00,Mido,Ocean Star 39,M042.430.11.051.00,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+mido-m026-608-11-041-01,Mido,Ocean Star 600 Chronometer,M026.608.11.041.01,Blue,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+mido-m027-407-11-010-00,Mido,Baroncelli Heritage,M027.407.11.010.00,White,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+mido-m027-407-16-010-00,Mido,Baroncelli Heritage,M027.407.16.010.00,White,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+mido-m027-408-16-018-00,Mido,Baroncelli Chronometer Silicon,M027.408.16.018.00,Silver,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+mido-m040-407-16-040-00,Mido,Multifort Patrimony,M040.407.16.040.00,Blue,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+mido-m040-407-16-060-00,Mido,Multifort Patrimony,M040.407.16.060.00,Green,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+mido-m049-526-11-091-00,Mido,Multifort TV Big Date,M049.526.11.091.00,Grey,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+mido-m049-526-11-041-00,Mido,Multifort TV Big Date,M049.526.11.041.00,Blue,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+baltic-aquascaphe-ti-blk,Baltic,Aquascaphe Titanium,AQUASCAPHE-TI-BLK,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+baltic-aquascaphe-dc-blu,Baltic,Aquascaphe Dual Crown,AQUASCAPHE-DC-BLU,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+baltic-mr01-silver,Baltic,MR01 Micro-Rotor,MR01-SILVER,Silver,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+baltic-mr01-blue,Baltic,MR01 Micro-Rotor,MR01-BLUE,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+baltic-tricompax-001,Baltic,Tricompax 001,TRICOMPAX-001,Silver,Chronograph,,reddit_under_1k_signal,identity_seeded_specs_pending
+baltic-aquascaphe-mk2-blk,Baltic,Aquascaphe MK2,AQUASCAPHE-MK2-BLK,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+baltic-aquascaphe-mk2-blu,Baltic,Aquascaphe MK2,AQUASCAPHE-MK2-BLU,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+lorier-neptune-v-blu,Lorier,Neptune V,NEPTUNE-V-BLU,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+lorier-neptune-v-blk,Lorier,Neptune V,NEPTUNE-V-BLK,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+lorier-hyperion-gmt-blu,Lorier,Hyperion GMT,HYPERION-GMT-BLU,Blue,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+lorier-hydra-ii-blk,Lorier,Hydra II,HYDRA-II-BLK,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+lorier-astra-blk,Lorier,Astra,ASTRA-BLK,Black,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+traska-freediver-iv-blu,Traska,Freediver IV,FREEDIVER-IV-BLU,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+traska-freediver-iv-blk,Traska,Freediver IV,FREEDIVER-IV-BLK,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+traska-seafarer-3-blu,Traska,Seafarer Gen 3,SEAFARER-3-BLU,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+traska-commuter-v3-wht,Traska,Commuter V3,COMMUTER-V3-WHT,White,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+traska-commuter-v3-blk,Traska,Commuter V3,COMMUTER-V3-BLK,Black,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+vaer-a5-field-blk,Vaer,A5 Automatic Field,A5-FIELD-BLK,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+vaer-a5-field-wht,Vaer,A5 Automatic Field,A5-FIELD-WHT,White,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+vaer-d5-tropic-blu,Vaer,D5 Tropic Diver,D5-TROPIC-BLU,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+vaer-d5-tropic-blk,Vaer,D5 Tropic Diver,D5-TROPIC-BLK,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+vaer-c5-solar-blk,Vaer,C5 Solar Field,C5-SOLAR-BLK,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+monta-skyquest-blk,Monta,Skyquest GMT,SKYQUEST-BLK,Black,GMT,,reddit_under_5k_signal,identity_seeded_specs_pending
+monta-skyquest-blu,Monta,Skyquest GMT,SKYQUEST-BLU,Blue,GMT,,reddit_under_5k_signal,identity_seeded_specs_pending
+monta-noble-v2-sil,Monta,Noble V2,NOBLE-V2-SIL,Silver,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+monta-noble-v2-blu,Monta,Noble V2,NOBLE-V2-BLU,Blue,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+zelos-nova-38-teal,Zelos,Nova 38,NOVA-38-TEAL,Teal,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+zelos-nova-38-salmon,Zelos,Nova 38,NOVA-38-SALMON,Salmon,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+zelos-hammerhead-ii-blk,Zelos,Hammerhead II,HAMMERHEAD-II-BLK,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+zelos-hammerhead-ii-met,Zelos,Hammerhead II,HAMMERHEAD-II-MET,Meteorite,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+nodus-contrail-blk,Nodus,Contrail Automatic,CONTRAIL-BLK,Black,Pilot,,reddit_under_1k_signal,identity_seeded_specs_pending
+nodus-contrail-blu,Nodus,Contrail Automatic,CONTRAIL-BLU,Blue,Pilot,,reddit_under_1k_signal,identity_seeded_specs_pending
+nodus-sector-pilot-blk,Nodus,Sector Pilot,SECTOR-PILOT-BLK,Black,Pilot,,reddit_under_500_signal,identity_seeded_specs_pending
+farer-lander-iii-blk,Farer,Lander Automatic,LANDER-III-BLK,Black,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+farer-endeavour-iii-gmt,Farer,Endeavour Automatic GMT,ENDEAVOUR-III-GMT,Blue,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+farer-hopewell-blu,Farer,Hopewell Automatic,HOPEWELL-BLU,Blue,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+brew-retrograph-blk,Brew,Retrograph,RETROGRAPH-BLK,Black,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+brew-retrograph-wht,Brew,Retrograph,RETROGRAPH-WHT,White,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+unimatic-u2-a,Unimatic,Modello Due,U2-A,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+unimatic-u2-bn,Unimatic,Modello Due,U2-BN,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+unimatic-u3-a,Unimatic,Modello Tre,U3-A,Black,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+unimatic-u3-an,Unimatic,Modello Tre,U3-AN,Black,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+unimatic-u4-a,Unimatic,Modello Quattro,U4-A,Black,GMT,,reddit_under_1k_signal,identity_seeded_specs_pending
+doxa-799-10-351-10,Doxa,SUB 200,799.10.351.10,Orange,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+doxa-799-10-361-10,Doxa,SUB 200,799.10.361.10,Yellow,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+doxa-799-10-101-10,Doxa,SUB 200,799.10.101.10,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+doxa-804-10-351-10,Doxa,SUB 200T,804.10.351.10,Orange,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+doxa-804-10-021-10,Doxa,SUB 200T,804.10.021.10,Silver,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+panerai-pam01312,Panerai,Luminor Marina,PAM01312,Black,Sport,,reddit_under_10k_signal,identity_seeded_specs_pending
+panerai-pam01314,Panerai,Luminor Marina,PAM01314,Blue,Sport,,reddit_under_10k_signal,identity_seeded_specs_pending
+panerai-pam01273,Panerai,Luminor Due,PAM01273,Black,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+panerai-pam01274,Panerai,Luminor Due,PAM01274,Blue,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+panerai-pam01046,Panerai,Luminor Due,PAM01046,Black,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+panerai-pam01392,Panerai,Luminor Marina,PAM01392,Black,Sport,,reddit_under_10k_signal,identity_seeded_specs_pending
+panerai-pam01084,Panerai,Luminor,PAM01084,Black,Sport,,reddit_under_10k_signal,identity_seeded_specs_pending
+panerai-pam00510,Panerai,Luminor,PAM00510,Black,Sport,,reddit_under_10k_signal,identity_seeded_specs_pending
+panerai-pam00973,Panerai,Submersible,PAM00973,Black,Diver,,reddit_under_10k_signal,identity_seeded_specs_pending
+panerai-pam01229,Panerai,Submersible,PAM01229,Blue,Diver,,reddit_under_10k_signal,identity_seeded_specs_pending
+panerai-pam00753,Panerai,Radiomir,PAM00753,Black,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+panerai-pam00620,Panerai,Radiomir,PAM00620,Black,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+panerai-pam00005,Panerai,Luminor Marina,PAM00005,Black,Sport,,reddit_under_10k_signal,identity_seeded_specs_pending
+panerai-pam01110,Panerai,Luminor Chrono,PAM01110,Black,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+zenith-03-3200-3600-21-c901,Zenith,Chronomaster Original,03.3200.3600/21.C901,Tri-Color,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+zenith-03-3200-3600-69-c902,Zenith,Chronomaster Original,03.3200.3600/69.C902,Blue,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+zenith-03-3100-3600-69-m3100,Zenith,Chronomaster Sport,03.3100.3600/69.M3100,Blue,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+zenith-03-3100-3600-39-m3100,Zenith,Chronomaster Sport,03.3100.3600/39.M3100,Black,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+zenith-11-1940-679-91-c807,Zenith,Pilot Type 20 Extra Special,11.1940.679/91.C807,Bronze,Pilot,,reddit_under_10k_signal,identity_seeded_specs_pending
+zenith-03-2430-693-21-c723,Zenith,Pilot Automatic,03.2430.693/21.C723,Blue,Pilot,,reddit_under_10k_signal,identity_seeded_specs_pending
+zenith-03-9300-3620-51-i001,Zenith,Defy Skyline,03.9300.3620/51.I001,Blue,Integrated Bracelet,,reddit_under_10k_signal,identity_seeded_specs_pending
+zenith-03-9300-3620-21-i001,Zenith,Defy Skyline,03.9300.3620/21.I001,White,Integrated Bracelet,,reddit_under_10k_signal,identity_seeded_specs_pending
+zenith-03-9300-3620-78-i001,Zenith,Defy Skyline,03.9300.3620/78.I001,Green,Integrated Bracelet,,reddit_under_10k_signal,identity_seeded_specs_pending
+tag-heuer-caw211p-fc6356,TAG Heuer,Monaco Chronograph,CAW211P.FC6356,Black,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+tag-heuer-caw211r-fc6401,TAG Heuer,Monaco Chronograph,CAW211R.FC6401,Blue,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+tag-heuer-wbp2114-ba0627,TAG Heuer,Aquaracer Professional 200 Date,WBP2114.BA0627,Silver,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+tag-heuer-wbp2115-ba0627,TAG Heuer,Aquaracer Professional 200 Date,WBP2115.BA0627,Green,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+breitling-a17375e71c1s1,Breitling,Superocean Automatic 42,A17375E71C1S1,Blue,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+breitling-a17375211b1a1,Breitling,Superocean Automatic 42,A17375211B1A1,Black,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+breitling-a10380101a1a1,Breitling,Chronomat Automatic 36,A10380101A1A1,White,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+breitling-a10380591c1a1,Breitling,Chronomat Automatic 36,A10380591C1A1,Blue,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+seiko-srpk17,Seiko,Presage Style60s,SRPK17,Cream,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpk19,Seiko,Presage Style60s,SRPK19,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpk15,Seiko,Presage Style60s,SRPK15,Green,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-srpd25,Seiko,Prospex Monster,SRPD25,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpd27,Seiko,Prospex Monster,SRPD27,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpd29,Seiko,Prospex Monster,SRPD29,Red,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpe27,Seiko,Prospex Monster,SRPE27,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpj81,Seiko,5 Sports 38mm,SRPJ81,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpj83,Seiko,5 Sports 38mm,SRPJ83,Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpj85,Seiko,5 Sports 38mm,SRPJ85,Green,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpj87,Seiko,5 Sports 38mm,SRPJ87,White,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-spb333,Seiko,Prospex Black Series,SPB333,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb335,Seiko,Prospex Black Series,SPB335,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-sje083,Seiko,King Seiko 36.1mm,SJE083,White,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+seiko-sje085,Seiko,King Seiko 36.1mm,SJE085,Black,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+seiko-sje087,Seiko,King Seiko 36.1mm,SJE087,Blue,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+seiko-sje089,Seiko,King Seiko 36.1mm,SJE089,Green,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+seiko-sla021,Seiko,Prospex Marinemaster 300,SLA021,Black,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+seiko-sla023,Seiko,Prospex Marinemaster 300,SLA023,Blue,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+casio-ga-700-1a,Casio,G-Shock,GA-700-1A,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ga-700-1b,Casio,G-Shock,GA-700-1B,Black/Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ga-700-4a,Casio,G-Shock,GA-700-4A,Red,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gw-9400-3,Casio,G-Shock Rangeman,GW-9400-3,Green,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gw-9400bj-1jf,Casio,G-Shock Rangeman,GW-9400BJ-1JF,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-dw-5600hr-1,Casio,G-Shock Square,DW-5600HR-1,Black/Red,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-dw-5600bbma-1,Casio,G-Shock Square,DW-5600BBMA-1,Black/Rose Gold,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-bga-280-1a,Casio,Baby-G,BGA-280-1A,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-bga-280-4a,Casio,Baby-G,BGA-280-4A,Pink,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-a700w-1a,Casio,Classic,A700W-1A,Silver,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-b640wd-1a,Casio,Classic,B640WD-1A,Silver,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-w-217h-1a,Casio,Classic,W-217H-1A,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-mdv-107-1a2,Casio,Duro,MDV-107-1A2,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+hamilton-h70405730,Hamilton,Khaki Field Murph,H70405730,Silver,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h70605993,Hamilton,Khaki Field Murph Auto,H70605993,Black,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h70405530,Hamilton,Khaki Field Murph 38mm,H70405530,Black,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h64615135,Hamilton,Khaki Aviation Pilot Day Date,H64615135,Black,Pilot,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h64615545,Hamilton,Khaki Aviation Pilot Day Date,H64615545,Blue,Pilot,,reddit_under_1k_signal,identity_seeded_specs_pending
+citizen-bn0158-00x,Citizen,Promaster Diver,BN0158-00X,Green,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-bj8050-08e,Citizen,Promaster Diver,BJ8050-08E,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-jy8078-52l,Citizen,Promaster Navihawk A-T,JY8078-52L,Blue,Pilot,,reddit_under_1k_signal,identity_seeded_specs_pending
+orient-ra-ac0019l,Orient,Bambino Version 5,RA-AC0019L,Light Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-ac0020g,Orient,Bambino Version 5,RA-AC0020G,Champagne,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-ac0h01l,Orient,Flight,RA-AC0H01L,Blue,Pilot,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-ac0h03b,Orient,Flight,RA-AC0H03B,Black,Pilot,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2w33100,Timex,Q Falcon Eye,TW2W33100,Green,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2w33200,Timex,Q Falcon Eye,TW2W33200,Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2u90400,Timex,Waterbury Traditional Day Date,TW2U90400,Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2u90200,Timex,Waterbury Traditional Day Date,TW2U90200,Black,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2u29500,Timex,M79 Automatic,TW2U29500,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2u96900,Timex,M79 Automatic,TW2U96900,Pepsi,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+bell-and-ross-br05a-bl-st-sst,Bell & Ross,BR 05,BR05A-BL-ST/SST,Blue,Integrated Bracelet,,reddit_under_10k_signal,identity_seeded_specs_pending
+bell-and-ross-br05a-blu-st-srb,Bell & Ross,BR 05,BR05A-BLU-ST/SRB,Blue,Integrated Bracelet,,reddit_under_10k_signal,identity_seeded_specs_pending
+bell-and-ross-br05a-bl-st-srb,Bell & Ross,BR 05,BR05A-BL-ST/SRB,Black,Integrated Bracelet,,reddit_under_10k_signal,identity_seeded_specs_pending
+bell-and-ross-br05a-blu-skst-sst,Bell & Ross,BR 05 Skeleton,BR05A-BLU-SKST/SST,Blue,Integrated Bracelet,,reddit_under_10k_signal,identity_seeded_specs_pending
+bell-and-ross-br05g-bl-st-sst,Bell & Ross,BR 05 GMT,BR05G-BL-ST/SST,Blue,GMT,,reddit_under_10k_signal,identity_seeded_specs_pending
+bell-and-ross-br0392-d-bl-st-srb,Bell & Ross,BR 03-92,BR0392-D-BL-ST/SRB,Black,Pilot,,reddit_under_10k_signal,identity_seeded_specs_pending
+bell-and-ross-brv294-bl-st-sst,Bell & Ross,BR V2-94 Chronograph,BRV294-BL-ST/SST,Blue,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+bell-and-ross-brv293-bl-st-sst,Bell & Ross,BR V2-93 GMT,BRV293-BL-ST/SST,Blue,GMT,,reddit_under_10k_signal,identity_seeded_specs_pending
+hublot-301-sb-131-rx,Hublot,Big Bang,301.SB.131.RX,Black,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+hublot-301-sx-1170-rx,Hublot,Big Bang,301.SX.1170.RX,Black,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+hublot-542-nx-1171-rx,Hublot,Classic Fusion,542.NX.1171.RX,Black,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+hublot-542-cm-1771-rx,Hublot,Classic Fusion,542.CM.1771.RX,Black,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+hublot-511-nx-1171-rx,Hublot,Classic Fusion,511.NX.1171.RX,Black,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+hublot-511-ox-1181-lr,Hublot,Classic Fusion,511.OX.1181.LR,Black,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+hublot-421-nm-1170-rx,Hublot,Big Bang Unico,421.NM.1170.RX,Skeleton,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+hublot-641-nx-0173-lr,Hublot,Spirit of Big Bang,641.NX.0173.LR,Black,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+raymond-weil-2780-st-20001,Raymond Weil,Freelancer,2780-ST-20001,Black,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+raymond-weil-2780-st-50001,Raymond Weil,Freelancer,2780-ST-50001,Green,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+raymond-weil-2780-st-65001,Raymond Weil,Freelancer,2780-ST-65001,Blue,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+raymond-weil-7741-st1-30021,Raymond Weil,Freelancer Chronograph,7741-ST1-30021,Silver,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+raymond-weil-5560-stp-00208,Raymond Weil,Tango,5560-STP-00208,White,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+raymond-weil-2237-st-00208,Raymond Weil,Maestro,2237-ST-00208,White,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+raymond-weil-2237-stc-65001,Raymond Weil,Maestro,2237-STC-65001,Blue,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+raymond-weil-2927-st-80001,Raymond Weil,Millesime,2927-ST-80001,Silver,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+baume-and-mercier-m0a10612,Baume & Mercier,Riviera,M0A10612,Blue,Integrated Bracelet,,reddit_under_5k_signal,identity_seeded_specs_pending
+baume-and-mercier-m0a10614,Baume & Mercier,Riviera,M0A10614,Black,Integrated Bracelet,,reddit_under_5k_signal,identity_seeded_specs_pending
+baume-and-mercier-m0a10616,Baume & Mercier,Riviera,M0A10616,Green,Integrated Bracelet,,reddit_under_5k_signal,identity_seeded_specs_pending
+baume-and-mercier-m0a10620,Baume & Mercier,Riviera,M0A10620,Grey,Integrated Bracelet,,reddit_under_5k_signal,identity_seeded_specs_pending
+baume-and-mercier-m0a10624,Baume & Mercier,Riviera Chronograph,M0A10624,Blue,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+baume-and-mercier-m0a10382,Baume & Mercier,Classima,M0A10382,Silver,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+baume-and-mercier-m0a10453,Baume & Mercier,Classima,M0A10453,Blue,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+baume-and-mercier-m0a10436,Baume & Mercier,Clifton,M0A10436,Silver,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+mido-m021-431-11-061-01,Mido,Commander,M021.431.11.061.01,Grey,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+mido-m021-431-11-041-01,Mido,Commander,M021.431.11.041.01,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+mido-m026-830-11-041-00,Mido,Ocean Star Tribute,M026.830.11.041.00,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+mido-m026-830-11-051-00,Mido,Ocean Star Tribute,M026.830.11.051.00,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+mido-m024-630-11-061-00,Mido,Belluna,M024.630.11.061.00,Black,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+mido-m024-630-11-041-00,Mido,Belluna,M024.630.11.041.00,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+breitling-a32397101b1x1,Breitling,Avenger GMT,A32397101B1X1,Black,GMT,,reddit_under_5k_signal,identity_seeded_specs_pending
+breitling-a17377211a1a1,Breitling,Superocean Automatic 36,A17377211A1A1,White,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+breitling-a17377211c1a1,Breitling,Superocean Automatic 36,A17377211C1A1,Blue,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+breitling-x82310a51b1s1,Breitling,Endurance Pro,X82310A51B1S1,Black,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+breitling-x82310a71b1s1,Breitling,Endurance Pro,X82310A71B1S1,Blue,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+formex-2200-1-6331-100,Formex,Reef Automatic,2200-1-6331-100,Black,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+formex-2200-1-6321-100,Formex,Reef Automatic,2200-1-6321-100,Blue,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+formex-2202-1-6331-100,Formex,Reef Automatic GMT,2202-1-6331-100,Black,GMT,,reddit_under_5k_signal,identity_seeded_specs_pending
+tissot-t137-463-11-050-00,Tissot,PRX Digital,T137.463.11.050.00,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t137-463-11-040-00,Tissot,PRX Digital,T137.463.11.040.00,Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t115-417-27-011-00,Tissot,T-Race,T115.417.27.011.00,Black,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t127-407-11-031-03,Tissot,Gentleman Open Heart,T127.407.11.031.03,Silver,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+certina-c032-427-11-041-00,Certina,DS Action Diver 43mm,C032.427.11.041.00,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+certina-c032-427-17-051-00,Certina,DS Action Diver 43mm,C032.427.17.051.00,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+christopher-ward-c60-40abzh3-s0kk0-tk,Christopher Ward,C60 Trident Bronze Pro 600,C60-40ABZH3-S0KK0-TK,Green,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+christopher-ward-c63-39ael3-s0bb1-hb,Christopher Ward,C63 Sealander Elite,C63-39AEL3-S0BB1-HB,Blue,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+frederique-constant-fc-310s4nh6b,Frederique Constant,Highlife Heartbeat,FC-310S4NH6B,Silver,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+frederique-constant-fc-718wm4h6,Frederique Constant,Classics Worldtimer,FC-718WM4H6,White,GMT,,reddit_under_5k_signal,identity_seeded_specs_pending
+seiko-srph29k1,Seiko,5 Sports,SRPH29K1,Black,Field,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpj45,Seiko,5 Sports,SRPJ45,Grey,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpj47,Seiko,5 Sports,SRPJ47,White,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpj09,Seiko,5 Sports,SRPJ09,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpj11,Seiko,5 Sports,SRPJ11,Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpj13,Seiko,5 Sports,SRPJ13,Green,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-sne573,Seiko,Prospex Solar Diver,SNE573,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-sne571,Seiko,Prospex Solar Diver,SNE571,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-sne569,Seiko,Prospex Solar Diver,SNE569,Green,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpc35,Seiko,Prospex Mini Turtle,SRPC35,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpc37,Seiko,Prospex Mini Turtle,SRPC37,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpc39,Seiko,Prospex Mini Turtle,SRPC39,Blue PADI,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpc43,Seiko,Presage Star Bar,SRPC43,Brown,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-srpe47j1,Seiko,Presage Star Bar,SRPE47J1,Green,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+seiko-spb093,Seiko,Presage Arita Porcelain,SPB093,White,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+seiko-spb085,Seiko,Presage Urushi,SPB085,Red,Dress,,reddit_under_5k_signal,identity_seeded_specs_pending
+seiko-spb237,Seiko,Prospex Willard,SPB237,Blue,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+seiko-spb235,Seiko,Prospex Willard,SPB235,Black,Diver,,reddit_under_1k_signal,identity_seeded_specs_pending
+casio-gma-s2100-1a,Casio,G-Shock,GMA-S2100-1A,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gma-s2100-4a,Casio,G-Shock,GMA-S2100-4A,Pink,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gma-s2100-7a,Casio,G-Shock,GMA-S2100-7A,White,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-mrg-b5000b-1,Casio,G-Shock MR-G,MRG-B5000B-1,Black,Sport,,reddit_under_10k_signal,identity_seeded_specs_pending
+casio-mrg-b5000d-1,Casio,G-Shock MR-G,MRG-B5000D-1,Silver,Sport,,reddit_under_10k_signal,identity_seeded_specs_pending
+casio-gm-5600-1,Casio,G-Shock Metal Covered,GM-5600-1,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gm-5600b-1,Casio,G-Shock Metal Covered,GM-5600B-1,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gm-5600b-3,Casio,G-Shock Metal Covered,GM-5600B-3,Green,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-gw-2310-1,Casio,G-Shock Solar,GW-2310-1,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-dw-6900-1v,Casio,G-Shock,DW-6900-1V,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-w-86-1v,Casio,Classic,W-86-1V,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-mq-24-7b2,Casio,Classic,MQ-24-7B2,White,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-ecb-2200dd-1a,Casio,Edifice Sospensione,ECB-2200DD-1A,Black,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+casio-eqb-1200d-1a,Casio,Edifice,EQB-1200D-1A,Black,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t143-410-11-011-00,Tissot,Everytime,T143.410.11.011.00,White,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t143-410-11-041-00,Tissot,Everytime,T143.410.11.041.00,Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t143-410-16-041-00,Tissot,Everytime,T143.410.16.041.00,Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t129-410-11-013-00,Tissot,Classic Dream,T129.410.11.013.00,Silver,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+tissot-t129-410-11-053-00,Tissot,Classic Dream,T129.410.11.053.00,Black,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+tag-heuer-wbp208c-bf0631,TAG Heuer,Aquaracer Professional 300 Tribute to Ref. 844,WBP208C.BF0631,Black,Diver,,reddit_under_10k_signal,identity_seeded_specs_pending
+tag-heuer-cbl2115-fc6494,TAG Heuer,Monaco Chronograph Gulf,CBL2115.FC6494,Blue/Orange,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+tag-heuer-cbs2213-fn6002,TAG Heuer,Carrera Skipper,CBS2213.FN6002,Blue,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+tag-heuer-wbn2114-ba0639,TAG Heuer,Carrera Three Hands,WBN2114.BA0639,Silver,Sport,,reddit_under_5k_signal,identity_seeded_specs_pending
+orient-fer2700jb0,Orient,Multi-Year Calendar,FER2700JB0,Black,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-ak0701s,Orient,Bambino RA-AK,RA-AK0701S,Silver,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-ra-ak0702y,Orient,Bambino RA-AK,RA-AK0702Y,Champagne,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+orient-re-ay0116a,Orient,Star Mechanical Moon Phase,RE-AY0116A,Green,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+timex-tw2w47500,Timex,Deepwater Reef 200,TW2W47500,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2w47600,Timex,Deepwater Reef 200,TW2W47600,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2w24500,Timex,Q Reissue 36mm,TW2W24500,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2w24600,Timex,Q Reissue 36mm,TW2W24600,Blue,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+timex-tw2w42200,Timex,Legacy Tonneau,TW2W42200,Silver,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+hamilton-h77912535,Hamilton,Khaki Aviation X-Wind,H77912535,Black,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+hamilton-h77912135,Hamilton,Khaki Aviation X-Wind,H77912135,Black,Chronograph,,reddit_under_5k_signal,identity_seeded_specs_pending
+hamilton-h38525541,Hamilton,Jazzmaster Thinline,H38525541,Silver,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h38525811,Hamilton,Jazzmaster Thinline,H38525811,Blue,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h78205553,Hamilton,Khaki Navy Pioneer Auto,H78205553,Silver,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+hamilton-h78205953,Hamilton,Khaki Navy Pioneer Auto,H78205953,Blue,Field,,reddit_under_1k_signal,identity_seeded_specs_pending
+citizen-bn2029-01e,Citizen,Promaster Aqualand,BN2029-01E,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-bn2037-11e,Citizen,Promaster Aqualand,BN2037-11E,Black,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-ny0100-50me,Citizen,Promaster Automatic,NY0100-50ME,Green,Diver,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-nj0160-87x,Citizen,Tsuyosa Small Second,NJ0160-87X,Green,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-nj0160-87l,Citizen,Tsuyosa Small Second,NJ0160-87L,Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-nk5010-51a,Citizen,Record Label,NK5010-51A,White,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-nk5010-51e,Citizen,Record Label,NK5010-51E,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+citizen-nk5010-51l,Citizen,Record Label,NK5010-51L,Blue,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+grand-seiko-sbga285,Grand Seiko,Heritage Spring Drive Power Reserve,SBGA285,Silver,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-sbga387,Grand Seiko,Heritage Spring Drive Power Reserve,SBGA387,Blue,Dress,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-slgc001,Grand Seiko,Evolution 9 Spring Drive Chronograph,SLGC001,White,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-slgc003,Grand Seiko,Evolution 9 Spring Drive Chronograph,SLGC003,Black,Chronograph,,reddit_under_10k_signal,identity_seeded_specs_pending
+grand-seiko-sbgn011,Grand Seiko,Heritage Quartz GMT,SBGN011,Black,GMT,,reddit_under_5k_signal,identity_seeded_specs_pending
+grand-seiko-sbgn013,Grand Seiko,Heritage Quartz GMT,SBGN013,Blue,GMT,,reddit_under_5k_signal,identity_seeded_specs_pending
+oris-01-400-7767-7754-07-4-26-04tebg,Oris,Aquis Pro 400m,01 400 7767 7754-07 4 26 04TEBG,Black,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+oris-01-733-7732-4185-set,Oris,Aquis Clean Ocean Limited,01 733 7732 4185-Set,Blue Recycled,Diver,,reddit_under_5k_signal,identity_seeded_specs_pending
+bulova-96a235,Bulova,Sutton,96A235,Silver,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+bulova-96a237,Bulova,Sutton,96A237,Blue,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+bulova-96a234,Bulova,Classic Automatic,96A234,Grey,Dress,,reddit_under_500_signal,identity_seeded_specs_pending
+bulova-96a299,Bulova,Lunar Pilot,96A299,White,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+movado-0607200,Movado,Museum Classic,0607200,Black,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+movado-0607199,Movado,Museum Classic,0607199,Black,Dress,,reddit_under_1k_signal,identity_seeded_specs_pending
+movado-3600560,Movado,Bold,3600560,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+movado-3600562,Movado,Bold,3600562,Navy,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+movado-0607541,Movado,SE,0607541,Black,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+movado-0607542,Movado,SE,0607542,Blue,Sport,,reddit_under_1k_signal,identity_seeded_specs_pending
+swatch-so33r100,Swatch,MoonSwatch Mission to Mars,SO33R100,Red,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+swatch-so33n100,Swatch,MoonSwatch Mission to Neptune,SO33N100,Blue,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+swatch-so33p100,Swatch,MoonSwatch Mission to Venus,SO33P100,Pink,Chronograph,,reddit_under_500_signal,identity_seeded_specs_pending
+swatch-so29b100,Swatch,Sistem51,SO29B100,Black,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
+swatch-yis404,Swatch,Sistem51 Irony,YIS404,Silver,Sport,,reddit_under_500_signal,identity_seeded_specs_pending
