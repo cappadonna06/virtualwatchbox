@@ -86,10 +86,14 @@ async function fetchHtml(url: string, attempt = 1): Promise<{ html: string; fina
     },
     redirect: 'follow',
   })
-  if (res.status === 429 || res.status >= 500) {
-    if (attempt >= 4) throw new Error(`HTTP ${res.status} after ${attempt} attempts`)
-    const wait = 5000 * 2 ** (attempt - 1)
-    console.warn(`[watchbase] ${res.status} for ${url}, backing off ${wait}ms`)
+  // 403 from WatchBase's WAF behaves the same as 429 — transient anti-bot
+  // throttling. Retry with longer backoff than 429 (Cloudflare-style blocks
+  // need minutes to lift, not seconds).
+  if (res.status === 403 || res.status === 429 || res.status >= 500) {
+    if (attempt >= 5) throw new Error(`HTTP ${res.status} after ${attempt} attempts`)
+    const base = res.status === 403 ? 30000 : 5000
+    const wait = base * 2 ** (attempt - 1)
+    console.warn(`[watchbase] ${res.status} for ${url}, backing off ${wait}ms (attempt ${attempt})`)
     await sleep(wait)
     return fetchHtml(url, attempt + 1)
   }
@@ -411,6 +415,8 @@ async function main() {
   let hits = 0
   let misses = 0
   let skipped = 0
+  let consecutiveErrors = 0
+  const CIRCUIT_BREAKER_THRESHOLD = 15
 
   for (const row of targets) {
     if (!row.brand || !row.reference) {
@@ -463,11 +469,17 @@ async function main() {
         'utf8',
       )
       hits += 1
+      consecutiveErrors = 0
       if (hits % 25 === 0 || hits < 20) {
         console.log(`[watchbase] HIT  ${row.brand} / ${row.reference}  → ${finalUrl}  (specs: ${Object.values(specs).filter(v => v != null && v !== '' && !(Array.isArray(v) && v.length === 0)).length}/${Object.keys(specs).length})`)
       }
     } catch (err) {
       console.error(`[watchbase] error ${row.brand} ${row.reference}: ${(err as Error).message}`)
+      consecutiveErrors += 1
+      if (consecutiveErrors >= CIRCUIT_BREAKER_THRESHOLD) {
+        console.error(`[watchbase] circuit breaker tripped: ${consecutiveErrors} consecutive errors. Aborting so we don't burn requests against an active block. Re-run after waiting.`)
+        break
+      }
       await sleep(jitter(DELAY_MS))
       continue
     }

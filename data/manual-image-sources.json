@@ -1,0 +1,6 @@
+{
+  "_comment_README": "Manual image URL overrides for npm run images:acquire. Tried BEFORE watchbase/wikimedia. Map catalog_watch_id (lowercase, with brand prefix) to a direct image URL. URL must return an image (PNG/JPG/WebP), not an HTML page. Real-browser sources like rolex.com/tudor.com/etc. work because you copy the resolved CDN URL — Cloudflare doesn't block the image bytes once you have the direct URL. Examples below.",
+  "_comment_example_1": "Tudor Black Bay 41 M79540-0004 — image URL right-clicked from tudorwatch.com",
+  "_comment_example_2": "Sinn 556 family — your example. We don't currently have 556-0101 in our seed but if you add it, this would land it.",
+  "sinn-556-0101": "https://watchbase.com/images/uploads/sinn/instrument-watches/556-0101.jpg"
+}

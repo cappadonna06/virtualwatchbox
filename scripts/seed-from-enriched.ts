@@ -41,6 +41,13 @@ const SUPABASE_KEY =
 
 const DRY_RUN = process.env.DRY_RUN === '1' || process.env.DRY_RUN === 'true'
 const CHUNK = Number(process.env.CHUNK ?? 100)
+// Escape hatch for legacy aka-style ids that pre-date the mintCatalogId
+// canonicality check. The 11,638 affected rows already exist in Supabase
+// with their stale ids; rewriting them would require a cascading FK
+// migration. Set to '1' to downgrade the canonicality failure to a warning
+// so the seed can proceed and add new (canonical) rows alongside the legacy.
+const ALLOW_NON_CANONICAL =
+  process.env.ALLOW_NON_CANONICAL === '1' || process.env.ALLOW_NON_CANONICAL === 'true'
 
 function fail(msg: string): never {
   console.error(`[seed-from-enriched] ${msg}`)
@@ -425,7 +432,7 @@ async function main() {
   // Load enriched catalog
   console.log('[seed-from-enriched] loading enriched JSON…')
   const enriched = JSON.parse(fs.readFileSync(enrichedPath, 'utf8'))
-  const records = enriched.records as EnrichedRecord[]
+  let records = enriched.records as EnrichedRecord[]
   console.log(`[seed-from-enriched] ${records.length.toLocaleString()} records`)
 
   // Validate IDs are canonical
@@ -443,25 +450,56 @@ async function main() {
     }
   }
   if (idMismatches.length > 0) {
-    console.error(`[seed-from-enriched] ${idMismatches.length} non-canonical IDs found. Examples:`)
+    const verb = ALLOW_NON_CANONICAL ? 'WARN' : 'ERROR'
+    console.error(`[seed-from-enriched] ${verb}: ${idMismatches.length} non-canonical IDs found. Examples:`)
     for (const m of idMismatches.slice(0, 5)) console.error(`  ${m}`)
-    fail('Resolve before seeding (re-run expand-from-watchdb to recanonicalize).')
+    if (ALLOW_NON_CANONICAL) {
+      console.warn('[seed-from-enriched] ALLOW_NON_CANONICAL=1 — proceeding with legacy ids. New (canonical) rows will be added alongside.')
+    } else {
+      fail('Resolve before seeding (re-run expand-from-watchdb to recanonicalize). Set ALLOW_NON_CANONICAL=1 to bypass for legacy data.')
+    }
   }
 
   // Dedup safety: catalog has a unique index on (brand, reference, dial_color).
   // Our enriched JSON has unique IDs but two records could theoretically share
-  // (brand, reference, dial_color) if dialColor differs only by case/whitespace.
-  const dupCheck = new Map<string, string>()
+  // (brand, reference, dial_color) — e.g. after a reference-column cleanup
+  // (the aka cleanup that produced 11,639 collisions). When duplicates exist,
+  // keep the row with the canonical id (passes the mintCatalogId check) so the
+  // catalog converges on canonical ids over time; if both are canonical, keep
+  // the first seen. Drop the others from the records array so the upsert
+  // doesn't blow up on the unique constraint.
+  const dupCheck = new Map<string, EnrichedRecord>()
   const duplicates: string[] = []
+  const filteredRecords: EnrichedRecord[] = []
   for (const r of records) {
     const k = `${r.brand.trim().toLowerCase()}::${r.reference.trim().toLowerCase()}::${(r.dialColor ?? '').trim().toLowerCase()}`
-    if (dupCheck.has(k)) duplicates.push(`${r.id} ↔ ${dupCheck.get(k)} share (${k})`)
-    else dupCheck.set(k, r.id)
+    const prev = dupCheck.get(k)
+    if (!prev) {
+      dupCheck.set(k, r)
+      filteredRecords.push(r)
+      continue
+    }
+    // Duplicate: prefer the canonical id over the legacy aka id
+    let canonicalExpected = ''
+    try { canonicalExpected = mintCatalogId({ brand: r.brand, reference: r.reference }) } catch {}
+    const rIsCanonical = r.id === canonicalExpected
+    const prevIsCanonical = prev.id === canonicalExpected
+    if (rIsCanonical && !prevIsCanonical) {
+      // Swap: keep r, drop prev
+      duplicates.push(`${prev.id} dropped in favor of ${r.id} for (${k})`)
+      const idx = filteredRecords.indexOf(prev)
+      if (idx >= 0) filteredRecords[idx] = r
+      dupCheck.set(k, r)
+    } else {
+      duplicates.push(`${r.id} dropped in favor of ${prev.id} for (${k})`)
+    }
   }
   if (duplicates.length > 0) {
-    console.warn(`[seed-from-enriched] ${duplicates.length} (brand,ref,dialColor) duplicates — only first kept per unique index.`)
-    if (duplicates.length <= 5) for (const d of duplicates) console.warn(`  ${d}`)
+    console.warn(`[seed-from-enriched] ${duplicates.length} (brand,ref,dialColor) duplicates — dropped to preserve unique index. Examples:`)
+    for (const d of duplicates.slice(0, 5)) console.warn(`  ${d}`)
+    console.log(`[seed-from-enriched] records: ${records.length} → ${filteredRecords.length} after dedup`)
   }
+  records = filteredRecords
 
   // Build row payloads
   console.log('[seed-from-enriched] building row payloads (incl. llm overlay)…')
@@ -527,17 +565,66 @@ async function main() {
     return
   }
 
+  // ── Pre-filter rows that collide with DB on (brand, ref, dial_color) ───
+  // The unique index `catalog_watches_brand_reference_dial_color_idx`
+  // rejects inserts where another row with the same natural key already
+  // exists, even if our row has a different id. This happens when we add
+  // a new canonical row for a watch that's already in the DB under a
+  // legacy aka id (e.g. canonical `a-lange-and-sohne-191-032` collides
+  // with existing `a-lange-and-sohne-191-032-aka-191032`). Without this
+  // filter, the whole chunk fails. Skip the new row when an existing one
+  // owns the natural key — the legacy aka row stays put.
+  console.log('[seed-from-enriched] checking for DB-side (brand,ref,dial) collisions…')
+  const existingByNaturalKey = new Map<string, string>()  // key -> id
+  let offset = 0
+  while (true) {
+    const { data, error } = await supabase
+      .from('catalog_watches')
+      .select('id, brand, reference, dial_color')
+      .range(offset, offset + 999)
+    if (error) {
+      console.warn(`[seed-from-enriched] collision pre-query warn: ${error.message}`)
+      break
+    }
+    if (!data || data.length === 0) break
+    for (const row of data) {
+      const r = row as { id: string; brand: string | null; reference: string | null; dial_color: string | null }
+      if (!r.brand || !r.reference) continue
+      const key = `${r.brand.trim().toLowerCase()}::${r.reference.trim().toLowerCase()}::${(r.dial_color ?? '').trim().toLowerCase()}`
+      existingByNaturalKey.set(key, r.id)
+    }
+    if (data.length < 1000) break
+    offset += 1000
+  }
+  console.log(`[seed-from-enriched]   loaded ${existingByNaturalKey.size} existing (brand,ref,dial) entries`)
+  const beforeFilter = catalogRows.length
+  const filteredCatalogRows = catalogRows.filter(r => {
+    const brand = String((r as { brand?: unknown }).brand ?? '').trim().toLowerCase()
+    const reference = String((r as { reference?: unknown }).reference ?? '').trim().toLowerCase()
+    const dial = String((r as { dial_color?: unknown }).dial_color ?? '').trim().toLowerCase()
+    const id = String((r as { id?: unknown }).id ?? '')
+    const key = `${brand}::${reference}::${dial}`
+    const existingId = existingByNaturalKey.get(key)
+    // Keep the row if no existing entry, OR if the existing entry IS this id
+    // (the standard upsert-by-id path).
+    return !existingId || existingId === id
+  })
+  const droppedCollisions = beforeFilter - filteredCatalogRows.length
+  if (droppedCollisions > 0) {
+    console.log(`[seed-from-enriched]   dropped ${droppedCollisions} rows that collide with existing DB rows on (brand,ref,dial) with a different id (preserves legacy aka rows)`)
+  }
+
   // ── Upsert catalog_watches ─────────────────────────────────────────────
-  console.log('[seed-from-enriched] upserting catalog_watches…')
-  for (let i = 0; i < catalogRows.length; i += CHUNK) {
-    const slice = catalogRows.slice(i, i + CHUNK)
+  console.log(`[seed-from-enriched] upserting catalog_watches (${filteredCatalogRows.length} rows after collision filter)…`)
+  for (let i = 0; i < filteredCatalogRows.length; i += CHUNK) {
+    const slice = filteredCatalogRows.slice(i, i + CHUNK)
     const { error } = await supabase.from('catalog_watches').upsert(slice, { onConflict: 'id' })
     if (error) fail(`catalog_watches chunk ${i / CHUNK} failed: ${error.message}`)
     if ((i / CHUNK) % 10 === 0) {
-      console.log(`  catalog_watches: ${i + slice.length}/${catalogRows.length}`)
+      console.log(`  catalog_watches: ${i + slice.length}/${filteredCatalogRows.length}`)
     }
   }
-  console.log(`[seed-from-enriched] catalog_watches: ${catalogRows.length} rows upserted`)
+  console.log(`[seed-from-enriched] catalog_watches: ${filteredCatalogRows.length} rows upserted`)
 
   // ── Upsert catalog_watch_market ────────────────────────────────────────
   console.log('[seed-from-enriched] upserting catalog_watch_market…')

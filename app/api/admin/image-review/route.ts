@@ -212,9 +212,19 @@ type PostPayload = {
 }
 
 const ALLOWED_TAGS = new Set([
+  // Manual review tags (TagPicker UI in app/admin/image-review/page.tsx)
   'bracelet_top', 'bracelet_bottom', 'band', 'case', 'small_detail',
   'halo', 'edge_eroded', 'bottom_clipped',
   'shadow_remnant', 'bg_remnant',
+  // Auto-screener tags. Reviewers can confirm/clear via the UI's "Auto-detected"
+  // group. Keep this in sync with TagKey in app/admin/image-review/page.tsx.
+  'aspect_ratio_off', 'multi_object', 'dial_only', 'bracelet_truncated', 'tiny_subject',
+  'wrong_subject_arm', 'wrong_subject_box', 'multi_watch', 'wrong_orientation', 'incomplete',
+  // Triage tags written by scripts/triage-rolex-image-review.ts and similar
+  // operator-script flows. Not user-clickable, but allowed for symmetry so
+  // the user can correct a triage decision (e.g. set status=approved and
+  // keep the tag for audit).
+  'bad_cutout', 'wrong_subject', 'multi_watch_legacy', 'true_duplicate', 'triage_reacquired',
 ])
 
 export async function POST(request: NextRequest) {

@@ -33,6 +33,12 @@ type TagKey =
   | 'bracelet_top' | 'bracelet_bottom' | 'band' | 'case' | 'small_detail'
   | 'halo' | 'edge_eroded' | 'bottom_clipped'
   | 'shadow_remnant' | 'bg_remnant'
+  // Auto-detected by the rules/LLM screener (lib/imageProcessing/screener.ts,
+  // lib/imageProcessing/llmScreener.ts). Reviewers see these as auto-applied
+  // tags they can confirm, override, or remove. New auto-screener tags
+  // should be added here AND in app/api/admin/image-review/route.ts.
+  | 'aspect_ratio_off' | 'multi_object' | 'dial_only' | 'bracelet_truncated' | 'tiny_subject'
+  | 'wrong_subject_arm' | 'wrong_subject_box' | 'multi_watch' | 'wrong_orientation' | 'incomplete'
 
 // Tag groups map directly to pipeline stages. The --feedback pass uses these
 // to pick which knobs to bump on the re-run: "missing parts" → ML refinement,
@@ -54,6 +60,18 @@ const TAG_GROUPS: ReadonlyArray<{ heading: string; items: ReadonlyArray<{ key: T
   { heading: 'Background',        items: [
     { key: 'shadow_remnant',  label: 'Shadow remnant' },
     { key: 'bg_remnant',      label: 'BG remnant' },
+  ]},
+  { heading: 'Auto-detected',     items: [
+    { key: 'aspect_ratio_off',  label: 'Rotated / wrong AR' },
+    { key: 'multi_object',      label: 'Multi-object (rules)' },
+    { key: 'dial_only',         label: 'Dial only' },
+    { key: 'bracelet_truncated',label: 'Bracelet truncated' },
+    { key: 'tiny_subject',      label: 'Tiny subject' },
+    { key: 'wrong_subject_arm', label: 'Arm in shot (LLM)' },
+    { key: 'wrong_subject_box', label: 'In display box (LLM)' },
+    { key: 'multi_watch',       label: 'Multiple watches (LLM)' },
+    { key: 'wrong_orientation', label: 'Wrong orientation (LLM)' },
+    { key: 'incomplete',        label: 'Incomplete (LLM)' },
   ]},
 ]
 

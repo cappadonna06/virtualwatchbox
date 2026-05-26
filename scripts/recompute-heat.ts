@@ -159,9 +159,25 @@ async function main() {
   const now = new Date().toISOString()
   console.log(`\n[recompute-heat] writing ${ranked.length} rows in chunks of ${CHUNK}...`)
 
+  // Dedup by catalog_watch_id — the enriched JSON can contain multiple
+  // records that resolve to the same id (e.g. after a reference-column
+  // cleanup that produced (brand,ref,dial) collisions). Postgres rejects
+  // an upsert chunk with two rows that share the conflict key.
+  // Keep the first occurrence per id; later ones are dropped.
+  const seenIds = new Set<string>()
+  const dedupedRanked = ranked.filter(r => {
+    if (seenIds.has(r.id)) return false
+    seenIds.add(r.id)
+    return true
+  })
+  const droppedDupes = ranked.length - dedupedRanked.length
+  if (droppedDupes > 0) {
+    console.log(`[recompute-heat] dropped ${droppedDupes} duplicate id(s) before upsert (kept first per id)`)
+  }
+
   let written = 0
-  for (let i = 0; i < ranked.length; i += CHUNK) {
-    const batch = ranked.slice(i, i + CHUNK).map(r => ({
+  for (let i = 0; i < dedupedRanked.length; i += CHUNK) {
+    const batch = dedupedRanked.slice(i, i + CHUNK).map(r => ({
       catalog_watch_id: r.id,
       heat_score: r.newHeat,
       popularity_rank: r.popularityRank,
@@ -172,7 +188,7 @@ async function main() {
       .upsert(batch, { onConflict: 'catalog_watch_id' })
     if (error) fail(`upsert failed at offset ${i}: ${error.message}`)
     written += batch.length
-    process.stdout.write(`  ${written}/${ranked.length}\r`)
+    process.stdout.write(`  ${written}/${dedupedRanked.length}\r`)
   }
   console.log(`\n[recompute-heat] done. updated ${written} rows.`)
 }
