@@ -104,7 +104,16 @@ async function uploadOne(
     upsert: OVERWRITE,
     cacheControl: '31536000', // 1 year — file names are content-addressed by id
   })
-  if (error) throw new Error(`upload ${storagePath} failed: ${error.message}`)
+  if (error) {
+    // Race condition fallback: the existence-check at line 92 is eventually
+    // consistent against Supabase's list endpoint; an upload that loses the
+    // race still gets a 409 here. Treat that as a no-op so a single transient
+    // race doesn't fail the whole batch.
+    if (error.message?.toLowerCase().includes('resource already exists')) {
+      return { uploaded: false, publicUrl }
+    }
+    throw new Error(`upload ${storagePath} failed: ${error.message}`)
+  }
   return { uploaded: true, publicUrl }
 }
 
@@ -120,6 +129,31 @@ async function main() {
   const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8')) as ManifestEntry[]
   let targets = manifest
   if (TOP > 0) targets = targets.slice(0, TOP)
+
+  // Filter to manifest entries whose watchId actually exists in catalog_watches.
+  // After an aka-cleanup or seed dedup, the manifest can contain raw filenames
+  // whose id was dropped/canonicalized in catalog_watches — inserting watch_images
+  // rows for those ids fails the FK constraint and dies the whole run mid-chunk.
+  if (!DRY_RUN) {
+    const idSet = new Set<string>()
+    let offset = 0
+    while (true) {
+      const { data, error } = await supabase.from('catalog_watches').select('id').range(offset, offset + 999)
+      if (error) { console.warn(`[upload-images] could not load catalog_watches ids: ${error.message}`); break }
+      if (!data || data.length === 0) break
+      for (const r of data) idSet.add(r.id as string)
+      if (data.length < 1000) break
+      offset += 1000
+    }
+    if (idSet.size > 0) {
+      const before = targets.length
+      targets = targets.filter(t => idSet.has(t.watchId))
+      const dropped = before - targets.length
+      if (dropped > 0) {
+        console.log(`[upload-images] filtered out ${dropped} manifest entries with no matching catalog_watches row (likely deduped or pre-canonicalization)`)
+      }
+    }
+  }
 
   console.log(
     `[upload-images] ${targets.length} watches to process${DRY_RUN ? ' (DRY_RUN)' : ''}${OVERWRITE ? ' (OVERWRITE)' : ''}`,
@@ -149,11 +183,22 @@ async function main() {
           }
           const pngStoragePath = `${watchId}/primary.png`
           const webpStoragePath = `${watchId}/primary.webp`
+          // PNG uploads disabled — WebP supports alpha and is 5-6× smaller.
+          // The site's renderer at lib/catalog/CatalogProvider.tsx falls back
+          // to webp_url when png_url is null. Set UPLOAD_PNG=1 to re-enable.
+          const uploadPng = process.env.UPLOAD_PNG === '1' || process.env.UPLOAD_PNG === 'true'
           try {
-            const [pngRes, webpRes] = await Promise.all([
-              uploadOne(supabase, localPng, pngStoragePath, 'image/png'),
+            const tasks: Promise<{ uploaded: boolean; publicUrl: string }>[] = [
               uploadOne(supabase, localWebp, webpStoragePath, 'image/webp'),
-            ])
+            ]
+            if (uploadPng) tasks.unshift(uploadOne(supabase, localPng, pngStoragePath, 'image/png'))
+            const results = await Promise.all(tasks)
+            const webpRes = uploadPng ? results[1] : results[0]
+            // When PNG upload is skipped, point png_url at the WebP URL too —
+            // the watch_images.png_url column is NOT NULL and the renderer
+            // falls back to webp_url anyway, so the WebP URL is safe to put
+            // in both slots without any client-visible change.
+            const pngRes = uploadPng ? results[0] : { uploaded: false, publicUrl: webpRes.publicUrl }
             if (pngRes.uploaded || webpRes.uploaded) uploaded += 1
             else skipped += 1
             dbRows.push({

@@ -50,7 +50,10 @@ function hasFlag(name: string) {
 const ENRICHED_JSON =
   arg('--enriched') ?? process.env.ENRICHED_JSON ?? path.join('data', 'catalog-enriched-full.json')
 const TOP = Number(arg('--top') ?? process.env.IMAGES_TOP ?? 500)
-const SOURCES = (arg('--sources') ?? 'watchbase,wikimedia').split(',').map(s => s.trim())
+// Sources tried in declared order. `manual` reads from data/manual-image-sources.json
+// (id → URL map) and is tried FIRST when present so curated URLs trump auto-scraped
+// ones. Default chain keeps `manual` always on (cheap no-op when the file is empty).
+const SOURCES = (arg('--sources') ?? 'manual,watchbase,wikimedia').split(',').map(s => s.trim())
 const DRY_RUN = hasFlag('--dry-run')
 const OVERWRITE = hasFlag('--overwrite')
 const DELAY_MS = Number(process.env.IMAGES_DELAY_MS ?? 800)
@@ -124,6 +127,66 @@ async function download(url: string, destPath: string): Promise<void> {
     throw new Error(`response too small (${buf.byteLength} bytes) — likely a placeholder`)
   }
   await fs.writeFile(destPath, Buffer.from(buf))
+}
+
+// ─── Source 0: Manual URL overrides ────────────────────────────────────
+//
+// data/manual-image-sources.json maps catalog_watch_id → image URL. Useful
+// when the bot-friendly sources (WatchBase / Wikimedia) don't have a watch
+// but you can paste a clean image URL from your browser (Cloudflare lets
+// real browsers through; not us).
+//
+// Format:
+//   {
+//     "rolex-124300-0005": "https://content.rolex.com/.../m124300-0005.png",
+//     "tudor-m79540-0004": "https://www.tudorwatch.com/.../m79540-0004.png"
+//   }
+//
+// Tried FIRST before WatchBase/Wikimedia (typically higher quality if the
+// user took the trouble to find it). Falls through normally on failure.
+
+const manualSourcesPath = path.join(repoRoot, 'data', 'manual-image-sources.json')
+let manualSourcesCache: { [id: string]: string } | undefined
+
+function loadManualSources(): { [id: string]: string } {
+  if (manualSourcesCache !== undefined) return manualSourcesCache
+  let out: { [id: string]: string } = {}
+  if (fsSync.existsSync(manualSourcesPath)) {
+    try {
+      const raw = JSON.parse(fsSync.readFileSync(manualSourcesPath, 'utf8')) as Record<string, unknown>
+      if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+        // Keys starting with `_` are doc/comment-only and skipped.
+        for (const [k, v] of Object.entries(raw)) {
+          if (!k.startsWith('_') && typeof v === 'string') out[k] = v
+        }
+      }
+      const count = Object.keys(out).length
+      if (count > 0) console.log(`[images:acquire] loaded ${count} manual URL overrides from ${path.relative(repoRoot, manualSourcesPath)}`)
+    } catch (err) {
+      console.warn(`[images:acquire] could not read ${manualSourcesPath}: ${(err as Error).message}`)
+    }
+  }
+  manualSourcesCache = out
+  return out
+}
+
+async function tryManual(record: WatchRow): Promise<string | null> {
+  const sources = loadManualSources()
+  const url = sources[record.id]
+  if (!url) return null
+  const ext = extFromUrl(url)
+  const dest = path.join(rawDir, `${record.id}${ext}`)
+  if (DRY_RUN) {
+    console.log(`  manual DRY ${record.id} <= ${url}`)
+    return 'manual'
+  }
+  try {
+    await download(url, dest)
+    return 'manual'
+  } catch (err) {
+    console.warn(`  manual ERR ${record.id}: ${(err as Error).message} (${url})`)
+    return null
+  }
 }
 
 // ─── Source 1: WatchBase cached HTML ───────────────────────────────────
@@ -283,7 +346,7 @@ async function main() {
 
   let acquired = 0
   let skipped = 0
-  const sourceCounts: { [k: string]: number } = { watchbase: 0, wikimedia: 0 }
+  const sourceCounts: { [k: string]: number } = { manual: 0, watchbase: 0, wikimedia: 0 }
   const missRows: string[] = ['popularityRank,heatScore,brand,model,reference,id,wikimedia_search_url,brand_site_url']
 
   for (const r of targets) {
@@ -298,7 +361,8 @@ async function main() {
 
     let result: string | null = null
     for (const source of SOURCES) {
-      if (source === 'watchbase') result = await tryWatchbase(r)
+      if (source === 'manual') result = await tryManual(r)
+      else if (source === 'watchbase') result = await tryWatchbase(r)
       else if (source === 'wikimedia') result = await tryWikimedia(r)
       if (result) break
     }

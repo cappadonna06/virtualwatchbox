@@ -3,9 +3,11 @@ import { execFile } from 'node:child_process'
 import os from 'node:os'
 import path from 'node:path'
 import { promisify } from 'node:util'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { watches } from '../lib/watches'
 import { processWatchImageBuffer, type ProcessOptions } from '../lib/imageProcessing'
+import { screenProcessedImage } from '../lib/imageProcessing/screener'
+import { llmScreenImage } from '../lib/imageProcessing/llmScreener'
 import { loadLocalEnv, repoRoot } from './watch-image-pipeline'
 import {
   ensureWatchAssetDirs,
@@ -42,11 +44,26 @@ function flag(name: string): string | undefined {
 const ONLY_FLAGGED       = ARGV.includes('--only-flagged')
 const SKIP_APPROVED      = ARGV.includes('--skip-approved')
 const ONLY_NEW           = ARGV.includes('--only-new')
+const ONLY_IDS_RAW       = flag('--only')
 const NO_TAG_OVERRIDES   = ARGV.includes('--no-tag-overrides')
 const DRY_RUN            = ARGV.includes('--dry-run')
 const LIMIT              = Number(flag('--limit') ?? 0)
 const OUT_SUFFIX         = (flag('--out-suffix') ?? '').replace(/^[-_]+/, '')
+// Auto-screener flags. --screen turns on the rules-based screener after each
+// processed image; --screen-llm additionally runs the gpt-4o-mini vision
+// screener on images that pass rules. Both write watch_image_reviews rows for
+// failures (requires SUPABASE_URL + SUPABASE_SECRET_KEY in env).
+const SCREEN             = ARGV.includes('--screen') || ARGV.includes('--screen-llm')
+const SCREEN_LLM         = ARGV.includes('--screen-llm')
 const SHOW_HELP          = ARGV.includes('--help') || ARGV.includes('-h')
+
+// --only=<comma-list-of-ids> — explicit ID allowlist. Useful after a
+// triage/reacquire pass where the manifest still shows the old entries but
+// only a known subset of raw files actually changed. Composes with the other
+// selection flags (intersected — must match BOTH).
+const ONLY_IDS: Set<string> | null = ONLY_IDS_RAW
+  ? new Set(ONLY_IDS_RAW.split(',').map(s => s.trim()).filter(Boolean))
+  : null
 
 if (SHOW_HELP) {
   console.log(`
@@ -59,6 +76,18 @@ Selection flags (one):
   --skip-approved      Process every raw EXCEPT watches whose latest review is 'approved'.
   --only-new           Process only raw files whose watchId is NOT yet in the manifest.
                        For the "I just dropped N new images, don't redo the existing 3K" workflow.
+  --only=id1,id2,...   Explicit ID allowlist. Intersects with any other selection flag.
+                       Useful after a targeted reacquire when only a known subset changed.
+
+Quality screener:
+  --screen             After each successful process, run the rules screener
+                       (lib/imageProcessing/screener.ts) on the output. If any
+                       failure tag fires, write a watch_image_reviews row with
+                       status='needs_reprocess' or 'deleted'. Requires Supabase env.
+  --screen-llm         Implies --screen. Additionally calls gpt-4o-mini vision
+                       (~\$0.001/image) on images that pass the rules check, to
+                       catch wrong-subject failures (arm, watch-in-box, etc.).
+                       Requires OPENAI_API_KEY.
 
 Output:
   --out-suffix=X       Write to public/watch-assets/processed-X/ instead of processed/.
@@ -291,6 +320,12 @@ async function main() {
     console.log(`--only-new: ${rawFiles.length} new of ${allRawFiles.length} raw files (${existingIds.size} already in manifest).`)
   }
 
+  if (ONLY_IDS) {
+    const before = rawFiles.length
+    rawFiles = rawFiles.filter(f => ONLY_IDS.has(withoutExtension(f)))
+    console.log(`--only: ${rawFiles.length} of ${before} match the ${ONLY_IDS.size}-id allowlist.`)
+  }
+
   if (LIMIT > 0 && rawFiles.length > LIMIT) {
     rawFiles = rawFiles.slice(0, LIMIT)
     console.log(`Limit applied: ${rawFiles.length} of ${rawFiles.length + (allRawFiles.length - rawFiles.length)}`)
@@ -310,9 +345,32 @@ async function main() {
   console.log(`\nProcessing ${rawFiles.length} image${rawFiles.length === 1 ? '' : 's'} → ${path.relative(repoRoot, processedDir)}/`)
   const useTagOverrides = (ONLY_FLAGGED || SKIP_APPROVED) && !NO_TAG_OVERRIDES
 
+  // Lazy Supabase client for screener-row writes. Initialized only when
+  // --screen is set; loadLatestReviews above already validated env if
+  // --only-flagged / --skip-approved is in play.
+  let screenerSupabase: SupabaseClient | null = null
+  if (SCREEN) {
+    loadLocalEnv()
+    const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.SUPABASE_SECRET_KEY
+      || process.env.SUPABASE_SERVICE_ROLE_KEY
+      || process.env.SUPABASE_SERVICE_KEY
+    if (!url || !key) {
+      console.error('--screen requires SUPABASE_URL + SUPABASE_SECRET_KEY (or SERVICE_ROLE_KEY) in env / .env.local')
+      process.exit(1)
+    }
+    if (SCREEN_LLM && !process.env.OPENAI_API_KEY) {
+      console.error('--screen-llm requires OPENAI_API_KEY in env / .env.local')
+      process.exit(1)
+    }
+    screenerSupabase = createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } })
+    console.log(`[screen] enabled (${SCREEN_LLM ? 'rules + LLM' : 'rules only'})`)
+  }
+
   const manifest: ManifestEntry[] = []
   let okCount = 0
   let failCount = 0
+  let screenerFlagged = 0
   for (let i = 0; i < rawFiles.length; i += 1) {
     const rawFilename = rawFiles[i]
     const watchId = withoutExtension(rawFilename)
@@ -327,9 +385,57 @@ async function main() {
         ? ` [overrides: ${Object.entries(opts).map(([k, v]) => `${k}=${v}`).join(',')}]`
         : ''
       console.log(`  [${i + 1}/${rawFiles.length}] ${rawFilename} → ${entry.processedWidth}x${entry.processedHeight} (${Date.now() - t0}ms)${entry.backgroundRemovalApplied ? '' : ' [no bg removal]'}${overrideNote}`)
+
+      // Screener pass — runs on the processed PNG bytes. Never fatal: a
+      // Supabase write failure logs a warning and continues so the batch
+      // can finish even if the network blips.
+      if (SCREEN && screenerSupabase) {
+        try {
+          const pngPath = path.join(processedDir, `${watchId}.png`)
+          const pngBuf = await fs.readFile(pngPath)
+          const rules = await screenProcessedImage(pngBuf)
+          let finalTags = rules.tags
+          let finalStatus = rules.recommendedStatus
+          let llmNote = ''
+          if (SCREEN_LLM && rules.tags.length === 0) {
+            const llm = await llmScreenImage(pngBuf)
+            if (!llm.isClean) {
+              finalTags = [...finalTags, ...llm.tags]
+              finalStatus = 'deleted'
+              llmNote = ` [llm] ${llm.reason}`
+            }
+          }
+          if (finalTags.length > 0) {
+            screenerFlagged += 1
+            const notes = [
+              ...rules.reasons.map(r => `[rule] ${r}`),
+              llmNote.trim(),
+            ].filter(Boolean).join(' | ').slice(0, 1000)
+            const { error } = await screenerSupabase.from('watch_image_reviews').insert({
+              catalog_watch_id: watchId,
+              variant: 'primary',
+              status: finalStatus,
+              tags: finalTags,
+              notes: `[auto-screener] ${notes}`,
+              reviewer_id: null,
+            })
+            if (error) {
+              console.warn(`    [screen] supabase insert failed for ${watchId}: ${error.message}`)
+            } else {
+              console.log(`    [screen] ${watchId} → ${finalStatus} [${finalTags.join(',')}]`)
+            }
+          }
+        } catch (err) {
+          console.warn(`    [screen] error for ${watchId}: ${(err as Error).message}`)
+        }
+      }
     } else {
       failCount += 1
     }
+  }
+
+  if (SCREEN) {
+    console.log(`\n[screen] flagged ${screenerFlagged}/${okCount} (${(screenerFlagged / Math.max(1, okCount) * 100).toFixed(1)}%)`)
   }
 
   // Merge with existing manifest when only a subset was processed. Otherwise
