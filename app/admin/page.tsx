@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { brand } from '@/lib/brand'
@@ -8,6 +8,7 @@ import { useAuth } from '@/lib/auth/AuthProvider'
 import { isAdminEmail } from '@/lib/auth/admin'
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
+import { createClient } from '@/lib/supabase/client'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,18 +18,50 @@ export default function AdminDashboardPage() {
   const { allWatches, dynamicWatches } = useCatalog()
   const { getImageUrl } = useWatchImages()
 
+  // The in-memory catalog is intentionally capped at the top-2000-by-heat
+  // (see CatalogProvider), so allWatches.length is NOT the real catalog size.
+  // Pull the true totals with cheap COUNT/head queries against the full tables
+  // so the dashboard reports accurate numbers, not the loaded subset.
+  const [dbCounts, setDbCounts] = useState<{ total: number; withImage: number } | null>(null)
+  const isAdmin = !!user && isAdminEmail(user.email)
+
+  useEffect(() => {
+    if (!isAdmin) return
+    let cancelled = false
+    void (async () => {
+      try {
+        const supabase = createClient()
+        const [catalogRes, imageRes] = await Promise.all([
+          supabase.from('catalog_watches').select('id', { count: 'exact', head: true }),
+          supabase.from('watch_images').select('id', { count: 'exact', head: true }).eq('variant', 'primary'),
+        ])
+        if (cancelled) return
+        if (catalogRes.error) throw catalogRes.error
+        if (imageRes.error) throw imageRes.error
+        setDbCounts({ total: catalogRes.count ?? 0, withImage: imageRes.count ?? 0 })
+      } catch (err) {
+        if (!cancelled) console.warn('[admin] count query failed; showing loaded-subset counts', err)
+      }
+    })()
+    return () => { cancelled = true }
+  }, [isAdmin])
+
   const stats = useMemo(() => {
-    const total = allWatches.length
-    const withImage = allWatches.filter(w => !!(getImageUrl(w.id) || w.imageUrl)).length
-    const withoutImage = total - withImage
+    // Prefer the true DB counts; fall back to the loaded subset until they land.
+    const loadedTotal = allWatches.length
+    const loadedWithImage = allWatches.filter(w => !!(getImageUrl(w.id) || w.imageUrl)).length
+    const total = dbCounts?.total ?? loadedTotal
+    const withImage = dbCounts?.withImage ?? loadedWithImage
+    const withoutImage = Math.max(0, total - withImage)
     return {
       total,
       withImage,
       withoutImage,
       coverage: total ? Math.round((withImage / total) * 100) : 0,
       supabase: dynamicWatches.length,
+      accurate: !!dbCounts,
     }
-  }, [allWatches, dynamicWatches, getImageUrl])
+  }, [allWatches, dynamicWatches, getImageUrl, dbCounts])
 
   if (loading) return null
 
@@ -84,10 +117,10 @@ export default function AdminDashboardPage() {
       </p>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 32 }}>
-        <Stat label="Catalog watches" value={stats.total} />
+        <Stat label="Catalog watches" value={stats.total} hint={stats.accurate ? 'full catalog' : 'counting…'} />
         <Stat label="With image" value={stats.withImage} hint={`${stats.coverage}% coverage`} />
         <Stat label="Missing image" value={stats.withoutImage} hint="see Photo Queue" emphasis={stats.withoutImage > 0} />
-        <Stat label="In Supabase" value={stats.supabase} hint="dynamic rows" />
+        <Stat label="Loaded in memory" value={stats.supabase} hint="top by heat" />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>

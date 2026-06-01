@@ -386,6 +386,16 @@ export default function AdminImageReviewPage() {
                   <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {row.reference ?? ''} · {row.catalog_watch_id}
                   </div>
+                  <Link
+                    href={`/admin/images?watchId=${encodeURIComponent(row.catalog_watch_id)}`}
+                    style={{
+                      display: 'inline-block', marginTop: 6,
+                      fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600,
+                      letterSpacing: '0.04em', color: brand.colors.gold, textDecoration: 'none',
+                    }}
+                  >
+                    Replace photo →
+                  </Link>
                 </div>
                 <span style={{
                   padding: '3px 9px', borderRadius: brand.radius.pill,

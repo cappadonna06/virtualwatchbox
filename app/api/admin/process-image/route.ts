@@ -3,7 +3,7 @@ import sharp from 'sharp'
 import { processWatchImageBuffer } from '@/lib/imageProcessing'
 import { identifyWatchWithVision } from '@/lib/watchVision'
 import { lookupReferenceCandidates, type ReferenceCandidate } from '@/lib/referenceLookup'
-import { verifyWatchImage, type WatchVerification, type VerifyExpected } from '@/lib/watchVerify'
+import { type VerifyExpected } from '@/lib/watchVerify'
 import { requireAdmin } from '@/lib/auth/requireAdmin'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -129,16 +129,12 @@ export async function POST(request: NextRequest) {
   // row can't be located (DB miss + not in static seed), return verify mode
   // with `expected: null` so the UI can render a clear "row not found"
   // warning instead of pretending to identify the watch from scratch.
+  //
+  // No AI re-confirmation: the admin already named the exact ref, so a vision
+  // call to "confirm" the match is pure latency/cost with no decision value —
+  // they see the before/after and approve. `verification` stays null.
   if (expectedWatchId) {
     const expected = await loadExpectedWatch(expectedWatchId)
-    let verification: WatchVerification | null = null
-    if (expected) {
-      try {
-        verification = await verifyWatchImage(inputBuffer, filename, expected)
-      } catch (err) {
-        console.warn('[admin/process-image] verify failed (non-fatal):', err)
-      }
-    }
     return NextResponse.json({
       mode: 'verify' as const,
       pngDataUrl: `data:image/png;base64,${processed.pngBuffer.toString('base64')}`,
@@ -149,7 +145,7 @@ export async function POST(request: NextRequest) {
       processedHeight: processed.processedHeight,
       backgroundRemovalApplied: processed.backgroundRemovalApplied,
       expected,
-      verification,
+      verification: null,
     })
   }
 

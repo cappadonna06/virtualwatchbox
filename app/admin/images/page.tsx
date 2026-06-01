@@ -459,7 +459,7 @@ function VerifyBody({
           </div>
         ) : (
           <div style={{ marginTop: 10, fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, fontStyle: 'italic' }}>
-            AI verification unavailable — review the image manually before approving.
+            Replacing the photo for this watch — confirm the new cutout looks right, then approve.
           </div>
         )}
       </div>

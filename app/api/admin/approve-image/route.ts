@@ -63,8 +63,15 @@ export async function POST(request: NextRequest) {
   const { data: pngUrlData } = supabase.storage.from('watch-images').getPublicUrl(pngPath)
   const { data: webpUrlData } = supabase.storage.from('watch-images').getPublicUrl(webpPath)
 
+  // Migration 014 renamed watch_id → catalog_watch_id, added a `variant`
+  // discriminator, and replaced the old UNIQUE(watch_id) with a unique index
+  // on (catalog_watch_id, variant, sort_order). Re-approving a watch's primary
+  // photo must update that one row, so we conflict-target all three columns
+  // with the fixed (primary, 0) coordinates this curated upload always writes.
   const { error: dbError } = await supabase.from('watch_images').upsert({
-    watch_id: watchId,
+    catalog_watch_id: watchId,
+    variant: 'primary',
+    sort_order: 0,
     png_url: pngUrlData.publicUrl,
     webp_url: webpUrlData.publicUrl,
     source_width: sourceWidth,
@@ -73,7 +80,7 @@ export async function POST(request: NextRequest) {
     processed_height: processedHeight,
     background_removal_applied: backgroundRemovalApplied,
     approved_at: new Date().toISOString(),
-  }, { onConflict: 'watch_id' })
+  }, { onConflict: 'catalog_watch_id,variant,sort_order' })
 
   if (dbError) {
     console.error('[admin/approve-image] DB insert failed:', dbError)
