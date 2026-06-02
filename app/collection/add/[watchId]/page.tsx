@@ -7,7 +7,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import type { CatalogWatch, PlaygroundBox, WatchCondition } from '@/types/watch'
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { addWatchToPlaygroundBox, createPlaygroundBox, createPlaygroundEntry, normalizePlaygroundBoxes } from '@/lib/playground'
-import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
+import { createSeededPlaygroundBoxes } from '@/lib/playgroundData'
 import { useCollectionSession } from '../../CollectionSessionProvider'
 import { brand } from '@/lib/brand'
 import WatchStateControl from '@/components/collection/WatchStateControl'
@@ -24,9 +24,9 @@ function fmt(n: number) {
 function loadPlaygroundBoxes() {
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
-    return normalizePlaygroundBoxes(stored ? JSON.parse(stored) : null, SEEDED_PLAYGROUND_BOXES)
+    return normalizePlaygroundBoxes(stored ? JSON.parse(stored) : null, createSeededPlaygroundBoxes())
   } catch {
-    return SEEDED_PLAYGROUND_BOXES
+    return createSeededPlaygroundBoxes()
   }
 }
 
@@ -96,7 +96,7 @@ export default function AddWatchConfirmPage() {
   const [purchasePrice, setPurchasePrice] = useState('')
   const [purchaseDate, setPurchaseDate] = useState('')
   const [notes, setNotes] = useState('')
-  const [playgroundBoxes, setPlaygroundBoxes] = useState<PlaygroundBox[]>(SEEDED_PLAYGROUND_BOXES)
+  const [playgroundBoxes, setPlaygroundBoxes] = useState<PlaygroundBox[]>(createSeededPlaygroundBoxes)
   const [selectedBoxId, setSelectedBoxId] = useState<string | null>(incomingBoxId)
   const [newBoxOpen, setNewBoxOpen] = useState(false)
   const [newBoxName, setNewBoxName] = useState('')

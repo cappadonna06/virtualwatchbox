@@ -6,7 +6,7 @@ import type { CatalogWatch, PlaygroundBox } from '@/types/watch'
 import { useCatalog, type CatalogSearchParams } from '@/lib/catalog/CatalogProvider'
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import { normalizePlaygroundBoxes } from '@/lib/playground'
-import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
+import { createSeededPlaygroundBoxes } from '@/lib/playgroundData'
 import { brand } from '@/lib/brand'
 import { dialColorToHex } from '@/lib/dialColors'
 import AddSearchWatchCard from '@/components/collection/AddSearchWatchCard'
@@ -42,9 +42,9 @@ function matchesSize(watch: CatalogWatch, size: SizeFilter) {
 function loadPlaygroundBoxes() {
   try {
     const stored = localStorage.getItem('playgroundBoxes')
-    return normalizePlaygroundBoxes(stored ? JSON.parse(stored) : null, SEEDED_PLAYGROUND_BOXES)
+    return normalizePlaygroundBoxes(stored ? JSON.parse(stored) : null, createSeededPlaygroundBoxes())
   } catch {
-    return SEEDED_PLAYGROUND_BOXES
+    return createSeededPlaygroundBoxes()
   }
 }
 

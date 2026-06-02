@@ -33,6 +33,15 @@ const DEFAULT_FRAME = 'light-oak'
 const DEFAULT_LINING = 'cream'
 const DEFAULT_SLOT_COUNT = 6
 
+// playground_boxes.id is a Postgres `uuid` column. A box id that isn't a valid
+// UUID (the legacy `pg-...` prefix, or the seed's `pg-dream-1` sentinel) makes
+// the Supabase upsert fail with an invalid-syntax error — which is why
+// playground boxes silently failed to persist across logins.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+export function isUuid(value: string): boolean {
+  return UUID_RE.test(value)
+}
+
 function getDefaultSlotCount(entryCount: number) {
   return SLOT_COUNTS.find(slot => slot.n >= Math.max(entryCount, DEFAULT_SLOT_COUNT))?.n
     ?? SLOT_COUNTS[SLOT_COUNTS.length - 1].n
@@ -66,7 +75,7 @@ export function createPlaygroundBox({
   createdAt?: string
 }): PlaygroundBox {
   return {
-    id: id ?? `pg-${crypto.randomUUID()}`,
+    id: id && isUuid(id) ? id : crypto.randomUUID(),
     name: name.trim(),
     tags,
     entries,
@@ -255,7 +264,7 @@ export function migratePlaygroundBox(raw: LegacyPlaygroundBox): PlaygroundBox | 
     }))
 
   return {
-    id: raw.id,
+    id: isUuid(raw.id) ? raw.id : crypto.randomUUID(),
     name: raw.name,
     tags: Array.isArray(raw.tags) ? raw.tags.filter(Boolean) : [],
     entries,

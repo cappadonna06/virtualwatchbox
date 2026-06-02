@@ -15,7 +15,7 @@ import { remapLegacyCatalogId } from '@/lib/catalog/legacyIdRemap'
 import { createCatalogWatchMap, resolveCatalogWatchId, resolveOwnedWatches } from '@/lib/watchData'
 import { getEffectiveSlotCount, packToSlotCount } from '@/lib/watchboxOverflow'
 import { migratePlaygroundBox, normalizePlaygroundBoxes } from '@/lib/playground'
-import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
+import { createSeededPlaygroundBoxes } from '@/lib/playgroundData'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { createClient } from '@/lib/supabase/client'
 import type {
@@ -744,7 +744,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   const [hydrated, setHydrated] = useState(false)
   const [dataLoading, setDataLoading] = useState(false)
   const [migrationPending, setMigrationPending] = useState(false)
-  const [playgroundBoxes, setPlaygroundBoxesState] = useState<PlaygroundBox[]>(SEEDED_PLAYGROUND_BOXES)
+  const [playgroundBoxes, setPlaygroundBoxesState] = useState<PlaygroundBox[]>(createSeededPlaygroundBoxes)
   const [playgroundHydrated, setPlaygroundHydrated] = useState(false)
   const [discoverRefreshOffsets, setDiscoverRefreshOffsets] = useState<Record<string, number>>({})
 
@@ -981,7 +981,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       const rawPg = localStorage.getItem(PLAYGROUND_BOXES_STORAGE_KEY)
       const pgNormalized = normalizePlaygroundBoxes(
         rawPg ? JSON.parse(rawPg) : null,
-        SEEDED_PLAYGROUND_BOXES,
+        createSeededPlaygroundBoxes(),
       )
       setPlaygroundBoxesState(pgNormalized)
     } catch {

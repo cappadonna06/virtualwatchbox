@@ -1,6 +1,6 @@
 import type { CatalogWatch } from '@/types/watch'
 import { SEEDED_OWNED_WATCHES } from './collectionData'
-import { SEEDED_PLAYGROUND_BOXES } from './playgroundData'
+import { createSeededPlaygroundBoxes } from './playgroundData'
 
 /**
  * Editorial heat score for the admin photo-intake backlog.
@@ -73,7 +73,7 @@ const DEFAULT_TIER: Tier = 'C'
 const SEEDED_WATCH_IDS: Set<string> = (() => {
   const ids = new Set<string>()
   for (const owned of SEEDED_OWNED_WATCHES) ids.add(owned.watchId)
-  for (const box of SEEDED_PLAYGROUND_BOXES) {
+  for (const box of createSeededPlaygroundBoxes()) {
     for (const entry of box.entries) ids.add(entry.watchId)
   }
   return ids

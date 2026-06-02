@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import type { PlaygroundBox, PlaygroundBoxEntry, ResolvedWatch } from '@/types/watch'
+import type { CatalogWatch, PlaygroundBox, PlaygroundBoxEntry, ResolvedWatch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS, watchboxSlotPadding } from '@/lib/frameConfig'
 import {
   buildAbsoluteProfileDemoUrl,
@@ -11,7 +11,7 @@ import {
   getProfileDemoState,
 } from '@/lib/profileDemo'
 import { useAuth } from '@/lib/auth/AuthProvider'
-import { watches as catalogWatches } from '@/lib/watches'
+import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import {
   buildSlotMap,
   createPlaygroundBox,
@@ -23,7 +23,7 @@ import {
   tryAddOrGrowPlaygroundBox,
   type ResolvedPlaygroundWatch,
 } from '@/lib/playground'
-import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
+import { createSeededPlaygroundBoxes } from '@/lib/playgroundData'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import WatchTray from '@/components/playground/WatchTray'
 import { packToSlotCount } from '@/lib/watchboxOverflow'
@@ -100,6 +100,7 @@ function PlaygroundPageInner() {
     setPlaygroundBoxes: setBoxes,
     playgroundHydrated: hydrated,
   } = useCollectionSession()
+  const { allWatches, ensureWatches } = useCatalog()
   const requestedBoxId = searchParams.get('boxId')
   const requestedEntryId = searchParams.get('entryId')
   const [shareDisplayName, setShareDisplayName] = useState('')
@@ -160,9 +161,39 @@ function PlaygroundPageInner() {
     () => boxes.map(box => ({ value: box.id, label: `${box.name} · ${box.entries.length}` })),
     [boxes],
   )
+
+  // Box entries can reference any catalog watch — owned (imported), followed, or
+  // dragged in from search/discover. The static seed list (lib/watches) only
+  // covers a sliver of the catalog, so resolving against it silently drops every
+  // entry whose watch lives only in the dynamic Supabase catalog. Build the
+  // resolution set from the dynamic catalog plus the user's already-resolved
+  // owned/followed rows (which carry full catalog data via the owned-set).
+  const resolutionCatalog = useMemo(() => {
+    const map = new Map<string, CatalogWatch>()
+    for (const w of collectionWatches) map.set(w.watchId, { ...w, id: w.watchId })
+    for (const w of followedWatches) map.set(w.id, w)
+    for (const w of allWatches) map.set(w.id, w)
+    return [...map.values()]
+  }, [collectionWatches, followedWatches, allWatches])
+
+  // Hydrate any box-referenced watch that isn't in the resolution set yet
+  // (e.g. a box loaded from Supabase pointing at a watch outside the top-2000
+  // discovery cache and not currently owned/followed). The requested ref guards
+  // against refetching ids that resolve to nothing.
+  const requestedHydrationRef = useRef<Set<string>>(new Set())
+  useEffect(() => {
+    const present = new Set(resolutionCatalog.map(w => w.id))
+    const missing = boxes
+      .flatMap(box => box.entries.map(entry => entry.watchId))
+      .filter(id => id && !present.has(id) && !requestedHydrationRef.current.has(id))
+    if (missing.length === 0) return
+    for (const id of missing) requestedHydrationRef.current.add(id)
+    void ensureWatches([...new Set(missing)])
+  }, [boxes, resolutionCatalog, ensureWatches])
+
   const resolvedEntries = useMemo(
-    () => resolvePlaygroundWatches(activeBox?.entries ?? [], catalogWatches),
-    [activeBox],
+    () => resolvePlaygroundWatches(activeBox?.entries ?? [], resolutionCatalog),
+    [activeBox, resolutionCatalog],
   )
   const watchBySlot = useMemo(() => {
     const slotMap = buildSlotMap(resolvedEntries)
@@ -299,8 +330,9 @@ function PlaygroundPageInner() {
   function handleDeleteBox() {
     if (!deleteConfirmId) return
     const remaining = boxes.filter(box => box.id !== deleteConfirmId)
-    setBoxes(remaining.length > 0 ? remaining : SEEDED_PLAYGROUND_BOXES)
-    const next = remaining[0] ?? SEEDED_PLAYGROUND_BOXES[0]
+    const fallback = remaining.length > 0 ? remaining : createSeededPlaygroundBoxes()
+    setBoxes(fallback)
+    const next = fallback[0]
     setActiveBoxId(next.id)
     setSelectedEntryId(null)
     setDeleteConfirmId(null)
