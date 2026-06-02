@@ -294,10 +294,54 @@ function normalizeModel(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 }
 
+// Trailing complication descriptors that mark a *variant* of a line rather than
+// a distinct line. "Seamaster Aqua Terra GMT" and "Aqua Terra Worldtimer" are
+// the same family as the base Aqua Terra; "Diver 300M" / "Planet Ocean" are
+// not. We only strip these when they trail the model name, so a leading use
+// (e.g. Rolex "GMT-Master II") is left intact.
+const FAMILY_SUFFIX_PHRASES = [
+  'small seconds', 'day date', 'annual calendar', 'perpetual calendar',
+  'power reserve', 'dual time', 'world timer', 'moon phase', 'big date',
+  'jumping hour', 'jump hour',
+]
+const FAMILY_SUFFIX_WORDS = new Set([
+  'gmt', 'worldtimer', 'chronograph', 'chrono',
+  'moonphase', 'tourbillon', 'skeleton', 'regulator',
+])
+
+// Collapse a model name to its base "line" by peeling trailing complication
+// descriptors. Always keeps at least the core token so it can't return ''.
+function familyFromModel(model: string): string {
+  let tokens = normalizeModel(model).split(' ').filter(Boolean)
+  let changed = true
+  while (changed && tokens.length > 1) {
+    changed = false
+    for (const phrase of FAMILY_SUFFIX_PHRASES) {
+      const parts = phrase.split(' ')
+      if (
+        parts.length < tokens.length &&
+        parts.every((p, i) => tokens[tokens.length - parts.length + i] === p)
+      ) {
+        tokens = tokens.slice(0, tokens.length - parts.length)
+        changed = true
+        break
+      }
+    }
+    if (changed) continue
+    if (FAMILY_SUFFIX_WORDS.has(tokens[tokens.length - 1])) {
+      tokens = tokens.slice(0, -1)
+      changed = true
+    }
+  }
+  return tokens.join(' ')
+}
+
 export function modelFamilyKey(watch: CatalogWatch): string {
   const family = watch.modelFamily?.trim()
+  // Curated model_family always wins; the suffix-strip heuristic is only the
+  // fallback for the (currently universal) case where it isn't populated.
   if (family) return `${watch.brand.toLowerCase()}::${family.toLowerCase()}`
-  return `${watch.brand.toLowerCase()}::${normalizeModel(watch.model)}`
+  return `${watch.brand.toLowerCase()}::${familyFromModel(watch.model)}`
 }
 
 // A watch's model can be matched two ways: by its curated model family
