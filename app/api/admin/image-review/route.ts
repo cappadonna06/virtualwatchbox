@@ -164,6 +164,23 @@ export async function GET(request: NextRequest) {
   }
   for (const row of all) counts[row.status] += 1
 
+  // A watch is "flagged" if it needs reprocessing or the auto-screener tagged
+  // it while still unreviewed. 'deleted' rows already had their image purged so
+  // they no longer appear in `all`; the count is still reported for the badge.
+  const isFlagged = (r: Row) =>
+    r.status === 'needs_reprocess' || (r.status === 'pending' && r.tags.length > 0)
+  const flaggedRows = all.filter(isFlagged)
+
+  // Summary mode: lightweight payload for the dashboard tile + catalog badges.
+  // Returns just the flagged ids (with status + tags) plus counts, so callers
+  // don't pull the full paginated row set.
+  if (url.searchParams.get('summary') === '1') {
+    return NextResponse.json({
+      counts: { ...counts, flagged: flaggedRows.length },
+      flagged: flaggedRows.map(r => ({ id: r.catalog_watch_id, status: r.status, tags: r.tags })),
+    })
+  }
+
   let filtered = status === 'all' ? all : all.filter(r => r.status === status)
   if (qTokens.length > 0) {
     filtered = filtered.filter(r => {

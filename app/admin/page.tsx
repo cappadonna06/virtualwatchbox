@@ -23,6 +23,7 @@ export default function AdminDashboardPage() {
   // Pull the true totals with cheap COUNT/head queries against the full tables
   // so the dashboard reports accurate numbers, not the loaded subset.
   const [dbCounts, setDbCounts] = useState<{ total: number; withImage: number } | null>(null)
+  const [flaggedCount, setFlaggedCount] = useState<number | null>(null)
   const isAdmin = !!user && isAdminEmail(user.email)
 
   useEffect(() => {
@@ -41,6 +42,24 @@ export default function AdminDashboardPage() {
         setDbCounts({ total: catalogRes.count ?? 0, withImage: imageRes.count ?? 0 })
       } catch (err) {
         if (!cancelled) console.warn('[admin] count query failed; showing loaded-subset counts', err)
+      }
+    })()
+    return () => { cancelled = true }
+  }, [isAdmin])
+
+  // Images the screener (or a human) flagged for review — surfaced as a stat
+  // tile so bad cutouts / wrong-subject photos are visible at a glance.
+  useEffect(() => {
+    if (!isAdmin) return
+    let cancelled = false
+    void (async () => {
+      try {
+        const res = await fetch('/api/admin/image-review?summary=1', { cache: 'no-store' })
+        if (!res.ok) return
+        const json = (await res.json()) as { counts?: { flagged?: number } }
+        if (!cancelled) setFlaggedCount(json.counts?.flagged ?? 0)
+      } catch {
+        // Non-fatal — the tile falls back to its static description.
       }
     })()
     return () => { cancelled = true }
@@ -120,7 +139,7 @@ export default function AdminDashboardPage() {
         <Stat label="Catalog watches" value={stats.total} hint={stats.accurate ? 'full catalog' : 'counting…'} />
         <Stat label="With image" value={stats.withImage} hint={`${stats.coverage}% coverage`} />
         <Stat label="Missing image" value={stats.withoutImage} hint="see Photo Queue" emphasis={stats.withoutImage > 0} />
-        <Stat label="Loaded in memory" value={stats.supabase} hint="top by heat" />
+        <Stat label="Flagged for review" value={flaggedCount ?? 0} hint={flaggedCount === null ? 'counting…' : 'auto-screened'} emphasis={(flaggedCount ?? 0) > 0} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
@@ -151,9 +170,14 @@ export default function AdminDashboardPage() {
         />
         <Tile
           title="Image Review"
-          description="Side-by-side audit of processed catalog images vs. originals. Flag bad cutouts for re-processing."
-          href="/admin/image-review"
-          cta="Open image review →"
+          description={
+            flaggedCount && flaggedCount > 0
+              ? `${flaggedCount} ${flaggedCount === 1 ? 'image' : 'images'} auto-flagged by the screener (off / wrong-subject). Review side-by-side vs. the original and approve or re-process.`
+              : 'Side-by-side audit of processed catalog images vs. originals. The screener auto-flags off / wrong-subject photos for review.'
+          }
+          href={flaggedCount && flaggedCount > 0 ? '/admin/image-review?status=needs_reprocess' : '/admin/image-review'}
+          cta={flaggedCount && flaggedCount > 0 ? `Review ${flaggedCount} flagged →` : 'Open image review →'}
+          accent={!!flaggedCount && flaggedCount > 0}
         />
       </div>
     </div>

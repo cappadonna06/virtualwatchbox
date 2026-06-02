@@ -85,26 +85,27 @@ type ApiResponse = {
   status: ReviewStatus | 'all'
 }
 
+// The only states that matter day-to-day are "flagged" (needs_reprocess) vs
+// "cleared" (approved). Everything else is just "not yet looked at" and lives
+// under All. Pending and removed images aren't their own tabs.
 const STATUS_TABS: Array<{ key: 'all' | ReviewStatus; label: string }> = [
+  { key: 'needs_reprocess', label: 'Flagged' },
+  { key: 'approved', label: 'Cleared' },
   { key: 'all', label: 'All' },
-  { key: 'pending', label: 'Pending' },
-  { key: 'needs_reprocess', label: 'Needs reprocess' },
-  { key: 'approved', label: 'Approved' },
-  { key: 'deleted', label: 'Wrong watch' },
 ]
 
 const STATUS_BADGE: Record<ReviewStatus, { bg: string; fg: string; border: string; label: string }> = {
-  pending:         { bg: '#FFFFFF',           fg: brand.colors.muted, border: brand.colors.borderMid, label: 'Unreviewed' },
-  approved:        { bg: '#EEF6EE',           fg: '#2F6B33',          border: '#BFD9C2',              label: 'Approved' },
-  needs_reprocess: { bg: '#FFF4E6',           fg: '#9A5B14',          border: '#E9C99B',              label: 'Needs reprocess' },
-  deleted:         { bg: '#FCEAEA',           fg: '#9A2F2F',          border: '#E5B5B5',              label: 'Wrong watch' },
+  pending:         { bg: '#FFFFFF',           fg: brand.colors.muted, border: brand.colors.borderMid, label: 'Not reviewed' },
+  approved:        { bg: '#EEF6EE',           fg: '#2F6B33',          border: '#BFD9C2',              label: 'Cleared' },
+  needs_reprocess: { bg: '#FFF4E6',           fg: '#9A5B14',          border: '#E9C99B',              label: 'Flagged' },
+  deleted:         { bg: '#FCEAEA',           fg: '#9A2F2F',          border: '#E5B5B5',              label: 'Removed' },
 }
 
 export default function AdminImageReviewPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
 
-  const [status, setStatus] = useState<'all' | ReviewStatus>('pending')
+  const [status, setStatus] = useState<'all' | ReviewStatus>('needs_reprocess')
   const [page, setPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -407,11 +408,8 @@ export default function AdminImageReviewPage() {
                 </span>
               </div>
 
-              {/* Side-by-side */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: brand.colors.borderLight }}>
-                <ImagePane label="Processed (WebP)" src={withVersion(row.webp_url) ?? row.webp_url} />
-                <ImagePane label="Raw original" src={row.raw_url} fallbackHint="raw not on disk" />
-              </div>
+              {/* Processed catalog image */}
+              <ImagePane src={withVersion(row.webp_url) ?? row.webp_url} />
 
               {/* Tags + notes + actions */}
               <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -454,7 +452,7 @@ export default function AdminImageReviewPage() {
                           onClick={() => submitReview(row, 'needs_reprocess')}
                         />
                         <ActionButton
-                          label="Wrong watch / delete"
+                          label="Remove image"
                           variant="delete"
                           disabled={isBusy}
                           onClick={() => submitReview(row, 'deleted')}
@@ -544,25 +542,27 @@ function TagPicker({
   )
 }
 
-function ImagePane({ label, src, fallbackHint }: { label: string; src: string | null; fallbackHint?: string }) {
+function ImagePane({ src, label }: { src: string | null; label?: string }) {
   return (
-    <div style={{ background: '#F7F6F2', position: 'relative', aspectRatio: '1 / 1', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-      <span style={{
-        position: 'absolute', top: 6, left: 8,
-        fontFamily: brand.font.sans, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase',
-        color: brand.colors.muted, background: 'rgba(255,255,255,0.85)', padding: '2px 6px', borderRadius: 4,
-      }}>{label}</span>
+    <div style={{ background: '#F7F6F2', position: 'relative', aspectRatio: '4 / 3', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+      {label && (
+        <span style={{
+          position: 'absolute', top: 6, left: 8,
+          fontFamily: brand.font.sans, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase',
+          color: brand.colors.muted, background: 'rgba(255,255,255,0.85)', padding: '2px 6px', borderRadius: 4,
+        }}>{label}</span>
+      )}
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={src}
-          alt={label}
+          alt={label ?? 'watch'}
           loading="lazy"
           style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
         />
       ) : (
         <span style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, fontStyle: 'italic' }}>
-          {fallbackHint ?? 'no image'}
+          no image
         </span>
       )}
     </div>
