@@ -367,18 +367,41 @@ type DbWatchboxConfig = {
   slot_count: number
 }
 
-// ── Supabase sync helpers (fire-and-forget) ────────────────────────────────
+// ── Supabase sync helpers ──────────────────────────────────────────────────
+//
+// Every cloud write is idempotent (upsert on a stable id / delete by id), so a
+// transient failure can be retried safely. `withRetry` re-runs the operation
+// with exponential backoff, then logs and gives up. The promise stays pending
+// across retries, so a sync wrapped in `trackedSync` keeps the in-flight count
+// raised — correctly deferring the tab-focus refetch until the write settles.
+const SYNC_RETRY_DELAYS = [400, 800, 1600, 3200]
+
+async function withRetry(label: string, op: () => Promise<void>): Promise<void> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await op()
+      return
+    } catch (err) {
+      const delay = SYNC_RETRY_DELAYS[attempt]
+      if (delay === undefined) {
+        console.error(`[vwb] ${label} failed after ${attempt + 1} attempts`, err)
+        return
+      }
+      await new Promise(resolve => setTimeout(resolve, delay))
+    }
+  }
+}
 
 async function syncWatchAdd(watch: OwnedWatch, _catalogWatch: CatalogWatch, userId: string, sortOrder: number) {
-  try {
+  // Slim payload: catalog facts resolve through catalog_id; only ownership
+  // and instance fields are persisted on the watches row. This requires
+  // migration 017 to have dropped NOT NULL on brand/model.
+  //
+  // watch.id is always passed so the upsert is idempotent on the client-
+  // generated UUID (Strict-mode double-invoke / transient duplicates update
+  // the same row instead of inserting two).
+  await withRetry('syncWatchAdd', async () => {
     const supabase = createClient()
-    // Slim payload: catalog facts resolve through catalog_id; only ownership
-    // and instance fields are persisted on the watches row. This requires
-    // migration 017 to have dropped NOT NULL on brand/model.
-    //
-    // watch.id is always passed so the upsert is idempotent on the client-
-    // generated UUID (Strict-mode double-invoke / transient duplicates update
-    // the same row instead of inserting two).
     const { error } = await supabase.from('watches').upsert({
       id: watch.id,
       user_id: userId,
@@ -391,61 +414,52 @@ async function syncWatchAdd(watch: OwnedWatch, _catalogWatch: CatalogWatch, user
       photo_url: watch.photoUrl ?? null,
       sort_order: sortOrder,
     })
-    if (error) console.error('[vwb] syncWatchAdd error', error)
-  } catch (err) {
-    console.error('[vwb] syncWatchAdd failed', err)
-  }
+    if (error) throw error
+  })
 }
 
 async function syncWatchUpdate(watchId: string, updates: Partial<OwnedWatch>, userId: string) {
-  try {
+  const payload: Record<string, unknown> = {}
+  if (updates.condition !== undefined) payload.condition = updates.condition
+  if (updates.ownershipStatus !== undefined) payload.ownership_status = updates.ownershipStatus
+  if (updates.purchasePrice !== undefined) payload.purchase_price = updates.purchasePrice
+  if (updates.purchaseDate !== undefined) payload.purchase_date = updates.purchaseDate || null
+  if (updates.notes !== undefined) payload.notes = updates.notes
+  if (Object.keys(payload).length === 0) return
+  await withRetry('syncWatchUpdate', async () => {
     const supabase = createClient()
-    const payload: Record<string, unknown> = {}
-    if (updates.condition !== undefined) payload.condition = updates.condition
-    if (updates.ownershipStatus !== undefined) payload.ownership_status = updates.ownershipStatus
-    if (updates.purchasePrice !== undefined) payload.purchase_price = updates.purchasePrice
-    if (updates.purchaseDate !== undefined) payload.purchase_date = updates.purchaseDate || null
-    if (updates.notes !== undefined) payload.notes = updates.notes
-    if (Object.keys(payload).length === 0) return
     const { error } = await supabase
       .from('watches')
       .update(payload)
       .eq('user_id', userId)
       .eq('id', watchId)
-    if (error) console.error('[vwb] syncWatchUpdate error', error)
-  } catch (err) {
-    console.error('[vwb] syncWatchUpdate failed', err)
-  }
+    if (error) throw error
+  })
 }
 
 async function syncWatchRemove(watchId: string, userId: string) {
-  try {
+  await withRetry('syncWatchRemove', async () => {
     const supabase = createClient()
     const { error } = await supabase.from('watches').delete().eq('user_id', userId).eq('id', watchId)
-    if (error) console.error('[vwb] syncWatchRemove error', error)
-  } catch (err) {
-    console.error('[vwb] syncWatchRemove failed', err)
-  }
+    if (error) throw error
+  })
 }
 
 async function syncWatchReorder(watches: OwnedWatch[], userId: string) {
-  try {
+  await withRetry('syncWatchReorder', async () => {
     const supabase = createClient()
     const results = await Promise.all(
       watches.map(w =>
         supabase.from('watches').update({ sort_order: w.slot }).eq('user_id', userId).eq('id', w.id)
       )
     )
-    for (const r of results) {
-      if (r.error) console.error('[vwb] syncWatchReorder error', r.error)
-    }
-  } catch (err) {
-    console.error('[vwb] syncWatchReorder failed', err)
-  }
+    const failed = results.find(r => r.error)
+    if (failed?.error) throw failed.error
+  })
 }
 
 async function syncWatchboxConfig(config: WatchboxConfig, userId: string) {
-  try {
+  await withRetry('syncWatchboxConfig', async () => {
     const supabase = createClient()
     const { error } = await supabase.from('watchbox_config').upsert({
       user_id: userId,
@@ -453,10 +467,22 @@ async function syncWatchboxConfig(config: WatchboxConfig, userId: string) {
       lining: config.lining,
       slot_count: config.slotCount,
     }, { onConflict: 'user_id' })
-    if (error) console.error('[vwb] syncWatchboxConfig error', error)
-  } catch (err) {
-    console.error('[vwb] syncWatchboxConfig failed', err)
-  }
+    if (error) throw error
+  })
+}
+
+// Photo columns are upserted independently of frame/lining/slot_count so the two
+// debounced writers don't clobber each other (both target watchbox_config).
+async function syncWatchboxPhoto(url: string | null, crop: WatchboxPhotoCrop | null, userId: string) {
+  await withRetry('syncWatchboxPhoto', async () => {
+    const supabase = createClient()
+    const { error } = await supabase.from('watchbox_config').upsert({
+      user_id: userId,
+      watchbox_photo_url: url,
+      watchbox_photo_crop: crop,
+    }, { onConflict: 'user_id' })
+    if (error) throw error
+  })
 }
 
 async function syncWatchState(
@@ -467,7 +493,7 @@ async function syncWatchState(
   userId?: string,
 ) {
   if (!userId) return
-  try {
+  await withRetry('syncWatchState', async () => {
     const supabase = createClient()
     if (active) {
       const { error } = await supabase.from('watch_states').upsert({
@@ -476,28 +502,26 @@ async function syncWatchState(
         state,
         metadata,
       }, { onConflict: 'user_id,catalog_watch_id,state' })
-      if (error) console.error('[vwb] syncWatchState upsert error', error)
+      if (error) throw error
     } else {
       const { error } = await supabase.from('watch_states')
         .delete()
         .eq('user_id', userId)
         .eq('catalog_watch_id', catalogWatchId)
         .eq('state', state)
-      if (error) console.error('[vwb] syncWatchState delete error', error)
+      if (error) throw error
     }
-  } catch (err) {
-    console.error('[vwb] syncWatchState failed', err)
-  }
+  })
 }
 
 async function syncPlaygroundBoxes(boxes: PlaygroundBox[], userId: string) {
-  try {
+  await withRetry('syncPlaygroundBoxes', async () => {
     const supabase = createClient()
     const { data: existing, error: selectError } = await supabase
       .from('playground_boxes')
       .select('id')
       .eq('user_id', userId)
-    if (selectError) console.error('[vwb] syncPlaygroundBoxes select error', selectError)
+    if (selectError) throw selectError
 
     const existingIds = new Set((existing ?? []).map((r: { id: string }) => r.id))
     const incomingIds = new Set(boxes.map(b => b.id))
@@ -505,7 +529,7 @@ async function syncPlaygroundBoxes(boxes: PlaygroundBox[], userId: string) {
     const toDelete = [...existingIds].filter(id => !incomingIds.has(id))
     if (toDelete.length > 0) {
       const { error: deleteError } = await supabase.from('playground_boxes').delete().in('id', toDelete)
-      if (deleteError) console.error('[vwb] syncPlaygroundBoxes delete error', deleteError)
+      if (deleteError) throw deleteError
     }
 
     const upsertResults = await Promise.all(
@@ -523,12 +547,9 @@ async function syncPlaygroundBoxes(boxes: PlaygroundBox[], userId: string) {
         })
       )
     )
-    for (const r of upsertResults) {
-      if (r.error) console.error('[vwb] syncPlaygroundBoxes upsert error', r.error)
-    }
-  } catch (err) {
-    console.error('[vwb] syncPlaygroundBoxes failed', err)
-  }
+    const failed = upsertResults.find(r => r.error)
+    if (failed?.error) throw failed.error
+  })
 }
 
 // ── Load from Supabase ─────────────────────────────────────────────────────
@@ -695,6 +716,52 @@ async function loadFromSupabase(
   }
 }
 
+// Debounced cloud writer that coalesces bursts (drags, slot repacks, rapid
+// typing) into a single write, but flushes the pending write immediately when
+// the tab is hidden or the page is being unloaded — so the last change inside
+// the debounce window isn't lost on tab-switch/close. visibilitychange→hidden
+// is the reliable trigger (fires on mobile background and tab switch); pagehide
+// is best-effort for hard navigation/close.
+function useDebouncedCloudWrite() {
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const jobRef = useRef<(() => void) | null>(null)
+
+  const flush = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
+    const job = jobRef.current
+    jobRef.current = null
+    job?.()
+  }, [])
+
+  const schedule = useCallback((delay: number, job: () => void) => {
+    jobRef.current = job
+    if (timerRef.current) clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null
+      const pending = jobRef.current
+      jobRef.current = null
+      pending?.()
+    }, delay)
+  }, [])
+
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') flush()
+    }
+    document.addEventListener('visibilitychange', onVisibility)
+    window.addEventListener('pagehide', flush)
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility)
+      window.removeEventListener('pagehide', flush)
+    }
+  }, [flush])
+
+  return useMemo(() => ({ schedule, flush }), [schedule, flush])
+}
+
 // ── Provider ───────────────────────────────────────────────────────────────
 
 export function CollectionSessionProvider({ children }: { children: React.ReactNode }) {
@@ -778,6 +845,9 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   // the write has begun).
   const pendingWritesRef = useRef(0)
   const loadInFlightRef = useRef(false)
+
+  const playgroundWriter = useDebouncedCloudWrite()
+  const watchboxPhotoWriter = useDebouncedCloudWrite()
 
   const trackedSync = useCallback(<T,>(promise: Promise<T>): Promise<T> => {
     pendingWritesRef.current += 1
@@ -1183,23 +1253,13 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   // stomp the debounced photo write).
   useEffect(() => {
     if (!user || !watchboxPhotoCloudHydrated) return
-    const handle = setTimeout(() => {
-      void trackedSync((async () => {
-        try {
-          const supabase = createClient()
-          const { error } = await supabase.from('watchbox_config').upsert({
-            user_id: user.id,
-            watchbox_photo_url: watchboxPhotoUrl ?? null,
-            watchbox_photo_crop: watchboxPhotoCrop ?? null,
-          }, { onConflict: 'user_id' })
-          if (error) console.error('[vwb] watchbox photo upsert error', error)
-        } catch (err) {
-          console.error('[vwb] watchbox photo upsert failed', err)
-        }
-      })())
-    }, 500)
-    return () => clearTimeout(handle)
-  }, [user, watchboxPhotoUrl, watchboxPhotoCrop, watchboxPhotoCloudHydrated, trackedSync])
+    const userId = user.id
+    const url = watchboxPhotoUrl ?? null
+    const crop = watchboxPhotoCrop ?? null
+    watchboxPhotoWriter.schedule(500, () => {
+      void trackedSync(syncWatchboxPhoto(url, crop, userId))
+    })
+  }, [user, watchboxPhotoUrl, watchboxPhotoCrop, watchboxPhotoCloudHydrated, trackedSync, watchboxPhotoWriter])
 
   const setWatchboxPhoto = useCallback((value: { url: string | null; crop: WatchboxPhotoCrop | null }) => {
     setWatchboxPhotoUrlState(value.url)
@@ -1219,7 +1279,9 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     })
   }, [hydrated, collectionWatches, followedWatches, nextTargets, grailWatch, collectionJewelWatch, watchboxConfig])
 
-  // Playground: persist to localStorage for guests, debounced Supabase sync for logged-in users
+  // Playground: persist to localStorage for guests, debounced Supabase sync for
+  // logged-in users. The debounced write flushes on tab-hide/unload (see
+  // useDebouncedCloudWrite) so a final drag/edit isn't lost inside the window.
   useEffect(() => {
     if (!playgroundHydrated) return
     if (!user) {
@@ -1228,11 +1290,12 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       } catch {}
       return
     }
-    const handle = setTimeout(() => {
-      void trackedSync(syncPlaygroundBoxes(playgroundBoxes, user.id))
-    }, 1000)
-    return () => clearTimeout(handle)
-  }, [playgroundBoxes, playgroundHydrated, user, trackedSync])
+    const userId = user.id
+    const boxesSnapshot = playgroundBoxes
+    playgroundWriter.schedule(1000, () => {
+      void trackedSync(syncPlaygroundBoxes(boxesSnapshot, userId))
+    })
+  }, [playgroundBoxes, playgroundHydrated, user, trackedSync, playgroundWriter])
 
   useEffect(() => {
     if (!playgroundHydrated) return
