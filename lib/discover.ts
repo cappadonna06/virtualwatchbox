@@ -269,40 +269,22 @@ export type UpgradeSuggestionPool = {
 const UPGRADE_POOL_SIZE = 10
 const MAX_UPGRADE_CARDS = 3
 
-function findHardcodedUpgrade(
-  owned: CatalogWatch,
-  ownedIds: Set<string>,
-  watchById: Map<string, CatalogWatch>,
-  hasImage?: (w: CatalogWatch) => boolean,
-): CatalogWatch | null {
-  const chain = UPGRADE_PATHS[owned.id]
-  if (!chain) return null
-  const ownedFamily = modelFamilyKey(owned)
-  for (const candidateId of chain) {
-    if (ownedIds.has(candidateId)) continue
-    const watch = watchById.get(candidateId)
-    if (!watch || !passesImage(watch, hasImage)) continue
-    if (modelFamilyKey(watch) === ownedFamily) continue
-    return watch
-  }
-  return null
-}
-
 function findHardcodedUpgradePool(
   owned: CatalogWatch,
   ownedIds: Set<string>,
+  ownedKeys: Set<string>,
   watchById: Map<string, CatalogWatch>,
   hasImage?: (w: CatalogWatch) => boolean,
 ): CatalogWatch[] {
   const chain = UPGRADE_PATHS[owned.id]
   if (!chain) return []
-  const ownedFamily = modelFamilyKey(owned)
   const out: CatalogWatch[] = []
   for (const candidateId of chain) {
     if (ownedIds.has(candidateId)) continue
     const watch = watchById.get(candidateId)
     if (!watch || !passesImage(watch, hasImage)) continue
-    if (modelFamilyKey(watch) === ownedFamily) continue
+    // Skip anything the collector already owns a version of, anywhere in the box.
+    if (isAlreadyOwnedModel(watch, ownedKeys)) continue
     out.push(watch)
   }
   return out
@@ -318,20 +300,35 @@ export function modelFamilyKey(watch: CatalogWatch): string {
   return `${watch.brand.toLowerCase()}::${normalizeModel(watch.model)}`
 }
 
-function findAlgorithmicUpgrade(
-  owned: CatalogWatch,
-  ownedIds: Set<string>,
-  collectionWatches: CatalogWatch[],
-  allWatches: CatalogWatch[],
-  hasImage?: (w: CatalogWatch) => boolean,
-): CatalogWatch | null {
-  const pool = findAlgorithmicUpgradePool(owned, ownedIds, collectionWatches, allWatches, hasImage)
-  return pool[0] ?? null
+// A watch's model can be matched two ways: by its curated model family
+// (Omega "Aqua Terra") and by its raw normalized model name. We index owned
+// watches under both so a candidate is excluded if it collides on either —
+// this catches the case where the catalog populates `modelFamily` on one row
+// but not another (e.g. owned "Aqua Terra 150M" vs a candidate "Aqua Terra").
+function similarityKeys(watch: CatalogWatch): [string, string] {
+  return [modelFamilyKey(watch), `${watch.brand.toLowerCase()}::${normalizeModel(watch.model)}`]
+}
+
+// Build the set of "things this collector already owns a version of," across
+// the WHOLE collection — not just the watch being upgraded. An upgrade for the
+// Sinn must not surface an Aqua Terra if an Aqua Terra is sitting two slots
+// over. Used to exclude near-duplicates from every upgrade candidate pool.
+export function ownedSimilarityKeys(collectionWatches: CatalogWatch[]): Set<string> {
+  const keys = new Set<string>()
+  for (const w of collectionWatches) {
+    for (const k of similarityKeys(w)) keys.add(k)
+  }
+  return keys
+}
+
+function isAlreadyOwnedModel(watch: CatalogWatch, ownedKeys: Set<string>): boolean {
+  return similarityKeys(watch).some(k => ownedKeys.has(k))
 }
 
 function findAlgorithmicUpgradePool(
   owned: CatalogWatch,
   ownedIds: Set<string>,
+  ownedKeys: Set<string>,
   collectionWatches: CatalogWatch[],
   allWatches: CatalogWatch[],
   hasImage?: (w: CatalogWatch) => boolean,
@@ -340,7 +337,6 @@ function findAlgorithmicUpgradePool(
   const sameTypeOwnedCount = collectionWatches.filter(w => w.watchType === owned.watchType).length
   if (sameTypeOwnedCount > 2) return []
 
-  const ownedFamily = modelFamilyKey(owned)
   const ownedBrandLower = owned.brand.toLowerCase()
 
   const idealTarget = owned.estimatedValue * 2
@@ -352,7 +348,9 @@ function findAlgorithmicUpgradePool(
     passesImage(w, hasImage) &&
     w.watchType === owned.watchType &&
     (BRAND_TIERS[w.brand] ?? 1) >= ownedTier &&
-    modelFamilyKey(w) !== ownedFamily
+    // Exclude any model the collector already owns a version of — across the
+    // whole box, not just the watch being upgraded.
+    !isAlreadyOwnedModel(w, ownedKeys)
 
   // Hard cap at 4x — better to show no upgrade card than recommend an 8x stretch
   // ("upgrade your $4K Aqua Terra to a $36K Patek" is not useful advice).
@@ -415,14 +413,15 @@ export function getUpgradeSuggestionPools(
   options: SelectionOptions = {},
 ): UpgradeSuggestionPool[] {
   const ownedIds = new Set(collectionWatches.map(w => w.id))
+  const ownedKeys = ownedSimilarityKeys(collectionWatches)
   const watchById = new Map(allWatches.map(w => [w.id, w] as const))
   const out: UpgradeSuggestionPool[] = []
 
   for (const owned of collectionWatches) {
     if (jewelWatchId && owned.id === jewelWatchId) continue
 
-    const hardcoded = findHardcodedUpgradePool(owned, ownedIds, watchById, options.hasImage)
-    const algorithmic = findAlgorithmicUpgradePool(owned, ownedIds, collectionWatches, allWatches, options.hasImage)
+    const hardcoded = findHardcodedUpgradePool(owned, ownedIds, ownedKeys, watchById, options.hasImage)
+    const algorithmic = findAlgorithmicUpgradePool(owned, ownedIds, ownedKeys, collectionWatches, allWatches, options.hasImage)
 
     const seen = new Set<string>()
     const pool: CatalogWatch[] = []
