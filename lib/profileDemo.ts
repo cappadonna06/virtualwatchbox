@@ -75,14 +75,17 @@ export const DEFAULT_PROFILE_VISIBILITY: ProfileVisibilitySettings = {
 }
 
 export function createDefaultProfileDemoState(): ProfileDemoState {
+  // No demo persona. 'Private Collector' is the neutral anonymous fallback
+  // (also the sentinel Discover treats as "no real name"); bio/featured start
+  // empty so nothing fake ships.
   return {
     displayName: 'Private Collector',
-    bio: 'Building a collection with room for classics, travel watches, and one long-term grail.',
+    bio: '',
     profileImageUrl: '',
     profileImageCrop: undefined,
     coverImageUrl: '',
     collectionHeroImageUrl: '',
-    featuredProfileWatch: 'grail',
+    featuredProfileWatch: 'none',
     visibility: DEFAULT_PROFILE_VISIBILITY,
     updatedAt: new Date().toISOString(),
   }
