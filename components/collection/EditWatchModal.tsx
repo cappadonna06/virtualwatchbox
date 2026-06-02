@@ -116,9 +116,6 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
   const [hasPapers, setHasPapers] = useState<boolean>(watch.hasPapers ?? false)
   const [acquisitionMethod, setAcquisitionMethod] = useState<AcquisitionMethod | undefined>(watch.acquisitionMethod)
   const [warrantyExpiresAt, setWarrantyExpiresAt] = useState<string>(watch.warrantyExpiresAt ?? '')
-  const [provenanceOpen, setProvenanceOpen] = useState<boolean>(
-    Boolean(watch.hasBox || watch.hasPapers || watch.acquisitionMethod || watch.warrantyExpiresAt),
-  )
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -372,78 +369,60 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
             />
           </Field>
 
-          <div style={{ borderTop: `1px solid ${brand.colors.border}`, paddingTop: 12 }}>
-            <button
-              type="button"
-              onClick={() => setProvenanceOpen(open => !open)}
-              aria-expanded={provenanceOpen}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: '100%',
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                cursor: 'pointer',
-                fontFamily: brand.font.sans,
-                fontSize: 10,
-                fontWeight: 600,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: brand.colors.ink,
-              }}
-            >
-              <span>Provenance</span>
-              <span style={{ color: brand.colors.muted, fontSize: 14 }}>{provenanceOpen ? '−' : '+'}</span>
-            </button>
-
-            {provenanceOpen && (
-              <div style={{ display: 'grid', gap: 12, marginTop: 14 }}>
-                <Field label="Box &amp; Papers">
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                    <ChoicePill active={hasBox} onClick={() => setHasBox(value => !value)}>Box</ChoicePill>
-                    <ChoicePill active={hasPapers} onClick={() => setHasPapers(value => !value)}>Papers</ChoicePill>
-                  </div>
-                </Field>
-
-                <Field label="Acquisition Method">
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                    {ACQUISITION_METHODS.map(method => (
-                      <ChoicePill
-                        key={method.value}
-                        active={acquisitionMethod === method.value}
-                        onClick={() => setAcquisitionMethod(prev => (prev === method.value ? undefined : method.value))}
-                      >
-                        {method.label}
-                      </ChoicePill>
-                    ))}
-                  </div>
-                </Field>
-
-                <Field label="Warranty Expires">
-                  <input
-                    type="date"
-                    value={warrantyExpiresAt}
-                    onChange={event => setWarrantyExpiresAt(event.target.value)}
-                    style={inputStyle}
-                  />
-                </Field>
-
-                <div
-                  style={{
-                    fontFamily: brand.font.sans,
-                    fontSize: 11,
-                    color: brand.colors.muted,
-                    lineHeight: 1.5,
-                    paddingTop: 2,
-                  }}
-                >
-                  Service history — last serviced, work performed, next-due — lives in the
-                  Service Center on the watch&apos;s detail page.
-                </div>
+          <div style={{ borderTop: `1px solid ${brand.colors.border}`, paddingTop: 18, marginTop: 4 }}>
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ fontFamily: brand.font.serif, fontSize: 17, color: brand.colors.ink, lineHeight: 1.1 }}>
+                Provenance &amp; Papers
               </div>
-            )}
+              <div style={{ fontFamily: brand.font.sans, fontSize: 11.5, color: brand.colors.muted, marginTop: 3, lineHeight: 1.45 }}>
+                Box, papers, and warranty affect a watch&apos;s value and how it sells.
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gap: 12 }}>
+              <Field label="Box &amp; Papers">
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  <ChoicePill active={hasBox} onClick={() => setHasBox(value => !value)}>Box</ChoicePill>
+                  <ChoicePill active={hasPapers} onClick={() => setHasPapers(value => !value)}>Papers</ChoicePill>
+                </div>
+              </Field>
+
+              <Field label="Acquisition Method">
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {ACQUISITION_METHODS.map(method => (
+                    <ChoicePill
+                      key={method.value}
+                      active={acquisitionMethod === method.value}
+                      onClick={() => setAcquisitionMethod(prev => (prev === method.value ? undefined : method.value))}
+                    >
+                      {method.label}
+                    </ChoicePill>
+                  ))}
+                </div>
+              </Field>
+
+              <Field label="Warranty Expires">
+                <input
+                  type="date"
+                  value={warrantyExpiresAt}
+                  onChange={event => setWarrantyExpiresAt(event.target.value)}
+                  style={inputStyle}
+                />
+              </Field>
+
+              <div
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 11,
+                  color: brand.colors.muted,
+                  lineHeight: 1.5,
+                  paddingTop: 2,
+                }}
+              >
+                Receipts, warranty cards, and service records attach as documents in the
+                watch&apos;s photo gallery; service history lives in the Service Center on its detail page.
+              </div>
+            </div>
           </div>
         </div>
 
