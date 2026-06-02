@@ -9,7 +9,6 @@ const fmt = (n: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
 
 const CONDITIONS: WatchCondition[] = ['Unworn', 'Like New', 'Excellent', 'Good', 'Fair']
-const OWNERSHIP_STATUSES: OwnershipStatus[] = ['Owned', 'For Sale', 'Recently Added', 'Needs Service']
 
 type AcquisitionMethod = NonNullable<ResolvedOwnedWatch['acquisitionMethod']>
 const ACQUISITION_METHODS: { value: AcquisitionMethod; label: string }[] = [
@@ -107,7 +106,7 @@ function ChoicePill({
 
 export default function EditWatchModal({ watch, onClose, onSave }: Props) {
   const [condition, setCondition] = useState<WatchCondition>(watch.condition)
-  const [ownershipStatus, setOwnershipStatus] = useState<OwnershipStatus>(watch.ownershipStatus)
+  const [forSale, setForSale] = useState<boolean>(watch.ownershipStatus === 'For Sale')
   const [purchasePrice, setPurchasePrice] = useState<string>(
     watch.purchasePrice ? String(watch.purchasePrice) : '',
   )
@@ -117,10 +116,8 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
   const [hasPapers, setHasPapers] = useState<boolean>(watch.hasPapers ?? false)
   const [acquisitionMethod, setAcquisitionMethod] = useState<AcquisitionMethod | undefined>(watch.acquisitionMethod)
   const [warrantyExpiresAt, setWarrantyExpiresAt] = useState<string>(watch.warrantyExpiresAt ?? '')
-  const [lastServicedAt, setLastServicedAt] = useState<string>(watch.lastServicedAt ?? '')
-  const [serviceNotes, setServiceNotes] = useState<string>(watch.serviceNotes ?? '')
   const [provenanceOpen, setProvenanceOpen] = useState<boolean>(
-    Boolean(watch.hasBox || watch.hasPapers || watch.acquisitionMethod || watch.warrantyExpiresAt || watch.lastServicedAt || watch.serviceNotes),
+    Boolean(watch.hasBox || watch.hasPapers || watch.acquisitionMethod || watch.warrantyExpiresAt),
   )
 
   useEffect(() => {
@@ -135,7 +132,7 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
     const numericPrice = Number.parseFloat(purchasePrice)
     onSave({
       condition,
-      ownershipStatus,
+      ownershipStatus: forSale ? 'For Sale' : 'Owned',
       purchasePrice: Number.isFinite(numericPrice) && numericPrice >= 0 ? numericPrice : 0,
       purchaseDate: purchaseDate.trim(),
       notes: notes.trim(),
@@ -143,8 +140,6 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
       hasPapers,
       acquisitionMethod,
       warrantyExpiresAt: warrantyExpiresAt.trim(),
-      lastServicedAt: lastServicedAt.trim(),
-      serviceNotes: serviceNotes.trim(),
     })
   }
 
@@ -337,13 +332,10 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
             </div>
           </Field>
 
-          <Field label="Ownership Status">
+          <Field label="Listing">
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {OWNERSHIP_STATUSES.map(option => (
-                <ChoicePill key={option} active={ownershipStatus === option} onClick={() => setOwnershipStatus(option)}>
-                  {option}
-                </ChoicePill>
-              ))}
+              <ChoicePill active={!forSale} onClick={() => setForSale(false)}>Owned</ChoicePill>
+              <ChoicePill active={forSale} onClick={() => setForSale(true)}>For Sale</ChoicePill>
             </div>
           </Field>
 
@@ -402,7 +394,7 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
                 color: brand.colors.ink,
               }}
             >
-              <span>Provenance &amp; Service</span>
+              <span>Provenance</span>
               <span style={{ color: brand.colors.muted, fontSize: 14 }}>{provenanceOpen ? '−' : '+'}</span>
             </button>
 
@@ -429,34 +421,27 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
                   </div>
                 </Field>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                  <Field label="Warranty Expires">
-                    <input
-                      type="date"
-                      value={warrantyExpiresAt}
-                      onChange={event => setWarrantyExpiresAt(event.target.value)}
-                      style={inputStyle}
-                    />
-                  </Field>
-                  <Field label="Last Serviced">
-                    <input
-                      type="date"
-                      value={lastServicedAt}
-                      onChange={event => setLastServicedAt(event.target.value)}
-                      style={inputStyle}
-                    />
-                  </Field>
-                </div>
-
-                <Field label="Service Notes">
-                  <textarea
-                    rows={2}
-                    value={serviceNotes}
-                    placeholder="Service center, work performed, parts replaced…"
-                    onChange={event => setServiceNotes(event.target.value)}
-                    style={{ ...inputStyle, resize: 'vertical' }}
+                <Field label="Warranty Expires">
+                  <input
+                    type="date"
+                    value={warrantyExpiresAt}
+                    onChange={event => setWarrantyExpiresAt(event.target.value)}
+                    style={inputStyle}
                   />
                 </Field>
+
+                <div
+                  style={{
+                    fontFamily: brand.font.sans,
+                    fontSize: 11,
+                    color: brand.colors.muted,
+                    lineHeight: 1.5,
+                    paddingTop: 2,
+                  }}
+                >
+                  Service history — last serviced, work performed, next-due — lives in the
+                  Service Center on the watch&apos;s detail page.
+                </div>
               </div>
             )}
           </div>
