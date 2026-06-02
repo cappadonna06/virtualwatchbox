@@ -1,16 +1,14 @@
 'use client'
 
 import type { CSSProperties, ReactNode } from 'react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import type { PlaygroundBox, PlaygroundWatchOverrides, ResolvedWatch, WatchCondition, WatchType } from '@/types/watch'
-import { normalizePlaygroundBoxes } from '@/lib/playground'
-import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
-import { watches as catalogWatches } from '@/lib/watches'
+import type { CatalogWatch, PlaygroundWatchOverrides, ResolvedWatch, WatchCondition, WatchType } from '@/types/watch'
+import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import { DEFAULT_RESOLVED_WATCH_CONDITION } from '@/lib/watchData'
 
-const STORAGE_KEY = 'playgroundBoxes'
 const CONDITIONS: WatchCondition[] = ['Unworn', 'Like New', 'Excellent', 'Good', 'Fair']
 const WATCH_TYPES: WatchType[] = [
   'Diver',
@@ -28,8 +26,14 @@ export default function EditPlaygroundWatchPage() {
   const params = useParams<{ boxId: string; entryId: string }>()
   const router = useRouter()
 
-  const [boxes, setBoxes] = useState<PlaygroundBox[]>([])
-  const [hydrated, setHydrated] = useState(false)
+  const {
+    playgroundBoxes: boxes,
+    setPlaygroundBoxes,
+    playgroundHydrated: hydrated,
+    collectionWatches,
+    followedWatches,
+  } = useCollectionSession()
+  const { allWatches, ensureWatches } = useCatalog()
 
   const [reference, setReference] = useState('')
   const [caseSizeMm, setCaseSizeMm] = useState('')
@@ -42,20 +46,31 @@ export default function EditPlaygroundWatchPage() {
   const [notes, setNotes] = useState('')
   const [watchType, setWatchType] = useState<WatchType>('Sport')
 
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      setBoxes(normalizePlaygroundBoxes(stored ? JSON.parse(stored) : null, SEEDED_PLAYGROUND_BOXES))
-    } catch {
-      setBoxes(SEEDED_PLAYGROUND_BOXES)
-    } finally {
-      setHydrated(true)
-    }
-  }, [])
-
   const box = useMemo(() => boxes.find(item => item.id === params.boxId), [boxes, params.boxId])
   const entry = useMemo(() => box?.entries.find(item => item.id === params.entryId) ?? null, [box, params.entryId])
-  const sourceWatch = useMemo(() => catalogWatches.find(watch => watch.id === entry?.watchId) ?? null, [entry])
+
+  // Resolve against the dynamic catalog plus the user's owned/followed rows, not
+  // the static seed list — a watch outside the seed list would otherwise fail to
+  // resolve and bounce the editor back to /playground.
+  const resolutionCatalog = useMemo(() => {
+    const map = new Map<string, CatalogWatch>()
+    for (const w of collectionWatches) map.set(w.watchId, { ...w, id: w.watchId })
+    for (const w of followedWatches) map.set(w.id, w)
+    for (const w of allWatches) map.set(w.id, w)
+    return map
+  }, [collectionWatches, followedWatches, allWatches])
+
+  const sourceWatch = useMemo(
+    () => (entry ? resolutionCatalog.get(entry.watchId) ?? null : null),
+    [entry, resolutionCatalog],
+  )
+
+  const requestedHydrationRef = useRef(false)
+  useEffect(() => {
+    if (!entry || sourceWatch || requestedHydrationRef.current) return
+    requestedHydrationRef.current = true
+    void ensureWatches([entry.watchId])
+  }, [entry, sourceWatch, ensureWatches])
 
   useEffect(() => {
     if (!entry || !sourceWatch) return
@@ -72,11 +87,12 @@ export default function EditPlaygroundWatchPage() {
     setWatchType(merged.watchType)
   }, [entry, sourceWatch])
 
-  if (hydrated && (!box || !entry || !sourceWatch)) {
+  if (hydrated && (!box || !entry)) {
     router.replace('/playground')
     return null
   }
 
+  // Box/entry exist but the catalog row may still be hydrating via ensureWatches.
   if (!entry || !sourceWatch) {
     return null
   }
@@ -123,7 +139,7 @@ export default function EditPlaygroundWatchPage() {
 
   function handleSave() {
     const overrides = buildOverrides()
-    const updated = boxes.map(item => {
+    setPlaygroundBoxes(prev => prev.map(item => {
       if (item.id !== activeBox.id) return item
       return {
         ...item,
@@ -136,8 +152,7 @@ export default function EditPlaygroundWatchPage() {
             : candidate,
         ),
       }
-    })
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+    }))
     router.push(`/playground?boxId=${activeBox.id}&entryId=${activeEntry.id}`)
   }
 

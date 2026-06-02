@@ -1,7 +1,7 @@
 import { SEEDED_OWNED_WATCHES } from '@/lib/collectionData'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import { normalizePlaygroundBoxes, resolvePlaygroundWatches } from '@/lib/playground'
-import { SEEDED_PLAYGROUND_BOXES } from '@/lib/playgroundData'
+import { createSeededPlaygroundBoxes } from '@/lib/playgroundData'
 import {
   COLLECTION_SESSION_STORAGE_KEY,
   LEGACY_COLLECTION_SESSION_STORAGE_KEY,
@@ -323,11 +323,11 @@ function readStoredCollectionSession() {
 
 export function getStoredPlaygroundBoxes() {
   if (!canUseBrowserStorage()) {
-    return SEEDED_PLAYGROUND_BOXES
+    return createSeededPlaygroundBoxes()
   }
 
   const stored = safeParseJson<PlaygroundBox[]>(window.localStorage.getItem(PLAYGROUND_BOXES_STORAGE_KEY))
-  return normalizePlaygroundBoxes(stored, SEEDED_PLAYGROUND_BOXES)
+  return normalizePlaygroundBoxes(stored, createSeededPlaygroundBoxes())
 }
 
 function slugifySegment(value: string) {
