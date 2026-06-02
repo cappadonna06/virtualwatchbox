@@ -81,6 +81,23 @@ export default function OwnedWatchDetailPage() {
     router.push('/collection')
   }
 
+  const acquisitionLabels: Record<NonNullable<typeof watch.acquisitionMethod>, string> = {
+    new: 'New',
+    'pre-owned': 'Pre-Owned',
+    gift: 'Gift',
+    inherited: 'Inherited',
+    trade: 'Trade',
+    auction: 'Auction',
+  }
+  const ownershipChips: string[] = [
+    watch.hasBox ? 'Box' : null,
+    watch.hasPapers ? 'Papers' : null,
+    watch.acquisitionMethod ? acquisitionLabels[watch.acquisitionMethod] : null,
+    watch.warrantyExpiresAt
+      ? `Warranty until ${new Date(watch.warrantyExpiresAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`
+      : null,
+  ].filter((chip): chip is string => Boolean(chip))
+
   const specs: Array<[string, string]> = [
     ['Watch Type', watch.watchType],
     ['Movement', watch.movement || '—'],
@@ -250,6 +267,31 @@ export default function OwnedWatchDetailPage() {
                 </div>
               ))}
             </div>
+
+            {ownershipChips.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 18 }}>
+                {ownershipChips.map(chip => (
+                  <span
+                    key={chip}
+                    style={{
+                      display: 'inline-block',
+                      padding: '4px 10px',
+                      borderRadius: brand.radius.pill,
+                      background: brand.colors.slot,
+                      border: `1px solid ${brand.colors.borderLight}`,
+                      fontFamily: brand.font.sans,
+                      fontSize: 9,
+                      fontWeight: 600,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      color: brand.colors.muted,
+                    }}
+                  >
+                    {chip}
+                  </span>
+                ))}
+              </div>
+            )}
 
             {watch.notes && (
               <div style={{

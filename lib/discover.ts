@@ -1,8 +1,14 @@
 import type { CatalogWatch, WatchTarget, WatchType } from '@/types/watch'
 import { BRAND_TIERS, UPGRADE_PATHS } from './discoverUpgradePaths'
 
-export function buildChrono24URL(brand: string, model: string): string {
+export function buildChrono24URL(brand: string, model: string, intent: 'buy' | 'sell' = 'buy'): string {
   const query = encodeURIComponent(`${brand} ${model}`)
+  if (intent === 'sell') {
+    // Sell-intent flow lands on Chrono24's "sell your watch" funnel rather
+    // than the buy-side search; pass the model as a hint so the dealer-offer
+    // form can pre-fill where supported.
+    return `https://www.chrono24.com/info/sell-watch.htm?query=${query}`
+  }
   return `https://www.chrono24.com/search/index.htm?query=${query}`
 }
 

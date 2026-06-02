@@ -61,6 +61,12 @@ export function resolveOwnedWatch(
     notes: ownedWatch.notes,
     ownershipStatus: ownedWatch.ownershipStatus,
     slot: ownedWatch.slot,
+    acquisitionMethod: ownedWatch.acquisitionMethod,
+    hasBox: ownedWatch.hasBox,
+    hasPapers: ownedWatch.hasPapers,
+    warrantyExpiresAt: ownedWatch.warrantyExpiresAt,
+    lastServicedAt: ownedWatch.lastServicedAt,
+    serviceNotes: ownedWatch.serviceNotes,
   }
 }
 

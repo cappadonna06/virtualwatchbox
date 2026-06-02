@@ -11,12 +11,28 @@ const fmt = (n: number) =>
 const CONDITIONS: WatchCondition[] = ['Unworn', 'Like New', 'Excellent', 'Good', 'Fair']
 const OWNERSHIP_STATUSES: OwnershipStatus[] = ['Owned', 'For Sale', 'Recently Added', 'Needs Service']
 
+type AcquisitionMethod = NonNullable<ResolvedOwnedWatch['acquisitionMethod']>
+const ACQUISITION_METHODS: { value: AcquisitionMethod; label: string }[] = [
+  { value: 'new', label: 'New' },
+  { value: 'pre-owned', label: 'Pre-Owned' },
+  { value: 'gift', label: 'Gift' },
+  { value: 'inherited', label: 'Inherited' },
+  { value: 'trade', label: 'Trade' },
+  { value: 'auction', label: 'Auction' },
+]
+
 export type EditWatchUpdates = {
   condition: WatchCondition
   ownershipStatus: OwnershipStatus
   purchasePrice: number
   purchaseDate: string
   notes: string
+  hasBox?: boolean
+  hasPapers?: boolean
+  acquisitionMethod?: AcquisitionMethod
+  warrantyExpiresAt?: string
+  lastServicedAt?: string
+  serviceNotes?: string
 }
 
 interface Props {
@@ -97,6 +113,15 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
   )
   const [purchaseDate, setPurchaseDate] = useState<string>(watch.purchaseDate ?? '')
   const [notes, setNotes] = useState<string>(watch.notes ?? '')
+  const [hasBox, setHasBox] = useState<boolean>(watch.hasBox ?? false)
+  const [hasPapers, setHasPapers] = useState<boolean>(watch.hasPapers ?? false)
+  const [acquisitionMethod, setAcquisitionMethod] = useState<AcquisitionMethod | undefined>(watch.acquisitionMethod)
+  const [warrantyExpiresAt, setWarrantyExpiresAt] = useState<string>(watch.warrantyExpiresAt ?? '')
+  const [lastServicedAt, setLastServicedAt] = useState<string>(watch.lastServicedAt ?? '')
+  const [serviceNotes, setServiceNotes] = useState<string>(watch.serviceNotes ?? '')
+  const [provenanceOpen, setProvenanceOpen] = useState<boolean>(
+    Boolean(watch.hasBox || watch.hasPapers || watch.acquisitionMethod || watch.warrantyExpiresAt || watch.lastServicedAt || watch.serviceNotes),
+  )
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -114,6 +139,12 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
       purchasePrice: Number.isFinite(numericPrice) && numericPrice >= 0 ? numericPrice : 0,
       purchaseDate: purchaseDate.trim(),
       notes: notes.trim(),
+      hasBox,
+      hasPapers,
+      acquisitionMethod,
+      warrantyExpiresAt: warrantyExpiresAt.trim(),
+      lastServicedAt: lastServicedAt.trim(),
+      serviceNotes: serviceNotes.trim(),
     })
   }
 
@@ -348,6 +379,87 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
               style={{ ...inputStyle, resize: 'vertical' }}
             />
           </Field>
+
+          <div style={{ borderTop: `1px solid ${brand.colors.border}`, paddingTop: 12 }}>
+            <button
+              type="button"
+              onClick={() => setProvenanceOpen(open => !open)}
+              aria-expanded={provenanceOpen}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+                fontFamily: brand.font.sans,
+                fontSize: 10,
+                fontWeight: 600,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: brand.colors.ink,
+              }}
+            >
+              <span>Provenance &amp; Service</span>
+              <span style={{ color: brand.colors.muted, fontSize: 14 }}>{provenanceOpen ? '−' : '+'}</span>
+            </button>
+
+            {provenanceOpen && (
+              <div style={{ display: 'grid', gap: 12, marginTop: 14 }}>
+                <Field label="Box &amp; Papers">
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    <ChoicePill active={hasBox} onClick={() => setHasBox(value => !value)}>Box</ChoicePill>
+                    <ChoicePill active={hasPapers} onClick={() => setHasPapers(value => !value)}>Papers</ChoicePill>
+                  </div>
+                </Field>
+
+                <Field label="Acquisition Method">
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    {ACQUISITION_METHODS.map(method => (
+                      <ChoicePill
+                        key={method.value}
+                        active={acquisitionMethod === method.value}
+                        onClick={() => setAcquisitionMethod(prev => (prev === method.value ? undefined : method.value))}
+                      >
+                        {method.label}
+                      </ChoicePill>
+                    ))}
+                  </div>
+                </Field>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <Field label="Warranty Expires">
+                    <input
+                      type="date"
+                      value={warrantyExpiresAt}
+                      onChange={event => setWarrantyExpiresAt(event.target.value)}
+                      style={inputStyle}
+                    />
+                  </Field>
+                  <Field label="Last Serviced">
+                    <input
+                      type="date"
+                      value={lastServicedAt}
+                      onChange={event => setLastServicedAt(event.target.value)}
+                      style={inputStyle}
+                    />
+                  </Field>
+                </div>
+
+                <Field label="Service Notes">
+                  <textarea
+                    rows={2}
+                    value={serviceNotes}
+                    placeholder="Service center, work performed, parts replaced…"
+                    onChange={event => setServiceNotes(event.target.value)}
+                    style={{ ...inputStyle, resize: 'vertical' }}
+                  />
+                </Field>
+              </div>
+            )}
+          </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>

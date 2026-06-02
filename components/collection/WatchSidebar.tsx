@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import type { ResolvedOwnedWatch, ResolvedWatch, WatchCondition } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import { dialColorToHex } from '@/lib/dialColors'
+import { buildChrono24URL } from '@/lib/discover'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import WatchPhotoGallery from './WatchPhotoGallery'
@@ -124,7 +125,14 @@ export default function WatchSidebar({
   onRequestEdit,
 }: Props) {
   const router = useRouter()
-  const { getWatchSavedState, isWatchJewel, showToast } = useCollectionSession()
+  const {
+    getWatchSavedState,
+    isWatchJewel,
+    isWatchTarget,
+    promoteToNextTarget,
+    removeFromNextTargets,
+    showToast,
+  } = useCollectionSession()
   const panelStyle: React.CSSProperties = sticky
     ? sidebarPanel
     : {
@@ -157,6 +165,7 @@ export default function WatchSidebar({
   const showConditionBadge = mode !== 'followed'
   const savedState = getWatchSavedState(resolvedCatalogWatchId)
   const showJewelBadge = mode === 'collection' && isWatchJewel(resolvedCatalogWatchId)
+  const isTarget = isWatchTarget(resolvedCatalogWatchId)
   const marketLabel = !isOwnedWatch && savedState === 'grail' && !isPublicMode ? 'Find on Market ↗' : 'Find For Sale ↗'
 
   return (
@@ -331,17 +340,29 @@ export default function WatchSidebar({
             {marketLabel}
           </a>
           {mode === 'followed' ? (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              <button onClick={() => router.push(`/collection/add/${resolvedCatalogWatchId}`)} style={btnSecondary}>
-                Add to My Collection
-              </button>
+            <>
               <button
-                onClick={() => router.push(`/collection/add/${resolvedCatalogWatchId}?dest=playground`)}
-                style={btnSecondary}
+                onClick={() => (isTarget
+                  ? removeFromNextTargets(resolvedCatalogWatchId)
+                  : promoteToNextTarget(resolvedCatalogWatchId))}
+                style={isTarget
+                  ? btnSecondary
+                  : { ...btnSecondary, borderColor: brand.colors.goldLine, color: brand.colors.gold }}
               >
-                Add to Playground
+                {isTarget ? 'Remove Target' : 'Set as Target'}
               </button>
-            </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <button onClick={() => router.push(`/collection/add/${resolvedCatalogWatchId}`)} style={btnSecondary}>
+                  Add to My Collection
+                </button>
+                <button
+                  onClick={() => router.push(`/collection/add/${resolvedCatalogWatchId}?dest=playground`)}
+                  style={btnSecondary}
+                >
+                  Add to Playground
+                </button>
+              </div>
+            </>
           ) : (
             <button onClick={() => router.push(`/collection/add/${resolvedCatalogWatchId}`)} style={btnSecondary}>
               Add to My Collection
@@ -359,10 +380,15 @@ export default function WatchSidebar({
             Find For Sale ↗
           </a>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            {/* TODO(coming-soon): Sell watch listing flow */}
-            <button style={btnSecondary} onClick={() => showToast('Coming soon.')}>Sell This Watch</button>
-            {/* TODO(coming-soon): Virtual strap swap / matchmaker */}
-            <button style={btnSecondary} onClick={() => showToast('Coming soon.')}>Swap Strap</button>
+            <a
+              href={buildChrono24URL(watch.brand, watch.model, 'sell')}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ ...btnSecondary, textAlign: 'center', textDecoration: 'none' }}
+            >
+              Sell This Watch ↗
+            </a>
+            <button style={btnSecondary} onClick={() => router.push('/collection/straps')}>Swap Strap →</button>
           </div>
         </div>
       )}

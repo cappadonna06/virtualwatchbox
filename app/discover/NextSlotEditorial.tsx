@@ -38,7 +38,7 @@ export default function NextSlotEditorial({ watches, ownedTypes, seedKeyByWatchI
       }}
     >
       <EditorialHeader
-        kicker="§ 03"
+        kicker="§ 04"
         title="For your next slot."
         sub="Watches not yet in your box. Three alternative reads across the same gap, in different price tiers."
       />
