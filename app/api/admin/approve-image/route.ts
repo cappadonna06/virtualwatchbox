@@ -1,10 +1,66 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { type SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/requireAdmin'
+import { screenProcessedImage } from '@/lib/imageProcessing/screener'
+import { llmScreenImage } from '@/lib/imageProcessing/llmScreener'
 
 export const maxDuration = 30
 export const runtime = 'nodejs'
+
+// Auto-screen a freshly approved primary image and, if it looks off (rotated,
+// dial-only, arm in shot, wrong subject, etc.), write a watch_image_reviews row
+// flagging it as 'needs_reprocess' so it surfaces in /admin/image-review. We
+// never auto-delete here — flagging keeps the image visible for human review.
+// Best-effort: any failure is logged and swallowed so it can't block approval.
+async function autoScreenAndFlag(
+  supabase: SupabaseClient,
+  watchId: string,
+  pngBuffer: Buffer,
+): Promise<{ flagged: boolean; tags: string[] }> {
+  try {
+    const tags = new Set<string>()
+    const reasons: string[] = []
+
+    const rules = await screenProcessedImage(pngBuffer)
+    rules.tags.forEach(t => tags.add(t))
+    rules.reasons.forEach(r => reasons.push(`[rule] ${r}`))
+
+    // The LLM pass catches wrong-subject cases the rules can't (arm/hand in
+    // frame, watch in a display box, subtle wrong orientation). Only runs when
+    // an OpenAI key is configured; skipped silently otherwise.
+    if (process.env.OPENAI_API_KEY) {
+      try {
+        const llm = await llmScreenImage(pngBuffer)
+        if (!llm.isClean) {
+          llm.tags.forEach(t => tags.add(t))
+          if (llm.reason) reasons.push(`[llm] ${llm.reason}`)
+        }
+      } catch (err) {
+        console.warn('[admin/approve-image] LLM screen failed (non-fatal):', err)
+      }
+    }
+
+    if (tags.size === 0) return { flagged: false, tags: [] }
+
+    const tagList = Array.from(tags)
+    const notes = `[auto-screener] ${reasons.join(' | ')}`.slice(0, 1000)
+    const { error } = await supabase.from('watch_image_reviews').insert({
+      catalog_watch_id: watchId,
+      variant: 'primary',
+      status: 'needs_reprocess',
+      tags: tagList,
+      notes,
+      reviewer_id: null,
+    })
+    if (error) console.warn('[admin/approve-image] auto-flag insert failed:', error.message)
+    return { flagged: true, tags: tagList }
+  } catch (err) {
+    console.warn('[admin/approve-image] auto-screen failed (non-fatal):', err)
+    return { flagged: false, tags: [] }
+  }
+}
 
 type ApprovePayload = {
   watchId: string
@@ -103,8 +159,12 @@ export async function POST(request: NextRequest) {
     console.error('[admin/approve-image] Failed to clear catalog image_url:', clearError)
   }
 
+  const screen = await autoScreenAndFlag(supabase, watchId, pngBuffer)
+
   return NextResponse.json({
     pngUrl: pngUrlData.publicUrl,
     webpUrl: webpUrlData.publicUrl,
+    flagged: screen.flagged,
+    flaggedTags: screen.tags,
   })
 }

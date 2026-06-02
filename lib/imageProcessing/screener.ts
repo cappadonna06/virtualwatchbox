@@ -17,6 +17,9 @@
  *                         the bracelet was clipped at the crop edge
  *   - tiny_subject      — final image is much smaller than the canonical 900px,
  *                         likely a partial-crop / missing-parts result
+ *   - wrong_orientation — the silhouette's principal axis (the direction the
+ *                         band runs) is tilted well off vertical, so the watch
+ *                         is lying sideways or on a diagonal
  *
  * Each tag maps to a recommended downstream action:
  *   - 'needs_reprocess' for things the processor can fix with knob bumps
@@ -53,6 +56,19 @@ const AR_SQUARE_THRESHOLD = 0.85  // > this AND tall image → likely dial-only
 // the canvas is full-height but the watch occupies very little of it.
 const TINY_WIDTH_PX = 200
 
+// Orientation via the principal axis of the opaque mask ("which way does the
+// band go?"). A correctly-shot watch is elongated vertically — case in the
+// middle, strap/bracelet running up and down — so the silhouette's major axis
+// is near-vertical. A sideways shot tilts that axis ~90°, a diagonal one ~45°.
+// This catches diagonals a plain width/height aspect ratio misses (a watch
+// rotated 30-45° can still sit in a near-square or tall bounding box). We only
+// trust the angle when the shape is clearly elongated — a round dial-only crop
+// has no meaningful long axis, so the angle there is noise.
+const ORIENTATION_MIN_ELONGATION = 1.2   // major/minor spread ratio needed to trust the axis
+// 20° chosen empirically: a clean straight-on watch (with normal strap draping)
+// reads ≤ ~10° of tilt, while genuinely diagonal/sideways shots read ≥ ~22°.
+const ORIENTATION_MAX_TILT_DEG = 20      // allowed tilt of the long axis from vertical
+
 export type ScreenerMetrics = {
   width: number
   height: number
@@ -62,6 +78,8 @@ export type ScreenerMetrics = {
   bottomOpaquePixelCount: number   // raw count of opaque bottom-row pixels
   componentCount: number           // number of components ≥ MIN_COMPONENT_FRACTION × largest
   largestComponentPixels: number
+  elongation: number               // sqrt(major/minor) second-moment ratio of the mask
+  majorAxisTiltDeg: number         // 0 = band runs vertical, ~90 = band runs sideways
 }
 
 export type ScreenerResult = {
@@ -135,10 +153,42 @@ export async function screenProcessedImage(input: Buffer): Promise<ScreenerResul
   const minComponentSize = Math.max(100, Math.round(largestComponentPixels * MIN_COMPONENT_FRACTION))
   const componentCount = componentSizes.filter(p => p >= minComponentSize).length
 
+  // --- principal axis (band direction) via second-order image moments ---
+  // Single pass over the opaque mask: accumulate the sums needed for the
+  // covariance of pixel coordinates, then take its eigen-decomposition. The
+  // major-axis angle tells us which way the watch (and its band) is pointing.
+  let n = 0, sumX = 0, sumY = 0, sumXX = 0, sumYY = 0, sumXY = 0
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      if (data[(y * width + x) * 4 + 3] <= ALPHA_THRESHOLD) continue
+      n += 1
+      sumX += x; sumY += y
+      sumXX += x * x; sumYY += y * y; sumXY += x * y
+    }
+  }
+  let elongation = 1
+  let majorAxisTiltDeg = 0
+  if (n > 0) {
+    const cx = sumX / n, cy = sumY / n
+    const mu20 = sumXX / n - cx * cx       // variance in x
+    const mu02 = sumYY / n - cy * cy       // variance in y
+    const mu11 = sumXY / n - cx * cy       // covariance
+    const common = Math.sqrt(((mu20 - mu02) / 2) ** 2 + mu11 * mu11)
+    const lambdaMajor = (mu20 + mu02) / 2 + common
+    const lambdaMinor = (mu20 + mu02) / 2 - common
+    elongation = lambdaMinor > 1e-6 ? Math.sqrt(lambdaMajor / lambdaMinor) : Infinity
+    // Angle of the major axis from the x-axis, in (-90°, 90°]. mu02 > mu20
+    // (more vertical spread) drives this toward ±90° — a vertically-standing
+    // watch. tiltFromVertical is 0 when the band runs straight up-and-down.
+    const thetaDeg = 0.5 * Math.atan2(2 * mu11, mu20 - mu02) * (180 / Math.PI)
+    majorAxisTiltDeg = Math.abs(90 - Math.abs(thetaDeg))
+  }
+
   const metrics: ScreenerMetrics = {
     width, height, aspectRatio,
     topEdgeTransparency, bottomEdgeTransparency, bottomOpaquePixelCount: bottomOpaque,
     componentCount, largestComponentPixels,
+    elongation, majorAxisTiltDeg,
   }
 
   // --- derive tags from metrics ---
@@ -156,9 +206,20 @@ export async function screenProcessedImage(input: Buffer): Promise<ScreenerResul
     reasons.push(`${componentCount} large components (each ≥${(MIN_COMPONENT_FRACTION * 100).toFixed(0)}% of largest) — likely two watches or a ghost behind the primary`)
   }
 
-  if (aspectRatio > AR_SQUARE_THRESHOLD && aspectRatio <= AR_WIDE_THRESHOLD && isFullHeight) {
+  if (
+    aspectRatio > AR_SQUARE_THRESHOLD && aspectRatio <= AR_WIDE_THRESHOLD &&
+    isFullHeight && elongation < ORIENTATION_MIN_ELONGATION
+  ) {
+    // Squarish AND not elongated → genuinely a round dial-only crop. An
+    // elongated subject in a near-square box is a diagonal watch, not a dial;
+    // that's caught by the orientation check below instead.
     tags.push('dial_only')
     reasons.push(`width/height = ${aspectRatio.toFixed(2)} with full-height crop — probably just the dial (case/bracelet missing)`)
+  }
+
+  if (elongation >= ORIENTATION_MIN_ELONGATION && majorAxisTiltDeg > ORIENTATION_MAX_TILT_DEG) {
+    tags.push('wrong_orientation')
+    reasons.push(`band axis tilted ${majorAxisTiltDeg.toFixed(0)}° from vertical (elongation ${elongation.toFixed(2)}×) — watch looks sideways or diagonal`)
   }
 
   if (
@@ -186,7 +247,7 @@ export async function screenProcessedImage(input: Buffer): Promise<ScreenerResul
   if (tags.length > 0) {
     severity = 'fail'
     // Hard-delete tags: source can't be saved by reprocessing
-    const hardFailTags = new Set(['multi_object', 'aspect_ratio_off', 'dial_only', 'tiny_subject'])
+    const hardFailTags = new Set(['multi_object', 'aspect_ratio_off', 'dial_only', 'tiny_subject', 'wrong_orientation'])
     const hasHardFail = tags.some(t => hardFailTags.has(t))
     if (hasHardFail) {
       recommendedStatus = 'deleted'

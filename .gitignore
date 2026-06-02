@@ -51,6 +51,8 @@ public/image-review-preview.html
 # Generated tier-batch inspection page (one-off output of scripts/build-tier2-preview.ts).
 public/tier2-preview.html
 public/watch-assets/processed-preview/
+# Generated auto-rotate before/after previews (one-off output of scripts/fix-rotated-images.ts).
+public/watch-assets/rotate-preview/
 
 # Claude Code agent runtime state.
 .claude/

@@ -8,6 +8,7 @@ import { useAuth } from '@/lib/auth/AuthProvider'
 import { isAdminEmail } from '@/lib/auth/admin'
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
+import { withVersion } from '@/lib/watchImages/cacheBust'
 import { brandTier, heatScore } from '@/lib/heatScore'
 import type { CatalogWatch, WatchType } from '@/types/watch'
 import CatalogWatchModal from '@/components/admin/CatalogWatchModal'
@@ -16,7 +17,7 @@ export const dynamic = 'force-dynamic'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type View = 'list' | 'add' | 'import' | 'queue'
+type View = 'list' | 'add' | 'import' | 'queue' | 'flagged'
 type ImportRow = Record<string, string> & { _id: string; _error?: string }
 
 const WATCH_TYPES: WatchType[] = [
@@ -168,7 +169,8 @@ function AdminCatalogPageInner() {
   const searchParams = useSearchParams()
   const { dynamicWatches, allWatches, refresh } = useCatalog()
   const { getImageUrl } = useWatchImages()
-  const initialView: View = searchParams.get('view') === 'queue' ? 'queue' : 'list'
+  const viewParam = searchParams.get('view')
+  const initialView: View = viewParam === 'queue' ? 'queue' : viewParam === 'flagged' ? 'flagged' : 'list'
   const [view, setView] = useState<View>(initialView)
   const [search, setSearch] = useState('')
   const [form, setForm] = useState({ ...BLANK_FORM })
@@ -183,11 +185,36 @@ function AdminCatalogPageInner() {
   const [importDone, setImportDone] = useState<number | null>(null)
   const [importError, setImportError] = useState<string | null>(null)
   const [dragOver, setDragOver] = useState(false)
+  const [flagged, setFlagged] = useState<Map<string, { status: string; tags: string[] }>>(new Map())
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Pull the set of images the screener (or a human) flagged for review so each
+  // row can show a warning badge inline. Lightweight summary endpoint returns
+  // only the flagged ids, not the full review row set.
+  useEffect(() => {
+    if (!user || !isAdminEmail(user.email)) return
+    let cancelled = false
+    void (async () => {
+      try {
+        const res = await fetch('/api/admin/image-review?summary=1', { cache: 'no-store' })
+        if (!res.ok) return
+        const json = (await res.json()) as { flagged?: Array<{ id: string; status: string; tags: string[] }> }
+        if (cancelled) return
+        setFlagged(new Map((json.flagged ?? []).map(f => [f.id, { status: f.status, tags: f.tags }])))
+      } catch {
+        // Non-fatal — the table still renders without flag badges.
+      }
+    })()
+    return () => { cancelled = true }
+  }, [user])
 
   const dynamicIds = new Set(dynamicWatches.map(w => w.id))
   const isStatic = (w: CatalogWatch) => !dynamicIds.has(w.id)
   const watchHasImage = useCallback((w: CatalogWatch) => !!(getImageUrl(w.id) || w.imageUrl), [getImageUrl])
+  const watchImageSrc = useCallback((w: CatalogWatch) => {
+    const url = getImageUrl(w.id) || w.imageUrl
+    return url ? (withVersion(url) ?? url) : null
+  }, [getImageUrl])
 
   const queueRows = useMemo(() => {
     return allWatches
@@ -196,8 +223,16 @@ function AdminCatalogPageInner() {
       .sort((a, b) => b.heat - a.heat || a.watch.brand.localeCompare(b.watch.brand))
   }, [allWatches, watchHasImage])
 
+  const flaggedRows = useMemo(
+    () => allWatches.filter(w => flagged.has(w.id)),
+    [allWatches, flagged],
+  )
+
   const filtered = (() => {
-    const baseList: CatalogWatch[] = view === 'queue' ? queueRows.map(r => r.watch) : allWatches
+    const baseList: CatalogWatch[] =
+      view === 'queue' ? queueRows.map(r => r.watch)
+      : view === 'flagged' ? flaggedRows
+      : allWatches
     if (!search.trim()) return baseList
     const q = search.toLowerCase()
     return baseList.filter(w => [w.brand, w.model, w.reference, w.watchType].some(v => v?.toLowerCase().includes(q)))
@@ -367,7 +402,7 @@ function AdminCatalogPageInner() {
             Watch Catalog
           </h1>
           <p style={{ margin: '4px 0 0', fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted }}>
-            {allWatches.length} watches · {dynamicWatches.length} in Supabase · {queueRows.length} missing photos
+            {allWatches.length} watches · {dynamicWatches.length} in Supabase · {queueRows.length} missing photos · {flaggedRows.length} flagged
           </p>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
@@ -635,6 +670,7 @@ function AdminCatalogPageInner() {
             {([
               { value: 'list' as const, label: `All watches (${allWatches.length})` },
               { value: 'queue' as const, label: `Photo Queue (${queueRows.length})` },
+              { value: 'flagged' as const, label: `Flagged (${flaggedRows.length})` },
             ]).map(tab => {
               const active = view === tab.value
               return (
@@ -676,7 +712,7 @@ function AdminCatalogPageInner() {
         <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: brand.font.sans, fontSize: 13 }}>
           <thead>
             <tr style={{ background: brand.colors.slot, borderBottom: `1px solid ${brand.colors.border}` }}>
-              {['Brand / Model', 'Reference', 'Type', 'Size', 'Est. Value', 'Image', 'Heat', 'Source', 'Actions'].map(h => (
+              {['Photo', 'Brand / Model', 'Reference', 'Type', 'Size', 'Est. Value', 'Image', 'Heat', 'Source', 'Actions'].map(h => (
                 <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 500, fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', color: brand.colors.muted, whiteSpace: 'nowrap' }}>{h}</th>
               ))}
             </tr>
@@ -685,6 +721,8 @@ function AdminCatalogPageInner() {
             {filtered.map(w => {
               const isBuiltin = isStatic(w)
               const hasImage = watchHasImage(w)
+              const imgSrc = watchImageSrc(w)
+              const flag = flagged.get(w.id)
               const heat = heatScore(w)
               const tier = brandTier(w.brand)
               return (
@@ -705,6 +743,22 @@ function AdminCatalogPageInner() {
                   onMouseEnter={e => { e.currentTarget.style.background = brand.colors.slot }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
                 >
+                  <td style={{ padding: '8px 14px' }}>
+                    <div style={{
+                      width: 52, height: 52, borderRadius: brand.radius.sm,
+                      border: `1px solid ${flag ? '#E5B5B5' : brand.colors.borderLight}`,
+                      background: brand.colors.slot,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      overflow: 'hidden', position: 'relative',
+                    }}>
+                      {imgSrc ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={imgSrc} alt={w.model} loading="lazy" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                      ) : (
+                        <span style={{ fontFamily: brand.font.sans, fontSize: 9, color: brand.colors.muted }}>—</span>
+                      )}
+                    </div>
+                  </td>
                   <td style={{ padding: '10px 14px' }}>
                     <div style={{ fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 2 }}>{w.brand}</div>
                     <div style={{ fontFamily: brand.font.serif, fontSize: 17, color: brand.colors.ink, lineHeight: 1.1 }}>{w.model}</div>
@@ -716,7 +770,17 @@ function AdminCatalogPageInner() {
                     {w.estimatedValue > 0 ? `$${w.estimatedValue.toLocaleString()}` : '—'}
                   </td>
                   <td style={{ padding: '10px 14px' }}>
-                    {hasImage ? (
+                    {flag ? (
+                      <Link
+                        href={`/admin/image-review?status=needs_reprocess&q=${encodeURIComponent(w.id)}`}
+                        title={flag.tags.length ? `Flagged: ${flag.tags.join(', ')}` : 'Flagged for review'}
+                        style={{
+                          display: 'inline-block', padding: '2px 8px', borderRadius: brand.radius.pill,
+                          fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600,
+                          letterSpacing: '0.06em', textTransform: 'uppercase', textDecoration: 'none',
+                          background: '#FCEAEA', color: '#9A2F2F', border: '1px solid #E5B5B5',
+                        }}>⚠ Flagged</Link>
+                    ) : hasImage ? (
                       <span style={{
                         display: 'inline-block', padding: '2px 8px', borderRadius: brand.radius.pill,
                         fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600,
@@ -773,8 +837,12 @@ function AdminCatalogPageInner() {
             })}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={9} style={{ padding: '32px', textAlign: 'center', fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted }}>
-                  {view === 'queue' ? 'Photo queue is empty — every catalog watch has an image.' : 'No watches found.'}
+                <td colSpan={10} style={{ padding: '32px', textAlign: 'center', fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted }}>
+                  {view === 'queue'
+                    ? 'Photo queue is empty — every catalog watch has an image.'
+                    : view === 'flagged'
+                      ? 'No flagged images in the loaded catalog. The image screener flags off / wrong-subject photos here automatically.'
+                      : 'No watches found.'}
                 </td>
               </tr>
             )}
