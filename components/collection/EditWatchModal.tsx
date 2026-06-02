@@ -9,7 +9,16 @@ const fmt = (n: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
 
 const CONDITIONS: WatchCondition[] = ['Unworn', 'Like New', 'Excellent', 'Good', 'Fair']
-const OWNERSHIP_STATUSES: OwnershipStatus[] = ['Owned', 'For Sale', 'Recently Added', 'Needs Service']
+
+type AcquisitionMethod = NonNullable<ResolvedOwnedWatch['acquisitionMethod']>
+const ACQUISITION_METHODS: { value: AcquisitionMethod; label: string }[] = [
+  { value: 'new', label: 'New' },
+  { value: 'pre-owned', label: 'Pre-Owned' },
+  { value: 'gift', label: 'Gift' },
+  { value: 'inherited', label: 'Inherited' },
+  { value: 'trade', label: 'Trade' },
+  { value: 'auction', label: 'Auction' },
+]
 
 export type EditWatchUpdates = {
   condition: WatchCondition
@@ -17,6 +26,12 @@ export type EditWatchUpdates = {
   purchasePrice: number
   purchaseDate: string
   notes: string
+  hasBox?: boolean
+  hasPapers?: boolean
+  acquisitionMethod?: AcquisitionMethod
+  warrantyExpiresAt?: string
+  lastServicedAt?: string
+  serviceNotes?: string
 }
 
 interface Props {
@@ -91,12 +106,16 @@ function ChoicePill({
 
 export default function EditWatchModal({ watch, onClose, onSave }: Props) {
   const [condition, setCondition] = useState<WatchCondition>(watch.condition)
-  const [ownershipStatus, setOwnershipStatus] = useState<OwnershipStatus>(watch.ownershipStatus)
+  const [forSale, setForSale] = useState<boolean>(watch.ownershipStatus === 'For Sale')
   const [purchasePrice, setPurchasePrice] = useState<string>(
     watch.purchasePrice ? String(watch.purchasePrice) : '',
   )
   const [purchaseDate, setPurchaseDate] = useState<string>(watch.purchaseDate ?? '')
   const [notes, setNotes] = useState<string>(watch.notes ?? '')
+  const [hasBox, setHasBox] = useState<boolean>(watch.hasBox ?? false)
+  const [hasPapers, setHasPapers] = useState<boolean>(watch.hasPapers ?? false)
+  const [acquisitionMethod, setAcquisitionMethod] = useState<AcquisitionMethod | undefined>(watch.acquisitionMethod)
+  const [warrantyExpiresAt, setWarrantyExpiresAt] = useState<string>(watch.warrantyExpiresAt ?? '')
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -110,10 +129,14 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
     const numericPrice = Number.parseFloat(purchasePrice)
     onSave({
       condition,
-      ownershipStatus,
+      ownershipStatus: forSale ? 'For Sale' : 'Owned',
       purchasePrice: Number.isFinite(numericPrice) && numericPrice >= 0 ? numericPrice : 0,
       purchaseDate: purchaseDate.trim(),
       notes: notes.trim(),
+      hasBox,
+      hasPapers,
+      acquisitionMethod,
+      warrantyExpiresAt: warrantyExpiresAt.trim(),
     })
   }
 
@@ -306,13 +329,10 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
             </div>
           </Field>
 
-          <Field label="Ownership Status">
+          <Field label="Listing">
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {OWNERSHIP_STATUSES.map(option => (
-                <ChoicePill key={option} active={ownershipStatus === option} onClick={() => setOwnershipStatus(option)}>
-                  {option}
-                </ChoicePill>
-              ))}
+              <ChoicePill active={!forSale} onClick={() => setForSale(false)}>Owned</ChoicePill>
+              <ChoicePill active={forSale} onClick={() => setForSale(true)}>For Sale</ChoicePill>
             </div>
           </Field>
 
@@ -348,6 +368,62 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
               style={{ ...inputStyle, resize: 'vertical' }}
             />
           </Field>
+
+          <div style={{ borderTop: `1px solid ${brand.colors.border}`, paddingTop: 18, marginTop: 4 }}>
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ fontFamily: brand.font.serif, fontSize: 17, color: brand.colors.ink, lineHeight: 1.1 }}>
+                Provenance &amp; Papers
+              </div>
+              <div style={{ fontFamily: brand.font.sans, fontSize: 11.5, color: brand.colors.muted, marginTop: 3, lineHeight: 1.45 }}>
+                Box, papers, and warranty affect a watch&apos;s value and how it sells.
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gap: 12 }}>
+              <Field label="Box &amp; Papers">
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  <ChoicePill active={hasBox} onClick={() => setHasBox(value => !value)}>Box</ChoicePill>
+                  <ChoicePill active={hasPapers} onClick={() => setHasPapers(value => !value)}>Papers</ChoicePill>
+                </div>
+              </Field>
+
+              <Field label="Acquisition Method">
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {ACQUISITION_METHODS.map(method => (
+                    <ChoicePill
+                      key={method.value}
+                      active={acquisitionMethod === method.value}
+                      onClick={() => setAcquisitionMethod(prev => (prev === method.value ? undefined : method.value))}
+                    >
+                      {method.label}
+                    </ChoicePill>
+                  ))}
+                </div>
+              </Field>
+
+              <Field label="Warranty Expires">
+                <input
+                  type="date"
+                  value={warrantyExpiresAt}
+                  onChange={event => setWarrantyExpiresAt(event.target.value)}
+                  style={inputStyle}
+                />
+              </Field>
+
+              <div
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: 11,
+                  color: brand.colors.muted,
+                  lineHeight: 1.5,
+                  paddingTop: 2,
+                }}
+              >
+                Receipts, warranty cards, and service records attach as documents in the
+                watch&apos;s photo gallery; service history lives in the Service Center on its detail page.
+              </div>
+            </div>
+          </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>

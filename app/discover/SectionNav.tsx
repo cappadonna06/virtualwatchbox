@@ -3,17 +3,18 @@
 import { useEffect, useState } from 'react'
 import { brand } from '@/lib/brand'
 
-const NAV_SECTIONS = [
-  { id: 'lead',      num: '01', label: 'Lead' },
-  { id: 'upgrade',   num: '02', label: 'Upgrade' },
-  { id: 'next-slot', num: '03', label: 'Next Slot' },
-  { id: 'news',      num: '04', label: 'News' },
-]
-
 const NAV_HEIGHT = 61
 
-export default function SectionNav() {
+export default function SectionNav({ showTargets = false }: { showTargets?: boolean }) {
   const [active, setActive] = useState<string>('lead')
+
+  const navSections = [
+    { id: 'lead',      num: '01', label: 'Lead' },
+    { id: 'upgrade',   num: '02', label: 'Upgrade' },
+    ...(showTargets ? [{ id: 'targets', num: '03', label: 'Targets' }] : []),
+    { id: 'next-slot', num: showTargets ? '04' : '03', label: 'Next Slot' },
+    { id: 'news',      num: showTargets ? '05' : '04', label: 'News' },
+  ]
 
   useEffect(() => {
     if (typeof IntersectionObserver === 'undefined') return
@@ -23,12 +24,13 @@ export default function SectionNav() {
         .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
       if (visible.length) setActive(visible[0].target.id)
     }, { rootMargin: '-30% 0px -55% 0px', threshold: 0 })
-    NAV_SECTIONS.forEach(s => {
+    navSections.forEach(s => {
       const el = document.getElementById(s.id)
       if (el) observer.observe(el)
     })
     return () => observer.disconnect()
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showTargets])
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault()
@@ -86,7 +88,7 @@ export default function SectionNav() {
           In this issue
         </div>
 
-        {NAV_SECTIONS.map(s => {
+        {navSections.map(s => {
           const isActive = active === s.id
           return (
             <a

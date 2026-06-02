@@ -108,6 +108,12 @@ type LegacyWatchSnapshot = {
   notes?: unknown
   ownershipStatus?: unknown
   slot?: unknown
+  acquisitionMethod?: unknown
+  hasBox?: unknown
+  hasPapers?: unknown
+  warrantyExpiresAt?: unknown
+  lastServicedAt?: unknown
+  serviceNotes?: unknown
 }
 
 type LegacySessionSnapshot = {
@@ -218,6 +224,11 @@ function isOwnershipStatus(value: unknown): value is OwnershipStatus {
   return typeof value === 'string' && OWNERSHIP_STATUSES.includes(value as OwnershipStatus)
 }
 
+const ACQUISITION_METHODS = ['new', 'pre-owned', 'gift', 'inherited', 'trade', 'auction'] as const
+function isAcquisitionMethod(value: unknown): value is NonNullable<OwnedWatch['acquisitionMethod']> {
+  return typeof value === 'string' && (ACQUISITION_METHODS as readonly string[]).includes(value)
+}
+
 function isWatchTarget(value: unknown): value is WatchTarget {
   if (!value || typeof value !== 'object') return false
 
@@ -262,6 +273,12 @@ function normalizeOwnedWatch(
     notes: typeof rawWatch.notes === 'string' ? rawWatch.notes : '',
     ownershipStatus: isOwnershipStatus(rawWatch.ownershipStatus) ? rawWatch.ownershipStatus : 'Owned',
     slot: typeof rawWatch.slot === 'number' && Number.isFinite(rawWatch.slot) ? rawWatch.slot : fallbackSlot,
+    acquisitionMethod: isAcquisitionMethod(rawWatch.acquisitionMethod) ? rawWatch.acquisitionMethod : undefined,
+    hasBox: typeof rawWatch.hasBox === 'boolean' ? rawWatch.hasBox : undefined,
+    hasPapers: typeof rawWatch.hasPapers === 'boolean' ? rawWatch.hasPapers : undefined,
+    warrantyExpiresAt: typeof rawWatch.warrantyExpiresAt === 'string' ? rawWatch.warrantyExpiresAt : undefined,
+    lastServicedAt: typeof rawWatch.lastServicedAt === 'string' ? rawWatch.lastServicedAt : undefined,
+    serviceNotes: typeof rawWatch.serviceNotes === 'string' ? rawWatch.serviceNotes : undefined,
   }
 }
 
@@ -353,6 +370,12 @@ type DbWatch = {
   notes: string | null
   sort_order: number
   photo_url: string | null
+  acquisition_method: string | null
+  has_box: boolean | null
+  has_papers: boolean | null
+  warranty_expires_at: string | null
+  last_serviced_at: string | null
+  service_notes: string | null
 }
 
 type DbWatchState = {
@@ -425,6 +448,12 @@ async function syncWatchUpdate(watchId: string, updates: Partial<OwnedWatch>, us
   if (updates.purchasePrice !== undefined) payload.purchase_price = updates.purchasePrice
   if (updates.purchaseDate !== undefined) payload.purchase_date = updates.purchaseDate || null
   if (updates.notes !== undefined) payload.notes = updates.notes
+  if (updates.hasBox !== undefined) payload.has_box = updates.hasBox
+  if (updates.hasPapers !== undefined) payload.has_papers = updates.hasPapers
+  if (updates.acquisitionMethod !== undefined) payload.acquisition_method = updates.acquisitionMethod || null
+  if (updates.warrantyExpiresAt !== undefined) payload.warranty_expires_at = updates.warrantyExpiresAt || null
+  if (updates.lastServicedAt !== undefined) payload.last_serviced_at = updates.lastServicedAt || null
+  if (updates.serviceNotes !== undefined) payload.service_notes = updates.serviceNotes
   if (Object.keys(payload).length === 0) return
   await withRetry('syncWatchUpdate', async () => {
     const supabase = createClient()
@@ -599,6 +628,12 @@ async function loadFromSupabase(
         notes: w.notes ?? '',
         photoUrl: w.photo_url ?? undefined,
         slot: typeof w.sort_order === 'number' ? w.sort_order : index,
+        acquisitionMethod: isAcquisitionMethod(w.acquisition_method) ? w.acquisition_method : undefined,
+        hasBox: w.has_box ?? undefined,
+        hasPapers: w.has_papers ?? undefined,
+        warrantyExpiresAt: w.warranty_expires_at ?? undefined,
+        lastServicedAt: w.last_serviced_at ?? undefined,
+        serviceNotes: w.service_notes ?? undefined,
       }))
 
     const followedWatchIds: string[] = []
@@ -1826,7 +1861,10 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
 
   function updateCollectionWatch(
     watchId: string,
-    updates: Partial<Pick<OwnedWatch, 'condition' | 'ownershipStatus' | 'purchasePrice' | 'purchaseDate' | 'notes'>>,
+    updates: Partial<Pick<OwnedWatch,
+      | 'condition' | 'ownershipStatus' | 'purchasePrice' | 'purchaseDate' | 'notes'
+      | 'acquisitionMethod' | 'hasBox' | 'hasPapers' | 'warrantyExpiresAt' | 'lastServicedAt' | 'serviceNotes'
+    >>,
   ) {
     setCollectionEntries(prev => {
       const target = prev.find(watch => watch.id === watchId)

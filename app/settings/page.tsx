@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
+import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { createClient } from '@/lib/supabase/client'
 import {
   getProfileDemoState,
@@ -140,6 +141,15 @@ function Toggle({ on, onChange, label, disabled }: { on: boolean; onChange: () =
 export default function SettingsPage() {
   const router = useRouter()
   const { user, signOut } = useAuth()
+  const {
+    collectionWatches,
+    followedWatchIds,
+    nextTargets,
+    grailWatchId,
+    collectionJewelWatchId,
+    watchboxConfig,
+    playgroundBoxes,
+  } = useCollectionSession()
 
   const [profile, setProfile] = useState<ProfileDemoState | null>(null)
   const [profileCloudHydrated, setProfileCloudHydrated] = useState(false)
@@ -311,6 +321,50 @@ export default function SettingsPage() {
       setToastVisible(false)
       hideTimer.current = setTimeout(() => setToastMsg(null), 300)
     }, 2500)
+  }
+
+  const [exporting, setExporting] = useState(false)
+
+  async function handleExportData() {
+    if (exporting) return
+    setExporting(true)
+    try {
+      let data: unknown = null
+      if (user) {
+        const res = await fetch('/api/user/export')
+        if (res.ok) data = await res.json()
+      }
+      if (!data) {
+        // Guest / demo sessions: assemble the same shape from in-memory state.
+        data = {
+          exportedAt: new Date().toISOString(),
+          userId: user?.id ?? null,
+          source: 'local',
+          collection: collectionWatches,
+          followedWatchIds,
+          watchboxConfig,
+          playgroundBoxes,
+          nextTargets,
+          grailWatchId,
+          collectionJewelWatchId,
+          photos: [],
+        }
+      }
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const anchor = document.createElement('a')
+      anchor.href = url
+      anchor.download = `virtualwatchbox-export-${new Date().toISOString().split('T')[0]}.json`
+      document.body.appendChild(anchor)
+      anchor.click()
+      anchor.remove()
+      URL.revokeObjectURL(url)
+      showToast('Export downloaded.')
+    } catch {
+      showToast('Export failed. Please try again.')
+    } finally {
+      setExporting(false)
+    }
   }
 
   function scheduleVisibilityUpsert(visibility: ProfileVisibilitySettings) {
@@ -686,20 +740,25 @@ export default function SettingsPage() {
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 padding: '12px 0',
-                opacity: 0.4,
-                cursor: 'default',
               }}
-              aria-disabled="true"
             >
-              <span
+              <button
+                type="button"
+                onClick={handleExportData}
+                disabled={exporting}
                 style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: exporting ? 'default' : 'pointer',
                   fontFamily: brand.font.sans,
                   fontSize: 13,
                   color: brand.colors.ink,
+                  opacity: exporting ? 0.5 : 1,
                 }}
               >
-                Download my data — Coming soon
-              </span>
+                {exporting ? 'Preparing export…' : 'Download my data'}
+              </button>
             </div>
           </div>
         </Section>

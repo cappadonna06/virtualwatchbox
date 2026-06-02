@@ -120,6 +120,8 @@
 
   /* ── Next-slot grid, etc. ────────────────────────────────────────────── */
   .discover-nextslot-grid { grid-template-columns: 1fr !important; }
+  .discover-targets-grid { grid-template-columns: 1fr !important; }
+  .discover-grail-card { grid-template-columns: 1fr !important; text-align: center; }
   .discover-strap-grid { grid-template-columns: repeat(2, 1fr) !important; }
   .discover-box-grid { grid-template-columns: 1fr !important; }
   .discover-news-grid { grid-template-columns: 1fr !important; }
@@ -129,6 +131,7 @@
   /* Tighter section padding on mobile */
   section#lead > div,
   section#upgrade,
+  section#targets,
   section#next-slot,
   section#straps,
   section#box,

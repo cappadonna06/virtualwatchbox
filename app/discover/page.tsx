@@ -26,6 +26,7 @@ import HeroMasthead from './HeroMasthead'
 import SectionNav from './SectionNav'
 import CompleteTheBoxLead from './CompleteTheBoxLead'
 import UpgradeSpread from './UpgradeSpread'
+import TargetsGrailSection from './TargetsGrailSection'
 import NextSlotEditorial from './NextSlotEditorial'
 import NewsEditorial from './NewsEditorial'
 import { usePersonalizedInsight } from './usePersonalizedInsight'
@@ -248,6 +249,10 @@ export default function DiscoverPage() {
   const insightRead = personalize.read || fallbackRead
   const leadInsight = personalize.leadInsight || boxInsight?.copy || ''
 
+  // Targets/Grail (§03) is user-curated, not algorithmic — only show for a
+  // logged-in collector who has actually crowned a grail or pinned a target.
+  const showTargets = !isGuest && (session.nextTargetWatches.length > 0 || Boolean(session.grailWatchId && session.grailWatch))
+
   // Map pair-id → rationale sentence for UpgradeSpread to render in place of
   // the static balanceNote when the LLM/cached copy is available.
   const upgradeRationaleByPair = useMemo(() => {
@@ -272,7 +277,7 @@ export default function DiscoverPage() {
         insightRead={insightRead}
       />
 
-      <SectionNav />
+      <SectionNav showTargets={showTargets} />
 
       {leadWatch && (
         <CompleteTheBoxLead
@@ -288,6 +293,8 @@ export default function DiscoverPage() {
       {personalized && upgradeSuggestions.length > 0 && (
         <UpgradeSpread suggestions={upgradeSuggestions} rationaleByPair={upgradeRationaleByPair} />
       )}
+
+      {showTargets && <TargetsGrailSection />}
 
       <NextSlotEditorial watches={nextSlotRecs} ownedTypes={ownedTypes} seedKeyByWatchId={nextSlotSeedKeys} />
 

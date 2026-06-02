@@ -245,6 +245,14 @@ export interface ResolvedOwnedWatch extends ResolvedWatch {
   ownershipStatus: OwnershipStatus
   /** Sparse slot index; derived from watches.sort_order. */
   slot: number
+
+  // ── Expanded ownership facts (carried through from OwnedWatch) ────────
+  acquisitionMethod?: OwnedWatch['acquisitionMethod']
+  hasBox?: boolean
+  hasPapers?: boolean
+  warrantyExpiresAt?: string
+  lastServicedAt?: string
+  serviceNotes?: string
 }
 
 export type PlaygroundWatchOverrides = Partial<Pick<

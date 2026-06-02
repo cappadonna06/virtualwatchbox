@@ -64,7 +64,7 @@ export default function NewsEditorial({ brandFilter }: Props) {
       }}
     >
       <EditorialHeader
-        kicker="§ 06"
+        kicker="§ 05"
         title="From the watch world."
         sub="The latest from the publications collectors trust. Tagged for your brands of interest."
       />
