@@ -3,7 +3,8 @@
 // components/serviceRoom/ServiceHorizon.tsx — the Agenda hero. A horizontal
 // "service runway": overdue bucket (left) · 24-month dated axis (centre) ·
 // beyond-2yr bucket (right). The colored DOT marks the exact due month — the
-// client's central UX requirement. Greedy 3-lane packing avoids pill overlap.
+// client's central UX requirement. Collision-aware lane stacking grows the
+// band vertically so every watch keeps its own pill without overlap.
 
 import { brand } from '@/lib/brand'
 import { addMonths, formatDate, formatMonthYear, monthsBetween, serviceStatus, type ServiceWatch } from '@/lib/serviceRoom/derive'
@@ -21,8 +22,16 @@ type Props = {
 const HORIZON = 24    // months on the axis
 const zL = 13         // % — overdue zone width / NOW line
 const zR = 87         // % — axis end / beyond zone start
-const LANES = 3
-const trackH = 178
+
+// Vertical layout — the band grows with the busiest column, then scrolls.
+const PILL_H = 50         // approximate pill height
+const GAP = 12            // vertical gap between stacked pills
+const ROW = PILL_H + GAP  // lane pitch
+const PAD = 16            // top/bottom padding inside the track
+const MIN_TRACK_H = 160
+const MAX_TRACK_H = 380   // ≈ 5-6 rows before the band scrolls internally
+const PILL_W_PCT = 16     // estimated pill footprint as a share of track width
+const FLOW_RIGHT_MAX = 68 // pills past this xPct flow left instead of right
 
 export function ServiceHorizon({ watches, now, onPick, activeId }: Props) {
   const placed = watches.map(sw => {
@@ -36,14 +45,38 @@ export function ServiceHorizon({ watches, now, onPick, activeId }: Props) {
     return { sw, st, m, xPct, bucket, lane: 0 }
   })
 
-  // Greedy lane assignment to avoid overlap.
-  const laneLast = Array(LANES).fill(-100)
-  ;[...placed].sort((a, b) => a.xPct - b.xPct).forEach(p => {
-    let lane = laneLast.indexOf(Math.min(...laneLast))
-    for (let i = 0; i < LANES; i++) { if (p.xPct - laneLast[i] > 20) { lane = i; break } }
-    laneLast[lane] = p.xPct
-    p.lane = lane
-  })
+  // Collision-aware lane assignment by interval partitioning. Each pill
+  // occupies an x-interval — its dot plus the pill body, which flows right for
+  // left/centre watches and left for right-edge watches. Lanes grow as needed
+  // so two pills whose footprints overlap never share a row (the band height
+  // follows). Same-x bucket pills (Overdue / Beyond) share an interval, so each
+  // is pushed to its own row; well-separated dated pills reuse lower lanes.
+  const laneEnd: number[] = []
+  placed
+    .map(p => {
+      const flowsRight = p.xPct <= FLOW_RIGHT_MAX
+      return {
+        p,
+        lo: flowsRight ? p.xPct - 1 : p.xPct - PILL_W_PCT - 1,
+        hi: flowsRight ? p.xPct + PILL_W_PCT + 1 : p.xPct + 1,
+      }
+    })
+    .sort((a, b) => (a.lo - b.lo) || (a.p.st.due.getTime() - b.p.st.due.getTime()))
+    .forEach(it => {
+      let lane = laneEnd.findIndex(end => end <= it.lo)
+      if (lane === -1) { lane = laneEnd.length; laneEnd.push(it.hi) }
+      else laneEnd[lane] = it.hi
+      it.p.lane = lane
+    })
+
+  const laneCount = Math.max(1, laneEnd.length)
+  const blockH = laneCount * PILL_H + (laneCount - 1) * GAP
+  const contentH = PAD * 2 + blockH
+  const trackH = Math.max(MIN_TRACK_H, Math.min(MAX_TRACK_H, contentH))
+  const bandH = Math.max(trackH, contentH)
+  const scrolls = contentH > trackH
+  const offsetTop = Math.max(PAD, (trackH - blockH) / 2)
+  const laneCenterY = (lane: number) => offsetTop + PILL_H / 2 + lane * ROW
 
   const ticks = [0, 6, 12, 18, 24]
   const overdueN = placed.filter(p => p.bucket === 'overdue').length
@@ -68,7 +101,10 @@ export function ServiceHorizon({ watches, now, onPick, activeId }: Props) {
       </div>
 
       {/* track */}
-      <div style={{ position: 'relative', height: trackH, borderRadius: brand.radius.xl, background: brand.colors.white, border: `1px solid ${brand.colors.border}`, overflow: 'hidden' }}>
+      <div style={{ position: 'relative', height: trackH, borderRadius: brand.radius.xl, background: brand.colors.white, border: `1px solid ${brand.colors.border}`, overflowX: 'hidden', overflowY: scrolls ? 'auto' : 'hidden' }}>
+        {/* inner band — grows past the visible track height when the busiest
+            column overflows, so all stacked pills remain reachable by scroll */}
+        <div style={{ position: 'relative', height: bandH }}>
         {/* zone tints */}
         <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: `${zL}%`, background: brand.serviceHorizon.overdueZoneBg, borderRight: `1px solid ${brand.serviceHorizon.overdueZoneBorder}` }} />
         <div style={{ position: 'absolute', top: 0, bottom: 0, left: `${zR}%`, right: 0, background: brand.colors.bg, borderLeft: `1px dashed ${brand.colors.borderLight}` }} />
@@ -79,15 +115,15 @@ export function ServiceHorizon({ watches, now, onPick, activeId }: Props) {
 
         {/* markers — the status dot sits EXACTLY on the due month */}
         {placed.map(p => {
-          const top = 20 + p.lane * ((trackH - 40 - 40) / (LANES - 1))
+          const cy = laneCenterY(p.lane)
           const nearRight = p.xPct > 68
           const isActive = activeId === p.sw.watch.id
           const dated = p.bucket === null
           const sub = p.bucket === 'overdue' ? `${Math.round(Math.abs(p.m))} mo overdue` : formatMonthYear(p.st.due)
           return (
-            <div key={p.sw.watch.id} style={{ position: 'absolute', left: `${p.xPct}%`, top: top + 18 }}>
+            <div key={p.sw.watch.id} style={{ position: 'absolute', left: `${p.xPct}%`, top: cy }}>
               {dated && (
-                <div style={{ position: 'absolute', left: 0, top: 0, width: 1.5, height: trackH - (top + 18) - 4, transform: 'translateX(-50%)', background: p.st.dot, opacity: 0.28 }} />
+                <div style={{ position: 'absolute', left: 0, top: 0, width: 1.5, height: Math.max(0, bandH - cy - 4), transform: 'translateX(-50%)', background: p.st.dot, opacity: 0.28 }} />
               )}
               <span style={{ position: 'absolute', left: 0, top: 0, transform: 'translate(-50%,-50%)', width: 12, height: 12, borderRadius: 12, background: p.st.dot, border: `2.5px solid ${brand.colors.white}`, boxShadow: `0 0 0 1px ${p.st.dot}55`, zIndex: 3 }} />
               <button
@@ -114,6 +150,7 @@ export function ServiceHorizon({ watches, now, onPick, activeId }: Props) {
             </div>
           )
         })}
+        </div>
       </div>
 
       {/* legend */}
