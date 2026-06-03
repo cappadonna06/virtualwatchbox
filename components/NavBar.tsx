@@ -8,11 +8,12 @@ import { useAuth } from '@/lib/auth/AuthProvider'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { BrandLockup } from '@/components/BrandLockup'
 
-type NavIconName = 'collection' | 'playground' | 'discover' | 'news' | 'profile' | 'settings'
+type NavIconName = 'collection' | 'service' | 'playground' | 'discover' | 'news' | 'profile' | 'settings'
 type NavLink = { label: string; href: string; coming?: boolean; icon: NavIconName }
 
 const LINKS: NavLink[] = [
   { label: 'My Collection', href: '/collection', icon: 'collection' },
+  { label: 'Service Room', href: '/service-room', icon: 'service' },
   { label: 'Playground', href: '/playground', icon: 'playground' },
   { label: 'Discover', href: '/discover', icon: 'discover' },
   { label: 'News', href: '/news', icon: 'news' },
@@ -34,6 +35,12 @@ function NavIcon({ name, size = 16 }: { name: NavIconName; size?: number }) {
           <path d="M3.25 5.25h13.5v10.5H3.25z" stroke="currentColor" strokeWidth="1.35" />
           <path d="M6.5 3.25h7" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" />
           <path d="M6.25 8.5h7.5M6.25 11.5h5.25" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+        </svg>
+      )
+    case 'service':
+      return (
+        <svg {...props}>
+          <path d="M13.7 4.1a3.2 3.2 0 0 0-3.85 4.05l-5.2 5.2a1.4 1.4 0 0 0 1.98 1.98l5.2-5.2a3.2 3.2 0 0 0 4.05-3.85l-1.95 1.95-1.78-.48-.48-1.78 1.95-1.95z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
         </svg>
       )
     case 'playground':

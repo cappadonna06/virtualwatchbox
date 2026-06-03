@@ -86,6 +86,19 @@ export const brand = {
     expired: { bg: '#F2EEE7', fg: '#A89880' },
   },
 
+  /** Ownership chips (Box / Papers present-vs-absent) in the dossier strip */
+  ownershipChip: {
+    presentBg:     '#EEF5EC',
+    presentBorder: '#DCEBD8',
+    absentBg:      '#F7F2EA',
+  },
+
+  /** Service Horizon overdue-zone tint (derived from the overdue dot color) */
+  serviceHorizon: {
+    overdueZoneBg:     'rgba(178,58,58,0.05)',
+    overdueZoneBorder: 'rgba(178,58,58,0.16)',
+  },
+
   /** Papers & Provenance document-tile tints, keyed by document photo type */
   docTint: {
     receipt:        '#8A6A10',
