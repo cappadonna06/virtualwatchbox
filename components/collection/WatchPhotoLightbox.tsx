@@ -1,10 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { brand } from '@/lib/brand'
 import type { PhotoType, UserWatchPhoto } from '@/types/watch'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
-import { PHOTO_TYPE_LABELS, PHOTO_TYPE_ORDER } from '@/lib/serviceRoom/derive'
+import { PHOTO_TYPE_GROUPS, PHOTO_TYPE_LABELS } from '@/lib/serviceRoom/derive'
+import { DocTile } from '@/components/serviceRoom/primitives'
+
+const isImagePhoto = (p: UserWatchPhoto) => !p.mimeType || p.mimeType.startsWith('image/')
 
 type Props = {
   photos: UserWatchPhoto[]
@@ -22,6 +25,17 @@ export default function WatchPhotoLightbox({ photos, startId, ownedWatchId, onCl
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [typeMenuOpen, setTypeMenuOpen] = useState(false)
   const [busy, setBusy] = useState(false)
+  const typeMenuRef = useRef<HTMLDivElement>(null)
+
+  // Dismiss the type menu when clicking anywhere outside it.
+  useEffect(() => {
+    if (!typeMenuOpen) return
+    function onDown(e: MouseEvent) {
+      if (!typeMenuRef.current?.contains(e.target as Node)) setTypeMenuOpen(false)
+    }
+    document.addEventListener('mousedown', onDown)
+    return () => document.removeEventListener('mousedown', onDown)
+  }, [typeMenuOpen])
 
   // If photos array changes from outside (delete, primary swap, etc.), keep the
   // active selection stable when possible; if it disappeared, fall to the
@@ -60,7 +74,8 @@ export default function WatchPhotoLightbox({ photos, startId, ownedWatchId, onCl
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (editingCaption) return
-      if (e.key === 'Escape') { onClose(); return }
+      if (e.key === 'Escape') { if (typeMenuOpen) { setTypeMenuOpen(false) } else { onClose() } return }
+      if (typeMenuOpen) return
       if (e.key === 'ArrowLeft') { navigate(-1); return }
       if (e.key === 'ArrowRight') { navigate(1); return }
       if ((e.key === 'Backspace' || e.key === 'Delete') && active) {
@@ -73,7 +88,7 @@ export default function WatchPhotoLightbox({ photos, startId, ownedWatchId, onCl
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeIndex, photos.length, active?.id, editingCaption])
+  }, [activeIndex, photos.length, active?.id, editingCaption, typeMenuOpen])
 
   if (!active) return null
 
@@ -193,7 +208,34 @@ export default function WatchPhotoLightbox({ photos, startId, ownedWatchId, onCl
             ‹
           </button>
         )}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {!isImagePhoto(active) ? (
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18,
+            background: brand.colors.white, borderRadius: brand.radius.md, padding: '48px 56px',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.5)', maxWidth: '90%',
+          }}>
+            <DocTile type={active.photoType ?? 'service_record'} size={72} />
+            <div style={{ fontFamily: brand.font.serif, fontSize: 20, color: brand.colors.ink, textAlign: 'center' }}>
+              {active.caption?.trim() || 'Document'}
+            </div>
+            <span style={{ fontFamily: brand.font.sans, fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: brand.colors.muted }}>
+              {active.mimeType === 'application/pdf' ? 'PDF document' : (active.mimeType ?? 'Document')}
+            </span>
+            <a
+              href={active.photoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.06em',
+                padding: '10px 20px', background: brand.colors.ink, color: brand.colors.slot,
+                borderRadius: brand.radius.btn, textDecoration: 'none',
+              }}
+            >
+              Open document ↗
+            </a>
+          </div>
+        ) : (
+        /* eslint-disable-next-line @next/next/no-img-element */
         <img
           src={active.photoUrl}
           alt={active.caption ?? 'Watch photo'}
@@ -205,6 +247,7 @@ export default function WatchPhotoLightbox({ photos, startId, ownedWatchId, onCl
             boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
           }}
         />
+        )}
         {photos.length > 1 && (
           <button
             type="button"
@@ -312,7 +355,7 @@ export default function WatchPhotoLightbox({ photos, startId, ownedWatchId, onCl
               {active.isPrimary ? '★ Primary' : '★ Set as primary'}
             </button>
             <button type="button" onClick={startEditCaption} style={toolbarButton()}>✎ Caption</button>
-            <div style={{ position: 'relative' }}>
+            <div ref={typeMenuRef} style={{ position: 'relative' }}>
               <button
                 type="button"
                 onClick={() => setTypeMenuOpen(o => !o)}
@@ -330,8 +373,8 @@ export default function WatchPhotoLightbox({ photos, startId, ownedWatchId, onCl
                     bottom: 'calc(100% + 8px)',
                     left: '50%',
                     transform: 'translateX(-50%)',
-                    minWidth: 168,
-                    maxHeight: 280,
+                    minWidth: 180,
+                    maxHeight: 320,
                     overflowY: 'auto',
                     background: brand.colors.white,
                     border: `1px solid ${brand.colors.border}`,
@@ -341,26 +384,32 @@ export default function WatchPhotoLightbox({ photos, startId, ownedWatchId, onCl
                     zIndex: 1,
                   }}
                 >
-                  {PHOTO_TYPE_ORDER.map(t => {
-                    const selected = active.photoType === t
-                    return (
-                      <button
-                        key={t}
-                        type="button"
-                        role="menuitemradio"
-                        aria-checked={selected}
-                        onClick={() => handleSetType(t)}
-                        style={{
-                          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
-                          width: '100%', textAlign: 'left', background: selected ? brand.colors.goldWash : 'transparent',
-                          border: 'none', cursor: 'pointer', padding: '8px 14px',
-                          fontFamily: brand.font.sans, fontSize: 12.5, color: brand.colors.ink,
-                        }}
-                      >
-                        {PHOTO_TYPE_LABELS[t]}{selected && <span style={{ color: brand.colors.gold }}>✓</span>}
-                      </button>
-                    )
-                  })}
+                  {PHOTO_TYPE_GROUPS.map((group, gi) => (
+                    <div key={group.label}>
+                      {gi > 0 && <div style={{ height: 1, background: brand.colors.border, margin: '5px 0' }} />}
+                      <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, padding: '6px 14px 2px' }}>{group.label}</div>
+                      {group.types.map(t => {
+                        const selected = active.photoType === t
+                        return (
+                          <button
+                            key={t}
+                            type="button"
+                            role="menuitemradio"
+                            aria-checked={selected}
+                            onClick={() => handleSetType(t)}
+                            style={{
+                              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
+                              width: '100%', textAlign: 'left', background: selected ? brand.colors.goldWash : 'transparent',
+                              border: 'none', cursor: 'pointer', padding: '8px 14px',
+                              fontFamily: brand.font.sans, fontSize: 12.5, color: brand.colors.ink,
+                            }}
+                          >
+                            {PHOTO_TYPE_LABELS[t]}{selected && <span style={{ color: brand.colors.gold }}>✓</span>}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  ))}
                   {active.photoType && (
                     <>
                       <div style={{ height: 1, background: brand.colors.border, margin: '5px 0' }} />

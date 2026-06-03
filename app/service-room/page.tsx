@@ -15,7 +15,7 @@ import {
   serviceStatus,
   type ServiceWatch,
 } from '@/lib/serviceRoom/derive'
-import type { ServiceIntervalYears } from '@/types/watch'
+import type { ServiceIntervalYears, WatchServiceRecord } from '@/types/watch'
 import { Icon, Meta, btnSecondary } from '@/components/serviceRoom/primitives'
 import { HubAgenda } from '@/components/serviceRoom/HubAgenda'
 import { HubLedger } from '@/components/serviceRoom/HubLedger'
@@ -40,7 +40,7 @@ export default function ServiceRoomPage() {
   const session = useCollectionSession()
   const {
     collectionWatches, getWatchServiceRecords, getWatchPhotos,
-    logServiceRecord, deleteServiceRecord, setWatchInterval, showToast,
+    logServiceRecord, setWatchInterval, showToast,
   } = session
 
   const [layout, setLayout] = useState<LayoutId>('agenda')
@@ -60,22 +60,16 @@ export default function ServiceRoomPage() {
   const onPick = (sw: ServiceWatch) => setSelectedId(sw.watch.id)
   const onLog = (sw: ServiceWatch) => setLogForId(sw.watch.id)
 
-  const onSaveService = async (sw: ServiceWatch, data: ServiceRecordInput) => {
+  // Returns the created record so the modal can tie attachments to it; the
+  // modal closes itself after the record + any attachments are saved.
+  const onSaveService = async (sw: ServiceWatch, data: ServiceRecordInput): Promise<WatchServiceRecord | null> => {
     try {
-      await logServiceRecord(sw.watch.id, data)
-      setLogForId(null)
+      const rec = await logServiceRecord(sw.watch.id, data)
       showToast(`Service logged for ${sw.watch.brand} ${sw.watch.model}`)
+      return rec
     } catch {
       showToast('Could not save the service record')
-    }
-  }
-
-  const onDeleteService = async (sw: ServiceWatch, recordId: string) => {
-    try {
-      await deleteServiceRecord(sw.watch.id, recordId)
-      showToast('Service record removed')
-    } catch {
-      showToast('Could not remove the record')
+      return null
     }
   }
 
@@ -146,7 +140,6 @@ export default function ServiceRoomPage() {
         onLog={onLog}
         onInterval={onInterval}
         onExport={onExport}
-        onDeleteService={onDeleteService}
       />
       <LogServiceModal sw={logFor} onClose={() => setLogForId(null)} onSave={onSaveService} />
     </div>

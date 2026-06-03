@@ -426,7 +426,7 @@ export default function WatchSidebar({
           borderTop: `1px solid ${brand.colors.borderLight}`,
         }}>
           <WatchPhotoGallery ownedWatchId={watch.id} variant="sidebar" />
-          <div style={{ marginTop: 12 }}>
+          <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
             <Link
               href={`/collection/watch/${watch.id}`}
               style={{
@@ -438,6 +438,18 @@ export default function WatchSidebar({
               }}
             >
               View full detail →
+            </Link>
+            <Link
+              href="/service-room"
+              style={{
+                fontFamily: brand.font.sans,
+                fontSize: 11,
+                color: brand.colors.muted,
+                textDecoration: 'none',
+                letterSpacing: '0.04em',
+              }}
+            >
+              Service Room →
             </Link>
           </div>
         </div>

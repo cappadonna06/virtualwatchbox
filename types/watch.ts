@@ -14,21 +14,17 @@ export type WatchType =
 export type OwnershipStatus = 'Owned' | 'For Sale' | 'Recently Added' | 'Needs Service'
 
 // ── Per-watch photo gallery classification (Feature 2D) ─────────────────
-// The 5 visual types + 6 document types + 'other'. Document types are
-// grouped as "Papers & Provenance" on the detail page and Service Room.
+// The "Grouped 7": three Photos types + four Documents types. Document types
+// are surfaced together as "Papers & Provenance". Untagged (null) is the
+// catch-all. 'detail' covers close-ups (dial, case back, macro, etc.).
 export type PhotoType =
   | 'wrist_shot'
-  | 'dial'
-  | 'case_back'
-  | 'macro'
+  | 'detail'
   | 'lifestyle'
   | 'receipt'
   | 'warranty_card'
   | 'service_record'
   | 'box_papers'
-  | 'appraisal'
-  | 'manual'
-  | 'other'
 
 // The subset of PhotoType treated as Papers & Provenance documents.
 export type DocumentPhotoType =
@@ -36,8 +32,6 @@ export type DocumentPhotoType =
   | 'warranty_card'
   | 'service_record'
   | 'box_papers'
-  | 'appraisal'
-  | 'manual'
 
 // ── Service history (Feature 2F / Service Room) ──────────────────────────
 // 8-type taxonomy. 'full' and 'movement' are clock-resetting services that
@@ -254,6 +248,11 @@ export interface UserWatchPhoto {
   // Optional metadata; populated as the gallery UI gets the controls.
   photoType?: PhotoType
   takenAt?: string
+  /** MIME type of the stored file. undefined / image/* renders inline; other
+   *  types (e.g. application/pdf) render as a document tile. */
+  mimeType?: string
+  /** When set, this attachment documents a specific service event. */
+  serviceRecordId?: string
 }
 
 export interface WatchTarget {

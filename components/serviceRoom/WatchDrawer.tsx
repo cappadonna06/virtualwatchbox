@@ -1,24 +1,24 @@
 'use client'
 
-// components/serviceRoom/WatchDrawer.tsx — the per-piece Service Dossier:
-// ownership strip · service summary (with 3/5/7/10yr interval toggle) ·
-// Papers & Provenance · most-recent-first service timeline.
+// components/serviceRoom/WatchDrawer.tsx — the per-piece Service Dossier
+// quick-peek: ownership strip + service summary (with 3/5/7/10yr interval
+// toggle) + a link into the full dossier tab on the watch detail page.
 
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { brand } from '@/lib/brand'
 import {
-  ACQ_LABEL, docTypeMeta, formatCost, formatDate, lastFullService, lifetimeCostCents,
-  relTime, serviceStatus, serviceTypeMeta, warrantyStatus, type ServiceWatch,
+  ACQ_LABEL, formatCost, formatDate, lastFullService, lifetimeCostCents,
+  relTime, serviceStatus, warrantyStatus, type ServiceWatch,
 } from '@/lib/serviceRoom/derive'
 import type { ServiceIntervalYears } from '@/types/watch'
 import {
-  DocTile, Icon, Meta, StatusChip, WarrantyChip, WatchTile,
-  bookingUrl, btnPrimary, btnSecondary, emptyNote, iconBtn,
+  Icon, Meta, StatusChip, WarrantyChip, WatchTile,
+  bookingUrl, btnPrimary, btnSecondary, iconBtn,
 } from '@/components/serviceRoom/primitives'
 
 const sans = brand.font.sans
 const serif = brand.font.serif
-const drawerH3: CSSProperties = { fontFamily: serif, fontSize: 21, fontWeight: 500, color: brand.colors.ink, margin: 0, lineHeight: 1 }
 const INTERVALS: ServiceIntervalYears[] = [3, 5, 7, 10]
 
 type Props = {
@@ -28,10 +28,9 @@ type Props = {
   onLog: (sw: ServiceWatch) => void
   onInterval: (sw: ServiceWatch, years: ServiceIntervalYears) => void
   onExport: (sw: ServiceWatch) => void
-  onDeleteService: (sw: ServiceWatch, recordId: string) => void
 }
 
-export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport, onDeleteService }: Props) {
+export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport }: Props) {
   const [displayed, setDisplayed] = useState<ServiceWatch | null>(sw)
   const panelRef = useRef<HTMLDivElement>(null)
   const open = !!sw
@@ -96,10 +95,26 @@ export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport, onD
 
               <OwnershipStrip sw={w} now={now} />
               <ServiceSummary sw={w} now={now} onLog={onLog} onInterval={onInterval} />
-              <div style={{ height: 1, background: brand.colors.border }} />
-              <PapersSection sw={w} />
-              <div style={{ height: 1, background: brand.colors.border }} />
-              <ServiceTimeline sw={w} onDeleteService={onDeleteService} />
+
+              {/* Full record (timeline, Papers & Provenance, attachments) lives
+                  on the watch's Service Dossier tab. */}
+              <Link
+                href={`/collection/watch/${w.watch.id}?tab=service`}
+                onClick={onClose}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
+                  padding: '13px 16px', background: brand.colors.bg, border: `1px solid ${brand.colors.border}`,
+                  borderRadius: brand.radius.lg, textDecoration: 'none',
+                }}
+              >
+                <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <span style={{ fontFamily: sans, fontSize: 12.5, fontWeight: 600, color: brand.colors.ink }}>Open full dossier</span>
+                  <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted }}>
+                    {w.records.length} service{w.records.length === 1 ? '' : 's'} · {w.documents.length} document{w.documents.length === 1 ? '' : 's'}
+                  </span>
+                </span>
+                <span style={{ fontFamily: sans, fontSize: 16, color: brand.colors.gold }}>→</span>
+              </Link>
             </div>
           </>
         )}
@@ -183,137 +198,6 @@ function SumStat({ label, value, accent }: { label: string; value: string; accen
     <div>
       <Meta style={{ display: 'block', marginBottom: 4, fontSize: 9 }}>{label}</Meta>
       <span style={{ fontFamily: sans, fontSize: 14, fontWeight: 600, color: accent ?? brand.colors.ink }}>{value}</span>
-    </div>
-  )
-}
-
-// ── Papers & Provenance (from document-type photos) ────────────────────────
-function PapersSection({ sw }: { sw: ServiceWatch }) {
-  const docs = sw.documents
-  const present = [...new Set(docs.map(d => d.photoType as string))]
-  const [filter, setFilter] = useState<string>('all')
-  const shown = filter === 'all' ? docs : docs.filter(d => d.photoType === filter)
-
-  return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 12 }}>
-        <h3 style={drawerH3}>Papers &amp; Provenance</h3>
-        <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted }}>{docs.length} on file</span>
-      </div>
-
-      {docs.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 14 }}>
-          <DocFilterChip active={filter === 'all'} label="All" count={docs.length} onClick={() => setFilter('all')} />
-          {present.map(t => (
-            <DocFilterChip key={t} active={filter === t} label={docTypeMeta(t).label} count={docs.filter(d => d.photoType === t).length} onClick={() => setFilter(t)} />
-          ))}
-        </div>
-      )}
-
-      <div style={{ display: 'grid', gap: 8 }}>
-        {shown.map(d => {
-          const type = d.photoType as string
-          const label = d.caption?.trim() || docTypeMeta(type).label
-          const date = d.takenAt || d.createdAt
-          return (
-            <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: 13, padding: '10px 12px', background: brand.colors.white, border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.lg }}>
-              <DocTile type={type} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: sans, fontSize: 12.5, fontWeight: 600, color: brand.colors.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{label}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginTop: 2 }}>
-                  <span style={{ fontFamily: sans, fontSize: 9.5, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: brand.colors.gold }}>{docTypeMeta(type).label}</span>
-                  <span style={{ width: 3, height: 3, borderRadius: 3, background: brand.colors.borderLight }} />
-                  <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted }}>{formatDate(date)}</span>
-                </div>
-              </div>
-              <a href={d.photoUrl} target="_blank" rel="noopener noreferrer" title="View full size" style={{ ...iconBtn, width: 26, height: 26 }}>
-                <Icon name="arrowUpRight" size={13} color={brand.colors.muted} />
-              </a>
-            </div>
-          )
-        })}
-        {sw.watch.hasPapers === false && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px', borderRadius: brand.radius.lg, background: brand.serviceStatus.due.bg, color: brand.serviceStatus.due.fg, fontFamily: sans, fontSize: 11.5 }}>
-            <Icon name="shield" size={13} color={brand.serviceStatus.due.fg} />Original papers missing — affects resale value.
-          </div>
-        )}
-        {docs.length === 0 && sw.watch.hasPapers !== false && (
-          <div style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted, padding: '4px 0' }}>
-            No documents on file yet. Add receipts, warranty cards, or service records from the watch&apos;s photo gallery.
-          </div>
-        )}
-      </div>
-    </div>
-  )
-}
-
-function DocFilterChip({ active, label, count, onClick }: { active: boolean; label: string; count: number; onClick: () => void }) {
-  return (
-    <button type="button" onClick={onClick} style={{
-      display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.02em',
-      padding: '5px 11px', borderRadius: brand.radius.pill, cursor: 'pointer',
-      background: active ? brand.colors.ink : 'transparent', color: active ? brand.colors.slot : brand.colors.muted,
-      border: `1px solid ${active ? brand.colors.ink : brand.colors.border}`, transition: `all ${brand.transition.fast}`,
-    }}>
-      {label}<span style={{ opacity: 0.6 }}>{count}</span>
-    </button>
-  )
-}
-
-// ── Service timeline (most-recent-first) ───────────────────────────────────
-function ServiceTimeline({ sw, onDeleteService }: { sw: ServiceWatch; onDeleteService: (sw: ServiceWatch, recordId: string) => void }) {
-  const records = [...sw.records].sort((a, b) => (a.serviceDate < b.serviceDate ? 1 : a.serviceDate > b.serviceDate ? -1 : 0))
-  const [confirmId, setConfirmId] = useState<string | null>(null)
-
-  return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 14 }}>
-        <h3 style={drawerH3}>Service history</h3>
-        <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted }}>{records.length} record{records.length === 1 ? '' : 's'}</span>
-      </div>
-
-      {records.length === 0 && (
-        <div style={{ ...emptyNote, padding: '14px 0', textAlign: 'left', fontSize: 15 }}>No service logged yet.</div>
-      )}
-
-      <div style={{ position: 'relative' }}>
-        {records.map((r, i) => {
-          const t = serviceTypeMeta(r.serviceType)
-          const last = i === records.length - 1
-          return (
-            <div key={r.id} style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gap: 14, paddingBottom: last ? 0 : 18 }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <span style={{ width: 13, height: 13, borderRadius: 13, border: `2px solid ${t.resets ? brand.colors.gold : brand.colors.borderLight}`, background: t.resets ? brand.colors.gold : brand.colors.white, marginTop: 3, flexShrink: 0, boxShadow: t.resets ? '0 0 0 3px rgba(201,168,76,0.13)' : 'none' }} />
-                {!last && <span style={{ width: 1.5, flex: 1, background: brand.colors.border, marginTop: 4 }} />}
-              </div>
-              <div style={{ paddingBottom: 2 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 5 }}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 12, fontWeight: 600, color: brand.colors.ink }}>
-                    <span style={{ color: t.resets ? brand.colors.gold : brand.colors.muted, fontSize: 13 }}>{t.glyph}</span>{t.label}
-                  </span>
-                  <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted, whiteSpace: 'nowrap', flexShrink: 0 }}>{formatDate(r.serviceDate)}</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: r.notes ? 6 : 0 }}>
-                  {r.provider && <span style={{ fontFamily: sans, fontSize: 11.5, color: brand.colors.muted }}>{r.provider}</span>}
-                  <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 700, color: r.cost ? brand.colors.ink : brand.serviceStatus.ok.fg, marginLeft: 'auto', whiteSpace: 'nowrap' }}>
-                    {r.cost ? formatCost(r.cost) : 'No charge'}
-                  </span>
-                </div>
-                {r.notes && <p style={{ fontFamily: sans, fontSize: 11.5, color: brand.colors.ink, opacity: 0.75, lineHeight: 1.5, margin: '0 0 6px' }}>{r.notes}</p>}
-                {confirmId === r.id ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: sans, fontSize: 11 }}>
-                    <span style={{ color: brand.serviceStatus.overdue.fg }}>Delete this record?</span>
-                    <button type="button" onClick={() => { onDeleteService(sw, r.id); setConfirmId(null) }} style={{ fontFamily: sans, fontSize: 11, fontWeight: 600, color: brand.serviceStatus.overdue.fg, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Confirm</button>
-                    <button type="button" onClick={() => setConfirmId(null)} style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Cancel</button>
-                  </div>
-                ) : (
-                  <button type="button" onClick={() => setConfirmId(r.id)} style={{ fontFamily: sans, fontSize: 10.5, color: brand.colors.muted, background: 'none', border: 'none', cursor: 'pointer', padding: 0, letterSpacing: '0.04em' }}>Remove</button>
-                )}
-              </div>
-            </div>
-          )
-        })}
-      </div>
     </div>
   )
 }

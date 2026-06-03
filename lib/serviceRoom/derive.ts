@@ -72,8 +72,6 @@ export const DOC_TYPES: DocTypeMeta[] = [
   { id: 'warranty_card', label: 'Warranty Card' },
   { id: 'service_record', label: 'Service Record' },
   { id: 'box_papers', label: 'Box & Papers' },
-  { id: 'appraisal', label: 'Appraisal' },
-  { id: 'manual', label: 'Manual' },
 ]
 
 const DOC_TYPE_IDS = new Set<string>(DOC_TYPES.map(d => d.id))
@@ -90,27 +88,26 @@ export function docTint(type: string): string {
   return (brand.docTint as Record<string, string>)[type] ?? brand.colors.muted
 }
 
-// Full set of photo types with their human labels — used by the upload picker
-// and lightbox type selector. Documents grouped after the visual types.
+// Photo-type labels — used by the upload picker and lightbox type selector.
 export const PHOTO_TYPE_LABELS: Record<PhotoType, string> = {
   wrist_shot: 'Wrist shot',
-  dial: 'Dial',
-  case_back: 'Case back',
-  macro: 'Macro',
+  detail: 'Detail',
   lifestyle: 'Lifestyle',
   receipt: 'Receipt',
   warranty_card: 'Warranty card',
   service_record: 'Service record',
   box_papers: 'Box & papers',
-  appraisal: 'Appraisal',
-  manual: 'Manual',
-  other: 'Other',
 }
 
 export const PHOTO_TYPE_ORDER: PhotoType[] = [
-  'wrist_shot', 'dial', 'case_back', 'macro', 'lifestyle',
-  'receipt', 'warranty_card', 'service_record', 'box_papers', 'appraisal', 'manual',
-  'other',
+  'wrist_shot', 'detail', 'lifestyle',
+  'receipt', 'warranty_card', 'service_record', 'box_papers',
+]
+
+// Grouped presentation for the pickers — Photos then Documents.
+export const PHOTO_TYPE_GROUPS: { label: string; types: PhotoType[] }[] = [
+  { label: 'Photos', types: ['wrist_shot', 'detail', 'lifestyle'] },
+  { label: 'Documents', types: ['receipt', 'warranty_card', 'service_record', 'box_papers'] },
 ]
 
 // ─── Acquisition method labels (real OwnedWatch enum) ────────────────────

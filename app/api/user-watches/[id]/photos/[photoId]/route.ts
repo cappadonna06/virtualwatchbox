@@ -7,9 +7,8 @@ export const runtime = 'nodejs'
 type Params = { params: { id: string; photoId: string } }
 
 const PHOTO_TYPES: PhotoType[] = [
-  'wrist_shot', 'dial', 'case_back', 'macro', 'lifestyle',
-  'receipt', 'warranty_card', 'service_record', 'box_papers', 'appraisal', 'manual',
-  'other',
+  'wrist_shot', 'detail', 'lifestyle',
+  'receipt', 'warranty_card', 'service_record', 'box_papers',
 ]
 
 // PATCH /api/user-watches/[id]/photos/[photoId] — update caption and/or primary.
@@ -85,6 +84,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       isPrimary: updated.is_primary,
       createdAt: updated.created_at,
       photoType: updated.photo_type ?? undefined,
+      mimeType: updated.mime_type ?? undefined,
+      serviceRecordId: updated.service_record_id ?? undefined,
     },
   })
 }

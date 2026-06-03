@@ -105,8 +105,6 @@ export const brand = {
     warranty_card:  '#1A4A8A',
     service_record: '#2D6A2D',
     box_papers:     '#8A5010',
-    appraisal:      '#6A3A8A',
-    manual:         '#A89880',
   },
 
   font: {

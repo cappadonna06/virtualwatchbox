@@ -8,7 +8,7 @@ import { brand } from '@/lib/brand'
 import { useCollectionSession } from '../../CollectionSessionProvider'
 import EditWatchModal, { type EditWatchUpdates } from '@/components/collection/EditWatchModal'
 import WatchPhotoGallery from '@/components/collection/WatchPhotoGallery'
-import WatchServiceSection from '@/components/collection/WatchServiceSection'
+import WatchDossier from '@/components/serviceRoom/WatchDossier'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 
 const fmt = (n: number) =>
@@ -36,6 +36,15 @@ export default function OwnedWatchDetailPage() {
   const [editing, setEditing] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [viewportWidth, setViewportWidth] = useState(1280)
+  const [tab, setTab] = useState<'photos' | 'service'>(searchParams.get('tab') === 'service' ? 'service' : 'photos')
+
+  function selectTab(next: 'photos' | 'service') {
+    setTab(next)
+    const params = new URLSearchParams(searchParams.toString())
+    if (next === 'service') params.set('tab', 'service'); else params.delete('tab')
+    const qs = params.toString()
+    router.replace(qs ? `?${qs}` : window.location.pathname, { scroll: false })
+  }
 
   useEffect(() => {
     const update = () => setViewportWidth(window.innerWidth)
@@ -312,15 +321,39 @@ export default function OwnedWatchDetailPage() {
           </div>
         </div>
 
-        {/* Papers & Provenance + Service History — between specs and gallery */}
-        <div style={{ marginBottom: 48 }}>
-          <WatchServiceSection watch={watch} />
+        {/* Tabbed lower area: Photos / Service Dossier */}
+        <div role="tablist" aria-label="Watch detail sections" style={{
+          display: 'inline-flex', gap: 2, marginBottom: 28, padding: 3,
+          background: brand.colors.slot, border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.lg,
+        }}>
+          {([['photos', 'Photos'], ['service', 'Service Dossier']] as const).map(([id, label]) => {
+            const active = tab === id
+            return (
+              <button
+                key={id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => selectTab(id)}
+                style={{
+                  fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.02em',
+                  padding: '8px 16px', borderRadius: brand.radius.sm, border: 'none', cursor: 'pointer',
+                  background: active ? brand.colors.ink : 'transparent',
+                  color: active ? brand.colors.slot : brand.colors.muted,
+                  transition: `all ${brand.transition.fast}`,
+                }}
+              >
+                {label}
+              </button>
+            )
+          })}
         </div>
 
-        {/* Photo gallery — full-width below specs */}
-        <div>
+        {tab === 'service' ? (
+          <WatchDossier watch={watch} />
+        ) : (
           <WatchPhotoGallery ownedWatchId={watch.id} variant="grid" />
-        </div>
+        )}
       </div>
 
       {editing && (

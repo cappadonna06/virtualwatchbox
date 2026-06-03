@@ -22,8 +22,12 @@ import { CSS } from '@dnd-kit/utilities'
 import { brand } from '@/lib/brand'
 import type { PhotoType, UserWatchPhoto } from '@/types/watch'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
-import { PHOTO_TYPE_LABELS, PHOTO_TYPE_ORDER } from '@/lib/serviceRoom/derive'
+import { PHOTO_TYPE_GROUPS, PHOTO_TYPE_LABELS } from '@/lib/serviceRoom/derive'
+import { DocTile } from '@/components/serviceRoom/primitives'
 import WatchPhotoLightbox from './WatchPhotoLightbox'
+
+const ACCEPTED_UPLOAD = 'image/jpeg,image/png,image/heic,image/webp,image/*,application/pdf'
+const isImagePhoto = (p: UserWatchPhoto) => !p.mimeType || p.mimeType.startsWith('image/')
 
 type Props = {
   ownedWatchId: string
@@ -50,7 +54,7 @@ export default function WatchPhotoGallery({ ownedWatchId, variant = 'sidebar' }:
   // Stage chosen files; the optional type picker decides the photoType, then
   // doUpload sends them. Skipping the picker uploads with no type (null).
   function handleFiles(files: FileList | File[]) {
-    const list = Array.from(files).filter(f => f.type.startsWith('image/'))
+    const list = Array.from(files).filter(f => f.type.startsWith('image/') || f.type === 'application/pdf')
     if (list.length === 0) return
     setUploadError(null)
     setPendingFiles(list)
@@ -92,7 +96,7 @@ export default function WatchPhotoGallery({ ownedWatchId, variant = 'sidebar' }:
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/jpeg,image/png,image/heic,image/webp,image/*"
+        accept={ACCEPTED_UPLOAD}
         multiple
         onChange={e => e.target.files && handleFiles(e.target.files)}
         style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
@@ -147,27 +151,34 @@ export default function WatchPhotoGallery({ ownedWatchId, variant = 'sidebar' }:
         }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8, marginBottom: 10 }}>
             <span style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, color: brand.colors.ink }}>
-              Tag {pendingFiles.length} photo{pendingFiles.length === 1 ? '' : 's'} <span style={{ color: brand.colors.muted, fontWeight: 400 }}>· optional</span>
+              Tag {pendingFiles.length} file{pendingFiles.length === 1 ? '' : 's'} <span style={{ color: brand.colors.muted, fontWeight: 400 }}>· optional</span>
             </span>
             <button type="button" onClick={() => doUpload(null)} disabled={uploading} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, letterSpacing: '0.04em' }}>
               {uploading ? 'Uploading…' : 'Skip & upload'}
             </button>
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {PHOTO_TYPE_ORDER.map(t => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => doUpload(t)}
-                disabled={uploading}
-                style={{
-                  fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, padding: '5px 11px',
-                  borderRadius: brand.radius.pill, border: `1px solid ${brand.colors.borderLight}`,
-                  background: brand.colors.white, color: brand.colors.ink, cursor: uploading ? 'not-allowed' : 'pointer',
-                }}
-              >
-                {PHOTO_TYPE_LABELS[t]}
-              </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {PHOTO_TYPE_GROUPS.map(group => (
+              <div key={group.label}>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>{group.label}</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {group.types.map(t => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => doUpload(t)}
+                      disabled={uploading}
+                      style={{
+                        fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, padding: '5px 11px',
+                        borderRadius: brand.radius.pill, border: `1px solid ${brand.colors.borderLight}`,
+                        background: brand.colors.white, color: brand.colors.ink, cursor: uploading ? 'not-allowed' : 'pointer',
+                      }}
+                    >
+                      {PHOTO_TYPE_LABELS[t]}
+                    </button>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -362,19 +373,34 @@ function SortableThumb({
           touchAction: 'none',
         }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={photo.photoUrl}
-          alt={photo.caption ?? 'Watch photo'}
-          style={{
-            width: '100%',
-            height: isSidebar ? '100%' : undefined,
-            aspectRatio: isSidebar ? undefined : '1 / 1',
-            objectFit: 'cover',
-            display: 'block',
-            pointerEvents: 'none',
-          }}
-        />
+        {isImagePhoto(photo) ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={photo.photoUrl}
+            alt={photo.caption ?? 'Watch photo'}
+            style={{
+              width: '100%',
+              height: isSidebar ? '100%' : undefined,
+              aspectRatio: isSidebar ? undefined : '1 / 1',
+              objectFit: 'cover',
+              display: 'block',
+              pointerEvents: 'none',
+            }}
+          />
+        ) : (
+          <div style={{
+            width: '100%', height: isSidebar ? '100%' : undefined, aspectRatio: isSidebar ? undefined : '1 / 1',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6,
+            background: brand.colors.bg, pointerEvents: 'none',
+          }}>
+            <DocTile type={photo.photoType ?? 'service_record'} size={isSidebar ? 24 : 40} />
+            {!isSidebar && (
+              <span style={{ fontFamily: brand.font.sans, fontSize: 9.5, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: brand.colors.muted }}>
+                {photo.mimeType === 'application/pdf' ? 'PDF' : 'Document'}
+              </span>
+            )}
+          </div>
+        )}
         {photo.isPrimary && (
           <span style={{
             position: 'absolute',

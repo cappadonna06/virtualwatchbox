@@ -202,7 +202,7 @@ interface CollectionSessionContextValue {
   dismissMigration: () => void
   // Per-watch photo gallery (user_watch_photos)
   getWatchPhotos: (ownedWatchId: string) => UserWatchPhoto[]
-  uploadWatchPhotos: (ownedWatchId: string, files: File[], photoType?: PhotoType | null) => Promise<UserWatchPhoto[]>
+  uploadWatchPhotos: (ownedWatchId: string, files: File[], photoType?: PhotoType | null, serviceRecordId?: string) => Promise<UserWatchPhoto[]>
   setPrimaryWatchPhoto: (ownedWatchId: string, photoId: string) => Promise<void>
   updateWatchPhotoCaption: (ownedWatchId: string, photoId: string, caption: string) => Promise<void>
   deleteWatchPhoto: (ownedWatchId: string, photoId: string) => Promise<void>
@@ -723,6 +723,8 @@ async function loadFromSupabase(
         createdAt: String(row.created_at ?? new Date().toISOString()),
         photoType: typeof row.photo_type === 'string' ? (row.photo_type as PhotoType) : undefined,
         takenAt: typeof row.taken_at === 'string' ? row.taken_at : undefined,
+        mimeType: typeof row.mime_type === 'string' ? row.mime_type : undefined,
+        serviceRecordId: typeof row.service_record_id === 'string' ? row.service_record_id : undefined,
       }
       const list = photosByWatchId.get(watchId) ?? []
       list.push(photo)
@@ -2058,6 +2060,8 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
           createdAt: String(row.created_at ?? new Date().toISOString()),
           photoType: typeof row.photo_type === 'string' ? (row.photo_type as PhotoType) : undefined,
           takenAt: typeof row.taken_at === 'string' ? row.taken_at : undefined,
+          mimeType: typeof row.mime_type === 'string' ? row.mime_type : undefined,
+          serviceRecordId: typeof row.service_record_id === 'string' ? row.service_record_id : undefined,
         }
         const list = next.get(wId) ?? []
         list.push(photo)
@@ -2069,10 +2073,11 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     }
   }, [user, photosByWatchId])
 
-  const uploadWatchPhotos = useCallback(async (ownedWatchId: string, files: File[], photoType?: PhotoType | null) => {
+  const uploadWatchPhotos = useCallback(async (ownedWatchId: string, files: File[], photoType?: PhotoType | null, serviceRecordId?: string) => {
     const formData = new FormData()
     for (const f of files) formData.append('image', f, f.name || 'photo.jpg')
     if (photoType) formData.append('photoType', photoType)
+    if (serviceRecordId) formData.append('serviceRecordId', serviceRecordId)
     const res = await fetch(`/api/user-watches/${ownedWatchId}/photos`, { method: 'POST', body: formData })
     if (!res.ok) {
       const errBody = await res.json().catch(() => ({}))
