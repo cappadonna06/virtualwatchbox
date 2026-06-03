@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import type { PhotoType } from '@/types/watch'
 
 export const runtime = 'nodejs'
 
 type Params = { params: { id: string; photoId: string } }
+
+const PHOTO_TYPES: PhotoType[] = [
+  'wrist_shot', 'dial', 'case_back', 'macro', 'lifestyle',
+  'receipt', 'warranty_card', 'service_record', 'box_papers', 'appraisal', 'manual',
+  'other',
+]
 
 // PATCH /api/user-watches/[id]/photos/[photoId] — update caption and/or primary.
 // When isPrimary: true is set, atomically clear is_primary on every other photo
@@ -13,7 +20,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
-  let body: { caption?: string | null; isPrimary?: boolean }
+  let body: { caption?: string | null; isPrimary?: boolean; photoType?: string | null }
   try {
     body = await request.json()
   } catch {
@@ -46,6 +53,15 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   const updates: Record<string, unknown> = {}
   if (body.caption !== undefined) updates.caption = body.caption
   if (body.isPrimary !== undefined) updates.is_primary = body.isPrimary
+  if (body.photoType !== undefined) {
+    // null clears the classification; otherwise must be a valid PhotoType.
+    if (body.photoType === null) updates.photo_type = null
+    else if (typeof body.photoType === 'string' && PHOTO_TYPES.includes(body.photoType as PhotoType)) {
+      updates.photo_type = body.photoType
+    } else {
+      return NextResponse.json({ error: 'invalid_photo_type' }, { status: 400 })
+    }
+  }
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ ok: true })
@@ -68,6 +84,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       sortOrder: updated.sort_order,
       isPrimary: updated.is_primary,
       createdAt: updated.created_at,
+      photoType: updated.photo_type ?? undefined,
     },
   })
 }

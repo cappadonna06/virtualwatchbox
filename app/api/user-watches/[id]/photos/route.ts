@@ -1,9 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 import sharp from 'sharp'
 import { createClient } from '@/lib/supabase/server'
+import type { PhotoType } from '@/types/watch'
 
 export const maxDuration = 60
 export const runtime = 'nodejs'
+
+const PHOTO_TYPES: PhotoType[] = [
+  'wrist_shot', 'dial', 'case_back', 'macro', 'lifestyle',
+  'receipt', 'warranty_card', 'service_record', 'box_papers', 'appraisal', 'manual',
+  'other',
+]
+
+// Coerce an arbitrary value to a valid PhotoType, or null when absent/invalid.
+function coercePhotoType(value: unknown): PhotoType | null {
+  return typeof value === 'string' && PHOTO_TYPES.includes(value as PhotoType)
+    ? (value as PhotoType) : null
+}
 
 type PhotoRow = {
   id: string
@@ -14,6 +27,7 @@ type PhotoRow = {
   sort_order: number
   is_primary: boolean
   created_at: string
+  photo_type: string | null
 }
 
 function rowToPhoto(row: PhotoRow) {
@@ -25,6 +39,7 @@ function rowToPhoto(row: PhotoRow) {
     sortOrder: row.sort_order,
     isPrimary: row.is_primary,
     createdAt: row.created_at,
+    photoType: (row.photo_type ?? undefined) as PhotoType | undefined,
   }
 }
 
@@ -79,12 +94,13 @@ export async function POST(
   //    route and just needs to associate the result with this owned watch.
   const contentType = request.headers.get('content-type') ?? ''
   if (contentType.includes('application/json')) {
-    let body: { photoUrl?: unknown; caption?: unknown }
+    let body: { photoUrl?: unknown; caption?: unknown; photoType?: unknown }
     try { body = await request.json() }
     catch { return NextResponse.json({ error: 'invalid_body' }, { status: 400 }) }
 
     const photoUrl = typeof body.photoUrl === 'string' ? body.photoUrl.trim() : ''
     if (!photoUrl) return NextResponse.json({ error: 'no_photo_url' }, { status: 400 })
+    const photoType = coercePhotoType(body.photoType)
 
     const { data: existingRows } = await supabase
       .from('user_watch_photos')
@@ -102,6 +118,7 @@ export async function POST(
         caption: typeof body.caption === 'string' ? body.caption : null,
         sort_order: startSort,
         is_primary: !hasAnyPrimary,
+        photo_type: photoType,
       })
       .select()
       .single()
@@ -122,6 +139,9 @@ export async function POST(
   if (files.length === 0) {
     return NextResponse.json({ error: 'no_image' }, { status: 400 })
   }
+
+  // Optional photo classification applied to every file in this upload.
+  const photoType = coercePhotoType(formData.get('photoType'))
 
   // Discover existing photo count + max sort_order so new photos append cleanly.
   const { data: existing, error: existingErr } = await supabase
@@ -181,6 +201,7 @@ export async function POST(
         caption: null,
         sort_order: startSort + i,
         is_primary: isPrimary,
+        photo_type: photoType,
       })
       .select()
       .single()

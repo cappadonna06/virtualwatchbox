@@ -13,6 +13,61 @@ export type WatchType =
 
 export type OwnershipStatus = 'Owned' | 'For Sale' | 'Recently Added' | 'Needs Service'
 
+// ── Per-watch photo gallery classification (Feature 2D) ─────────────────
+// The 5 visual types + 6 document types + 'other'. Document types are
+// grouped as "Papers & Provenance" on the detail page and Service Room.
+export type PhotoType =
+  | 'wrist_shot'
+  | 'dial'
+  | 'case_back'
+  | 'macro'
+  | 'lifestyle'
+  | 'receipt'
+  | 'warranty_card'
+  | 'service_record'
+  | 'box_papers'
+  | 'appraisal'
+  | 'manual'
+  | 'other'
+
+// The subset of PhotoType treated as Papers & Provenance documents.
+export type DocumentPhotoType =
+  | 'receipt'
+  | 'warranty_card'
+  | 'service_record'
+  | 'box_papers'
+  | 'appraisal'
+  | 'manual'
+
+// ── Service history (Feature 2F / Service Room) ──────────────────────────
+// 8-type taxonomy. 'full' and 'movement' are clock-resetting services that
+// reset the next-due calculation.
+export type ServiceType =
+  | 'full'
+  | 'movement'
+  | 'water'
+  | 'battery'
+  | 'polish'
+  | 'strap'
+  | 'repair'
+  | 'other'
+
+export interface WatchServiceRecord {
+  id: string
+  watchId: string           // owned-watch id
+  serviceDate: string       // ISO date
+  serviceType: ServiceType
+  provider?: string
+  /** Stored in cents. undefined = no charge recorded. */
+  cost?: number
+  currency?: string         // default 'USD'
+  notes?: string
+  createdAt: string
+}
+
+/** Allowed full-service cadences (years). */
+export type ServiceIntervalYears = 3 | 5 | 7 | 10
+
 export type WatchTargetIntent = 'Addition' | 'Replacement'
 export type WatchSavedState = 'followed' | 'target' | 'grail' | 'jewel'
 export type WatchStateSource =
@@ -184,6 +239,8 @@ export interface OwnedWatch {
   insuranceValueUsd?: number
   askingPrice?: number
   tags?: string[]
+  /** Configurable full-service cadence (years). Defaults to 5 when unset. */
+  intervalYears?: ServiceIntervalYears
 }
 
 export interface UserWatchPhoto {
@@ -195,7 +252,7 @@ export interface UserWatchPhoto {
   isPrimary: boolean
   createdAt: string
   // Optional metadata; populated as the gallery UI gets the controls.
-  photoType?: 'wrist_shot' | 'box_papers' | 'macro' | 'lifestyle' | 'dial' | 'case_back' | 'other'
+  photoType?: PhotoType
   takenAt?: string
 }
 
@@ -253,6 +310,7 @@ export interface ResolvedOwnedWatch extends ResolvedWatch {
   warrantyExpiresAt?: string
   lastServicedAt?: string
   serviceNotes?: string
+  intervalYears?: ServiceIntervalYears
 }
 
 export type PlaygroundWatchOverrides = Partial<Pick<
