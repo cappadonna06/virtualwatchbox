@@ -8,6 +8,7 @@ import { brand } from '@/lib/brand'
 import { dialColorToHex } from '@/lib/dialColors'
 import { buildChrono24URL } from '@/lib/discover'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import { buildServiceWatch, formatDate, nextDueDate } from '@/lib/serviceRoom/derive'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import WatchPhotoGallery from './WatchPhotoGallery'
 import WatchStateControl from './WatchStateControl'
@@ -132,6 +133,7 @@ export default function WatchSidebar({
     promoteToNextTarget,
     removeFromNextTargets,
     showToast,
+    getWatchServiceRecords,
   } = useCollectionSession()
   const panelStyle: React.CSSProperties = sticky
     ? sidebarPanel
@@ -165,6 +167,18 @@ export default function WatchSidebar({
   const showConditionBadge = mode !== 'followed'
   const savedState = getWatchSavedState(resolvedCatalogWatchId)
   const showJewelBadge = mode === 'collection' && isWatchJewel(resolvedCatalogWatchId)
+
+  // Owner-only "Last serviced" hint: most recent service record, else the
+  // watch's lightweight lastServicedAt fallback. Overdue badge when the watch
+  // is marked Needs Service and the computed next-service date has passed.
+  const ownedForService = isOwnedWatch ? (watch as ResolvedOwnedWatch) : null
+  const serviceRecords = ownedForService ? getWatchServiceRecords(ownedForService.id) : []
+  const lastServicedDate = serviceRecords.length
+    ? [...serviceRecords].sort((a, b) => (a.serviceDate < b.serviceDate ? 1 : -1))[0].serviceDate
+    : ownedForService?.lastServicedAt ?? null
+  const serviceOverdue = !!ownedForService
+    && ownedForService.ownershipStatus === 'Needs Service'
+    && nextDueDate(buildServiceWatch(ownedForService, serviceRecords, [])).getTime() < Date.now()
   const isTarget = isWatchTarget(resolvedCatalogWatchId)
   const marketLabel = !isOwnedWatch && savedState === 'grail' && !isPublicMode ? 'Find on Market ↗' : 'Find For Sale ↗'
 
@@ -329,6 +343,17 @@ export default function WatchSidebar({
         ))}
       </div>
 
+      {isOwnedWatch && lastServicedDate && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: -4, marginBottom: 16, fontFamily: brand.font.sans, fontSize: 11.5, color: brand.colors.muted }}>
+          <span>Last serviced: {formatDate(lastServicedDate, { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+          {serviceOverdue && (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: brand.radius.pill, background: brand.serviceStatus.due.bg, color: brand.serviceStatus.due.fg, fontSize: 10, fontWeight: 600, letterSpacing: '0.04em' }}>
+              Service overdue
+            </span>
+          )}
+        </div>
+      )}
+
       {mode === 'playground' || mode === 'followed' ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <a
@@ -401,7 +426,7 @@ export default function WatchSidebar({
           borderTop: `1px solid ${brand.colors.borderLight}`,
         }}>
           <WatchPhotoGallery ownedWatchId={watch.id} variant="sidebar" />
-          <div style={{ marginTop: 12 }}>
+          <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
             <Link
               href={`/collection/watch/${watch.id}`}
               style={{
@@ -413,6 +438,18 @@ export default function WatchSidebar({
               }}
             >
               View full detail →
+            </Link>
+            <Link
+              href="/service-room"
+              style={{
+                fontFamily: brand.font.sans,
+                fontSize: 11,
+                color: brand.colors.muted,
+                textDecoration: 'none',
+                letterSpacing: '0.04em',
+              }}
+            >
+              Service Room →
             </Link>
           </div>
         </div>

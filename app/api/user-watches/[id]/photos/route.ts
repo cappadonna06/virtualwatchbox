@@ -1,9 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import sharp from 'sharp'
 import { createClient } from '@/lib/supabase/server'
+import type { PhotoType } from '@/types/watch'
 
 export const maxDuration = 60
 export const runtime = 'nodejs'
+
+const PHOTO_TYPES: PhotoType[] = [
+  'wrist_shot', 'detail', 'lifestyle',
+  'receipt', 'warranty_card', 'service_record', 'box_papers',
+]
+
+// Non-image attachments we accept alongside photos (tagged as documents).
+const ALLOWED_DOC_MIME = new Set(['application/pdf'])
+const MAX_DOC_BYTES = 15 * 1024 * 1024
+const EXT_BY_MIME: Record<string, string> = { 'application/pdf': 'pdf' }
+
+// Coerce an arbitrary value to a valid PhotoType, or null when absent/invalid.
+function coercePhotoType(value: unknown): PhotoType | null {
+  return typeof value === 'string' && PHOTO_TYPES.includes(value as PhotoType)
+    ? (value as PhotoType) : null
+}
 
 type PhotoRow = {
   id: string
@@ -14,6 +31,9 @@ type PhotoRow = {
   sort_order: number
   is_primary: boolean
   created_at: string
+  photo_type: string | null
+  mime_type: string | null
+  service_record_id: string | null
 }
 
 function rowToPhoto(row: PhotoRow) {
@@ -25,7 +45,27 @@ function rowToPhoto(row: PhotoRow) {
     sortOrder: row.sort_order,
     isPrimary: row.is_primary,
     createdAt: row.created_at,
+    photoType: (row.photo_type ?? undefined) as PhotoType | undefined,
+    mimeType: row.mime_type ?? undefined,
+    serviceRecordId: row.service_record_id ?? undefined,
   }
+}
+
+// Validate that a service_record_id (if provided) belongs to this watch + user.
+async function resolveServiceRecordId(
+  supabase: ReturnType<typeof createClient>,
+  value: unknown,
+  watchId: string,
+  userId: string,
+): Promise<{ ok: true; id: string | null } | { ok: false }> {
+  if (typeof value !== 'string' || !value) return { ok: true, id: null }
+  const { data, error } = await supabase
+    .from('watch_service_records')
+    .select('id, watch_id, user_id')
+    .eq('id', value)
+    .maybeSingle()
+  if (error || !data || data.watch_id !== watchId || data.user_id !== userId) return { ok: false }
+  return { ok: true, id: value }
 }
 
 // GET /api/user-watches/[id]/photos — list all photos for a watch the caller owns.
@@ -79,12 +119,16 @@ export async function POST(
   //    route and just needs to associate the result with this owned watch.
   const contentType = request.headers.get('content-type') ?? ''
   if (contentType.includes('application/json')) {
-    let body: { photoUrl?: unknown; caption?: unknown }
+    let body: { photoUrl?: unknown; caption?: unknown; photoType?: unknown; serviceRecordId?: unknown }
     try { body = await request.json() }
     catch { return NextResponse.json({ error: 'invalid_body' }, { status: 400 }) }
 
     const photoUrl = typeof body.photoUrl === 'string' ? body.photoUrl.trim() : ''
     if (!photoUrl) return NextResponse.json({ error: 'no_photo_url' }, { status: 400 })
+    const photoType = coercePhotoType(body.photoType)
+    const svc = await resolveServiceRecordId(supabase, body.serviceRecordId, params.id, user.id)
+    if (!svc.ok) return NextResponse.json({ error: 'invalid_service_record' }, { status: 400 })
+    const serviceRecordId = svc.id
 
     const { data: existingRows } = await supabase
       .from('user_watch_photos')
@@ -102,6 +146,8 @@ export async function POST(
         caption: typeof body.caption === 'string' ? body.caption : null,
         sort_order: startSort,
         is_primary: !hasAnyPrimary,
+        photo_type: photoType,
+        service_record_id: serviceRecordId,
       })
       .select()
       .single()
@@ -123,6 +169,12 @@ export async function POST(
     return NextResponse.json({ error: 'no_image' }, { status: 400 })
   }
 
+  // Optional photo classification applied to every file in this upload.
+  const photoType = coercePhotoType(formData.get('photoType'))
+  const svc = await resolveServiceRecordId(supabase, formData.get('serviceRecordId'), params.id, user.id)
+  if (!svc.ok) return NextResponse.json({ error: 'invalid_service_record' }, { status: 400 })
+  const serviceRecordId = svc.id
+
   // Discover existing photo count + max sort_order so new photos append cleanly.
   const { data: existing, error: existingErr } = await supabase
     .from('user_watch_photos')
@@ -136,41 +188,51 @@ export async function POST(
   const inserted: PhotoRow[] = []
   for (let i = 0; i < files.length; i += 1) {
     const file = files[i]
-    let processed: Buffer
-    try {
-      processed = await sharp(Buffer.from(await file.arrayBuffer()))
-        .rotate()
-        .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
-        .jpeg({ quality: 86 })
-        .toBuffer()
-    } catch (err) {
-      console.error('[user-watch-photos] sharp failed:', err)
+    const isImage = file.type.startsWith('image/')
+
+    // Prepare bytes + storage metadata per file kind. Images are normalised to
+    // JPEG via sharp (mime_type left null → renders inline); allowed documents
+    // (PDF) are stored as-is with their mime so the UI shows a doc tile.
+    let bytes: Buffer
+    let ext: string
+    let storedMime: string
+    let dbMime: string | null
+    if (isImage) {
+      try {
+        bytes = await sharp(Buffer.from(await file.arrayBuffer()))
+          .rotate()
+          .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
+          .jpeg({ quality: 86 })
+          .toBuffer()
+      } catch (err) {
+        console.error('[user-watch-photos] sharp failed:', err)
+        continue
+      }
+      ext = 'jpg'; storedMime = 'image/jpeg'; dbMime = null
+    } else if (ALLOWED_DOC_MIME.has(file.type) && file.size <= MAX_DOC_BYTES) {
+      bytes = Buffer.from(await file.arrayBuffer())
+      ext = EXT_BY_MIME[file.type] ?? 'bin'; storedMime = file.type; dbMime = file.type
+    } else {
+      console.warn('[user-watch-photos] skipped unsupported file:', file.type, file.size)
       continue
     }
 
-    const filename = `${crypto.randomUUID()}.jpg`
-    const path = `user-uploads/${user.id}/gallery/${filename}`
+    const path = `user-uploads/${user.id}/gallery/${crypto.randomUUID()}.${ext}`
     const { error: uploadError } = await supabase
       .storage
       .from('watch-photos')
-      .upload(path, processed, {
-        contentType: 'image/jpeg',
-        cacheControl: '31536000',
-        upsert: false,
-      })
+      .upload(path, bytes, { contentType: storedMime, cacheControl: '31536000', upsert: false })
     if (uploadError) {
       console.error('[user-watch-photos] upload failed:', uploadError)
       continue
     }
 
-    const { data: publicUrlData } = supabase
-      .storage
-      .from('watch-photos')
-      .getPublicUrl(path)
+    const { data: publicUrlData } = supabase.storage.from('watch-photos').getPublicUrl(path)
     const photoUrl = publicUrlData?.publicUrl ?? ''
 
-    // First photo on a watch with no existing primary becomes primary.
-    const isPrimary = !hasAnyPrimary && inserted.length === 0
+    // First image on a watch with no existing primary becomes primary;
+    // documents never auto-become the primary thumbnail.
+    const isPrimary = isImage && !hasAnyPrimary && inserted.length === 0
 
     const { data: newRow, error: insertError } = await supabase
       .from('user_watch_photos')
@@ -181,6 +243,9 @@ export async function POST(
         caption: null,
         sort_order: startSort + i,
         is_primary: isPrimary,
+        photo_type: photoType,
+        mime_type: dbMime,
+        service_record_id: serviceRecordId,
       })
       .select()
       .single()

@@ -68,6 +68,45 @@ export const brand = {
     fair:      { bg: '#FAE8E8', text: '#8A2020' },
   },
 
+  /**
+   * Service Room status palette — overdue / due-soon / on-track.
+   * Each carries a tinted pill (bg/fg) plus a saturated dot/track color for
+   * the Service Horizon markers and timeline rails.
+   */
+  serviceStatus: {
+    overdue: { bg: '#FAE8E8', fg: '#8A2020', dot: '#B23A3A', track: '#C25151' },
+    due:     { bg: '#FFF3E0', fg: '#8A5010', dot: '#C98A2A', track: '#D69A3A' },
+    ok:      { bg: '#E8F4E8', fg: '#2D6A2D', dot: '#5A9A5A', track: '#7BAE7B' },
+  },
+
+  /** Warranty countdown chip palette */
+  warranty: {
+    soon:    { bg: '#FFF8E6', fg: '#8A6A10' },
+    active:  { bg: '#E8F0FA', fg: '#1A4A8A' },
+    expired: { bg: '#F2EEE7', fg: '#A89880' },
+  },
+
+  /** Ownership chips (Box / Papers present-vs-absent) in the dossier strip */
+  ownershipChip: {
+    presentBg:     '#EEF5EC',
+    presentBorder: '#DCEBD8',
+    absentBg:      '#F7F2EA',
+  },
+
+  /** Service Horizon overdue-zone tint (derived from the overdue dot color) */
+  serviceHorizon: {
+    overdueZoneBg:     'rgba(178,58,58,0.05)',
+    overdueZoneBorder: 'rgba(178,58,58,0.16)',
+  },
+
+  /** Papers & Provenance document-tile tints, keyed by document photo type */
+  docTint: {
+    receipt:        '#8A6A10',
+    warranty_card:  '#1A4A8A',
+    service_record: '#2D6A2D',
+    box_papers:     '#8A5010',
+  },
+
   font: {
     /** Cormorant Garamond — display headings, card titles, prices */
     serif: 'var(--font-cormorant)',

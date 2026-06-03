@@ -22,17 +22,32 @@ import type {
   CatalogWatch,
   OwnedWatch,
   OwnershipStatus,
+  PhotoType,
   PlaygroundBox,
   PlaygroundBoxEntry,
   ResolvedOwnedWatch,
+  ServiceIntervalYears,
+  ServiceType,
   UserWatchPhoto,
   WatchCondition,
   WatchSavedState,
+  WatchServiceRecord,
   WatchStateSource,
   WatchTarget,
 } from '@/types/watch'
 import type { ProfileImageCropState } from '@/types/profile'
 import { brand } from '@/lib/brand'
+import { isDocumentPhotoType, normalizeInterval } from '@/lib/serviceRoom/derive'
+
+// Mutable fields accepted when logging or editing a service record.
+export type ServiceRecordInput = {
+  serviceDate: string
+  serviceType: ServiceType
+  provider?: string
+  cost?: number | null
+  currency?: string
+  notes?: string
+}
 
 export type WatchboxPhotoCrop = ProfileImageCropState & { aspect?: number }
 
@@ -96,6 +111,7 @@ type SessionSnapshot = {
   collectionJewelWatchId: string | null
   watchboxConfig: WatchboxConfig
   photosByWatchId?: Map<string, UserWatchPhoto[]>
+  serviceRecordsByWatchId?: Map<string, WatchServiceRecord[]>
   playgroundBoxes?: PlaygroundBox[]
 }
 
@@ -114,6 +130,7 @@ type LegacyWatchSnapshot = {
   warrantyExpiresAt?: unknown
   lastServicedAt?: unknown
   serviceNotes?: unknown
+  intervalYears?: unknown
 }
 
 type LegacySessionSnapshot = {
@@ -185,12 +202,23 @@ interface CollectionSessionContextValue {
   dismissMigration: () => void
   // Per-watch photo gallery (user_watch_photos)
   getWatchPhotos: (ownedWatchId: string) => UserWatchPhoto[]
-  uploadWatchPhotos: (ownedWatchId: string, files: File[]) => Promise<UserWatchPhoto[]>
+  uploadWatchPhotos: (ownedWatchId: string, files: File[], photoType?: PhotoType | null, serviceRecordId?: string) => Promise<UserWatchPhoto[]>
   setPrimaryWatchPhoto: (ownedWatchId: string, photoId: string) => Promise<void>
   updateWatchPhotoCaption: (ownedWatchId: string, photoId: string, caption: string) => Promise<void>
   deleteWatchPhoto: (ownedWatchId: string, photoId: string) => Promise<void>
   reorderWatchPhotos: (ownedWatchId: string, orderedIds: string[]) => Promise<void>
   refreshWatchPhotos: (ownedWatchId?: string) => Promise<void>
+  updateWatchPhotoType: (ownedWatchId: string, photoId: string, photoType: PhotoType | null) => Promise<void>
+  // Papers & Provenance — the watch's document-type photos.
+  getWatchDocuments: (ownedWatchId: string) => UserWatchPhoto[]
+  // Service history (watch_service_records)
+  getWatchServiceRecords: (ownedWatchId: string) => WatchServiceRecord[]
+  logServiceRecord: (ownedWatchId: string, data: ServiceRecordInput) => Promise<WatchServiceRecord>
+  updateServiceRecord: (ownedWatchId: string, recordId: string, data: Partial<ServiceRecordInput>) => Promise<void>
+  deleteServiceRecord: (ownedWatchId: string, recordId: string) => Promise<void>
+  refreshServiceRecords: (ownedWatchId?: string) => Promise<void>
+  // Configurable per-watch full-service cadence.
+  setWatchInterval: (ownedWatchId: string, years: ServiceIntervalYears) => Promise<void>
   // Playground boxes (synced to Supabase for logged-in users)
   playgroundBoxes: PlaygroundBox[]
   setPlaygroundBoxes: (boxes: PlaygroundBox[] | ((prev: PlaygroundBox[]) => PlaygroundBox[])) => void
@@ -279,6 +307,7 @@ function normalizeOwnedWatch(
     warrantyExpiresAt: typeof rawWatch.warrantyExpiresAt === 'string' ? rawWatch.warrantyExpiresAt : undefined,
     lastServicedAt: typeof rawWatch.lastServicedAt === 'string' ? rawWatch.lastServicedAt : undefined,
     serviceNotes: typeof rawWatch.serviceNotes === 'string' ? rawWatch.serviceNotes : undefined,
+    intervalYears: rawWatch.intervalYears === undefined ? undefined : normalizeInterval(rawWatch.intervalYears),
   }
 }
 
@@ -376,6 +405,7 @@ type DbWatch = {
   warranty_expires_at: string | null
   last_serviced_at: string | null
   service_notes: string | null
+  interval_years: number | null
 }
 
 type DbWatchState = {
@@ -454,6 +484,7 @@ async function syncWatchUpdate(watchId: string, updates: Partial<OwnedWatch>, us
   if (updates.warrantyExpiresAt !== undefined) payload.warranty_expires_at = updates.warrantyExpiresAt || null
   if (updates.lastServicedAt !== undefined) payload.last_serviced_at = updates.lastServicedAt || null
   if (updates.serviceNotes !== undefined) payload.service_notes = updates.serviceNotes
+  if (updates.intervalYears !== undefined) payload.interval_years = updates.intervalYears
   if (Object.keys(payload).length === 0) return
   await withRetry('syncWatchUpdate', async () => {
     const supabase = createClient()
@@ -597,12 +628,14 @@ async function loadFromSupabase(
   try {
     const supabase = createClient()
 
-    const [watchesRes, statesRes, configRes, photosRes, playgroundRes] = await Promise.all([
+    const [watchesRes, statesRes, configRes, photosRes, serviceRes, playgroundRes] = await Promise.all([
       supabase.from('watches').select('*').eq('user_id', userId).order('sort_order'),
       supabase.from('watch_states').select('*').eq('user_id', userId),
       supabase.from('watchbox_config').select('*').eq('user_id', userId).maybeSingle(),
       supabase.from('user_watch_photos').select('*').eq('user_id', userId)
         .order('watch_id').order('sort_order').order('created_at'),
+      supabase.from('watch_service_records').select('*').eq('user_id', userId)
+        .order('watch_id').order('service_date', { ascending: false }).order('created_at', { ascending: false }),
       supabase.from('playground_boxes').select('*').eq('user_id', userId).order('sort_order'),
     ])
 
@@ -634,6 +667,7 @@ async function loadFromSupabase(
         warrantyExpiresAt: w.warranty_expires_at ?? undefined,
         lastServicedAt: w.last_serviced_at ?? undefined,
         serviceNotes: w.service_notes ?? undefined,
+        intervalYears: w.interval_years == null ? undefined : normalizeInterval(w.interval_years),
       }))
 
     const followedWatchIds: string[] = []
@@ -687,10 +721,35 @@ async function loadFromSupabase(
         sortOrder: typeof row.sort_order === 'number' ? row.sort_order : 0,
         isPrimary: !!row.is_primary,
         createdAt: String(row.created_at ?? new Date().toISOString()),
+        photoType: typeof row.photo_type === 'string' ? (row.photo_type as PhotoType) : undefined,
+        takenAt: typeof row.taken_at === 'string' ? row.taken_at : undefined,
+        mimeType: typeof row.mime_type === 'string' ? row.mime_type : undefined,
+        serviceRecordId: typeof row.service_record_id === 'string' ? row.service_record_id : undefined,
       }
       const list = photosByWatchId.get(watchId) ?? []
       list.push(photo)
       photosByWatchId.set(watchId, list)
+    }
+
+    if (serviceRes.error) console.error('[vwb] loadFromSupabase watch_service_records error', serviceRes.error)
+    const serviceRecordsByWatchId = new Map<string, WatchServiceRecord[]>()
+    for (const row of (serviceRes.data ?? []) as Array<Record<string, unknown>>) {
+      const watchId = String(row.watch_id ?? '')
+      if (!watchId) continue
+      const record: WatchServiceRecord = {
+        id: String(row.id),
+        watchId,
+        serviceDate: String(row.service_date ?? ''),
+        serviceType: String(row.service_type ?? 'other') as ServiceType,
+        provider: typeof row.provider === 'string' ? row.provider : undefined,
+        cost: typeof row.cost === 'number' ? row.cost : undefined,
+        currency: typeof row.currency === 'string' ? row.currency : undefined,
+        notes: typeof row.notes === 'string' ? row.notes : undefined,
+        createdAt: String(row.created_at ?? new Date().toISOString()),
+      }
+      const list = serviceRecordsByWatchId.get(watchId) ?? []
+      list.push(record)
+      serviceRecordsByWatchId.set(watchId, list)
     }
 
     // Opportunistic self-heal: any row whose catalog_id was a legacy seed
@@ -743,6 +802,7 @@ async function loadFromSupabase(
       collectionJewelWatchId,
       watchboxConfig,
       photosByWatchId,
+      serviceRecordsByWatchId,
       playgroundBoxes: playgroundBoxes.length > 0 ? playgroundBoxes : undefined,
     }
   } catch (err) {
@@ -832,6 +892,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
 
   const [collectionEntries, setCollectionEntries] = useState<OwnedWatch[]>([])
   const [photosByWatchId, setPhotosByWatchId] = useState<Map<string, UserWatchPhoto[]>>(new Map())
+  const [serviceRecordsByWatchId, setServiceRecordsByWatchId] = useState<Map<string, WatchServiceRecord[]>>(new Map())
   const [followedWatchIds, setFollowedWatchIds] = useState<string[]>([])
   const [nextTargets, setNextTargets] = useState<WatchTarget[]>([])
   const [grailWatchId, setGrailWatchId] = useState<string | null>(null)
@@ -933,6 +994,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   const applyServerSnapshot = useCallback((snapshot: SessionSnapshot) => {
     setCollectionEntries(snapshot.collectionWatches)
     if (snapshot.photosByWatchId) setPhotosByWatchId(snapshot.photosByWatchId)
+    if (snapshot.serviceRecordsByWatchId) setServiceRecordsByWatchId(snapshot.serviceRecordsByWatchId)
     setFollowedWatchIds(snapshot.followedWatchIds)
     setNextTargets(snapshot.nextTargets)
     setGrailWatchId(snapshot.grailWatchId)
@@ -1996,6 +2058,10 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
           sortOrder: typeof row.sort_order === 'number' ? row.sort_order : 0,
           isPrimary: !!row.is_primary,
           createdAt: String(row.created_at ?? new Date().toISOString()),
+          photoType: typeof row.photo_type === 'string' ? (row.photo_type as PhotoType) : undefined,
+          takenAt: typeof row.taken_at === 'string' ? row.taken_at : undefined,
+          mimeType: typeof row.mime_type === 'string' ? row.mime_type : undefined,
+          serviceRecordId: typeof row.service_record_id === 'string' ? row.service_record_id : undefined,
         }
         const list = next.get(wId) ?? []
         list.push(photo)
@@ -2007,9 +2073,11 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     }
   }, [user, photosByWatchId])
 
-  const uploadWatchPhotos = useCallback(async (ownedWatchId: string, files: File[]) => {
+  const uploadWatchPhotos = useCallback(async (ownedWatchId: string, files: File[], photoType?: PhotoType | null, serviceRecordId?: string) => {
     const formData = new FormData()
     for (const f of files) formData.append('image', f, f.name || 'photo.jpg')
+    if (photoType) formData.append('photoType', photoType)
+    if (serviceRecordId) formData.append('serviceRecordId', serviceRecordId)
     const res = await fetch(`/api/user-watches/${ownedWatchId}/photos`, { method: 'POST', body: formData })
     if (!res.ok) {
       const errBody = await res.json().catch(() => ({}))
@@ -2089,6 +2157,134 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     }
   }, [refreshWatchPhotos])
 
+  const updateWatchPhotoType = useCallback(async (ownedWatchId: string, photoId: string, photoType: PhotoType | null) => {
+    const res = await fetch(`/api/user-watches/${ownedWatchId}/photos/${photoId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ photoType }),
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    setPhotosByWatchId(prev => {
+      const next = new Map(prev)
+      const list = (next.get(ownedWatchId) ?? []).map(p =>
+        p.id === photoId ? { ...p, photoType: photoType ?? undefined } : p)
+      next.set(ownedWatchId, list)
+      return next
+    })
+  }, [])
+
+  // ── Service records (watch_service_records) ──────────────────────────────
+  const getWatchServiceRecords = useCallback(
+    (ownedWatchId: string) => serviceRecordsByWatchId.get(ownedWatchId) ?? [],
+    [serviceRecordsByWatchId],
+  )
+
+  const getWatchDocuments = useCallback(
+    (ownedWatchId: string) => (photosByWatchId.get(ownedWatchId) ?? [])
+      .filter(p => isDocumentPhotoType(p.photoType)),
+    [photosByWatchId],
+  )
+
+  const refreshServiceRecords = useCallback(async (ownedWatchId?: string) => {
+    if (!user) return
+    try {
+      const supabase = createClient()
+      const query = supabase.from('watch_service_records').select('*').eq('user_id', user.id)
+      if (ownedWatchId) query.eq('watch_id', ownedWatchId)
+      query.order('watch_id').order('service_date', { ascending: false }).order('created_at', { ascending: false })
+      const { data, error } = await query
+      if (error) throw error
+      setServiceRecordsByWatchId(prev => {
+        const next = new Map(prev)
+        if (ownedWatchId) next.delete(ownedWatchId)
+        else next.clear()
+        for (const row of (data ?? []) as Array<Record<string, unknown>>) {
+          const wId = String(row.watch_id ?? '')
+          if (!wId) continue
+          const record: WatchServiceRecord = {
+            id: String(row.id),
+            watchId: wId,
+            serviceDate: String(row.service_date ?? ''),
+            serviceType: String(row.service_type ?? 'other') as ServiceType,
+            provider: typeof row.provider === 'string' ? row.provider : undefined,
+            cost: typeof row.cost === 'number' ? row.cost : undefined,
+            currency: typeof row.currency === 'string' ? row.currency : undefined,
+            notes: typeof row.notes === 'string' ? row.notes : undefined,
+            createdAt: String(row.created_at ?? new Date().toISOString()),
+          }
+          const list = next.get(wId) ?? []
+          list.push(record)
+          next.set(wId, list)
+        }
+        return next
+      })
+    } catch (err) {
+      console.error('[vwb] refreshServiceRecords failed', err)
+    }
+  }, [user])
+
+  const logServiceRecord = useCallback(async (ownedWatchId: string, data: ServiceRecordInput) => {
+    const res = await fetch(`/api/user-watches/${ownedWatchId}/service-records`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}))
+      throw new Error(errBody.error ?? `HTTP ${res.status}`)
+    }
+    const body = await res.json() as { record: WatchServiceRecord }
+    setServiceRecordsByWatchId(prev => {
+      const next = new Map(prev)
+      const list = [body.record, ...(next.get(ownedWatchId) ?? [])]
+      list.sort((a, b) => (a.serviceDate < b.serviceDate ? 1 : a.serviceDate > b.serviceDate ? -1 : 0))
+      next.set(ownedWatchId, list)
+      return next
+    })
+    return body.record
+  }, [])
+
+  const updateServiceRecord = useCallback(async (ownedWatchId: string, recordId: string, data: Partial<ServiceRecordInput>) => {
+    const res = await fetch(`/api/user-watches/${ownedWatchId}/service-records/${recordId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}))
+      throw new Error(errBody.error ?? `HTTP ${res.status}`)
+    }
+    const body = await res.json() as { record: WatchServiceRecord }
+    setServiceRecordsByWatchId(prev => {
+      const next = new Map(prev)
+      const list = (next.get(ownedWatchId) ?? []).map(r => r.id === recordId ? body.record : r)
+      list.sort((a, b) => (a.serviceDate < b.serviceDate ? 1 : a.serviceDate > b.serviceDate ? -1 : 0))
+      next.set(ownedWatchId, list)
+      return next
+    })
+  }, [])
+
+  const deleteServiceRecord = useCallback(async (ownedWatchId: string, recordId: string) => {
+    // Optimistic removal.
+    setServiceRecordsByWatchId(prev => {
+      const next = new Map(prev)
+      next.set(ownedWatchId, (next.get(ownedWatchId) ?? []).filter(r => r.id !== recordId))
+      return next
+    })
+    const res = await fetch(`/api/user-watches/${ownedWatchId}/service-records/${recordId}`, { method: 'DELETE' })
+    if (!res.ok) {
+      await refreshServiceRecords(ownedWatchId)
+      throw new Error(`HTTP ${res.status}`)
+    }
+  }, [refreshServiceRecords])
+
+  const setWatchInterval = useCallback(async (ownedWatchId: string, years: ServiceIntervalYears) => {
+    // Optimistic local update on the owned entry.
+    setCollectionEntries(prev => prev.map(w => w.id === ownedWatchId ? { ...w, intervalYears: years } : w))
+    if (!user) return  // guest: persisted via the sessionStorage snapshot effect
+    await trackedSync(syncWatchUpdate(ownedWatchId, { intervalYears: years }, user.id))
+  }, [user, trackedSync])
+
   const value: CollectionSessionContextValue = {
     collectionWatches,
     followedWatchIds,
@@ -2149,6 +2345,14 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     deleteWatchPhoto,
     reorderWatchPhotos,
     refreshWatchPhotos,
+    updateWatchPhotoType,
+    getWatchDocuments,
+    getWatchServiceRecords,
+    logServiceRecord,
+    updateServiceRecord,
+    deleteServiceRecord,
+    refreshServiceRecords,
+    setWatchInterval,
     playgroundBoxes,
     setPlaygroundBoxes,
     playgroundHydrated,
