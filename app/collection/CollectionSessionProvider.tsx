@@ -202,7 +202,7 @@ interface CollectionSessionContextValue {
   dismissMigration: () => void
   // Per-watch photo gallery (user_watch_photos)
   getWatchPhotos: (ownedWatchId: string) => UserWatchPhoto[]
-  uploadWatchPhotos: (ownedWatchId: string, files: File[]) => Promise<UserWatchPhoto[]>
+  uploadWatchPhotos: (ownedWatchId: string, files: File[], photoType?: PhotoType | null) => Promise<UserWatchPhoto[]>
   setPrimaryWatchPhoto: (ownedWatchId: string, photoId: string) => Promise<void>
   updateWatchPhotoCaption: (ownedWatchId: string, photoId: string, caption: string) => Promise<void>
   deleteWatchPhoto: (ownedWatchId: string, photoId: string) => Promise<void>
@@ -2069,9 +2069,10 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     }
   }, [user, photosByWatchId])
 
-  const uploadWatchPhotos = useCallback(async (ownedWatchId: string, files: File[]) => {
+  const uploadWatchPhotos = useCallback(async (ownedWatchId: string, files: File[], photoType?: PhotoType | null) => {
     const formData = new FormData()
     for (const f of files) formData.append('image', f, f.name || 'photo.jpg')
+    if (photoType) formData.append('photoType', photoType)
     const res = await fetch(`/api/user-watches/${ownedWatchId}/photos`, { method: 'POST', body: formData })
     if (!res.ok) {
       const errBody = await res.json().catch(() => ({}))

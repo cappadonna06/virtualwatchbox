@@ -27,14 +27,15 @@ Current user-backed persistence includes:
   - `cover_image_url`, `collection_hero_image_url`
   - `featured_profile_watch`, `visibility`
 - `public.watches`
+  - `interval_years` (migration 028 — configurable per-watch full-service cadence, 3/5/7/10)
 - `public.watch_states`
 - `public.watchbox_config`
   - `frame`, `lining`, `slot_count`
   - `watchbox_photo_url`, `watchbox_photo_crop`
 - `public.playground_boxes`
 - `public.user_watch_photos`
-  - `photo_type` (migration 018, not yet surfaced in UI)
-- `public.watch_service_records` (planned — Feature 2F)
+  - `photo_type` (migration 018 + 026 — surfaced in UI: upload picker, lightbox type selector, gallery badge, Papers & Provenance)
+- `public.watch_service_records` (Service Room — Feature 2F; migration 027, RLS-scoped to owner)
 - `public.user_straps` (planned — Feature 7)
 - `public.strap_watch_overrides` (planned — Feature 7)
 

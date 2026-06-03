@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { brand } from '@/lib/brand'
-import type { UserWatchPhoto } from '@/types/watch'
+import type { PhotoType, UserWatchPhoto } from '@/types/watch'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import { PHOTO_TYPE_LABELS, PHOTO_TYPE_ORDER } from '@/lib/serviceRoom/derive'
 
 type Props = {
   photos: UserWatchPhoto[]
@@ -13,12 +14,13 @@ type Props = {
 }
 
 export default function WatchPhotoLightbox({ photos, startId, ownedWatchId, onClose }: Props) {
-  const { setPrimaryWatchPhoto, updateWatchPhotoCaption, deleteWatchPhoto } = useCollectionSession()
+  const { setPrimaryWatchPhoto, updateWatchPhotoCaption, deleteWatchPhoto, updateWatchPhotoType } = useCollectionSession()
 
   const [activeId, setActiveId] = useState(startId)
   const [editingCaption, setEditingCaption] = useState(false)
   const [captionDraft, setCaptionDraft] = useState('')
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [typeMenuOpen, setTypeMenuOpen] = useState(false)
   const [busy, setBusy] = useState(false)
 
   // If photos array changes from outside (delete, primary swap, etc.), keep the
@@ -43,6 +45,16 @@ export default function WatchPhotoLightbox({ photos, startId, ownedWatchId, onCl
     setActiveId(photos[next].id)
     setEditingCaption(false)
     setConfirmDelete(false)
+    setTypeMenuOpen(false)
+  }
+
+  async function handleSetType(type: PhotoType | null) {
+    if (!active || busy) return
+    setTypeMenuOpen(false)
+    if ((active.photoType ?? null) === type) return
+    setBusy(true)
+    try { await updateWatchPhotoType(ownedWatchId, active.id, type) }
+    finally { setBusy(false) }
   }
 
   useEffect(() => {
@@ -300,6 +312,71 @@ export default function WatchPhotoLightbox({ photos, startId, ownedWatchId, onCl
               {active.isPrimary ? '★ Primary' : '★ Set as primary'}
             </button>
             <button type="button" onClick={startEditCaption} style={toolbarButton()}>✎ Caption</button>
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => setTypeMenuOpen(o => !o)}
+                aria-haspopup="menu"
+                aria-expanded={typeMenuOpen}
+                style={toolbarButton(active.photoType ? brand.colors.gold : undefined)}
+              >
+                ◫ {active.photoType ? PHOTO_TYPE_LABELS[active.photoType] : 'Type'}
+              </button>
+              {typeMenuOpen && (
+                <div
+                  role="menu"
+                  style={{
+                    position: 'absolute',
+                    bottom: 'calc(100% + 8px)',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    minWidth: 168,
+                    maxHeight: 280,
+                    overflowY: 'auto',
+                    background: brand.colors.white,
+                    border: `1px solid ${brand.colors.border}`,
+                    borderRadius: brand.radius.md,
+                    boxShadow: brand.shadow.menu,
+                    padding: '5px 0',
+                    zIndex: 1,
+                  }}
+                >
+                  {PHOTO_TYPE_ORDER.map(t => {
+                    const selected = active.photoType === t
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        role="menuitemradio"
+                        aria-checked={selected}
+                        onClick={() => handleSetType(t)}
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
+                          width: '100%', textAlign: 'left', background: selected ? brand.colors.goldWash : 'transparent',
+                          border: 'none', cursor: 'pointer', padding: '8px 14px',
+                          fontFamily: brand.font.sans, fontSize: 12.5, color: brand.colors.ink,
+                        }}
+                      >
+                        {PHOTO_TYPE_LABELS[t]}{selected && <span style={{ color: brand.colors.gold }}>✓</span>}
+                      </button>
+                    )
+                  })}
+                  {active.photoType && (
+                    <>
+                      <div style={{ height: 1, background: brand.colors.border, margin: '5px 0' }} />
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => handleSetType(null)}
+                        style={{ display: 'block', width: '100%', textAlign: 'left', background: 'transparent', border: 'none', cursor: 'pointer', padding: '8px 14px', fontFamily: brand.font.sans, fontSize: 12.5, color: brand.colors.muted }}
+                      >
+                        Clear type
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
             <a
               href={active.photoUrl}
               target="_blank"

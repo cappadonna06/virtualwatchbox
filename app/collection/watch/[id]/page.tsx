@@ -8,6 +8,7 @@ import { brand } from '@/lib/brand'
 import { useCollectionSession } from '../../CollectionSessionProvider'
 import EditWatchModal, { type EditWatchUpdates } from '@/components/collection/EditWatchModal'
 import WatchPhotoGallery from '@/components/collection/WatchPhotoGallery'
+import WatchServiceSection from '@/components/collection/WatchServiceSection'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 
 const fmt = (n: number) =>
@@ -309,6 +310,11 @@ export default function OwnedWatchDetailPage() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Papers & Provenance + Service History — between specs and gallery */}
+        <div style={{ marginBottom: 48 }}>
+          <WatchServiceSection watch={watch} />
         </div>
 
         {/* Photo gallery — full-width below specs */}

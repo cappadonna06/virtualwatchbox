@@ -20,8 +20,9 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 
 import { brand } from '@/lib/brand'
-import type { UserWatchPhoto } from '@/types/watch'
+import type { PhotoType, UserWatchPhoto } from '@/types/watch'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import { PHOTO_TYPE_LABELS, PHOTO_TYPE_ORDER } from '@/lib/serviceRoom/derive'
 import WatchPhotoLightbox from './WatchPhotoLightbox'
 
 type Props = {
@@ -38,19 +39,30 @@ export default function WatchPhotoGallery({ ownedWatchId, variant = 'sidebar' }:
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [dragOver, setDragOver] = useState(false)
+  // Files chosen but not yet uploaded — surfaces the optional type picker.
+  const [pendingFiles, setPendingFiles] = useState<File[] | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 220, tolerance: 8 } }),
   )
 
-  async function handleFiles(files: FileList | File[]) {
+  // Stage chosen files; the optional type picker decides the photoType, then
+  // doUpload sends them. Skipping the picker uploads with no type (null).
+  function handleFiles(files: FileList | File[]) {
     const list = Array.from(files).filter(f => f.type.startsWith('image/'))
     if (list.length === 0) return
+    setUploadError(null)
+    setPendingFiles(list)
+  }
+
+  async function doUpload(photoType: PhotoType | null) {
+    if (!pendingFiles || uploading) return
     setUploading(true)
     setUploadError(null)
     try {
-      await uploadWatchPhotos(ownedWatchId, list)
+      await uploadWatchPhotos(ownedWatchId, pendingFiles, photoType)
+      setPendingFiles(null)
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : 'Upload failed')
     } finally {
@@ -126,6 +138,40 @@ export default function WatchPhotoGallery({ ownedWatchId, variant = 'sidebar' }:
           </button>
         )}
       </div>
+
+      {/* Optional type picker — appears after files are chosen, before upload */}
+      {pendingFiles && (
+        <div style={{
+          marginBottom: 12, padding: '12px 14px', background: brand.colors.slot,
+          border: `1px solid ${brand.colors.goldLine}`, borderRadius: brand.radius.lg,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8, marginBottom: 10 }}>
+            <span style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, color: brand.colors.ink }}>
+              Tag {pendingFiles.length} photo{pendingFiles.length === 1 ? '' : 's'} <span style={{ color: brand.colors.muted, fontWeight: 400 }}>· optional</span>
+            </span>
+            <button type="button" onClick={() => doUpload(null)} disabled={uploading} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, letterSpacing: '0.04em' }}>
+              {uploading ? 'Uploading…' : 'Skip & upload'}
+            </button>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {PHOTO_TYPE_ORDER.map(t => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => doUpload(t)}
+                disabled={uploading}
+                style={{
+                  fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, padding: '5px 11px',
+                  borderRadius: brand.radius.pill, border: `1px solid ${brand.colors.borderLight}`,
+                  background: brand.colors.white, color: brand.colors.ink, cursor: uploading ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {PHOTO_TYPE_LABELS[t]}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Empty state */}
       {photos.length === 0 ? (
@@ -347,6 +393,26 @@ function SortableThumb({
             fontWeight: 700,
             boxShadow: '0 1px 3px rgba(0,0,0,0.25)',
           }}>★</span>
+        )}
+        {photo.photoType && !isSidebar && (
+          <span style={{
+            position: 'absolute',
+            bottom: 4,
+            left: 4,
+            maxWidth: 'calc(100% - 8px)',
+            padding: '2px 7px',
+            borderRadius: brand.radius.pill,
+            background: 'rgba(26,20,16,0.72)',
+            color: brand.colors.bg,
+            fontFamily: brand.font.sans,
+            fontSize: 9.5,
+            fontWeight: 500,
+            letterSpacing: '0.03em',
+            lineHeight: 1.4,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}>{PHOTO_TYPE_LABELS[photo.photoType]}</span>
         )}
       </button>
       {!isSidebar && photo.caption && (
