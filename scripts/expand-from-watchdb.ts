@@ -26,6 +26,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { repoRoot, parseCsv, csvEscape } from './watch-image-pipeline'
 import { isValidCatalogId, mintCatalogId } from '../lib/catalogId'
+import { classifyWatchType } from './watchTypeClassifier'
 
 const existingSeedPath = path.join(repoRoot, 'data', 'catalog-seed-1500.csv')
 const watchDbCsvPath =
@@ -63,19 +64,14 @@ const HEADER: Array<keyof Row> = [
   'verificationStatus',
 ]
 
-// Heuristic watchType inference. Combines model/family/name and the
-// description's keyword footprint. More aggressive than expand-seed-list's
-// rules because we have richer text here (Family name + description).
-const WATCH_TYPE_RULES: Array<{ re: RegExp; type: string }> = [
-  { re: /submariner|sea[\s-]?dweller|seamaster\s+diver|seamaster\s+300|fifty\s*fathoms|aquanaut(?!\s+(?:travel|chrono))|pelagos|black\s*bay(?!\s+gmt)|aquaracer|deepsea|fathom|seastar|aqua\s*racer|sea\s*timer|diver/i, type: 'Diver' },
-  { re: /\bgmt\b|world[\s-]?time|worldtimer|world\s*tour|dual\s*time|tradition\s*hours\s*and\s*minutes|tradition\s+gmt|aqua\s+terra\s+gmt|navitimer\s+gmt|black\s*bay\s+gmt/i, type: 'GMT' },
-  { re: /daytona|speedmaster|chrono(?:graph|mat)?(?!\s+(?:gmt|world))|navitimer(?!\s+gmt)|monaco|carrera\s*(?:chrono)?|el\s*primero|el-primero|datograph|chronoswiss|chronospace|chronomat\b/i, type: 'Chronograph' },
-  { re: /pilot|big\s*pilot|mark\s+(?:xv|xvi|xvii|xviii)|aviator|flieger|portugieser\s+chronograph|chronospace|navitimer\b|spitfire|top\s*gun|chronomat\s*frecce/i, type: 'Pilot' },
-  { re: /explorer|ranger|khaki\s+field|hardlex.*field|field|tank\s+(?:must|francaise|americaine|solo|cintree|louis)|seamaster\s+railmaster|railmaster|hardy|khaki/i, type: 'Field' },
-  { re: /nautilus|royal\s*oak|overseas|laureato|polo\s*s|ingenieur|alpine\s*eagle|odyssey|defy|octo\b|gerald\s*genta|pasha|aikon\b/i, type: 'Integrated Bracelet' },
-  { re: /datejust|day-?date|cellini|patrimony|saxonia|lange\s*1|reverso|portugieser(?!\s+chrono)|portuguese|calatrava|altiplano|simplicity|tank\b|santos|cle|tonda|toric|villeret|fiftysix|patrimoine|complications/i, type: 'Dress' },
-]
-
+// watchType inference. Pass 1 runs the canonical classifier
+// (scripts/watchTypeClassifier.ts) over the STRUCTURED identity (name +
+// family) plus structured signals. The free-text Description is deliberately
+// kept out of the substring rule tables: matching a bare `field`/`diver`/`aqua`
+// token against marketing copy is exactly what mislabeled watches before
+// (e.g. a diver whose blurb mentioned "magnetic field"). Pass 2 mines the
+// description, but only through word-boundary phrases that can't false-trigger
+// on an incidental word.
 function inferWatchType(
   name: string,
   family: string,
@@ -87,56 +83,22 @@ function inferWatchType(
     caseShape?: string
   } = {},
 ): string {
+  const primary = classifyWatchType(`${name} ${family}`, signals)
+  if (primary) return primary
+
   const blob = `${name} ${family} ${description}`.toLowerCase()
 
-  // Pass 1: explicit nickname / family rules (highest confidence).
-  for (const rule of WATCH_TYPE_RULES) {
-    if (rule.re.test(blob)) return rule.type
-  }
-
-  // Pass 2: structured signal heuristics. Run in confidence order.
-  const fn = (signals.functions ?? '').toLowerCase()
-  if (/chronograph/.test(fn)) return 'Chronograph'
-  if (/(gmt|24[\s-]?hour|second time zone|dual\s*time|world[\s-]?time)/.test(fn)) return 'GMT'
-
-  // W/R ≥ 200m → almost certainly a diver
-  const wrMatch = (signals.waterResistance ?? '').match(/(\d+(?:\.\d+)?)/)
-  const wr = wrMatch ? Number(wrMatch[1]) : 0
-  if (wr >= 200) return 'Diver'
-
-  // Pilot indicators in description (when not caught by rules above)
   if (/\b(flieger|aviator|pilot[''']?s?|cockpit|navigator|big\s*pilot|chronospace|navitimer)\b/i.test(blob))
     return 'Pilot'
-
-  // Field watch indicators
-  if (/\b(field watch|khaki|expedition|trail|mil[\s-]?spec|service\s*watch|trench)\b/i.test(blob))
+  if (/\b(field watch|expedition|trail|mil[\s-]?spec|service\s*watch|trench)\b/i.test(blob))
     return 'Field'
-
-  // Diver indicators in description (lower confidence than W/R signal)
   if (/\b(divers?\s+watch|dive\s+watch|skin[\s-]?diver|saturation|helium|tropic)\b/i.test(blob))
     return 'Diver'
-
-  // GMT in description
   if (/\b(gmt[\s-]?master|world[\s-]?time|second\s+time\s+zone|two\s+time\s+zones)\b/i.test(blob))
     return 'GMT'
-
-  // Vintage indicator — but only when description explicitly says vintage/historic
   if (/\b(vintage|historic(al)?|reproduction|tribute to the|heritage of|1950s|1960s|1970s)\b/i.test(blob))
     return 'Vintage'
-
-  // Integrated bracelet hint — case shape often "Cushion" + bracelet listed
   if (/integrated\s+bracelet|integrated[\s-]?case/i.test(blob)) return 'Integrated Bracelet'
-
-  // Dress watch fallback: small diameter (<= 39mm) with no complications,
-  // closed case back, common dress collection words
-  const diaMatch = (signals.diameter ?? '').match(/(\d+(?:\.\d+)?)/)
-  const dia = diaMatch ? Number(diaMatch[1]) : 0
-  if (dia > 0 && dia <= 38 && !/chronograph|gmt|date/.test(fn)) {
-    return 'Dress'
-  }
-
-  // Sport fallback (only for clear cases): heavy case w/r 100m and chronoless
-  if (wr >= 100 && wr < 200 && !/chronograph|gmt/.test(fn)) return 'Sport'
 
   return ''
 }

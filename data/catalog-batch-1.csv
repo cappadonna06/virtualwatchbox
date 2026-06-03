@@ -90,7 +90,7 @@ rolex-126234-0046,Rolex,Datejust 36,126234-0046,Grey,Dress,,kaggle:watch_db,iden
 rolex-126234-0047,Rolex,Datejust 36,126234-0047,Green,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 rolex-126234-0049,Rolex,Datejust 36,126234-0049,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 rolex-124270,Rolex,Explorer,124270,Black,Field,https://www.rolex.com/en-us/watches/explorer,core_icon,identity_seeded_specs_pending
-rolex-216570-0001,Rolex,Explorer II,216570-0001,White,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-216570-0001,Rolex,Explorer II,216570-0001,White,GMT,,kaggle:watch_db,identity_seeded_specs_partial
 rolex-226570,Rolex,Explorer II,226570,White,GMT,https://www.rolex.com/en-us/watches/explorer,curated,identity_seeded_specs_verified
 rolex-114270-0001,Rolex,Explorer,114270-0001,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
 rolex-124270-0001-aka-m124270-0001,Rolex,Explorer,124270-0001 (aka: m124270-0001),Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
@@ -101,13 +101,13 @@ rolex-16570-0003,Rolex,Explorer II,16570-0003,White,GMT,,kaggle:watch_db,identit
 rolex-16570-0004,Rolex,Explorer II,16570-0004,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
 rolex-214270-0001,Rolex,Explorer,214270-0001,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
 rolex-214270-0003,Rolex,Explorer,214270-0003,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
-rolex-216570-0002,Rolex,Explorer II,216570-0002,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-216570-0002,Rolex,Explorer II,216570-0002,Black,GMT,,kaggle:watch_db,identity_seeded_specs_partial
 rolex-224270-0001-aka-m224270-0001,Rolex,Explorer,224270-0001 (aka: m224270-0001),Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
-rolex-226570-0001-aka-m226570-0001,Rolex,Explorer II,226570-0001 (aka: M226570-0001),White,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-226570-0001-aka-m226570-0001,Rolex,Explorer II,226570-0001 (aka: M226570-0001),White,GMT,,kaggle:watch_db,identity_seeded_specs_partial
 rolex-114200-0024,Rolex,Oyster Perpetual 34,114200-0024,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 rolex-124300,Rolex,Oyster Perpetual 41,124300,Green,Sport,https://www.rolex.com/en-us/watches/oyster-perpetual,core_icon,identity_seeded_specs_pending
-rolex-114200-0014,Rolex,Oyster Perpetual 34,114200-0014,Blue,Field,,kaggle:watch_db,identity_seeded_specs_partial
-rolex-114200-0019,Rolex,Oyster Perpetual 34,114200-0019,Silver,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-114200-0014,Rolex,Oyster Perpetual 34,114200-0014,Blue,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-114200-0019,Rolex,Oyster Perpetual 34,114200-0019,Silver,Sport,,kaggle:watch_db,identity_seeded_specs_partial
 rolex-114200-0020,Rolex,Oyster Perpetual 34,114200-0020,Purple,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 rolex-114200-0021,Rolex,Oyster Perpetual 34,114200-0021,Green,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 rolex-114200-0022,Rolex,Oyster Perpetual 34,114200-0022,Champagne,Dress,,kaggle:watch_db,identity_seeded_specs_partial
@@ -180,9 +180,9 @@ rolex-6611,Rolex,Day-Date 36,6611,Silver,Chronograph,,kaggle:watch_db,identity_s
 rolex-228235,Rolex,Day-Date 40,228235,Olive,Dress,https://www.rolex.com/en-us/watches/day-date,core_icon,identity_seeded_specs_pending
 rolex-116400,Rolex,Milgauss,116400,,Sport,,thewatchapi:ref-list,identity_seeded_specs_pending
 rolex-116400v,Rolex,Milgauss,116400V,,Sport,,thewatchapi:ref-list,identity_seeded_specs_pending
-rolex-1019-001,Rolex,Milgauss,1019-001,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
-rolex-116400-0001,Rolex,Milgauss,116400-0001,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
-rolex-116400-0002,Rolex,Milgauss,116400-0002,White,Field,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-1019-001,Rolex,Milgauss,1019-001,Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116400-0001,Rolex,Milgauss,116400-0001,Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
+rolex-116400-0002,Rolex,Milgauss,116400-0002,White,Sport,,kaggle:watch_db,identity_seeded_specs_partial
 rolex-116400gv,Rolex,Milgauss,116400GV,Blue,Sport,https://www.rolex.com/en-us/watches,enthusiast_icon,identity_seeded_specs_pending
 omega-310-30-42-50-01-001,Omega,Speedmaster Professional Moonwatch,310.30.42.50.01.001,Black,Chronograph,https://www.omegawatches.com/watches/speedmaster/moonwatch-professional,core_icon,identity_seeded_specs_partial
 omega-310-30-42-50-01-002,Omega,Speedmaster Professional Moonwatch,310.30.42.50.01.002,Black,Chronograph,https://www.omegawatches.com/watches/speedmaster/moonwatch-professional,core_icon,identity_seeded_specs_pending
@@ -255,15 +255,15 @@ omega-220-22-41-21-03-001,Omega,Seamaster Aqua Terra,220.22.41.21.03.001,,Diver,
 omega-220-92-43-22-99-001,Omega,Seamaster Aqua Terra,220.92.43.22.99.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
 omega-2200-51-00,Omega,Seamaster Aqua Terra,2200.51.00,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
 omega-215-30-44-21-01-001,Omega,Seamaster Planet Ocean 600M,215.30.44.21.01.001,Black,Diver,https://www.omegawatches.com/watches/seamaster/planet-ocean-600m,core_icon,identity_seeded_specs_pending
-omega-215-30-40-20-01-001,Omega,Seamaster Planet Ocean,215.30.40.20.01.001,,,,thewatchapi:ref-list,identity_seeded_specs_pending
-omega-215-30-40-20-03-002,Omega,Seamaster Planet Ocean,215.30.40.20.03.002,,,,thewatchapi:ref-list,identity_seeded_specs_pending
-omega-215-30-44-21-01-002,Omega,Seamaster Planet Ocean,215.30.44.21.01.002,,,,thewatchapi:ref-list,identity_seeded_specs_pending
-omega-215-30-44-21-03-001,Omega,Seamaster Planet Ocean,215.30.44.21.03.001,,,,thewatchapi:ref-list,identity_seeded_specs_pending
-omega-215-30-44-21-04-001,Omega,Seamaster Planet Ocean,215.30.44.21.04.001,,,,thewatchapi:ref-list,identity_seeded_specs_pending
-omega-215-30-44-22-01-001,Omega,Seamaster Planet Ocean,215.30.44.22.01.001,,,,thewatchapi:ref-list,identity_seeded_specs_pending
-omega-215-30-46-51-01-002,Omega,Seamaster Planet Ocean,215.30.46.51.01.002,,,,thewatchapi:ref-list,identity_seeded_specs_pending
-omega-215-32-44-21-01-001,Omega,Seamaster Planet Ocean,215.32.44.21.01.001,,,,thewatchapi:ref-list,identity_seeded_specs_pending
-omega-215-33-44-21-03-001,Omega,Seamaster Planet Ocean,215.33.44.21.03.001,,,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-30-40-20-01-001,Omega,Seamaster Planet Ocean,215.30.40.20.01.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-30-40-20-03-002,Omega,Seamaster Planet Ocean,215.30.40.20.03.002,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-30-44-21-01-002,Omega,Seamaster Planet Ocean,215.30.44.21.01.002,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-30-44-21-03-001,Omega,Seamaster Planet Ocean,215.30.44.21.03.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-30-44-21-04-001,Omega,Seamaster Planet Ocean,215.30.44.21.04.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-30-44-22-01-001,Omega,Seamaster Planet Ocean,215.30.44.22.01.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-30-46-51-01-002,Omega,Seamaster Planet Ocean,215.30.46.51.01.002,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-32-44-21-01-001,Omega,Seamaster Planet Ocean,215.32.44.21.01.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-33-44-21-03-001,Omega,Seamaster Planet Ocean,215.33.44.21.03.001,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
 omega-130-30-39-21-02-001,Omega,Constellation Globemaster,130.30.39.21.02.001,Silver,Dress,https://www.omegawatches.com/watches/constellation/globemaster,curated,identity_seeded_specs_verified
 omega-220-10-40-20-06-001,Omega,Railmaster,220.10.40.20.06.001,Grey,Field,,curated,identity_seeded_specs_verified
 omega-1102-10-00,Omega,Constellation,1102.10.00,Champagne,Sport,,kaggle:watch_db,identity_seeded_specs_partial
@@ -279,17 +279,17 @@ omega-111-50-36-10-52-001,Omega,Constellation,111.50.36.10.52.001,Silver,Sport,,
 omega-111-50-36-20-52-001,Omega,Constellation,111.50.36.20.52.001,Silver,Sport,,kaggle:watch_db,identity_seeded_specs_partial
 omega-111-55-23-60-58-001,Omega,Constellation,111.55.23.60.58.001,Champagne,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 cartier-wsta0041,Cartier,Tank Must Large,WSTA0041,Silver,Dress,https://www.cartier.com/en-us/watches/collections/tank,core_icon,identity_seeded_specs_pending
-cartier-w4ta0016,Cartier,Tank,W4TA0016,Silver,Field,,kaggle:watch_db,identity_seeded_specs_partial
-cartier-w4ta0017,Cartier,Tank,W4TA0017,Silver,Field,,kaggle:watch_db,identity_seeded_specs_partial
-cartier-w5200026,Cartier,Tank,W5200026,Silver,Field,,kaggle:watch_db,identity_seeded_specs_partial
-cartier-w5200028,Cartier,Tank,W5200028,Silver,Field,,kaggle:watch_db,identity_seeded_specs_partial
-cartier-w5310009,Cartier,Tank,W5310009,Silver,Field,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w4ta0016,Cartier,Tank,W4TA0016,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w4ta0017,Cartier,Tank,W4TA0017,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w5200026,Cartier,Tank,W5200026,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w5200028,Cartier,Tank,W5200028,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-w5310009,Cartier,Tank,W5310009,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 cartier-w5330001,Cartier,Tank,W5330001,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 cartier-w5330002,Cartier,Tank,W5330002,Brown,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 cartier-w5330003,Cartier,Tank,W5330003,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 cartier-w5330007,Cartier,Tank,W5330007,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
-cartier-wgta0010,Cartier,Tank,WGTA0010,Silver,Field,,kaggle:watch_db,identity_seeded_specs_partial
-cartier-wgta0091,Cartier,Tank,WGTA0091,Silver,Field,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-wgta0010,Cartier,Tank,WGTA0010,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+cartier-wgta0091,Cartier,Tank,WGTA0091,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 cartier-w2006951,Cartier,Santos de Cartier,W2006951,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 cartier-w20072x7,Cartier,Santos de Cartier,W20072X7,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 cartier-w20073x8,Cartier,Santos de Cartier,W20073X8,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
@@ -374,11 +374,11 @@ iwc-iw3266-06-aka-iw326606,IWC,Portugieser,IW3266-06 (aka: IW326606),Blue,GMT,,k
 iwc-iw3440-01,IWC,Portugieser,IW3440-01,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 iwc-iw3442-02-aka-iw344202,IWC,Portugieser,IW3442-02 (aka: IW344202),Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 iwc-iw328901,IWC,Ingenieur Automatic 40,IW328901,Aqua Blue,Integrated Bracelet,https://www.iwc.com/us/en/watch-collections/ingenieur.html,curated,identity_seeded_specs_verified
-iwc-666ad,IWC,Ingenieur,666AD,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-666ad,IWC,Ingenieur,666AD,Black,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
 iwc-iw3227-01,IWC,Ingenieur,IW3227-01,Black,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
 iwc-iw328801,IWC,Aquatimer Automatic,IW328801,Black,Diver,https://www.iwc.com/us/en/watch-collections/aquatimer.html,brand_variety,identity_seeded_specs_pending
 iwc-iw3707-08,IWC,GST Aquatimer,IW3707-08,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
-iwc-666a,IWC,Ingenieur,666A,Ivory,Field,,kaggle:watch_db,identity_seeded_specs_partial
+iwc-666a,IWC,Ingenieur,666A,Ivory,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
 iwc-iw1832-01-aka-iw183201,IWC,Ingenieur,IW1832-01 (aka: IW183201),Black,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
 iwc-iw2010-01-aka-2010-2010-001,IWC,Portofino,"IW2010-01 (aka: 2010, 2010-001)",White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 iwc-iw3224-01-aka-iw322401-322401-3224-01,IWC,Ingenieur,"IW3224-01 (aka: IW322401, 322401, 3224-01)",Black,Integrated Bracelet,,kaggle:watch_db,identity_seeded_specs_partial
@@ -391,7 +391,7 @@ jaeger-lecoultre-2213399-aka-q2213399,Jaeger-LeCoultre,Reverso,2213399 (aka: Q22
 jaeger-lecoultre-2323425,Jaeger-LeCoultre,Reverso,2323425,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 jaeger-lecoultre-2332420-aka-q2332420,Jaeger-LeCoultre,Reverso,2332420 (aka: Q2332420),Skeleton,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 jaeger-lecoultre-2353520-aka-q2353520,Jaeger-LeCoultre,Reverso,2353520 (aka: Q2353520),Skeleton,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-jaeger-lecoultre-235352m-aka-q235352m,Jaeger-LeCoultre,Reverso,235352M (aka: Q235352M),Skeleton,Field,,kaggle:watch_db,identity_seeded_specs_partial
+jaeger-lecoultre-235352m-aka-q235352m,Jaeger-LeCoultre,Reverso,235352M (aka: Q235352M),Skeleton,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 jaeger-lecoultre-2438520-aka-q2438520,Jaeger-LeCoultre,Reverso,2438520 (aka: Q2438520),Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 jaeger-lecoultre-q1368420,Jaeger-LeCoultre,Master Ultra Thin Moon,Q1368420,Silver,Dress,https://www.jaeger-lecoultre.com/us-en/watches/master-ultra-thin,enthusiast_favorite,identity_seeded_specs_pending
 jaeger-lecoultre-q4018420,Jaeger-LeCoultre,Master Control Date,Q4018420,Silver,Dress,https://www.jaeger-lecoultre.com/us-en/watches/master-control,brand_variety,identity_seeded_specs_pending
@@ -560,14 +560,14 @@ longines-l3-774-4-30-2,Longines,Legend Diver,L3.774.4.30.2,Beige,Diver,,kaggle:w
 longines-l3-774-4-50-0,Longines,Legend Diver,L3.774.4.50.0,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-793-4-78-3,Longines,Master Collection,L2.793.4.78.3,Silver,Dress,,curated,identity_seeded_specs_verified
 longines-l2-909-4-78-3,Longines,Master Collection Moonphase,L2.909.4.78.3,Silver,Dress,https://www.longines.com/en-us/collection/the-longines-master-collection,curated,identity_seeded_specs_verified
-longines-l2-357-4-07-2,Longines,Master Collection,L2.357.4.07.2,Beige,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-357-4-07-6,Longines,Master Collection,L2.357.4.07.6,Beige,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-357-4-08-6,Longines,Master Collection,L2.357.4.08.6,Orange,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-357-4-87-0,Longines,Master Collection,L2.357.4.87.0,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-357-4-87-2,Longines,Master Collection,L2.357.4.87.2,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-357-4-87-6,Longines,Master Collection,L2.357.4.87.6,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-357-4-97-6,Longines,Master Collection,L2.357.4.97.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-357-4-98-6,Longines,Master Collection,L2.357.4.98.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-07-2,Longines,Master Collection,L2.357.4.07.2,Beige,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-07-6,Longines,Master Collection,L2.357.4.07.6,Beige,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-08-6,Longines,Master Collection,L2.357.4.08.6,Orange,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-87-0,Longines,Master Collection,L2.357.4.87.0,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-87-2,Longines,Master Collection,L2.357.4.87.2,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-87-6,Longines,Master Collection,L2.357.4.87.6,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-97-6,Longines,Master Collection,L2.357.4.97.6,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-98-6,Longines,Master Collection,L2.357.4.98.6,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-830-4-02-6,Longines,Conquest,L3.830.4.02.6,Green,Sport,https://www.longines.com/en-us/collection/conquest,reddit_under_5k_signal,identity_seeded_specs_pending
 longines-l5-255-0-71-7,Longines,DolceVita,L5.255.0.71.7,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-255-4-59-2,Longines,DolceVita,L5.255.4.59.2,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
@@ -669,7 +669,7 @@ nomos-glashutte-101-s19,Nomos Glashütte,Tangente,101.S19,White,Dress,,kaggle:wa
 nomos-glashutte-101-s5,Nomos Glashütte,Tangente,101.S5,Turquoise,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 nomos-glashutte-101-s6,Nomos Glashütte,Tangente,101.S6,Pink,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 nomos-glashutte-101-s7,Nomos Glashütte,Tangente,101.S7,Purple,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-nomos-glashutte-107,Nomos Glashütte,Tangente,107,White,,,kaggle:watch_db,identity_seeded_specs_partial
+nomos-glashutte-107,Nomos Glashütte,Tangente,107,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 nomos-glashutte-110,Nomos Glashütte,Tangente,110,Brown,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 nomos-glashutte-115,Nomos Glashütte,Tangente,115,White,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 nomos-glashutte-116,Nomos Glashütte,Tangente,116,White,Diver,,kaggle:watch_db,identity_seeded_specs_partial
@@ -746,8 +746,8 @@ mido-m007-207-11-038-00,Mido,Baroncelli,M007.207.11.038.00,Silver,Dress,,kaggle:
 mido-m007-207-16-036-00,Mido,Baroncelli,M007.207.16.036.00,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 mido-m007-207-36-036-00,Mido,Baroncelli,M007.207.36.036.00,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 mido-m007-207-36-291-00,Mido,Baroncelli,M007.207.36.291.00,Brown,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-mido-m022-207-11-036-10,Mido,Baroncelli,M022.207.11.036.10,White,,,kaggle:watch_db,identity_seeded_specs_partial
-mido-m027-207-11-010-00,Mido,Baroncelli,M027.207.11.010.00,White,,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m022-207-11-036-10,Mido,Baroncelli,M022.207.11.036.10,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+mido-m027-207-11-010-00,Mido,Baroncelli,M027.207.11.010.00,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 mido-m027-207-11-010-01,Mido,Baroncelli,M027.207.11.010.01,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 christopher-ward-c5gwt,Christopher Ward,Dress,C5GWT,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
 christopher-ward-c5sks,Christopher Ward,Dress,C5SKS,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
@@ -893,9 +893,9 @@ hamilton-h38425120,Hamilton,Intra-Matic,H38425120,Silver,,,kaggle:watch_db,ident
 hamilton-h38425140,Hamilton,Intra-Matic,H38425140,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
 hamilton-h32111140,Hamilton,Jazzmaster,H32111140,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 hamilton-h32111190,Hamilton,Jazzmaster,H32111190,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-hamilton-h32115191,Hamilton,Jazzmaster,H32115191,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h32115191,Hamilton,Jazzmaster,H32115191,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 hamilton-h32121430,Hamilton,Jazzmaster,H32121430,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-hamilton-h32201430,Hamilton,Jazzmaster,H32201430,Black,,,kaggle:watch_db,identity_seeded_specs_partial
+hamilton-h32201430,Hamilton,Jazzmaster,H32201430,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 hamilton-h32205890-aka-h32205890,Hamilton,Jazzmaster,H32205890 (aka: H32205890),White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 hamilton-h32215100,Hamilton,Jazzmaster,H32215100,Orange,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 hamilton-h32215130,Hamilton,Jazzmaster,H32215130,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial

@@ -65,7 +65,7 @@ omega-2503-30-00,Omega,Aqua Terra,2503.30.00,Silver,Sport,,kaggle:watch_db,ident
 omega-2504-50-00,Omega,Aqua Terra,2504.50.00,Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
 omega-2511-31-00,Omega,Seamaster 120M,2511.31.00,Silver,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 omega-2577-30-00,Omega,Aqua Terra,2577.30.00,Silver,Sport,,kaggle:watch_db,identity_seeded_specs_partial
-omega-424-23-40-20-58-002,Omega,De Ville,424.23.40.20.58.002,Champagne,,,kaggle:watch_db,identity_seeded_specs_partial
+omega-424-23-40-20-58-002,Omega,De Ville,424.23.40.20.58.002,Champagne,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 tudor-79540-0003,Tudor,Black Bay One,79540-0003,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 tudor-79733n-0003,Tudor,Black Bay,79733N-0003,Champagne,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 tudor-79733n-0005,Tudor,Black Bay,79733N-0005,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
@@ -95,7 +95,7 @@ omega-3516-20-00,Omega,Speedmaster (Non-Moonwatch),3516.20.00,Black,Chronograph,
 omega-3810-51-41,Omega,Speedmaster Reduced,3810.51.41,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 omega-3840-50-31,Omega,Speedmaster (Non-Moonwatch),3840.50.31,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 omega-3851-20-12,Omega,Speedmaster Broad Arrow,3851.20.12,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
-omega-424-13-40-20-02-007,Omega,De Ville,424.13.40.20.02.007,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+omega-424-13-40-20-02-007,Omega,De Ville,424.13.40.20.02.007,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 omega-5941-31-31,Omega,De Ville,5941.31.31,Silver,Sport,,kaggle:watch_db,identity_seeded_specs_partial
 omega-st-345-0809,Omega,Speedmaster Moonwatch,ST 345.0809,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 tudor-79733n-0006,Tudor,Black Bay,79733N-0006,Champagne,Diver,,kaggle:watch_db,identity_seeded_specs_partial
@@ -109,7 +109,7 @@ oris-01-733-7766-4135-07-8-22-05peb,Oris,Aquis,01 733 7766 4135-07 8 22 05PEB,Bl
 oris-01-754-7741-3167-07-5-20-58br,Oris,Big Crown,01 754 7741 3167-07 5 20 58BR,Green,,,kaggle:watch_db,identity_seeded_specs_partial
 omega-130-53-41-22-99-002,Omega,Globemaster,130.53.41.22.99.002,Rose,Sport,,kaggle:watch_db,identity_seeded_specs_partial
 omega-3290-50-00,Omega,X-33 / Z-33,3290.50.00,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
-omega-428-18-39-60-03-001,Omega,Trésor,428.18.39.60.03.001,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+omega-428-18-39-60-03-001,Omega,Trésor,428.18.39.60.03.001,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-733-7766-4157-07-8-22-05peb,Oris,Aquis,01 733 7766 4157-07 8 22 05PEB,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-733-7720-4055-07-8-21-18,Oris,Divers 65,01 733 7720 4055-07 8 21 18,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-754-7779-4067-set,Oris,Big Crown,01 754 7779 4067-Set,Green,,,kaggle:watch_db,identity_seeded_specs_partial
@@ -196,7 +196,7 @@ oris-01-733-7732-4157-07-8-21-05peb,Oris,Aquis,01 733 7732 4157-07 8 21 05PEB,Gr
 oris-01-754-7741-4068-07-5-20-50,Oris,Big Crown,01 754 7741 4068-07 5 20 50,Red,,,kaggle:watch_db,identity_seeded_specs_partial
 omega-3815-79-40,Omega,Speedmaster Reduced,3815.79.40,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 omega-422-13-41-52-04-001,Omega,De Ville,422.13.41.52.04.001,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
-omega-7802-30-32,Omega,De Ville,7802.30.32,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+omega-7802-30-32,Omega,De Ville,7802.30.32,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-774-4-70-2,Longines,Legend Diver,L3.774.4.70.2,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-733-7730-7153-07-8-24-15peb,Oris,Aquis,01 733 7730 7153-07 8 24 15PEB,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-733-7770-4155-07-8-18-05p,Oris,Aquis,01 733 7770 4155-07 8 18 05P,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
@@ -211,12 +211,12 @@ longines-l3-811-4-53-6,Longines,Spirit,L3.811.4.53.6,Black,Chronograph,,kaggle:w
 longines-l3-820-4-53-6,Longines,Spirit,L3.820.4.53.6,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-400-7769-6355-07-4-22-75fc,Oris,Aquis,01 400 7769 6355-07 4 22 75FC,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-733-7707-4357-07-8-20-18,Oris,Divers 65,01 733 7707 4357-07 8 20 18,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-409-4-87-2,Longines,Master Collection,L2.409.4.87.2,White,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-409-4-87-2,Longines,Master Collection,L2.409.4.87.2,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-374-4-30-2,Longines,Legend Diver,L3.374.4.30.2,Beige,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-733-7707-4356-07-5-20-45,Oris,Divers 65,01 733 7707 4356-07 5 20 45,Brown,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-733-7730-4105-set,Oris,Aquis,01 733 7730 4105-Set,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-733-7732-4134-07-8-21-05peb,Oris,Aquis,01 733 7732 4134-07 8 21 05PEB,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-793-4-59-6,Longines,Master Collection,L2.793.4.59.6,Black,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-793-4-59-6,Longines,Master Collection,L2.793.4.59.6,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-774-2-50-9,Longines,Legend Diver,L3.774.2.50.9,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-774-4-30-2,Longines,Legend Diver,L3.774.4.30.2,Beige,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-810-4-53-6,Longines,Spirit,L3.810.4.53.6,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
@@ -249,7 +249,7 @@ omega-2803-34-37,Omega,Aqua Terra,2803.34.37,Silver,Sport,,kaggle:watch_db,ident
 omega-3510-81-00,Omega,Speedmaster Reduced,3510.81.00,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 omega-3656-20-31,Omega,Speedmaster Broad Arrow,3656.20.31,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 omega-434-20-34-20-10-001,Omega,De Ville,434.20.34.20.10.001,Green,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
-omega-4532-31-00,Omega,De Ville,4532.31.00,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+omega-4532-31-00,Omega,De Ville,4532.31.00,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 omega-4610-30-02,Omega,De Ville,4610.30.02,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 omega-4633-80-33,Omega,De Ville,4633.80.33,Blue,GMT,,kaggle:watch_db,identity_seeded_specs_partial
 omega-4810-31-01,Omega,De Ville,4810.31.01,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
@@ -258,7 +258,7 @@ omega-da-145-0022,Omega,Speedmaster Moonwatch,DA 145.0022,Black,Chronograph,,kag
 tudor-79230dk-0008,Tudor,Black Bay,79230DK-0008,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 tudor-79250bm-0003,Tudor,Black Bay,79250BM-0003,Brown,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 tudor-79500-0011,Tudor,Black Bay One,79500-0011,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-793-4-09-6,Longines,Master Collection,L2.793.4.09.6,Green,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-793-4-09-6,Longines,Master Collection,L2.793.4.09.6,Green,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-781-3-78-7,Longines,HydroConquest,L3.781.3.78.7,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-811-4-53-0,Longines,Spirit,L3.811.4.53.0,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 omega-428-55-36-60-99-002,Omega,Trésor,428.55.36.60.99.002,Diamonds,Dress,,kaggle:watch_db,identity_seeded_specs_partial
@@ -272,7 +272,7 @@ oris-01-733-7770-4158-07-8-18-05p,Oris,Aquis,01 733 7770 4158-07 8 18 05P,Pink,D
 oris-01-733-7771-3155-07-3-19-02brs,Oris,Divers 65,01 733 7771 3155-07 3 19 02BRS,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-754-7741-4068-07-8-20-22,Oris,Big Crown,01 754 7741 4068-07 8 20 22,Red,,,kaggle:watch_db,identity_seeded_specs_partial
 grand-seiko-sbgx335,Grand Seiko,Heritage Quartz,SBGX335,White,Sport,,curated,identity_seeded_specs_verified
-longines-l2-357-4-07-6,Longines,Master Collection,L2.357.4.07.6,Beige,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-07-6,Longines,Master Collection,L2.357.4.07.6,Beige,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-780-3-78-6,Longines,HydroConquest,L3.780.3.78.6,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-781-3-58-7,Longines,HydroConquest,L3.781.3.58.7,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-781-4-06-9,Longines,HydroConquest,L3.781.4.06.9,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
@@ -291,11 +291,11 @@ oris-01-733-7766-4187-set,Oris,Aquis,01 733 7766 4187-Set,Green,Diver,,kaggle:wa
 oris-01-733-7771-3157-07-3-19-03brs,Oris,Divers 65,01 733 7771 3157-07 3 19 03BRS,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-754-7741-4064-07-5-20-65,Oris,Big Crown,01 754 7741 4064-07 5 20 65,Black,,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-771-7744-3185-set-ls,Oris,Divers 65,01 771 7744 3185-Set LS,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-409-4-87-6,Longines,Master Collection,L2.409.4.87.6,White,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-409-4-87-6,Longines,Master Collection,L2.409.4.87.6,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-759-4-92-6,Longines,Master Collection,L2.759.4.92.6,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-793-4-59-2,Longines,Master Collection,L2.793.4.59.2,Black,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-793-4-59-2,Longines,Master Collection,L2.793.4.59.2,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-821-5-11-2,Longines,Record,L2.821.5.11.2,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-910-4-92-6,Longines,Master Collection,L2.910.4.92.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-910-4-92-6,Longines,Master Collection,L2.910.4.92.6,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-374-4-90-2,Longines,Legend Diver,L3.374.4.90.2,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-781-3-06-9,Longines,HydroConquest,L3.781.3.06.9,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-781-3-58-9,Longines,HydroConquest,L3.781.3.58.9,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
@@ -309,17 +309,17 @@ oris-01-733-7771-3158-07-8-19-15,Oris,Divers 65,01 733 7771 3158-07 8 19 15,Pink
 oris-01-743-7733-4155-07-4-24-69eb,Oris,Aquis,01 743 7733 4155-07 4 24 69EB,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-751-7761-4065-07-8-20-08p,Oris,ProPilot,01 751 7761 4065-07 8 20 08P,Blue,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-774-7655-4154-07-8-26-01peb,Oris,Aquis,01 774 7655 4154-07 8 26 01PEB,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-357-4-87-6,Longines,Master Collection,L2.357.4.87.6,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-628-4-97-6,Longines,Master Collection,L2.628.4.97.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-87-6,Longines,Master Collection,L2.357.4.87.6,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-628-4-97-6,Longines,Master Collection,L2.628.4.97.6,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-773-4-92-6,Longines,Master Collection,L2.773.4.92.6,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-793-4-79-2,Longines,Master Collection,L2.793.4.79.2,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-893-4-79-2,Longines,Master Collection,L2.893.4.79.2,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-920-4-92-0,Longines,Master Collection,L2.920.4.92.0,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-793-4-79-2,Longines,Master Collection,L2.793.4.79.2,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-893-4-79-2,Longines,Master Collection,L2.893.4.79.2,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-920-4-92-0,Longines,Master Collection,L2.920.4.92.0,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-780-4-96-9,Longines,HydroConquest,L3.780.4.96.9,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-781-3-56-9,Longines,HydroConquest,L3.781.3.56.9,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-810-4-53-9,Longines,Spirit,L3.810.4.53.9,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-810-4-93-9,Longines,Spirit,L3.810.4.93.9,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-812-4-11-0,Longines,Elegant,L4.812.4.11.0,White,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-812-4-11-0,Longines,Elegant,L4.812.4.11.0,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-400-7772-4054-07-5-20-82,Oris,Divers 65,01 400 7772 4054-07 5 20 82,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-733-7707-4354-07-5-20-55,Oris,Divers 65,01 733 7707 4354-07 5 20 55,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-733-7720-4055-07-5-21-02,Oris,Divers 65,01 733 7720 4055-07 5 21 02,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
@@ -336,27 +336,27 @@ omega-3113-30-00,Omega,Speedmaster (Non-Moonwatch),3113.30.00,Silver,Chronograph
 omega-3557-50-00,Omega,Speedmaster Broad Arrow,3557.50.00,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 omega-3653-80-33,Omega,Speedmaster Broad Arrow,3653.80.33,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 omega-434-13-28-60-55-001,Omega,De Ville,434.13.28.60.55.001,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-omega-4503-51-00,Omega,De Ville,4503.51.00,Black,,,kaggle:watch_db,identity_seeded_specs_partial
+omega-4503-51-00,Omega,De Ville,4503.51.00,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 omega-4510-50-00,Omega,De Ville,4510.50.00,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 omega-4660-20-32,Omega,De Ville,4660.20.32,White,Sport,,kaggle:watch_db,identity_seeded_specs_partial
 omega-4831-51-31,Omega,De Ville,4831.51.31,Black,Sport,,kaggle:watch_db,identity_seeded_specs_partial
 omega-4841-50-31,Omega,De Ville,4841.50.31,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 omega-4846-20-32,Omega,De Ville,4846.20.32,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 omega-4849-40-32,Omega,De Ville,4849.40.32,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-omega-7801-50-31,Omega,De Ville,7801.50.31,Black,,,kaggle:watch_db,identity_seeded_specs_partial
+omega-7801-50-31,Omega,De Ville,7801.50.31,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 omega-st-376-0822,Omega,Speedmaster (Non-Moonwatch),ST 376.0822,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 tudor-79910-0002,Tudor,Ranger,79910-0002,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 tudor-79910-0010,Tudor,Ranger,79910-0010,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-330-4-93-0,Longines,Heritage,L2.330.4.93.0,Black,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-357-4-97-6,Longines,Master Collection,L2.357.4.97.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-97-6,Longines,Master Collection,L2.357.4.97.6,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-811-4-53-0,Longines,Heritage,L2.811.4.53.0,Black,Field,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-893-4-09-2,Longines,Master Collection,L2.893.4.09.2,Green,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-893-4-09-6,Longines,Master Collection,L2.893.4.09.6,Green,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-893-4-09-2,Longines,Master Collection,L2.893.4.09.2,Green,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-893-4-09-6,Longines,Master Collection,L2.893.4.09.6,Green,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-742-3-56-7,Longines,HydroConquest,L3.742.3.56.7,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-782-3-58-9,Longines,HydroConquest,L3.782.3.58.9,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-811-4-93-9,Longines,Spirit,L3.811.4.93.9,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-512-4-77-6,Longines,La Grande Classique,L4.512.4.77.6,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-921-4-92-6,Longines,Presence,L4.921.4.92.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-921-4-92-6,Longines,Presence,L4.921.4.92.6,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l8-122-4-71-6,Longines,PrimaLuna,L8.122.4.71.6,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-400-7769-4135-07-4-22-74fc,Oris,Aquis,01 400 7769 4135-07 4 22 74FC,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-561-7783-4063-07-5-19-16,Oris,Rectangular,01 561 7783 4063-07 5 19 16,Green,,,kaggle:watch_db,identity_seeded_specs_partial
@@ -369,11 +369,11 @@ oris-01-733-7732-4134-07-4-21-64fc,Oris,Aquis,01 733 7732 4134-07 4 21 64FC,Blac
 oris-01-733-7732-4157-07-4-21-64fc,Oris,Aquis,01 733 7732 4157-07 4 21 64FC,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-743-7734-4187-set,Oris,Aquis,01 743 7734 4187-Set,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-754-7741-4365-07-5-20-58,Oris,Big Crown,01 754 7741 4365-07 5 20 58,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-142-4-96-2,Longines,Evidenza,L2.142.4.96.2,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-793-4-71-6,Longines,Master Collection,L2.793.4.71.6,Grey,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-142-4-96-2,Longines,Evidenza,L2.142.4.96.2,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-793-4-71-6,Longines,Master Collection,L2.793.4.71.6,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-821-4-56-2,Longines,Record,L2.821.4.56.2,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-821-4-72-6,Longines,Record,L2.821.4.72.6,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-893-4-79-6,Longines,Master Collection,L2.893.4.79.6,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-893-4-79-6,Longines,Master Collection,L2.893.4.79.6,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-781-3-96-9,Longines,HydroConquest,L3.781.3.96.9,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-782-3-58-7,Longines,HydroConquest,L3.782.3.58.7,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-820-4-53-0,Longines,Spirit,L3.820.4.53.0,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
@@ -383,10 +383,10 @@ longines-l4-312-4-11-0,Longines,Elegant,L4.312.4.11.0,White,Dress,,kaggle:watch_
 longines-l4-341-0-11-6,Longines,La Grande Classique,L4.341.0.11.6,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-512-4-97-6,Longines,La Grande Classique,L4.512.4.97.6,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-755-4-51-6,Longines,La Grande Classique,L4.755.4.51.6,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-911-4-71-2,Longines,Elegant,L4.911.4.71.2,Grey,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-911-4-71-2,Longines,Elegant,L4.911.4.71.2,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-918-4-11-2,Longines,La Grande Classique,L4.918.4.11.2,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-922-4-92-6,Longines,Presence,L4.922.4.92.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-984-4-79-2,Longines,Flagship,L4.984.4.79.2,Beige,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-922-4-92-6,Longines,Presence,L4.922.4.92.6,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-984-4-79-2,Longines,Flagship,L4.984.4.79.2,Beige,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-512-4-11-6,Longines,DolceVita,L5.512.4.11.6,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l8-115-4-61-6,Longines,PrimaLuna,L8.115.4.61.6,Green,,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l8-116-4-87-6,Longines,PrimaLuna,L8.116.4.87.6,White,,,kaggle:watch_db,identity_seeded_specs_partial
@@ -404,39 +404,39 @@ oris-01-754-7741-4068-07-5-20-64,Oris,Big Crown,01 754 7741 4068-07 5 20 64,Red,
 oris-01-754-7749-3167-07-5-17-66br,Oris,Big Crown,01 754 7749 3167-07 5 17 66BR,Green,,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-798-7754-4135-07-4-24-64eb,Oris,Aquis,01 798 7754 4135-07 4 24 64EB,Blue,GMT,,kaggle:watch_db,identity_seeded_specs_partial
 grand-seiko-sbgp005,Grand Seiko,Heritage Quartz,SBGP005,Blue,Dress,https://www.grand-seiko.com/us-en/collections,reddit_grandseiko_signal,identity_seeded_specs_pending
-longines-l2-357-4-07-2,Longines,Master Collection,L2.357.4.07.2,Beige,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-357-4-87-2,Longines,Master Collection,L2.357.4.87.2,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-357-4-98-6,Longines,Master Collection,L2.357.4.98.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-409-4-78-6,Longines,Master Collection,L2.409.4.78.6,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-409-4-87-4,Longines,Master Collection,L2.409.4.87.4,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-793-4-09-2,Longines,Master Collection,L2.793.4.09.2,Green,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-793-4-79-6,Longines,Master Collection,L2.793.4.79.6,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-07-2,Longines,Master Collection,L2.357.4.07.2,Beige,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-87-2,Longines,Master Collection,L2.357.4.87.2,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-98-6,Longines,Master Collection,L2.357.4.98.6,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-409-4-78-6,Longines,Master Collection,L2.409.4.78.6,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-409-4-87-4,Longines,Master Collection,L2.409.4.87.4,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-793-4-09-2,Longines,Master Collection,L2.793.4.09.2,Green,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-793-4-79-6,Longines,Master Collection,L2.793.4.79.6,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-820-5-72-7,Longines,Record,L2.820.5.72.7,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-820-5-76-2,Longines,Record,L2.820.5.76.2,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-821-4-96-4,Longines,Record,L2.821.4.96.4,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-821-5-76-2,Longines,Record,L2.821.5.76.2,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-836-4-52-8,Longines,Heritage,L2.836.4.52.8,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-836-452-8,Longines,Heritage,L2.836.452.8,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-893-4-59-6,Longines,Master Collection,L2.893.4.59.6,Black,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-908-4-92-0,Longines,Master Collection,L2.908.4.92.0,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-919-4-77-6,Longines,Master Collection,L2.919.4.77.6,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-893-4-59-6,Longines,Master Collection,L2.893.4.59.6,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-908-4-92-0,Longines,Master Collection,L2.908.4.92.0,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-919-4-77-6,Longines,Master Collection,L2.919.4.77.6,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-780-3-78-9,Longines,HydroConquest,L3.780.3.78.9,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-782-3-78-9,Longines,HydroConquest,L3.782.3.78.9,Grey,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-782-3-96-9,Longines,HydroConquest,L3.782.3.96.9,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-821-4-93-2,Longines,Spirit,L3.821.4.93.2,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-312-4-11-6,Longines,Elegant,L4.312.4.11.6,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-812-4-11-2,Longines,Elegant,L4.812.4.11.2,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-812-4-11-6,Longines,Elegant,L4.812.4.11.6,White,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-812-4-11-2,Longines,Elegant,L4.812.4.11.2,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-812-4-11-6,Longines,Elegant,L4.812.4.11.6,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-905-4-11-2,Longines,Presence,L4.905.4.11.2,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-911-4-11-0,Longines,Elegant,L4.911.4.11.0,White,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-911-4-11-0,Longines,Elegant,L4.911.4.11.0,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-255-5-87-7,Longines,DolceVita,L5.255.5.87.7,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-512-4-71-7,Longines,DolceVita,L5.512.4.71.7,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-512-5-87-7,Longines,DolceVita,L5.512.5.87.7,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-512-8-71-0,Longines,DolceVita,L5.512.8.71.0,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l5-757-4-73-6,Longines,DolceVita,L5.757.4.73.6,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l5-757-4-73-6,Longines,DolceVita,L5.757.4.73.6,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l8-112-4-98-6,Longines,PrimaLuna,L8.112.4.98.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l8-113-4-98-6,Longines,PrimaLuna,L8.113.4.98.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
-omega-215-30-40-20-03-002,Omega,Seamaster Planet Ocean,215.30.40.20.03.002,,,,thewatchapi:ref-list,identity_seeded_specs_pending
+omega-215-30-40-20-03-002,Omega,Seamaster Planet Ocean,215.30.40.20.03.002,,Diver,,thewatchapi:ref-list,identity_seeded_specs_pending
 oris-01-400-7763-4157-07-4-24-74eb,Oris,Aquis,01 400 7763 4157-07 4 24 74EB,Green,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-733-7720-4354-07-5-21-45,Oris,Divers 65,01 733 7720 4354-07 5 21 45,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-733-7721-4051-07-8-21-88,Oris,Artelier,01 733 7721 4051-07 8 21 88,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
@@ -455,14 +455,14 @@ omega-220-10-41-21-03-006,Omega,Aqua Terra,220.10.41.21.03.006,Turquoise,Chronog
 omega-220-20-30-20-63-001,Omega,Aqua Terra,220.20.30.20.63.001,Brown,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 tudor-42000cn-0005,Tudor,Fastrider,42000CN-0005,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 tudor-42000cr-0002,Tudor,Fastrider,42000CR-0002,Black,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-142-4-70-2,Longines,Evidenza,L2.142.4.70.2,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-142-4-70-6,Longines,Evidenza,L2.142.4.70.6,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-357-4-87-0,Longines,Master Collection,L2.357.4.87.0,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-357-4-99-6,Longines,Master Collection,L2.357.4.99.6,Green,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-409-4-87-0,Longines,Master Collection,L2.409.4.87.0,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-409-4-97-6,Longines,Master Collection,L2.409.4.97.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-142-4-70-2,Longines,Evidenza,L2.142.4.70.2,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-142-4-70-6,Longines,Evidenza,L2.142.4.70.6,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-87-0,Longines,Master Collection,L2.357.4.87.0,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-99-6,Longines,Master Collection,L2.357.4.99.6,Green,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-409-4-87-0,Longines,Master Collection,L2.409.4.87.0,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-409-4-97-6,Longines,Master Collection,L2.409.4.97.6,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-838-4-53-9,Longines,Heritage,L2.838.4.53.9,Black,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-910-4-92-0,Longines,Master Collection,L2.910.4.92.0,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-910-4-92-0,Longines,Master Collection,L2.910.4.92.0,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-374-4-80-6,Longines,Legend Diver,L3.374.4.80.6,White,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-782-3-56-7,Longines,HydroConquest,L3.782.3.56.7,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-811-4-73-6,Longines,Spirit,L3.811.4.73.6,Silver,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
@@ -471,15 +471,15 @@ longines-l4-512-4-87-0,Longines,La Grande Classique,L4.512.4.87.0,White,Dress,,k
 longines-l4-512-4-91-6,Longines,La Grande Classique,L4.512.4.91.6,Red,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-512-4-92-6,Longines,La Grande Classique,L4.512.4.92.6,Green,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-766-4-51-6,Longines,La Grande Classique,L4.766.4.51.6,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-866-4-94-2,Longines,La Grande Classique,L4.866.4.94.2,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-910-4-92-6,Longines,Elegant,L4.910.4.92.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-911-4-11-2,Longines,Elegant,L4.911.4.11.2,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-911-4-11-6,Longines,Elegant,L4.911.4.11.6,White,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-866-4-94-2,Longines,La Grande Classique,L4.866.4.94.2,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-910-4-92-6,Longines,Elegant,L4.910.4.92.6,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-911-4-11-2,Longines,Elegant,L4.911.4.11.2,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-911-4-11-6,Longines,Elegant,L4.911.4.11.6,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-918-1-91-7,Longines,La Grande Classique,L4.918.1.91.7,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-921-1-12-7,Longines,Presence,L4.921.1.12.7,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-922-2-11-2,Longines,Presence,L4.922.2.11.2,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-922-4-12-2,Longines,Presence,L4.922.4.12.2,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-922-4-52-2,Longines,Presence,L4.922.4.52.2,Black,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-921-1-12-7,Longines,Presence,L4.921.1.12.7,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-922-2-11-2,Longines,Presence,L4.922.2.11.2,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-922-4-12-2,Longines,Presence,L4.922.4.12.2,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-922-4-52-2,Longines,Presence,L4.922.4.52.2,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-960-4-11-6,Longines,Lyre,L4.960.4.11.6,White,,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-255-4-75-6,Longines,DolceVita,L5.255.4.75.6,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-255-5-75-7,Longines,DolceVita,L5.255.5.75.7,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
@@ -488,7 +488,7 @@ longines-l5-512-4-90-2,Longines,DolceVita,L5.512.4.90.2,Blue,Dress,,kaggle:watch
 longines-l5-512-4-91-2,Longines,DolceVita,L5.512.4.91.2,Red,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-512-4-92-2,Longines,DolceVita,L5.512.4.92.2,Red,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-512-5-71-7,Longines,DolceVita,L5.512.5.71.7,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l5-757-4-73-9,Longines,DolceVita,L5.757.4.73.9,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l5-757-4-73-9,Longines,DolceVita,L5.757.4.73.9,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l8-115-4-91-6,Longines,PrimaLuna,L8.115.4.91.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l8-115-4-92-6,Longines,PrimaLuna,L8.115.4.92.6,Red,,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l8-115-5-61-7,Longines,PrimaLuna,L8.115.5.61.7,Taupe,,,kaggle:watch_db,identity_seeded_specs_partial
@@ -510,9 +510,9 @@ oris-01-752-7733-4135-07-8-24-05peb,Oris,Aquis,01 752 7733 4135-07 8 24 05PEB,Bl
 oris-01-752-7760-4063-07-5-22-07lc,Oris,ProPilot,01 752 7760 4063-07 5 22 07LC,Grey,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-754-7741-4064-07-5-20-64,Oris,Big Crown,01 754 7741 4064-07 5 20 64,Black,,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-793-7775-8734-set,Oris,ProPilot,01 793 7775 8734-Set,Black,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-142-4-09-2,Longines,Evidenza,L2.142.4.09.2,Red,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-142-4-73-4,Longines,Evidenza,L2.142.4.73.4,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-142-4-76-6,Longines,Evidenza,L2.142.4.76.6,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-142-4-09-2,Longines,Evidenza,L2.142.4.09.2,Red,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-142-4-73-4,Longines,Evidenza,L2.142.4.73.4,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-142-4-76-6,Longines,Evidenza,L2.142.4.76.6,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-320-5-11-2,Longines,Record,L2.320.5.11.2,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-820-8-11-2,Longines,Record,L2.820.8.11.2,White,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l2-859-4-92-6,Longines,Master Collection,L2.859.4.92.6,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
@@ -523,23 +523,23 @@ longines-l4-312-4-11-2,Longines,Elegant,L4.312.4.11.2,White,Dress,,kaggle:watch_
 longines-l4-312-4-87-6,Longines,Elegant,L4.312.4.87.6,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-312-5-11-7,Longines,Elegant,L4.312.5.11.7,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-341-0-97-6,Longines,La Grande Classique,L4.341.0.97.6,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-866-4-11-6,Longines,La Grande Classique,L4.866.4.11.6,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-866-4-94-6,Longines,La Grande Classique,L4.866.4.94.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-905-4-11-6,Longines,Presence,L4.905.4.11.6,White,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-866-4-11-6,Longines,La Grande Classique,L4.866.4.11.6,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-866-4-94-6,Longines,La Grande Classique,L4.866.4.94.6,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-905-4-11-6,Longines,Presence,L4.905.4.11.6,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-908-4-51-2,Longines,La Grande Classique,L4.908.4.51.2,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-918-1-91-2,Longines,La Grande Classique,L4.918.1.91.2,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-918-4-94-6,Longines,La Grande Classique,L4.918.4.94.6,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-922-1-11-2,Longines,Presence,L4.922.1.11.2,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-922-2-12-7,Longines,Presence,L4.922.2.12.7,White,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-922-1-11-2,Longines,Presence,L4.922.1.11.2,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-922-2-12-7,Longines,Presence,L4.922.2.12.7,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-961-4-12-6,Longines,Lyre,L4.961.4.12.6,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-984-4-59-2,Longines,Flagship,L4.984.4.59.2,Black,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-984-4-92-6,Longines,Flagship,L4.984.4.92.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-984-4-59-2,Longines,Flagship,L4.984.4.59.2,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-984-4-92-6,Longines,Flagship,L4.984.4.92.6,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-255-4-59-2,Longines,DolceVita,L5.255.4.59.2,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-255-4-71-7,Longines,DolceVita,L5.255.4.71.7,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-512-4-59-2,Longines,DolceVita,L5.512.4.59.2,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-512-4-71-a,Longines,DolceVita,L5.512.4.71.A,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l5-757-4-71-9,Longines,DolceVita,L5.757.4.71.9,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l5-757-4-73-3,Longines,DolceVita,L5.757.4.73.3,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l5-757-4-71-9,Longines,DolceVita,L5.757.4.71.9,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l5-757-4-73-3,Longines,DolceVita,L5.757.4.73.3,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l8-115-4-67-6,Longines,PrimaLuna,L8.115.4.67.6,Green,,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-111-7711-4163-set-1-22-72fc,Oris,ProPilot,01 111 7711 4163-Set 1 22 72FC,Grey,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-733-7720-4054-07-5-21-26fc,Oris,Divers 65,01 733 7720 4054-07 5 21 26FC,Black,Diver,,kaggle:watch_db,identity_seeded_specs_partial
@@ -552,33 +552,33 @@ oris-01-743-7733-4159-07-4-24-64eb,Oris,Aquis,01 743 7733 4159-07 4 24 64EB,Blac
 oris-01-751-7761-4063-07-3-20-03lc,Oris,ProPilot,01 751 7761 4063-07 3 20 03LC,Grey,Pilot,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-754-7741-4081-set,Oris,Big Crown,01 754 7741 4081-Set,White,Field,,kaggle:watch_db,identity_seeded_specs_partial
 oris-01-781-7729-4051-07-5-21-66fc,Oris,Artelier,01 781 7729 4051-07 5 21 66FC,Silver,GMT,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-142-4-06-2,Longines,Evidenza,L2.142.4.06.2,Green,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-142-4-56-2,Longines,Evidenza,L2.142.4.56.2,Grey,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-357-4-08-6,Longines,Master Collection,L2.357.4.08.6,Orange,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l2-409-4-78-3,Longines,Master Collection,L2.409.4.78.3,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-142-4-06-2,Longines,Evidenza,L2.142.4.06.2,Green,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-142-4-56-2,Longines,Evidenza,L2.142.4.56.2,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-357-4-08-6,Longines,Master Collection,L2.357.4.08.6,Orange,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l2-409-4-78-3,Longines,Master Collection,L2.409.4.78.3,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-782-3-96-7,Longines,HydroConquest,L3.782.3.96.7,Blue,Diver,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l3-821-4-93-6,Longines,Spirit,L3.821.4.93.6,Blue,Chronograph,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-274-3-91-7,Longines,Flagship,L4.274.3.91.7,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-274-3-92-7,Longines,Flagship,L4.274.3.92.7,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-309-4-97-6,Longines,Elegant,L4.309.4.97.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-374-4-57-6,Longines,Flagship,L4.374.4.57.6,Black,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-274-3-91-7,Longines,Flagship,L4.274.3.91.7,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-274-3-92-7,Longines,Flagship,L4.274.3.92.7,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-309-4-97-6,Longines,Elegant,L4.309.4.97.6,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-374-4-57-6,Longines,Flagship,L4.374.4.57.6,Black,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-523-0-87-6,Longines,La Grande Classique,L4.523.0.87.6,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-523-0-92-2,Longines,La Grande Classique,L4.523.0.92.2,Orange,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-866-4-11-2,Longines,La Grande Classique,L4.866.4.11.2,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-905-2-11-7,Longines,Presence,L4.905.2.11.7,White,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-866-4-11-2,Longines,La Grande Classique,L4.866.4.11.2,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-905-2-11-7,Longines,Presence,L4.905.2.11.7,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-918-2-11-2,Longines,La Grande Classique,L4.918.2.11.2,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-918-4-51-6,Longines,La Grande Classique,L4.918.4.51.6,Grey,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-918-4-94-2,Longines,La Grande Classique,L4.918.4.94.2,Blue,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-922-4-11-2,Longines,Presence,L4.922.4.11.2,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-922-4-72-6,Longines,Presence,L4.922.4.72.6,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-922-4-11-2,Longines,Presence,L4.922.4.11.2,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-922-4-72-6,Longines,Presence,L4.922.4.72.6,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l4-960-1-11-7,Longines,Lyre,L4.960.1.11.7,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-974-3-27-7,Longines,Flagship,L4.974.3.27.7,White,,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l4-984-4-12-6,Longines,Flagship,L4.984.4.12.6,White,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-974-3-27-7,Longines,Flagship,L4.974.3.27.7,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l4-984-4-12-6,Longines,Flagship,L4.984.4.12.6,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-255-0-71-7,Longines,DolceVita,L5.255.0.71.7,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-255-4-75-2,Longines,DolceVita,L5.255.4.75.2,White,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-255-4-79-2,Longines,DolceVita,L5.255.4.79.2,Beige,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l5-255-5-79-7,Longines,DolceVita,L5.255.5.79.7,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
-longines-l5-757-4-73-8,Longines,DolceVita,L5.757.4.73.8,Silver,,,kaggle:watch_db,identity_seeded_specs_partial
+longines-l5-757-4-73-8,Longines,DolceVita,L5.757.4.73.8,Silver,Dress,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l8-111-4-98-6,Longines,PrimaLuna,L8.111.4.98.6,Blue,,,kaggle:watch_db,identity_seeded_specs_partial
 longines-l8-113-4-99-6,Longines,PrimaLuna,L8.113.4.99.6,Pink,,,kaggle:watch_db,identity_seeded_specs_partial
 omega-1102-10-00,Omega,Constellation,1102.10.00,Champagne,Sport,,kaggle:watch_db,identity_seeded_specs_partial

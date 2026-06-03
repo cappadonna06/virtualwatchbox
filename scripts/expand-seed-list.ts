@@ -33,6 +33,7 @@ import path from 'node:path'
 import { repoRoot, parseCsv, csvEscape } from './watch-image-pipeline'
 import { isValidCatalogId, mintCatalogId } from '../lib/catalogId'
 import { watches } from '../lib/watches'
+import { classifyWatchType } from './watchTypeClassifier'
 
 const existingSeedPath = path.join(repoRoot, 'data', 'catalog-seed-200.csv')
 const outputPath = path.join(repoRoot, 'data', 'catalog-seed-1500.csv')
@@ -68,25 +69,14 @@ const PRIORITY_BRANDS: string[] = [
   'Breguet',
 ]
 
-const WATCH_TYPE_RULES: Array<{ re: RegExp; type: string }> = [
-  { re: /submariner|sea[\s-]?dweller|seamaster\s+(diver|300|aqua\s*terra)|fifty\s*fathoms|aquanaut|pelagos|black\s*bay|seamaster\s*diver|aquaracer/i, type: 'Diver' },
-  { re: /daytona|speedmaster|chronograph|chrono|navitimer|monaco|carrera|el\s*primero/i, type: 'Chronograph' },
-  { re: /gmt|world[\s-]?time|worldtimer|aqua\s*terra\s*gmt/i, type: 'GMT' },
-  { re: /pilot|navi(timer)?|big\s*pilot|mark\s+xv|aviator|flieger|chronomat/i, type: 'Pilot' },
-  { re: /explorer|ranger|khaki\s+field|field|chronomat\s*sport|tank/i, type: 'Field' },
-  { re: /nautilus|royal\s*oak|overseas|laureato|polo\s*s|ingenieur|alpine\s*eagle|odyssey/i, type: 'Integrated Bracelet' },
-  { re: /datejust|day-?date|cellini|patrimony|saxonia|lange\s*1|reverso|portugieser|portuguese|calatrava|altiplano|simplicity|tank|santos|cle/i, type: 'Dress' },
-  { re: /oyster\s*perpetual|yacht-?master|milgauss|polaris|big\s*bang|spirit/i, type: 'Sport' },
-]
-
+// watchType derivation is centralized in scripts/watchTypeClassifier.ts so
+// every intake path shares one rule order. (A bare `tank`/`field` token in a
+// per-script table once mislabeled every Cartier Tank as Field — do not
+// reintroduce local tables.) Non-confident matches return '' so the LLM
+// extraction step can fill them rather than locking in a wrong default.
 function inferWatchType(model: string): string {
   if (!model) return ''
-  for (const rule of WATCH_TYPE_RULES) {
-    if (rule.re.test(model)) return rule.type
-  }
-  // No confident match. Leave empty so the LLM extraction step can fill it
-  // rather than seeding a wrong default that priority-merge would lock in.
-  return ''
+  return classifyWatchType(model)
 }
 
 type Row = {
