@@ -6,10 +6,22 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { brand } from '@/lib/brand'
-import { formatCost, formatDate, PHOTO_TYPE_GROUPS, PHOTO_TYPE_LABELS, serviceTypeMeta, SERVICE_TYPES, type ServiceWatch } from '@/lib/serviceRoom/derive'
+import { DOC_TYPES, formatCost, formatDate, serviceTypeMeta, SERVICE_TYPES, type ServiceWatch } from '@/lib/serviceRoom/derive'
 import { useCollectionSession, type ServiceRecordInput } from '@/app/collection/CollectionSessionProvider'
 import type { PhotoType, ServiceType, WatchServiceRecord } from '@/types/watch'
-import { Icon, Meta, TypeTag, WatchTile, bookingUrl, btnPrimary, btnSecondary, iconBtn } from '@/components/serviceRoom/primitives'
+import { DocTile, Icon, Meta, TypeTag, WatchTile, bookingUrl, btnPrimary, btnSecondary, iconBtn } from '@/components/serviceRoom/primitives'
+
+// Auto-guess the document type from the filename (editable). Falls back to
+// service_record (the 4-type taxonomy has no appraisal/manual).
+function guessDocType(name: string): PhotoType {
+  const n = (name || '').toLowerCase()
+  if (/receipt|invoice|bill/.test(n)) return 'receipt'
+  if (/warrant|guarantee/.test(n)) return 'warranty_card'
+  if (/box|paper|tag/.test(n)) return 'box_papers'
+  return 'service_record'
+}
+
+type AttachDoc = { id: string; file: File; type: PhotoType }
 
 const ATTACH_ACCEPT = 'image/jpeg,image/png,image/heic,image/webp,image/*,application/pdf'
 
@@ -38,8 +50,7 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
   const [provider, setProvider] = useState('')
   const [cost, setCost] = useState('')
   const [notes, setNotes] = useState('')
-  const [files, setFiles] = useState<File[]>([])
-  const [attachType, setAttachType] = useState<PhotoType>('service_record')
+  const [docs, setDocs] = useState<AttachDoc[]>([])
   const [attachError, setAttachError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const attachInputRef = useRef<HTMLInputElement | null>(null)
@@ -48,9 +59,18 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
 
   useEffect(() => {
     setDate(today); setType('full'); setProvider(''); setCost(''); setNotes('')
-    setFiles([]); setAttachType('service_record'); setAttachError(null); setSaving(false)
+    setDocs([]); setAttachError(null); setSaving(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchId])
+
+  const addFiles = (list: FileList | File[]) => {
+    const next: AttachDoc[] = Array.from(list).map((file, i) => ({
+      id: `doc-${Date.now()}-${i}`, file, type: guessDocType(file.name),
+    }))
+    setDocs(d => [...d, ...next])
+  }
+  const setDocType = (id: string, type: PhotoType) => setDocs(d => d.map(x => x.id === id ? { ...x, type } : x))
+  const removeDoc = (id: string) => setDocs(d => d.filter(x => x.id !== id))
 
   useEffect(() => {
     if (!sw) return
@@ -76,9 +96,18 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
       notes: notes.trim() || undefined,
     })
     if (!rec) { setSaving(false); return }  // parent surfaced the error
-    if (files.length > 0) {
+    if (docs.length > 0) {
       try {
-        await uploadWatchPhotos(sw.watch.id, files, attachType, rec.id)
+        // Group by chosen doc type → one upload per type, all tied to the record.
+        const byType = new Map<PhotoType, File[]>()
+        for (const d of docs) {
+          const list = byType.get(d.type) ?? []
+          list.push(d.file)
+          byType.set(d.type, list)
+        }
+        for (const [docType, groupFiles] of byType) {
+          await uploadWatchPhotos(sw.watch.id, groupFiles, docType, rec.id)
+        }
       } catch {
         // Record is saved; keep the modal open so the user can retry the files.
         setAttachError('Service saved, but the attachments failed to upload.')
@@ -120,8 +149,9 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
               ))}
             </div>
             {t.resets && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginTop: 10, fontFamily: sans, fontSize: 11.5, color: brand.colors.gold }}>
-                <Icon name="spark" size={13} color={brand.colors.gold} />Resets the service clock — next due recalculates to {sw.intervalYears} years out.
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 7, marginTop: 10 }}>
+                <Icon name="spark" size={13} color={brand.colors.gold} style={{ flexShrink: 0, marginTop: 1 }} />
+                <span style={{ fontFamily: sans, fontSize: 11.5, color: brand.colors.gold, lineHeight: 1.45 }}>Resets the service clock — next due recalculates to {sw.intervalYears} years out.</span>
               </div>
             )}
           </Field>
@@ -152,47 +182,47 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
             <textarea value={notes} maxLength={500} placeholder="Amplitude, parts replaced, who handled it…" onChange={e => setNotes(e.target.value)} rows={3} style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.5 }} />
           </Field>
 
-          <Field label="Attachments">
+          <Field label="Attach documents">
             <input
               ref={attachInputRef}
               type="file"
               accept={ATTACH_ACCEPT}
               multiple
-              onChange={e => { if (e.target.files) setFiles(prev => [...prev, ...Array.from(e.target.files!)]); if (attachInputRef.current) attachInputRef.current.value = '' }}
+              onChange={e => { if (e.target.files) addFiles(e.target.files); if (attachInputRef.current) attachInputRef.current.value = '' }}
               style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
             />
-            <button type="button" onClick={() => attachInputRef.current?.click()} style={{ ...btnSecondary, padding: '8px 14px' }}>
-              <Icon name="doc" size={13} color={brand.colors.ink} />Add receipt / file
+            <button type="button" onClick={() => attachInputRef.current?.click()} style={{
+              width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, minHeight: 48,
+              fontFamily: sans, fontSize: 12.5, fontWeight: 500, color: brand.colors.muted, cursor: 'pointer',
+              background: brand.colors.bg, border: `1.5px dashed ${brand.colors.borderLight}`, borderRadius: brand.radius.lg, padding: '14px 16px',
+            }}>
+              <Icon name="download" size={15} color={brand.colors.gold} style={{ transform: 'rotate(180deg)' }} />
+              Upload receipt, warranty card or service record
             </button>
-            {files.length > 0 && (
-              <>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 10 }}>
-                  {files.map((f, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: sans, fontSize: 11.5, color: brand.colors.ink }}>
-                      <Icon name="doc" size={13} color={brand.colors.muted} />
-                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.name}</span>
-                      <button type="button" onClick={() => setFiles(prev => prev.filter((_, j) => j !== i))} aria-label={`Remove ${f.name}`} style={{ background: 'none', border: 'none', cursor: 'pointer', color: brand.colors.muted, padding: 2 }}>
-                        <Icon name="close" size={12} color={brand.colors.muted} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ marginTop: 10 }}>
-                  <Meta style={{ display: 'block', marginBottom: 6 }}>Tag these as</Meta>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                    {PHOTO_TYPE_GROUPS.flatMap(g => g.types).map(pt => {
-                      const active = attachType === pt
-                      return (
-                        <button key={pt} type="button" onClick={() => setAttachType(pt)} style={{
-                          fontFamily: sans, fontSize: 11, fontWeight: 500, padding: '5px 11px', borderRadius: brand.radius.pill, cursor: 'pointer',
-                          background: active ? brand.colors.ink : brand.colors.white, color: active ? brand.colors.slot : brand.colors.ink,
-                          border: `1px solid ${active ? brand.colors.ink : brand.colors.borderLight}`,
-                        }}>{PHOTO_TYPE_LABELS[pt]}</button>
-                      )
-                    })}
+            <div style={{ fontFamily: sans, fontSize: 10.5, color: brand.colors.muted, marginTop: 7 }}>
+              Keep proof of work with the record — receipts, certificates, before/after photos.
+            </div>
+
+            {docs.length > 0 && (
+              <div style={{ display: 'grid', gap: 8, marginTop: 12 }}>
+                {docs.map(d => (
+                  <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '9px 11px', background: brand.colors.white, border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.lg }}>
+                    <DocTile type={d.type} size={30} />
+                    <span style={{ flex: 1, minWidth: 0, fontFamily: sans, fontSize: 12, fontWeight: 500, color: brand.colors.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{d.file.name}</span>
+                    <select
+                      value={d.type}
+                      onChange={e => setDocType(d.id, e.target.value as PhotoType)}
+                      aria-label={`Document type for ${d.file.name}`}
+                      style={{ fontFamily: sans, fontSize: 11, color: brand.colors.ink, background: brand.colors.bg, border: `1px solid ${brand.colors.borderLight}`, borderRadius: brand.radius.sm, padding: '5px 7px', outline: 'none', flexShrink: 0, maxWidth: 132 }}
+                    >
+                      {DOC_TYPES.map(dt => <option key={dt.id} value={dt.id}>{dt.label}</option>)}
+                    </select>
+                    <button type="button" onClick={() => removeDoc(d.id)} aria-label={`Remove ${d.file.name}`} title="Remove" style={{ ...iconBtn, width: 26, height: 26, flexShrink: 0 }}>
+                      <Icon name="close" size={12} color={brand.colors.muted} />
+                    </button>
                   </div>
-                </div>
-              </>
+                ))}
+              </div>
             )}
             {attachError && (
               <div style={{ marginTop: 8, fontFamily: sans, fontSize: 11, color: brand.serviceStatus.due.fg }}>{attachError}</div>
@@ -203,7 +233,7 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
         {/* footer */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, padding: '16px 24px', borderTop: `1px solid ${brand.colors.border}`, position: 'sticky', bottom: 0, background: brand.colors.slot }}>
           <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted }}>
-            {t.label} · {formatDate(date)}{costCents ? ` · ${formatCost(costCents)}` : ''}
+            {t.label} · {formatDate(date)}{costCents ? ` · ${formatCost(costCents)}` : ''}{docs.length ? ` · ${docs.length} doc${docs.length > 1 ? 's' : ''}` : ''}
           </span>
           <div style={{ display: 'flex', gap: 10 }}>
             <button type="button" onClick={onClose} style={{ ...btnSecondary, padding: '10px 18px' }}>Cancel</button>

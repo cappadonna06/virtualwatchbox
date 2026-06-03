@@ -17,7 +17,13 @@ type Props = {
   now: Date
   onPick: (sw: ServiceWatch) => void
   activeId: string | null
+  isMobile: boolean
 }
+
+// On mobile the band can't fit 24 months at phone width, so the axis + track
+// live on a fixed-width canvas inside a horizontal scroller (still swipeable,
+// dots still mark the exact due month).
+const MOBILE_CANVAS = 660
 
 const HORIZON = 24    // months on the axis
 const zL = 13         // % — overdue zone width / NOW line
@@ -33,7 +39,7 @@ const MAX_TRACK_H = 380   // ≈ 5-6 rows before the band scrolls internally
 const PILL_W_PCT = 16     // estimated pill footprint as a share of track width
 const FLOW_RIGHT_MAX = 68 // pills past this xPct flow left instead of right
 
-export function ServiceHorizon({ watches, now, onPick, activeId }: Props) {
+export function ServiceHorizon({ watches, now, onPick, activeId, isMobile }: Props) {
   const placed = watches.map(sw => {
     const st = serviceStatus(sw, now)
     const m = monthsBetween(now, st.due)
@@ -85,6 +91,9 @@ export function ServiceHorizon({ watches, now, onPick, activeId }: Props) {
 
   return (
     <div>
+      {/* mobile: horizontal-scroll canvas so the 24-month axis stays swipeable */}
+      <div style={{ overflowX: isMobile ? 'auto' : 'visible', WebkitOverflowScrolling: 'touch' }}>
+      <div style={{ minWidth: isMobile ? MOBILE_CANVAS : undefined }}>
       {/* axis labels */}
       <div style={{ position: 'relative', height: 15, marginBottom: 5 }}>
         <div style={{ position: 'absolute', left: `${zL / 2}%`, transform: 'translateX(-50%)' }}>
@@ -152,6 +161,8 @@ export function ServiceHorizon({ watches, now, onPick, activeId }: Props) {
         })}
         </div>
       </div>
+      </div>
+      </div>
 
       {/* legend */}
       <div style={{ display: 'flex', gap: 18, marginTop: 12, flexWrap: 'wrap' }}>
@@ -161,7 +172,7 @@ export function ServiceHorizon({ watches, now, onPick, activeId }: Props) {
             {['Overdue', 'Due soon', 'On track'][i]}
           </span>
         ))}
-        {beyondN > 0 && <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted, marginLeft: 'auto' }}>{beyondN} resting comfortably past two years</span>}
+        {beyondN > 0 && <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted, marginLeft: 'auto' }}>{isMobile ? `+${beyondN} past two years` : `${beyondN} resting comfortably past two years`}</span>}
       </div>
     </div>
   )

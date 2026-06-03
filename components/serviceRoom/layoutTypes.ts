@@ -6,4 +6,5 @@ export type LayoutProps = {
   onPick: (sw: ServiceWatch) => void
   onLog: (sw: ServiceWatch) => void
   activeId: string | null
+  isMobile: boolean
 }

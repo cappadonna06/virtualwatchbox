@@ -16,6 +16,7 @@ import {
   type ServiceWatch,
 } from '@/lib/serviceRoom/derive'
 import type { ServiceIntervalYears, WatchServiceRecord } from '@/types/watch'
+import { useIsMobile } from '@/components/collection/useResponsiveState'
 import { Icon, Meta, btnSecondary } from '@/components/serviceRoom/primitives'
 import { HubAgenda } from '@/components/serviceRoom/HubAgenda'
 import { HubLedger } from '@/components/serviceRoom/HubLedger'
@@ -43,6 +44,8 @@ export default function ServiceRoomPage() {
     logServiceRecord, setWatchInterval, showToast,
   } = session
 
+  const isMobile = useIsMobile()
+  const gx = isMobile ? 16 : 24
   const [layout, setLayout] = useState<LayoutId>('agenda')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [logForId, setLogForId] = useState<string | null>(null)
@@ -91,44 +94,52 @@ export default function ServiceRoomPage() {
 
   return (
     <div style={{ background: brand.colors.bg, minHeight: '70vh' }}>
-      <div style={{ padding: '36px 24px 16px' }}>
+      <div style={{ padding: `36px ${gx}px 16px` }}>
         {/* header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 24, marginBottom: 26, flexWrap: 'wrap' }}>
           <div>
             <Meta style={{ color: brand.colors.gold, display: 'block', marginBottom: 10 }}>Maintenance &amp; provenance</Meta>
-            <h1 style={{ fontFamily: serif, fontSize: 'clamp(38px, 6vw, 52px)', fontWeight: 300, color: brand.colors.ink, lineHeight: 0.98, letterSpacing: '-0.01em', margin: 0 }}>
+            <h1 style={{ fontFamily: serif, fontSize: isMobile ? 34 : 'clamp(38px, 6vw, 52px)', fontWeight: 300, color: brand.colors.ink, lineHeight: 0.98, letterSpacing: '-0.01em', margin: 0 }}>
               The Service Room
             </h1>
             <p style={{ fontFamily: sans, fontSize: 14, color: brand.colors.mutedDark, lineHeight: 1.6, margin: '12px 0 0', maxWidth: 460 }}>
               Every service, document, and cost for your collection — and a clear read on what to send to the bench next.
             </p>
           </div>
-          <button type="button" onClick={onExportAll} style={{ ...btnSecondary, padding: '10px 16px' }}>
-            <Icon name="download" size={14} color={brand.colors.ink} />Export dossier
-          </button>
+          {!isMobile && (
+            <button type="button" onClick={onExportAll} style={{ ...btnSecondary, padding: '10px 16px' }}>
+              <Icon name="download" size={14} color={brand.colors.ink} />Export dossier
+            </button>
+          )}
         </div>
 
-        <SummaryStrip watches={watches} now={now} />
+        <SummaryStrip watches={watches} now={now} isMobile={isMobile} />
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, margin: '28px 0 4px', flexWrap: 'wrap' }}>
           <LayoutSwitch value={layout} onChange={setLayout} />
-          <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>
-            Three reads on the same box — pick the one that suits the moment.
-          </span>
+          {isMobile ? (
+            <button type="button" onClick={onExportAll} style={{ ...btnSecondary, padding: '9px 14px' }}>
+              <Icon name="download" size={13} color={brand.colors.ink} />Export
+            </button>
+          ) : (
+            <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>
+              Three reads on the same box — pick the one that suits the moment.
+            </span>
+          )}
         </div>
       </div>
 
-      <div style={{ padding: '8px 24px 40px', display: 'flex', flexDirection: 'column', gap: 40 }}>
+      <div style={{ padding: `8px ${gx}px 40px`, display: 'flex', flexDirection: 'column', gap: 40 }}>
         {watches.length === 0 ? (
           <EmptyState />
         ) : (
-          <Layout watches={watches} now={now} onPick={onPick} onLog={onLog} activeId={selectedId} />
+          <Layout watches={watches} now={now} onPick={onPick} onLog={onLog} activeId={selectedId} isMobile={isMobile} />
         )}
         <div style={{ height: 1, background: brand.colors.border }} />
         <PartnerBand />
       </div>
 
-      <footer style={{ padding: '24px 24px 48px', borderTop: `1px solid ${brand.colors.border}`, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+      <footer style={{ padding: `24px ${gx}px 48px`, borderTop: `1px solid ${brand.colors.border}`, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <span style={{ fontFamily: serif, fontSize: 17, color: brand.colors.muted, fontStyle: 'italic' }}>Your source of truth — for the life of every piece.</span>
         <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted, letterSpacing: '0.04em' }}>VIRTUAL WATCHBOX · THE SERVICE ROOM</span>
       </footer>
@@ -147,7 +158,7 @@ export default function ServiceRoomPage() {
 }
 
 // ─── Summary stat strip ──────────────────────────────────────────────────
-function SummaryStrip({ watches, now }: { watches: ServiceWatch[]; now: Date }) {
+function SummaryStrip({ watches, now, isMobile }: { watches: ServiceWatch[]; now: Date; isMobile: boolean }) {
   const attention = watches.filter(w => serviceStatus(w, now).key !== 'ok')
   const totalCents = watches.reduce((s, w) => s + lifetimeCostCents(w), 0)
   const soonest = [...watches].sort((a, b) => serviceStatus(a, now).due.getTime() - serviceStatus(b, now).due.getTime())[0]
@@ -166,16 +177,26 @@ function SummaryStrip({ watches, now }: { watches: ServiceWatch[]; now: Date }) 
 
   return (
     <div className="service-summary-strip" style={{
-      display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, background: brand.colors.white,
+      display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: 0, background: brand.colors.white,
       border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.xl, overflow: 'hidden',
     }}>
-      {stats.map((s, i) => (
-        <div key={s.label} style={{ padding: '18px 22px', borderLeft: i ? `1px solid ${brand.colors.border}` : 'none' }}>
-          <Meta style={{ display: 'block', marginBottom: 8 }}>{s.label}</Meta>
-          <div style={{ fontFamily: serif, fontSize: 34, fontWeight: 400, color: s.accent ?? brand.colors.ink, lineHeight: 0.95, marginBottom: 6 }}>{s.value}</div>
-          <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted }}>{s.meta}</span>
-        </div>
-      ))}
+      {stats.map((s, i) => {
+        // 2×2 grid borders: left border on the right column; top border on row 2.
+        const borderLeft = isMobile ? (i % 2 === 1) : i > 0
+        const borderTop = isMobile && i >= 2
+        return (
+          <div key={s.label} style={{
+            padding: isMobile ? '15px 16px' : '18px 22px',
+            borderLeft: borderLeft ? `1px solid ${brand.colors.border}` : 'none',
+            borderTop: borderTop ? `1px solid ${brand.colors.border}` : 'none',
+            minWidth: 0,
+          }}>
+            <Meta style={{ display: 'block', marginBottom: 8 }}>{s.label}</Meta>
+            <div style={{ fontFamily: serif, fontSize: isMobile ? 28 : 34, fontWeight: 400, color: s.accent ?? brand.colors.ink, lineHeight: 0.95, marginBottom: 6 }}>{s.value}</div>
+            <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.meta}</span>
+          </div>
+        )
+      })}
     </div>
   )
 }
