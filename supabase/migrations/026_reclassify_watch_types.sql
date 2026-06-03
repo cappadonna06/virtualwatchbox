@@ -49,6 +49,7 @@ from (
       when txt ~* 'aquaracer|aqua racer' then 'Diver'
       when txt ~* 'aquis(?!.*(chrono|gmt))' then 'Diver'
       when txt ~* 'ocean star|seastar|sea star' then 'Diver'
+      when txt ~* 'ingenieur (automatic 40|sl)|ingenieur.*(3289|3239|1832)' then 'Integrated Bracelet'
       when txt ~* 'big pilot' then 'Pilot'
       when txt ~* 'pilot''?s watch' then 'Pilot'
       when txt ~* 'fliegeruhr|flieger' then 'Pilot'
@@ -70,10 +71,10 @@ from (
       when txt ~* 'chronograph|chronomat|chronospace|navitimer' then 'Chronograph'
       when txt ~* 'pilot|aviator|navigator|cockpit|spitfire|top gun' then 'Pilot'
       when txt ~* 'diver|divers|deep|fathom|aqua|nautical|scuba|sub ' then 'Diver'
-      when txt ~* 'nautilus|royal oak|laureato|overseas|alpine eagle|polo s|ingenieur|odyssey|tonda pf|octo finissimo|defy' then 'Integrated Bracelet'
+      when txt ~* 'nautilus|royal oak|laureato|overseas|alpine eagle|polo s|odyssey|tonda pf|octo finissimo|defy' then 'Integrated Bracelet'
       when txt ~* 'field|khaki|expedition|trail|mil[- ]?spec|trench' then 'Field'
       when txt ~* 'datejust|day-?date|patrimony|portofino|portugieser|presence|elegant|flagship|master collection|baroncelli|jazzmaster|max bill|tangente|ludwig|orion|trésor|tresor|evidenza|la grande' then 'Dress'
-      when txt ~* 'oyster perpetual|milgauss|air[- ]?king|prx|conquest|big bang' then 'Sport'
+      when txt ~* 'oyster perpetual|milgauss|air[- ]?king|prx|conquest|big bang|ingenieur' then 'Sport'
       else watch_type
     end as new_type
   from (

@@ -92,6 +92,10 @@ export const OVERRIDE_RULES: ClassifierRule[] = [
   { pattern: 'aquis(?!.*(chrono|gmt))', type: 'Diver' },
   { pattern: 'ocean star|seastar|sea star', type: 'Diver' },
 
+  // ── Integrated bracelet (only the Genta-lineage Ingenieur generations; the
+  //    vintage ref 666 tool watch is handled as Sport in FILL_RULES) ────────
+  { pattern: 'ingenieur (automatic 40|sl)|ingenieur.*(3289|3239|1832)', type: 'Integrated Bracelet' },
+
   // ── Pilot / aviation ───────────────────────────────────────────────────
   { pattern: 'big pilot', type: 'Pilot' },
   { pattern: "pilot'?s watch", type: 'Pilot' },
@@ -124,10 +128,14 @@ export const FILL_RULES: ClassifierRule[] = [
   { pattern: 'chronograph|chronomat|chronospace|navitimer', type: 'Chronograph' },
   { pattern: 'pilot|aviator|navigator|cockpit|spitfire|top gun', type: 'Pilot' },
   { pattern: 'diver|divers|deep|fathom|aqua|nautical|scuba|sub ', type: 'Diver' },
-  { pattern: 'nautilus|royal oak|laureato|overseas|alpine eagle|polo s|ingenieur|odyssey|tonda pf|octo finissimo|defy', type: 'Integrated Bracelet' },
+  { pattern: 'nautilus|royal oak|laureato|overseas|alpine eagle|polo s|odyssey|tonda pf|octo finissimo|defy', type: 'Integrated Bracelet' },
   { pattern: 'field|khaki|expedition|trail|mil[- ]?spec|trench', type: 'Field' },
   { pattern: 'datejust|day-?date|patrimony|portofino|portugieser|presence|elegant|flagship|master collection|baroncelli|jazzmaster|max bill|tangente|ludwig|orion|trésor|tresor|evidenza|la grande', type: 'Dress' },
-  { pattern: 'oyster perpetual|milgauss|air[- ]?king|prx|conquest|big bang', type: 'Sport' },
+  // `ingenieur` only lands here (Sport) after the integrated-bracelet GENERATIONS
+  // are pinned above in OVERRIDE_RULES. The original ref 666 (1954) is an
+  // antimagnetic TOOL watch — peer of the Milgauss/Railmaster — not the 1976
+  // Genta integrated-bracelet model. Name reused across eras; don't conflate.
+  { pattern: 'oyster perpetual|milgauss|air[- ]?king|prx|conquest|big bang|ingenieur', type: 'Sport' },
 ]
 
 function testPattern(pattern: string, haystack: string): boolean {
