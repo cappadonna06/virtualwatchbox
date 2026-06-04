@@ -11,7 +11,7 @@ import WatchPhotoGallery from '@/components/collection/WatchPhotoGallery'
 import WatchDossier from '@/components/serviceRoom/WatchDossier'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import { StrapsThatFit } from '@/components/straps/StrapsThatFit'
-import type { StrapDrawerWatch } from '@/components/straps/atoms'
+import { toStrapDrawerWatch } from '@/components/straps/useStrapDrawerWatches'
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -40,20 +40,10 @@ export default function OwnedWatchDetailPage() {
     [collectionWatches, params.id],
   )
 
-  const strapWatch: StrapDrawerWatch | null = useMemo(() => {
-    if (!watch) return null
-    const cat = getCatalogWatch(watch.watchId)
-    return {
-      id: watch.id,
-      brand: watch.brand,
-      model: watch.model,
-      reference: watch.reference,
-      caseSizeMm: watch.caseSizeMm,
-      lugWidthMm: watch.lugWidthMm ?? cat?.lugWidthMm ?? null,
-      braceletType: cat?.braceletType ?? null,
-      imageUrl: watch.imageUrl ?? cat?.imageUrl ?? null,
-    }
-  }, [watch, getCatalogWatch])
+  const strapWatch = useMemo(
+    () => (watch ? toStrapDrawerWatch(watch, getCatalogWatch(watch.watchId)) : null),
+    [watch, getCatalogWatch],
+  )
 
   const [editing, setEditing] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)

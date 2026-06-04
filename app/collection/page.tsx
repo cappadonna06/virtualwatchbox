@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import type { ResolvedOwnedWatch } from '@/types/watch'
 import CollectionHeader from '@/components/collection/CollectionHeader'
 import CollectionStats from '@/components/collection/CollectionStats'
+import StrapDrawerSummary from '@/components/collection/StrapDrawerSummary'
 import SortDropdown from '@/components/collection/SortDropdown'
 import CollectionPhotoView from '@/components/collection/CollectionPhotoView'
 import CollectionEmptyState from '@/components/collection/CollectionEmptyState'
@@ -55,6 +56,7 @@ export default function CollectionPage() {
     watchboxPhotoCrop,
     setWatchboxPhoto,
     watchboxConfig,
+    straps,
   } = useCollectionSession()
 
   const [activeView, setActiveView] = useState<View>('watchbox')
@@ -176,6 +178,7 @@ export default function CollectionPage() {
             <CollectionHeader
               watchCount={collectionWatches.length}
               totalEstValue={totalEstimatedValue}
+              strapCount={straps.length}
               pendingChangesCount={0}
               onAddWatch={() => router.push('/collection/add')}
               onJumpStats={() => document.getElementById('collection-stats')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
@@ -268,6 +271,12 @@ export default function CollectionPage() {
             onRequestEdit={watch => setEditTarget(watch)}
           />
         )}
+        {collectionWatches.length > 0 ? (
+          <div style={{ marginTop: isMobile ? 48 : 64, paddingTop: isMobile ? 28 : 40, borderTop: `1px solid ${brand.colors.border}` }}>
+            <StrapDrawerSummary />
+          </div>
+        ) : null}
+
         {isMobile ? (
           mobileStatsOpen ? (
             <div id="collection-stats" style={{ marginTop: 56, paddingTop: 28, borderTop: `1px solid ${brand.colors.border}` }}>

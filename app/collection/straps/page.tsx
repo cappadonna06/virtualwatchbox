@@ -12,7 +12,8 @@ import { FilterBar, applyFilters, applySort, type StrapFilterState, type StrapSo
 import { StrapGrid, EmptyDrawer } from '@/components/straps/StrapCard'
 import { StrapSidebar } from '@/components/straps/StrapSidebar'
 import { StrapModal } from '@/components/straps/StrapModal'
-import { StrapIcon, type StrapDrawerWatch } from '@/components/straps/atoms'
+import { StrapIcon } from '@/components/straps/atoms'
+import { useStrapDrawerWatches } from '@/components/straps/useStrapDrawerWatches'
 
 type ModalState = null | { mode: 'add'; suggestLug: number | null } | { mode: 'edit'; strap: UserStrap }
 
@@ -20,8 +21,6 @@ function StrapDrawerPage() {
   const router = useRouter()
   const params = useSearchParams()
   const {
-    collectionWatches,
-    getCatalogWatch,
     straps,
     strapOverrides,
     createStrap,
@@ -39,24 +38,8 @@ function StrapDrawerPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [modal, setModal] = useState<ModalState>(null)
 
-  // Owned watches normalized for the compatibility engine (lugWidthMm from the
-  // resolved watch, braceletType from the catalog row).
-  const watches: StrapDrawerWatch[] = useMemo(
-    () => collectionWatches.map(ow => {
-      const cat = getCatalogWatch(ow.watchId)
-      return {
-        id: ow.id,
-        brand: ow.brand,
-        model: ow.model,
-        reference: ow.reference,
-        caseSizeMm: ow.caseSizeMm,
-        lugWidthMm: ow.lugWidthMm ?? cat?.lugWidthMm ?? null,
-        braceletType: cat?.braceletType ?? null,
-        imageUrl: ow.imageUrl ?? cat?.imageUrl ?? null,
-      }
-    }),
-    [collectionWatches, getCatalogWatch],
-  )
+  // Owned watches normalized for the compatibility engine.
+  const watches = useStrapDrawerWatches()
 
   // Apply incoming query params once on mount.
   useEffect(() => {

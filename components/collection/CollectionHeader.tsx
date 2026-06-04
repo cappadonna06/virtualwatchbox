@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { brand } from '@/lib/brand'
 
 function fmt(n: number) {
@@ -7,6 +8,7 @@ function fmt(n: number) {
 interface Props {
   watchCount: number
   totalEstValue: number
+  strapCount: number
   pendingChangesCount: number
   onAddWatch: () => void
   onJumpStats: () => void
@@ -37,6 +39,7 @@ const chipDivider = {
 export default function CollectionHeader({
   watchCount,
   totalEstValue,
+  strapCount,
   pendingChangesCount,
   onAddWatch,
   onJumpStats,
@@ -166,6 +169,25 @@ export default function CollectionHeader({
                 <polyline points="3.5,7.5 7,11 10.5,7.5" />
               </svg>
             </a>
+            <span style={chipDivider} />
+            <Link
+              href="/collection/straps"
+              onMouseEnter={event => { event.currentTarget.style.color = brand.colors.ink }}
+              onMouseLeave={event => { event.currentTarget.style.color = brand.colors.muted }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                ...metaLabel,
+                textDecoration: 'none',
+                cursor: 'pointer',
+                transition: 'color 0.15s',
+              }}
+            >
+              Straps
+              <span style={{ ...metaValue, fontSize: 13 }}>{strapCount}</span>
+              <span aria-hidden="true">→</span>
+            </Link>
           </div>
         )}
 

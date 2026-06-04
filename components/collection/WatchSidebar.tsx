@@ -10,8 +10,7 @@ import { buildChrono24URL } from '@/lib/discover'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { buildServiceWatch, formatDate, nextDueDate } from '@/lib/serviceRoom/derive'
 import { compatibleStraps } from '@/lib/strapCompatibility'
-import { StrapsThatFit } from '@/components/straps/StrapsThatFit'
-import type { StrapDrawerWatch } from '@/components/straps/atoms'
+import { toStrapDrawerWatch } from '@/components/straps/useStrapDrawerWatches'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import WatchPhotoGallery from './WatchPhotoGallery'
 import WatchStateControl from './WatchStateControl'
@@ -188,22 +187,8 @@ export default function WatchSidebar({
   const isTarget = isWatchTarget(resolvedCatalogWatchId)
   const marketLabel = !isOwnedWatch && savedState === 'grail' && !isPublicMode ? 'Find on Market ↗' : 'Find For Sale ↗'
 
-  // Strap Drawer wiring (owner-only). Build the normalized watch shape the
-  // compatibility engine needs — lugWidthMm from the resolved watch,
-  // braceletType from the catalog row.
-  const ownedCatalog = isOwnedWatch ? getCatalogWatch(watch.watchId) : undefined
-  const strapWatch: StrapDrawerWatch | null = isOwnedWatch
-    ? {
-        id: watch.id,
-        brand: watch.brand,
-        model: watch.model,
-        reference: watch.reference,
-        caseSizeMm: watch.caseSizeMm,
-        lugWidthMm: watch.lugWidthMm ?? ownedCatalog?.lugWidthMm ?? null,
-        braceletType: ownedCatalog?.braceletType ?? null,
-        imageUrl: watch.imageUrl ?? ownedCatalog?.imageUrl ?? null,
-      }
-    : null
+  // Strap Drawer wiring (owner-only).
+  const strapWatch = isOwnedWatch ? toStrapDrawerWatch(watch, getCatalogWatch(watch.watchId)) : null
   const isIntegrated = strapWatch?.braceletType === 'integrated'
   const fittingStrapCount = strapWatch ? compatibleStraps(strapWatch, straps, strapOverrides).length : 0
 
@@ -447,16 +432,9 @@ export default function WatchSidebar({
             ) : fittingStrapCount === 0 ? (
               <button style={btnSecondary} onClick={() => router.push(`/collection/straps?addStrap=1&suggestLug=${strapWatch?.lugWidthMm ?? ''}`)}>No matching · Add →</button>
             ) : (
-              <button style={btnSecondary} onClick={() => document.getElementById('straps-that-fit')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })}>Swap Strap →</button>
+              <button style={btnSecondary} onClick={() => router.push(`/collection/straps?watchId=${watch.id}`)}>Swap Strap →</button>
             )}
           </div>
-        </div>
-      )}
-
-      {/* Straps that fit — owner-only, hidden when the drawer is empty */}
-      {isOwnedWatch && strapWatch && straps.length > 0 && (
-        <div style={{ marginTop: 18, paddingTop: 18, borderTop: `1px solid ${brand.colors.borderLight}` }}>
-          <StrapsThatFit watch={strapWatch} variant="sidebar" />
         </div>
       )}
 
