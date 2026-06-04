@@ -10,6 +10,8 @@ import EditWatchModal, { type EditWatchUpdates } from '@/components/collection/E
 import WatchPhotoGallery from '@/components/collection/WatchPhotoGallery'
 import WatchDossier from '@/components/serviceRoom/WatchDossier'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
+import { StrapsThatFit } from '@/components/straps/StrapsThatFit'
+import type { StrapDrawerWatch } from '@/components/straps/atoms'
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -30,12 +32,28 @@ export default function OwnedWatchDetailPage() {
     updateCollectionWatch,
     removeFromCollection,
     showToast,
+    getCatalogWatch,
   } = useCollectionSession()
 
   const watch = useMemo(
     () => collectionWatches.find(w => w.id === params.id),
     [collectionWatches, params.id],
   )
+
+  const strapWatch: StrapDrawerWatch | null = useMemo(() => {
+    if (!watch) return null
+    const cat = getCatalogWatch(watch.watchId)
+    return {
+      id: watch.id,
+      brand: watch.brand,
+      model: watch.model,
+      reference: watch.reference,
+      caseSizeMm: watch.caseSizeMm,
+      lugWidthMm: watch.lugWidthMm ?? cat?.lugWidthMm ?? null,
+      braceletType: cat?.braceletType ?? null,
+      imageUrl: watch.imageUrl ?? cat?.imageUrl ?? null,
+    }
+  }, [watch, getCatalogWatch])
 
   const [editing, setEditing] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -324,6 +342,13 @@ export default function OwnedWatchDetailPage() {
             )}
           </div>
         </div>
+
+        {/* Straps that fit — hidden when the drawer is empty or bracelet is integrated */}
+        {strapWatch && strapWatch.braceletType !== 'integrated' && (
+          <div style={{ marginBottom: 28, paddingBottom: 24, borderBottom: `1px solid ${brand.colors.border}` }}>
+            <StrapsThatFit watch={strapWatch} variant="detail" />
+          </div>
+        )}
 
         {/* Tabbed lower area: Photos / Service Dossier */}
         <div role="tablist" aria-label="Watch detail sections" style={{

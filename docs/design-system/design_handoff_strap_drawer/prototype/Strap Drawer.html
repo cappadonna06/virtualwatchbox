@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Strap Drawer — Virtual Watchbox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #FAF8F4; color: #1A1410;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #D4CBBF; border-radius: 3px; }
+  button { font: inherit; }
+  input, textarea { font: inherit; }
+  input:focus, textarea:focus { border-color: #C9A84C !important; }
+  a { color: inherit; }
+
+  @keyframes sdFade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes sdSlideIn { from { transform: translateX(24px); opacity: 0.4; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes sdSlideUp { from { transform: translateY(40px); } to { transform: translateY(0); } }
+  @keyframes sdPop { from { transform: scale(0.97); opacity: 0.4; } to { transform: scale(1); opacity: 1; } }
+
+  /* Mobile adaptations */
+  @media (max-width: 760px) {
+    .sd-nav-links { display: none !important; }
+    .sd-nav-inner { padding: 14px 18px !important; }
+    .sd-filterbar { gap: 11px !important; }
+    .sd-chiprow { flex-wrap: nowrap !important; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 2px; }
+    .sd-chiprow::-webkit-scrollbar { display: none; }
+    .sd-focus-rail { scrollbar-width: none; }
+    .sd-focus-rail::-webkit-scrollbar { display: none; }
+    .sd-filtergroups { flex-direction: column !important; align-items: stretch !important; gap: 11px !important; width: 100%; }
+    .sd-filterrow { align-items: stretch !important; }
+    .sd-modal-body { flex-direction: column !important; }
+    .sd-modal-preview { width: 100% !important; flex-direction: row !important; gap: 16px; align-items: center; border-right: none !important; border-bottom: 1px solid #EAE5DC; padding: 16px !important; }
+    .sd-modal-preview > div:first-child { width: 116px; flex-shrink: 0; }
+    .sd-modal-card { max-height: 94vh !important; border-radius: 16px 16px 0 0 !important; }
+    .sd-form-2col { grid-template-columns: 1fr !important; }
+  }
+  @media (max-width: 460px) {
+    .sd-stats { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- Thumbnail for bundling -->
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#1A1410"/>
+    <rect x="42" y="20" width="16" height="60" rx="5" fill="#C9A84C"/>
+    <circle cx="50" cy="62" r="1.6" fill="#1A1410"/>
+    <circle cx="50" cy="68" r="1.6" fill="#1A1410"/>
+  </svg>
+</template>
+
+<script type="text/babel" src="strap_drawer/strap-data.jsx"></script>
+<script type="text/babel" src="strap_drawer/ui-atoms.jsx"></script>
+<script type="text/babel" src="strap_drawer/StrapSwatch.jsx"></script>
+<script type="text/babel" src="strap_drawer/StrapCard.jsx"></script>
+<script type="text/babel" src="strap_drawer/StrapFocus.jsx"></script>
+<script type="text/babel" src="strap_drawer/StrapFilters.jsx"></script>
+<script type="text/babel" src="strap_drawer/StrapSidebar.jsx"></script>
+<script type="text/babel" src="strap_drawer/StrapModal.jsx"></script>
+<script type="text/babel" src="strap_drawer/StrapDrawer.jsx"></script>
+
+<script type="text/babel" data-presets="env,react">
+(function mount() {
+  if (!window.StrapDrawerRoot) return setTimeout(mount, 30);
+  ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(window.StrapDrawerRoot));
+})();
+</script>
+</body>
+</html>

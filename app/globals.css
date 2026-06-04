@@ -503,3 +503,100 @@ body {
   .sidebar-mobile-sheet { display: none !important; }
   .watchbox-overflow-sheet { display: none !important; }
 }
+
+/* ─── Strap Drawer (Feature 7) ────────────────────────────────────────── */
+/* Hide scrollbars on the horizontal Fit Finder rail + chip rows. */
+.sd-focus-rail::-webkit-scrollbar,
+.sd-chiprow::-webkit-scrollbar { display: none; }
+.sd-focus-rail, .sd-chiprow { scrollbar-width: none; }
+
+/* Detail sheet — right-anchored panel on desktop, bottom sheet on mobile. */
+.sd-sheet-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,20,16,0.42);
+  backdrop-filter: blur(2px);
+  z-index: 200;
+  animation: sd-scrim-fade 0.2s ease;
+}
+@keyframes sd-scrim-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.sd-sheet-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(412px, 100vw);
+  background: var(--color-slot);
+  border-left: 1px solid var(--color-border-mid);
+  box-shadow: -12px 0 40px rgba(26,20,16,0.12);
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  animation: sd-sheet-in-right 0.26s cubic-bezier(0.22,1,0.36,1);
+}
+@keyframes sd-sheet-in-right { from { transform: translateX(24px); opacity: 0.6; } to { transform: translateX(0); opacity: 1; } }
+
+.sd-sheet-grab { display: none; }
+
+@media (max-width: 760px) {
+  .sd-sheet-panel {
+    top: auto;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    height: 90vh;
+    border-left: none;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    box-shadow: 0 -12px 40px rgba(26,20,16,0.18);
+    animation: sd-sheet-in-up 0.26s cubic-bezier(0.22,1,0.36,1);
+  }
+  @keyframes sd-sheet-in-up { from { transform: translateY(40px); opacity: 0.6; } to { transform: translateY(0); opacity: 1; } }
+  .sd-sheet-grab {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0 2px;
+    flex-shrink: 0;
+  }
+}
+
+/* Add/Edit modal — centered on desktop, bottom sheet on mobile. */
+.sd-modal-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,20,16,0.5);
+  backdrop-filter: blur(2px);
+  z-index: 210;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: sd-scrim-fade 0.2s ease;
+}
+.sd-modal-card {
+  animation: sd-modal-pop 0.22s ease;
+}
+@keyframes sd-modal-pop { from { transform: scale(0.97); opacity: 0.7; } to { transform: scale(1); opacity: 1; } }
+
+@media (max-width: 760px) {
+  .sd-modal-scrim { align-items: flex-end; padding: 0; }
+  .sd-modal-card {
+    width: 100% !important;
+    max-height: 92vh !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    animation: sd-sheet-in-up 0.26s cubic-bezier(0.22,1,0.36,1);
+  }
+  .sd-modal-body { flex-direction: column !important; }
+  .sd-modal-preview { width: 100% !important; border-right: none !important; border-bottom: 1px solid var(--color-border); }
+  .sd-form-2col { grid-template-columns: 1fr !important; }
+}
+
+/* Mobile fixed "Add Strap" bar. */
+.sd-mobile-addbar { display: none; }
+@media (max-width: 760px) {
+  .sd-mobile-addbar { display: block; }
+  .sd-header-addbtn { display: none !important; }
+}

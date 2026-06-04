@@ -62,6 +62,47 @@ export interface WatchServiceRecord {
 /** Allowed full-service cadences (years). */
 export type ServiceIntervalYears = 3 | 5 | 7 | 10
 
+// ── Strap inventory (Feature 7 / Strap Drawer) ──────────────────────────
+export type StrapMaterial =
+  | 'leather' | 'rubber' | 'nylon' | 'canvas' | 'fabric'
+  | 'metal' | 'silicone' | 'ceramic' | 'exotic' | 'other'
+
+export type StrapStyle = 'dressy' | 'sporty' | 'casual' | 'rugged' | 'vintage'
+
+export interface UserStrap {
+  id: string
+  userId: string
+  name?: string
+  brand?: string
+  material: StrapMaterial
+  /** e.g. "alligator", "suede", "oyster", "milanese" */
+  subMaterial?: string
+  color: string
+  /** Hex for the swatch/color-chip UI; falls back to a derived value. */
+  colorHex?: string
+  /** Required — THE compatibility key. */
+  lugWidthMm: number
+  style?: StrapStyle
+  taperedToMm?: number
+  lengthMm?: number
+  claspType?: string
+  /** Stored in cents. */
+  purchasePrice?: number
+  purchaseUrl?: string
+  photoUrl?: string
+  notes?: string
+  sortOrder: number
+  createdAt: string
+}
+
+export interface StrapWatchOverride {
+  id: string
+  strapId: string
+  watchId: string           // owned-watch id (public.watches.id)
+  override: 'fits' | 'excluded'
+  notes?: string
+}
+
 export type WatchTargetIntent = 'Addition' | 'Replacement'
 export type WatchSavedState = 'followed' | 'target' | 'grail' | 'jewel'
 export type WatchStateSource =

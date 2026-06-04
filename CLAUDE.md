@@ -36,8 +36,8 @@ Current user-backed persistence includes:
 - `public.user_watch_photos`
   - `photo_type` (migration 018 + 026 — surfaced in UI: upload picker, lightbox type selector, gallery badge, Papers & Provenance)
 - `public.watch_service_records` (Service Room — Feature 2F; migration 027, RLS-scoped to owner)
-- `public.user_straps` (planned — Feature 7)
-- `public.strap_watch_overrides` (planned — Feature 7)
+- `public.user_straps` (Strap Drawer — Feature 7; migration 030, RLS-scoped to owner; hydrated + saved via `straps` in `CollectionSessionProvider`)
+- `public.strap_watch_overrides` (Strap Drawer — Feature 7; migration 030, RLS-scoped to owner; hydrated + saved via `strapOverrides` in `CollectionSessionProvider`)
 
 If a new user-based field is added in UI state (`ProfileDemoState`, collection session state, playground state, etc.), you must update all of:
 1. Supabase migration(s)
