@@ -18,9 +18,13 @@ export default function OwnedWatchDetailPage() {
   const params = useParams<{ id: string }>()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const fromDiscover = searchParams.get('from') === 'discover'
-  const backHref = fromDiscover ? '/discover' : '/collection'
-  const backLabel = fromDiscover ? '← Back to Discover' : '← Back to Collection'
+  const from = searchParams.get('from')
+  const backHref = from === 'discover' ? '/discover' : from === 'service-room' ? '/service-room' : '/collection'
+  const backLabel = from === 'discover'
+    ? '← Back to Discover'
+    : from === 'service-room'
+    ? '← Back to Service Room'
+    : '← Back to Collection'
   const {
     collectionWatches,
     updateCollectionWatch,
@@ -187,7 +191,7 @@ export default function OwnedWatchDetailPage() {
                 fontFamily: brand.font.sans, fontSize: 9, fontWeight: 500,
                 letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.muted,
               }}>
-                My Watch
+                {from === 'service-room' ? 'Service Dossier' : 'My Watch'}
               </span>
             </div>
 
