@@ -349,7 +349,7 @@ export default function AddWatchConfirmPage() {
   const showActionArea = !alreadyInCollection || addAnotherOpen || submitting
 
   return (
-    <div style={{ padding: isCompact ? '28px 20px 72px' : '36px 56px 80px', borderTop: `1px solid ${brand.colors.border}` }}>
+    <div style={{ padding: isCompact ? '28px 20px 132px' : '36px 56px 80px', borderTop: `1px solid ${brand.colors.border}` }}>
       <style>{`@keyframes addwatch-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }`}</style>
       {(() => {
         const fromParam = searchParams.get('from')
@@ -932,9 +932,11 @@ export default function AddWatchConfirmPage() {
       {isCompact && showActionArea && (
         <div
           style={{
-            position: 'sticky',
+            position: 'fixed',
+            left: 0,
+            right: 0,
             bottom: 0,
-            margin: '24px -20px 0',
+            zIndex: 90,
             padding: '14px 20px calc(14px + env(safe-area-inset-bottom))',
             borderTop: '1px solid #EAE5DC',
             background: '#FAF8F4',
