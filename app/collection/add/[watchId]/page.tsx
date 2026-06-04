@@ -1,6 +1,6 @@
 'use client'
 
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
@@ -19,6 +19,55 @@ type OwnershipChoice = 'owned' | 'playground'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
+}
+
+function StepHeading({
+  n,
+  children,
+  labelColor = '#A89880',
+  trailing,
+}: {
+  n: number
+  children: ReactNode
+  labelColor?: string
+  trailing?: ReactNode
+}) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 10 }}>
+      <span
+        style={{
+          width: 18,
+          height: 18,
+          borderRadius: '50%',
+          border: '1px solid #D4CBBF',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: 'var(--font-dm-sans)',
+          fontSize: 10,
+          fontWeight: 600,
+          color: '#A89880',
+          flexShrink: 0,
+        }}
+      >
+        {n}
+      </span>
+      <span
+        style={{
+          fontFamily: 'var(--font-dm-sans)',
+          fontSize: 9,
+          fontWeight: 600,
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          color: labelColor,
+          transition: 'color 0.2s',
+        }}
+      >
+        {children}
+      </span>
+      {trailing}
+    </div>
+  )
 }
 
 function loadPlaygroundBoxes() {
@@ -221,8 +270,87 @@ export default function AddWatchConfirmPage() {
     router.push('/collection')
   }
 
+  const canAdd = choice === 'owned' ? !!condition : !!selectedBoxId
+  const ctaHelper = canAdd
+    ? 'Ready when you are.'
+    : choice === 'owned'
+    ? 'Select a condition to continue.'
+    : 'Pick a box to continue.'
+
+  const ctaNode = (
+    <>
+      {choice === 'owned' ? (
+        <button
+          disabled={submitting}
+          aria-disabled={!condition}
+          onClick={() => {
+            if (submitting) return
+            if (!condition) {
+              setConditionNudge(true)
+              conditionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              window.setTimeout(() => setConditionNudge(false), 1400)
+              return
+            }
+            void commitCollectionAdd()
+          }}
+          style={{
+            ...primaryButtonStyle(!condition || submitting),
+            cursor: submitting ? 'not-allowed' : 'pointer',
+          }}
+        >
+          {submitting
+            ? 'Adding…'
+            : `${alreadyInCollection ? 'Add another to My Collection' : 'Add to My Collection'}${condition ? '  →' : ''}`}
+        </button>
+      ) : (
+        <button
+          disabled={!selectedBoxId}
+          onClick={handleAddToPlayground}
+          style={primaryButtonStyle(!selectedBoxId)}
+        >
+          {`Add to Playground${selectedBoxId ? '  →' : ''}`}
+        </button>
+      )}
+      <div
+        style={{
+          fontFamily: 'var(--font-dm-sans)',
+          fontSize: 10.5,
+          color: '#A89880',
+          textAlign: 'center',
+          marginTop: 10,
+        }}
+      >
+        {ctaHelper}
+      </div>
+      {alreadyInCollection && addAnotherOpen && (
+        <button
+          type="button"
+          onClick={() => setAddAnotherOpen(false)}
+          style={{
+            marginTop: 10,
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+            fontFamily: 'var(--font-dm-sans)',
+            fontSize: 11,
+            color: '#A89880',
+            textDecoration: 'underline',
+            textUnderlineOffset: 2,
+            alignSelf: 'flex-start',
+          }}
+        >
+          Cancel — don&apos;t add another
+        </button>
+      )}
+    </>
+  )
+
+  const showActionArea = !alreadyInCollection || addAnotherOpen || submitting
+
   return (
     <div style={{ padding: isCompact ? '28px 20px 72px' : '36px 56px 80px', borderTop: `1px solid ${brand.colors.border}` }}>
+      <style>{`@keyframes addwatch-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }`}</style>
       {(() => {
         const fromParam = searchParams.get('from')
         const isFromDiscover = fromParam === 'discover'
@@ -499,78 +627,132 @@ export default function AddWatchConfirmPage() {
 
             {(!alreadyInCollection || addAnotherOpen || submitting) && (
             <>
-            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
+            <StepHeading n={1}>
               {alreadyInCollection ? 'Add another copy — where does it go?' : 'Where does it go?'}
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: isCompact ? '1fr' : '1fr 1fr', gap: 10, marginBottom: 20 }}>
-              {([
-                { id: 'owned', headline: 'Add to My Collection', sub: 'You own this watch' },
-                { id: 'playground', headline: 'Add to Playground', sub: 'Dream box, no ownership' },
-              ] as const).map(option => {
-                const active = choice === option.id
-                return (
-                  <button
-                    key={option.id}
-                    onClick={() => setChoice(option.id)}
-                    style={{
-                      padding: '16px 18px',
-                      borderRadius: 10,
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      border: active ? '1.5px solid #1A1410' : '1px solid #E8E2D8',
-                      background: active ? '#1A1410' : '#FFFFFF',
-                      boxShadow: active ? '0 4px 16px rgba(26,20,16,0.12)' : '0 1px 4px rgba(26,20,16,0.04)',
-                      transition: 'all 0.15s ease',
-                    }}
-                  >
-                    <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: 18, fontWeight: 400, lineHeight: 1.2, color: active ? '#FAF8F4' : '#1A1410', marginBottom: 4 }}>
-                      {option.headline}
-                    </div>
-                    <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, letterSpacing: '0.06em', color: active ? 'rgba(250,248,244,0.55)' : '#A89880' }}>
-                      {option.sub}
-                    </div>
-                  </button>
-                )
-              })}
-            </div>
-
-            {choice === 'owned' ? (
-              <div ref={conditionRef} style={{ marginBottom: 24 }}>
+            </StepHeading>
+            <div style={{ marginBottom: 20 }}>
+              <div
+                style={{
+                  position: 'relative',
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: 0,
+                  background: '#F0EBE3',
+                  border: '1px solid #E8E2D8',
+                  borderRadius: 12,
+                  padding: 4,
+                }}
+              >
                 <div
                   style={{
-                    display: 'flex',
-                    alignItems: 'baseline',
-                    gap: 10,
-                    marginBottom: 10,
+                    position: 'absolute',
+                    top: 4,
+                    bottom: 4,
+                    left: `calc(4px + ${choice === 'playground' ? 1 : 0} * (50% - 4px))`,
+                    width: 'calc(50% - 4px)',
+                    background: '#1A1410',
+                    borderRadius: 9,
+                    boxShadow: '0 4px 16px rgba(26,20,16,0.18)',
+                    transition: 'left 0.22s cubic-bezier(.4,0,.2,1)',
                   }}
-                >
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-dm-sans)',
-                      fontSize: 9,
-                      fontWeight: 600,
-                      letterSpacing: '0.12em',
-                      textTransform: 'uppercase',
-                      color: conditionNudge ? '#8A6A10' : '#A89880',
-                      transition: 'color 0.2s',
-                    }}
-                  >
-                    Condition
-                  </div>
-                  {!condition && (
-                    <div
+                />
+                {([
+                  { id: 'owned', title: 'I Own This', sub: isCompact ? 'My Collection' : 'Goes to My Collection' },
+                  { id: 'playground', title: 'Just Dreaming', sub: isCompact ? 'Playground box' : 'Saves to a Playground box' },
+                ] as const).map(option => {
+                  const active = choice === option.id
+                  return (
+                    <button
+                      key={option.id}
+                      onClick={() => setChoice(option.id)}
                       style={{
-                        fontFamily: 'var(--font-dm-sans)',
-                        fontSize: 10.5,
-                        color: conditionNudge ? '#8A6A10' : '#A89880',
-                        fontStyle: 'italic',
-                        transition: 'color 0.2s',
+                        position: 'relative',
+                        zIndex: 1,
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        padding: isCompact ? '12px 13px' : '13px 16px',
+                        borderRadius: 9,
+                        transition: 'color 0.18s ease',
                       }}
                     >
-                      Choose one to continue
-                    </div>
-                  )}
-                </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 3 }}>
+                        <span
+                          style={{
+                            width: 13,
+                            height: 13,
+                            borderRadius: '50%',
+                            flexShrink: 0,
+                            border: active ? '4px solid #C9A84C' : '1.5px solid #D4CBBF',
+                            background: active ? '#1A1410' : 'transparent',
+                            transition: 'all 0.18s ease',
+                          }}
+                        />
+                        <span
+                          style={{
+                            fontFamily: 'var(--font-cormorant)',
+                            fontSize: isCompact ? 17 : 19,
+                            fontWeight: 400,
+                            lineHeight: 1.1,
+                            color: active ? '#FAF8F4' : '#1A1410',
+                          }}
+                        >
+                          {option.title}
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          fontFamily: 'var(--font-dm-sans)',
+                          fontSize: 10.5,
+                          letterSpacing: '0.03em',
+                          paddingLeft: 20,
+                          color: active ? 'rgba(250,248,244,0.6)' : '#A89880',
+                        }}
+                      >
+                        {option.sub}
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+              <div
+                style={{
+                  fontFamily: 'var(--font-dm-sans)',
+                  fontSize: 11,
+                  color: '#A89880',
+                  lineHeight: 1.5,
+                  marginTop: 9,
+                }}
+              >
+                Pick where it lives — you&apos;ll confirm with the button below.
+              </div>
+            </div>
+
+            <div key={choice} style={{ animation: 'addwatch-fade 0.25s ease' }}>
+            {choice === 'owned' ? (
+              <div ref={conditionRef} style={{ marginBottom: 24 }}>
+                <StepHeading
+                  n={2}
+                  labelColor={conditionNudge ? '#8A6A10' : '#A89880'}
+                  trailing={
+                    !condition ? (
+                      <span
+                        style={{
+                          fontFamily: 'var(--font-dm-sans)',
+                          fontSize: 10.5,
+                          color: conditionNudge ? '#8A6A10' : '#A89880',
+                          fontStyle: 'italic',
+                          transition: 'color 0.2s',
+                        }}
+                      >
+                        Choose one to continue
+                      </span>
+                    ) : undefined
+                  }
+                >
+                  Condition
+                </StepHeading>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
                   {CONDITIONS.map(option => {
                     const active = condition === option
@@ -648,9 +830,7 @@ export default function AddWatchConfirmPage() {
               </div>
             ) : (
               <div style={{ marginBottom: 24 }}>
-                <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
-                  Choose a Playground Box
-                </div>
+                <StepHeading n={2}>Choose a Playground Box</StepHeading>
 
                 <div style={{ display: 'grid', gap: 6, marginBottom: 10 }}>
                   {playgroundBoxes.map(box => {
@@ -740,68 +920,30 @@ export default function AddWatchConfirmPage() {
                 )}
               </div>
             )}
+            </div>
 
-            {choice === 'owned' ? (
-              <button
-                disabled={submitting}
-                aria-disabled={!condition}
-                onClick={() => {
-                  if (submitting) return
-                  if (!condition) {
-                    setConditionNudge(true)
-                    conditionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                    window.setTimeout(() => setConditionNudge(false), 1400)
-                    return
-                  }
-                  void commitCollectionAdd()
-                }}
-                style={{
-                  ...primaryButtonStyle(!condition || submitting),
-                  // Stay interactive when condition is missing — the click triggers
-                  // the nudge. Only the in-flight submit gets the not-allowed cursor.
-                  cursor: submitting ? 'not-allowed' : 'pointer',
-                }}
-              >
-                {submitting
-                  ? 'Adding…'
-                  : alreadyInCollection ? 'Add another to My Collection' : 'Add to My Collection'}
-              </button>
-            ) : (
-              <button
-                disabled={!selectedBoxId}
-                onClick={handleAddToPlayground}
-                style={primaryButtonStyle(!selectedBoxId)}
-              >
-                Add to Playground
-              </button>
-            )}
-            {alreadyInCollection && addAnotherOpen && (
-              <button
-                type="button"
-                onClick={() => setAddAnotherOpen(false)}
-                style={{
-                  marginTop: 10,
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                  fontFamily: 'var(--font-dm-sans)',
-                  fontSize: 11,
-                  color: '#A89880',
-                  textDecoration: 'underline',
-                  textUnderlineOffset: 2,
-                  alignSelf: 'flex-start',
-                }}
-              >
-                Cancel — don&apos;t add another
-              </button>
-            )}
+            {!isCompact && ctaNode}
             </>
             )}
           </div>
         </div>
       </div>
 
+      {isCompact && showActionArea && (
+        <div
+          style={{
+            position: 'sticky',
+            bottom: 0,
+            margin: '24px -20px 0',
+            padding: '14px 20px calc(14px + env(safe-area-inset-bottom))',
+            borderTop: '1px solid #EAE5DC',
+            background: '#FAF8F4',
+            boxShadow: '0 -2px 14px rgba(26,20,16,0.06)',
+          }}
+        >
+          {ctaNode}
+        </div>
+      )}
     </div>
   )
 }

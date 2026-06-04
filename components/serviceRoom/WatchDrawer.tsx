@@ -99,7 +99,7 @@ export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport }: P
               {/* Full record (timeline, Papers & Provenance, attachments) lives
                   on the watch's Service Dossier tab. */}
               <Link
-                href={`/collection/watch/${w.watch.id}?tab=service`}
+                href={`/collection/watch/${w.watch.id}?tab=service&from=service-room`}
                 onClick={onClose}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,

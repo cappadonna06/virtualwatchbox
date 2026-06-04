@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Add Watch — VWB Redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #FAF8F4; color: #1A1410; font-family: 'DM Sans', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #FAF8F4; }
+  ::-webkit-scrollbar-thumb { background: #D4CBBF; border-radius: 3px; }
+  input, textarea, button { font-family: inherit; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../tweaks-panel.jsx"></script>
+<script type="text/babel">
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "intentStyle": "cards",
+  "specsPlacement": "top",
+  "showSearchPage": false
+}/*EDITMODE-END*/;
+
+const fmt = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+
+const WATCH = {
+  brand: 'IWC Schaffhausen',
+  model: "Big Pilot's Watch 43",
+  reference: 'IW329301',
+  caseMaterial: 'Stainless Steel',
+  dialColor: 'Black',
+  caseSizeMm: 43,
+  watchType: 'Pilot',
+  movement: 'Calibre 82100',
+  complications: ['Date'],
+  estimatedValue: 7600,
+  notes: 'Oversized crown',
+  imageUrl: '../assets/watches/longines-04.avif',
+};
+
+const PLAYGROUND_BOXES = [
+  { id: 'box1', name: 'Dream Collection', count: 5 },
+  { id: 'box2', name: 'Under $10K', count: 5 },
+  { id: 'box3', name: 'Travel Box', count: 3 },
+];
+
+const CONDITIONS = ['Unworn', 'Like New', 'Excellent', 'Good', 'Fair'];
+
+// ── NavBar ──────────────────────────────────────────────────────────────
+const NavBar = () =>
+  React.createElement('nav', {
+    style: { borderBottom: '1px solid #EAE5DC', background: '#FAF8F4', position: 'sticky', top: 0, zIndex: 100 }
+  },
+    React.createElement('div', {
+      style: { maxWidth: 1280, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 56px' }
+    },
+      React.createElement('span', { style: { fontFamily: 'Cormorant Garamond, serif', fontSize: 20, fontWeight: 500, letterSpacing: '0.03em', color: '#1A1410' } }, 'Virtual Watchbox'),
+      React.createElement('div', { style: { display: 'flex', gap: 32 } },
+        ['My Collection','Playground','Discover','News'].map(l =>
+          React.createElement('a', { key: l, style: { fontSize: 12, letterSpacing: '0.04em', color: '#A89880', textDecoration: 'none', cursor: 'pointer' } }, l)
+        )
+      ),
+      React.createElement('button', { style: { fontSize: 11, fontWeight: 500, letterSpacing: '0.08em', padding: '9px 22px', background: '#1A1410', color: '#FAF8F4', border: 'none', borderRadius: 4, cursor: 'pointer' } }, 'Sign In')
+    )
+  );
+
+// ── Intent selector variants ────────────────────────────────────────────
+const IntentCards = ({ choice, setChoice }) => {
+  const options = [
+    { id: 'owned', headline: 'Add to My Collection', sub: 'You own this watch' },
+    { id: 'playground', headline: 'Add to Playground', sub: 'Dream box, no ownership' },
+  ];
+  return React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 } },
+    options.map(opt => {
+      const active = choice === opt.id;
+      return React.createElement('button', {
+        key: opt.id, onClick: () => setChoice(opt.id),
+        style: {
+          padding: '16px 18px', borderRadius: 10, cursor: 'pointer', textAlign: 'left',
+          border: active ? '1.5px solid #1A1410' : '1px solid #E8E2D8',
+          background: active ? '#1A1410' : '#FFFFFF',
+          transition: 'all 0.15s ease',
+          boxShadow: active ? '0 4px 16px rgba(26,20,16,0.12)' : '0 1px 4px rgba(26,20,16,0.04)',
+        }
+      },
+        React.createElement('div', { style: { fontFamily: 'Cormorant Garamond, serif', fontSize: 18, fontWeight: 400, lineHeight: 1.2, color: active ? '#FAF8F4' : '#1A1410', marginBottom: 4 } }, opt.headline),
+        React.createElement('div', { style: { fontSize: 10, letterSpacing: '0.06em', color: active ? 'rgba(250,248,244,0.55)' : '#A89880' } }, opt.sub)
+      );
+    })
+  );
+};
+
+const IntentPills = ({ choice, setChoice }) => {
+  const options = [
+    { id: 'owned', label: 'My Collection' },
+    { id: 'playground', label: 'Playground' },
+  ];
+  return React.createElement('div', {
+    style: { display: 'flex', background: '#F0EBE3', borderRadius: 6, padding: 3, gap: 2 }
+  },
+    options.map(opt => {
+      const active = choice === opt.id;
+      return React.createElement('button', {
+        key: opt.id, onClick: () => setChoice(opt.id),
+        style: {
+          flex: 1, padding: '9px 16px', borderRadius: 4, border: 'none', cursor: 'pointer',
+          background: active ? '#1A1410' : 'transparent',
+          color: active ? '#FAF8F4' : '#A89880',
+          fontSize: 12, fontWeight: 500, letterSpacing: '0.04em',
+          transition: 'background 0.15s, color 0.15s',
+          boxShadow: active ? '0 1px 4px rgba(26,20,16,0.12)' : 'none',
+        }
+      }, opt.label);
+    })
+  );
+};
+
+// ── Condition picker ────────────────────────────────────────────────────
+const ConditionPicker = ({ condition, setCondition }) =>
+  React.createElement('div', null,
+    React.createElement('div', { style: { fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 } }, 'Condition'),
+    React.createElement('div', { style: { display: 'flex', gap: 6, flexWrap: 'wrap' } },
+      CONDITIONS.map(c => {
+        const active = condition === c;
+        return React.createElement('button', {
+          key: c, onClick: () => setCondition(c),
+          style: {
+            padding: '8px 14px', borderRadius: 20, cursor: 'pointer',
+            border: active ? '1.5px solid #1A1410' : '1px solid #E8E2D8',
+            background: active ? '#1A1410' : '#FFFFFF',
+            color: active ? '#FAF8F4' : '#1A1410',
+            fontSize: 11, fontWeight: 500,
+            transition: 'all 0.15s ease',
+          }
+        }, c);
+      })
+    )
+  );
+
+// ── Playground box picker ───────────────────────────────────────────────
+const BoxPicker = ({ selectedBoxId, setSelectedBoxId, boxes, newBoxOpen, setNewBoxOpen, newBoxName, setNewBoxName }) =>
+  React.createElement('div', null,
+    React.createElement('div', { style: { fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 } }, 'Choose a Playground Box'),
+    React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 } },
+      boxes.map(box => {
+        const active = selectedBoxId === box.id;
+        return React.createElement('button', {
+          key: box.id, onClick: () => setSelectedBoxId(box.id),
+          style: {
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            width: '100%', padding: '12px 14px', borderRadius: 8, cursor: 'pointer', textAlign: 'left',
+            border: active ? '1.5px solid #C9A84C' : '1px solid #E8E2D8',
+            background: active ? 'rgba(201,168,76,0.06)' : '#FFFFFF',
+            transition: 'all 0.15s ease',
+          }
+        },
+          React.createElement('div', null,
+            React.createElement('div', { style: { fontFamily: 'Cormorant Garamond, serif', fontSize: 20, fontWeight: 400, color: '#1A1410', lineHeight: 1.1 } }, box.name),
+            React.createElement('div', { style: { fontSize: 10, color: '#A89880', marginTop: 2 } }, `${box.count} watches`)
+          ),
+          active && React.createElement('span', { style: { fontSize: 9, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#C9A84C' } }, 'Selected')
+        );
+      })
+    ),
+    !newBoxOpen
+      ? React.createElement('button', {
+          onClick: () => setNewBoxOpen(true),
+          style: { fontSize: 11, color: '#A89880', background: 'none', border: 'none', cursor: 'pointer', padding: 0, letterSpacing: '0.04em' }
+        }, '+ Create New Box')
+      : React.createElement('div', { style: { display: 'flex', gap: 8, marginTop: 4 } },
+          React.createElement('input', {
+            value: newBoxName, onChange: e => setNewBoxName(e.target.value),
+            placeholder: 'Name your box...',
+            autoFocus: true,
+            style: { flex: 1, padding: '9px 12px', border: '1px solid #E8E2D8', borderRadius: 6, fontSize: 13, color: '#1A1410', background: '#FFFFFF', outline: 'none' }
+          }),
+          React.createElement('button', {
+            onClick: () => setNewBoxOpen(false),
+            style: { padding: '9px 14px', background: 'transparent', border: '1px solid #E8E2D8', borderRadius: 6, cursor: 'pointer', fontSize: 11, color: '#A89880' }
+          }, 'Cancel')
+        )
+  );
+
+// ── Spec row ────────────────────────────────────────────────────────────
+const SpecRow = ({ label, value }) =>
+  React.createElement('div', {
+    style: { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '8px 0', borderBottom: '1px solid #F0EBE3' }
+  },
+    React.createElement('span', { style: { fontSize: 11, color: '#A89880' } }, label),
+    React.createElement('span', { style: { fontSize: 11, color: '#1A1410', fontWeight: 500, textAlign: 'right' } }, value)
+  );
+
+// ── Specs block ─────────────────────────────────────────────────────────
+const SpecsBlock = () => {
+  const specs = [
+    ['Watch Type', WATCH.watchType],
+    ['Movement', WATCH.movement],
+    ['Complications', WATCH.complications.join(', ') || '—'],
+    ['Case Material', WATCH.caseMaterial],
+    ['Dial Color', WATCH.dialColor],
+    ['Case Size', `${WATCH.caseSizeMm}mm`],
+  ];
+  return React.createElement('div', null,
+    specs.map(([l, v]) => React.createElement(SpecRow, { key: l, label: l, value: v })),
+    WATCH.notes && React.createElement('div', {
+      style: { fontSize: 11, color: '#C9A84C', fontStyle: 'italic', paddingTop: 10 }
+    }, `"${WATCH.notes}"`)
+  );
+};
+
+// ── Purchase details accordion ──────────────────────────────────────────
+const PurchaseDetails = () => {
+  const [open, setOpen] = React.useState(false);
+  return React.createElement('div', null,
+    React.createElement('button', {
+      onClick: () => setOpen(o => !o),
+      style: { fontSize: 11, color: '#A89880', background: 'none', border: 'none', cursor: 'pointer', padding: 0, letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: 6 }
+    },
+      React.createElement('span', { style: { fontSize: 14, lineHeight: 1, color: '#C9A84C' } }, open ? '−' : '+'),
+      open ? 'Hide purchase details' : 'Add purchase details'
+    ),
+    open && React.createElement('div', { style: { display: 'grid', gap: 8, marginTop: 12 } },
+      React.createElement('input', { type: 'number', placeholder: 'Purchase price', style: inputStyle }),
+      React.createElement('input', { type: 'date', style: inputStyle }),
+      React.createElement('textarea', { rows: 2, placeholder: 'Notes (optional)', style: { ...inputStyle, resize: 'vertical' } })
+    )
+  );
+};
+
+const inputStyle = {
+  width: '100%', padding: '10px 12px',
+  border: '1px solid #E8E2D8', borderRadius: 6,
+  fontSize: 13, color: '#1A1410', background: '#FFFFFF', outline: 'none',
+};
+
+// ── Toast ───────────────────────────────────────────────────────────────
+const Toast = ({ visible }) =>
+  React.createElement('div', {
+    style: {
+      position: 'fixed', bottom: 32, left: '50%', transform: `translateX(-50%) translateY(${visible ? 0 : 16}px)`,
+      background: '#1A1410', color: '#FAF8F4', borderRadius: 8, padding: '12px 24px',
+      fontSize: 12, letterSpacing: '0.04em', zIndex: 200,
+      opacity: visible ? 1 : 0, transition: 'opacity 0.22s ease, transform 0.22s ease',
+      pointerEvents: 'none', whiteSpace: 'nowrap',
+      boxShadow: '0 8px 24px rgba(26,20,16,0.18)',
+    }
+  }, '♡ Saved to Followed Watches');
+
+// ── Main page ───────────────────────────────────────────────────────────
+const AddWatchPage = ({ tweaks }) => {
+  const { intentStyle, specsPlacement } = tweaks;
+  const [choice, setChoice] = React.useState('owned');
+  const [condition, setCondition] = React.useState(null);
+  const [selectedBoxId, setSelectedBoxId] = React.useState('box1');
+  const [followed, setFollowed] = React.useState(false);
+  const [toastVisible, setToastVisible] = React.useState(false);
+  const [newBoxOpen, setNewBoxOpen] = React.useState(false);
+  const [newBoxName, setNewBoxName] = React.useState('');
+  const [detailsOpen, setDetailsOpen] = React.useState(false);
+
+  const handleFollow = () => {
+    setFollowed(true);
+    setToastVisible(true);
+    setTimeout(() => setToastVisible(false), 2400);
+  };
+
+  const canAdd = choice === 'owned' ? !!condition : !!selectedBoxId;
+  const ctaLabel = choice === 'owned' ? 'Add to My Collection' : 'Add to Playground';
+
+  const specsEl = React.createElement(SpecsBlock);
+
+  return React.createElement('div', null,
+    React.createElement(NavBar),
+
+    React.createElement('div', { style: { maxWidth: 1280, margin: '0 auto', padding: '36px 56px 80px' } },
+      // Back nav
+      React.createElement('button', {
+        style: { fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#A89880', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: 28, display: 'flex', alignItems: 'center', gap: 6 }
+      },
+        React.createElement('span', { style: { fontSize: 14 } }, '←'),
+        'Back to search'
+      ),
+
+      // Main grid
+      React.createElement('div', {
+        style: { display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) minmax(340px, 520px)', gap: 48, alignItems: 'start' }
+      },
+
+        // ── LEFT: Image ─────────────────────────────────────────────────
+        React.createElement('div', {
+          style: { position: 'sticky', top: 88 }
+        },
+          React.createElement('div', {
+            style: { position: 'relative', background: '#F5F2EC', border: '1px solid #EAE5DC', borderRadius: 16, overflow: 'hidden', aspectRatio: '1/1' }
+          },
+            React.createElement('img', {
+              src: WATCH.imageUrl, alt: WATCH.model,
+              style: { width: '100%', height: '100%', objectFit: 'contain', padding: 32, display: 'block', filter: 'drop-shadow(0 16px 32px rgba(26,20,16,0.18))' }
+            }),
+            // Heart button — top-right of image (product-detail convention)
+            React.createElement('button', {
+              onClick: handleFollow,
+              title: followed ? 'Saved to Followed Watches' : 'Follow this watch',
+              style: {
+                position: 'absolute', top: 14, right: 14,
+                width: 38, height: 38, borderRadius: '50%',
+                background: followed ? 'rgba(201,168,76,0.18)' : 'rgba(250,248,244,0.80)',
+                backdropFilter: 'blur(8px)',
+                border: followed ? '1px solid rgba(201,168,76,0.55)' : '1px solid rgba(212,203,191,0.7)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', transition: 'all 0.18s ease',
+                boxShadow: '0 2px 8px rgba(26,20,16,0.07)',
+              }
+            },
+              React.createElement('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: followed ? '#C9A84C' : 'none', stroke: followed ? '#C9A84C' : '#1A1410', strokeWidth: 1.6, strokeLinejoin: 'round' },
+                React.createElement('path', { d: 'M12 20.5s-6.8-4.35-9.22-8.05C.92 9.63 2.03 5.5 6.2 5.5c2.07 0 3.34 1.07 4.16 2.28.82-1.21 2.09-2.28 4.16-2.28 4.17 0 5.28 4.13 3.42 6.95C18.8 16.15 12 20.5 12 20.5z' })
+              )
+            ),
+            // "In Collection" badge — bottom-left
+            React.createElement('div', {
+              style: { position: 'absolute', bottom: 14, left: 14, fontSize: 9, fontWeight: 600, letterSpacing: '0.06em', padding: '4px 10px', borderRadius: 20, background: 'rgba(232,244,232,0.92)', color: '#2D6A2D', backdropFilter: 'blur(4px)' }
+            }, 'In Collection')
+          )
+        ),
+
+        // ── RIGHT: Form ─────────────────────────────────────────────────
+        React.createElement('div', null,
+
+          // Brand + model header
+          React.createElement('div', { style: { marginBottom: 20 } },
+            React.createElement('div', { style: { fontSize: 9, fontWeight: 500, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#A89880', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 } },
+              React.createElement('span', { style: { display: 'inline-block', width: 16, height: 1, background: '#D4CBBF', verticalAlign: 'middle' } }),
+              'Add a Watch'
+            ),
+            React.createElement('div', { style: { fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: 8 } }, WATCH.brand),
+            React.createElement('h1', { style: { fontFamily: 'Cormorant Garamond, serif', fontSize: 44, fontWeight: 400, lineHeight: 0.95, color: '#1A1410', marginBottom: 10 } }, WATCH.model),
+            React.createElement('div', { style: { fontSize: 13, color: '#A89880', marginBottom: 16, letterSpacing: '0.02em' } }, WATCH.reference),
+            // Quick spec strip
+            React.createElement('div', { style: { display: 'flex', gap: 0, fontSize: 13, color: '#1A1410', lineHeight: 1.5 } },
+              React.createElement('span', null, WATCH.caseMaterial),
+              React.createElement('span', { style: { margin: '0 10px', color: '#D4CBBF' } }, '|'),
+              React.createElement('span', null, `Dial: ${WATCH.dialColor}`),
+              React.createElement('span', { style: { margin: '0 10px', color: '#D4CBBF' } }, '|'),
+              React.createElement('span', null, `${WATCH.caseSizeMm} mm`)
+            )
+          ),
+
+          // Est. value
+          React.createElement('div', {
+            style: { display: 'flex', alignItems: 'baseline', gap: 10, paddingBottom: 20, marginBottom: 20, borderBottom: '1px solid #EAE5DC' }
+          },
+            React.createElement('span', { style: { fontFamily: 'Cormorant Garamond, serif', fontSize: 38, fontWeight: 400, color: '#C9A84C', lineHeight: 1 } }, fmt(WATCH.estimatedValue)),
+            React.createElement('span', { style: { fontSize: 10, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A89880' } }, 'Est. Market Value')
+          ),
+
+          // Specs (top placement)
+          specsPlacement === 'top' && React.createElement('div', { style: { marginBottom: 24 } }, specsEl),
+
+          // Divider before intent
+          React.createElement('div', { style: { height: 1, background: '#EAE5DC', marginBottom: 20 } }),
+
+          // Intent label
+          React.createElement('div', { style: { fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 } }, 'Where does it go?'),
+
+          // Intent selector
+          React.createElement('div', { style: { marginBottom: 20 } },
+            intentStyle === 'cards'
+              ? React.createElement(IntentCards, { choice, setChoice })
+              : React.createElement(IntentPills, { choice, setChoice })
+          ),
+
+          // Contextual form
+          choice === 'owned'
+            ? React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 24 } },
+                React.createElement(ConditionPicker, { condition, setCondition }),
+                React.createElement(PurchaseDetails)
+              )
+            : React.createElement('div', { style: { marginBottom: 24 } },
+                React.createElement(BoxPicker, {
+                  selectedBoxId, setSelectedBoxId,
+                  boxes: PLAYGROUND_BOXES,
+                  newBoxOpen, setNewBoxOpen, newBoxName, setNewBoxName
+                })
+              ),
+
+          // Specs (bottom placement)
+          specsPlacement === 'bottom' && React.createElement('div', { style: { marginBottom: 24, paddingTop: 4 } },
+            React.createElement('div', { style: { fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 8 } }, 'Watch Specifications'),
+            specsEl
+          ),
+
+          // Primary CTA
+          React.createElement('button', {
+            disabled: !canAdd,
+            style: {
+              width: '100%', padding: '14px 20px', borderRadius: 6, border: 'none', cursor: canAdd ? 'pointer' : 'not-allowed',
+              background: canAdd ? '#1A1410' : '#C8BFAF', color: '#FAF8F4',
+              fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase',
+              transition: 'background 0.15s ease',
+            }
+          }, ctaLabel)
+        )
+      )
+    ),
+
+    React.createElement(Toast, { visible: toastVisible })
+  );
+};
+
+// ── App with Tweaks ─────────────────────────────────────────────────────
+const App = () => {
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  return React.createElement('div', null,
+    React.createElement(AddWatchPage, { tweaks }),
+
+    React.createElement(TweaksPanel, null,
+      React.createElement(TweakSection, { title: 'Intent Selector Style' },
+        React.createElement(TweakRadio, {
+          id: 'intentStyle',
+          value: tweaks.intentStyle,
+          options: ['cards', 'pills'],
+          labels: ['Cards', 'Segmented'],
+          onChange: v => setTweak('intentStyle', v),
+        })
+      ),
+      React.createElement(TweakSection, { title: 'Watch Specs Placement' },
+        React.createElement(TweakRadio, {
+          id: 'specsPlacement',
+          value: tweaks.specsPlacement,
+          options: ['top', 'bottom'],
+          labels: ['Above intent', 'Below intent'],
+          onChange: v => setTweak('specsPlacement', v),
+        })
+      )
+    )
+  );
+};
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(React.createElement(App));
+</script>
+</body>
+</html>
