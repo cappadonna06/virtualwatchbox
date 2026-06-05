@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState, type DragEvent as ReactDragEvent, type PointerEvent as ReactPointerEvent } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import type { ResolvedWatch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS, watchboxFrameMetrics } from '@/lib/frameConfig'
 import { getWatchboxOverflow } from '@/lib/watchboxOverflow'
@@ -298,6 +299,7 @@ export default function WatchBox({
   const isSparse = watchBySlot !== undefined
   const { isWatchJewel } = useCollectionSession()
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null)
+  const reduceMotion = useReducedMotion()
   const [overflowOpen, setOverflowOpen] = useState(false)
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
@@ -775,10 +777,27 @@ export default function WatchBox({
               const isBeingDragged = !inPreview && onReorder !== undefined && draggedIndex === i
               const isDragTarget = !inPreview && onReorder !== undefined && dragOverIndex === i && draggedIndex !== i
               const isExternalDragTarget = externalDragOverIndex === i || externalHoverIndex === i
+              const slotOpacity = isBeingDragged ? 0.5 : isSourceInPreview ? 0.4 : 1
 
               return (
+                <motion.div
+                  key={`watch-${w.id}`}
+                  layout={reduceMotion ? false : 'position'}
+                  initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: slotOpacity, scale: 1 }}
+                  transition={
+                    reduceMotion
+                      ? { duration: 0 }
+                      : {
+                          layout: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+                          opacity: { duration: 0.18, ease: [0.4, 0, 0.2, 1], delay: i * 0.04 },
+                          scale: { duration: 0.3, ease: [0.4, 0, 0.2, 1], delay: i * 0.04 },
+                        }
+                  }
+                  whileHover={reduceMotion || draggedIndex !== null ? undefined : { y: -2 }}
+                  style={{ position: 'relative', aspectRatio: '3/4' }}
+                >
                 <div
-                  key={i}
                   data-slot-index={i}
                   draggable={onReorder !== undefined && !isTouchDevice}
                   onPointerDown={isTouchDevice && onReorder ? e => handleSlotTouchPointerDown(e, i) : undefined}
@@ -837,14 +856,12 @@ export default function WatchBox({
                     setDragOverIndex(null)
                   } : undefined}
                   style={{
-                    aspectRatio: '3/4',
+                    width: '100%',
+                    height: '100%',
                     borderRadius: 3,
                     position: 'relative',
                     cursor: 'pointer',
                     overflow: 'visible',
-                    opacity: isBeingDragged ? 0.5 : isSourceInPreview ? 0.4 : 1,
-                    transform: 'translateY(0)',
-                    transition: 'transform 0.18s ease, opacity 0.15s ease',
                     // iOS Safari intercepts long-press on the slot image with
                     // its native callout menu before our custom long-press
                     // timer can fire. These CSS knobs suppress that gesture
@@ -863,13 +880,11 @@ export default function WatchBox({
                     // any slot (frame, configurator, tray, page margin).
                     touchAction: (isTouchDevice && onReorder) ? 'none' : undefined,
                   }}
-                  onMouseEnter={e => {
+                  onMouseEnter={() => {
                     if (draggedIndex !== null) return
-                    e.currentTarget.style.transform = 'translateY(-2px)'
                     if (onReorder !== undefined) setHoveredSlot(i)
                   }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.transform = 'translateY(0)'
+                  onMouseLeave={() => {
                     if (onReorder !== undefined) setHoveredSlot(null)
                   }}
                 >
@@ -993,6 +1008,7 @@ export default function WatchBox({
                     )}
                   </div>
                 </div>
+                </motion.div>
               )
             })}
           </div>
