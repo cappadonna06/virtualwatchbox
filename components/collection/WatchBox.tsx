@@ -784,7 +784,7 @@ export default function WatchBox({
                   key={`watch-${w.id}`}
                   layout={reduceMotion ? false : 'position'}
                   initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
-                  animate={{ opacity: slotOpacity, scale: 1 }}
+                  animate={{ opacity: 1, scale: 1 }}
                   transition={
                     reduceMotion
                       ? { duration: 0 }
@@ -862,6 +862,12 @@ export default function WatchBox({
                     position: 'relative',
                     cursor: 'pointer',
                     overflow: 'visible',
+                    // Transient drag/preview dimming stays plain CSS (instant,
+                    // position-correct). Framer owns only the entrance + reorder
+                    // opacity on the wrapper, so the two never fight and a slot
+                    // can't get stranded mid-fade.
+                    opacity: slotOpacity,
+                    transition: 'opacity 0.15s ease',
                     // iOS Safari intercepts long-press on the slot image with
                     // its native callout menu before our custom long-press
                     // timer can fire. These CSS knobs suppress that gesture
