@@ -1,0 +1,95 @@
+{
+  "omega-aqua-terra-blue-22010412103004": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-aqua-terra-blue-22010412103004/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-aqua-terra-blue-22010412103004/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 179,
+        "y": 16
+      },
+      "topLugRight": {
+        "x": 580,
+        "y": 16
+      },
+      "bottomLugLeft": {
+        "x": 179,
+        "y": 822
+      },
+      "bottomLugRight": {
+        "x": 582,
+        "y": 822
+      },
+      "lugWidthPx": 402,
+      "imageWidth": 830,
+      "imageHeight": 900
+    },
+    "lugWidthMm": 19,
+    "brand": "Omega",
+    "model": "Seamaster Aqua Terra 150M",
+    "reference": "220.10.38.20.03.001",
+    "confidence": 0.9,
+    "status": "approved"
+  },
+  "oris-big-crown-pointer-date-green": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/oris-big-crown-pointer-date-green/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/oris-big-crown-pointer-date-green/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 181,
+        "y": 14
+      },
+      "topLugRight": {
+        "x": 560,
+        "y": 14
+      },
+      "bottomLugLeft": {
+        "x": 181,
+        "y": 815
+      },
+      "bottomLugRight": {
+        "x": 561,
+        "y": 815
+      },
+      "lugWidthPx": 380,
+      "imageWidth": 810,
+      "imageHeight": 900
+    },
+    "lugWidthMm": 20,
+    "brand": "Oris",
+    "model": "Big Crown Pointer Date (Cervo Volante)",
+    "reference": "Big Crown",
+    "confidence": 0.9,
+    "status": "approved"
+  },
+  "tudor-black-bay-gmt-m79830rb": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-black-bay-gmt-m79830rb/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-black-bay-gmt-m79830rb/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 185,
+        "y": 7
+      },
+      "topLugRight": {
+        "x": 571,
+        "y": 7
+      },
+      "bottomLugLeft": {
+        "x": 185,
+        "y": 822
+      },
+      "bottomLugRight": {
+        "x": 571,
+        "y": 822
+      },
+      "lugWidthPx": 386,
+      "imageWidth": 805,
+      "imageHeight": 900
+    },
+    "lugWidthMm": 22,
+    "brand": "Tudor",
+    "model": "Black Bay GMT",
+    "reference": "M79830RB-0001",
+    "confidence": 0.9,
+    "status": "approved"
+  }
+}
