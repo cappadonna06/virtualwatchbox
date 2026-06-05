@@ -12,7 +12,6 @@ import { FilterBar, applyFilters, applySort, type StrapFilterState, type StrapSo
 import { StrapGrid, EmptyDrawer } from '@/components/straps/StrapCard'
 import { StrapSidebar } from '@/components/straps/StrapSidebar'
 import { StrapModal } from '@/components/straps/StrapModal'
-import { StrapIcon } from '@/components/straps/atoms'
 import { useStrapDrawerWatches } from '@/components/straps/useStrapDrawerWatches'
 
 type ModalState = null | { mode: 'add'; suggestLug: number | null } | { mode: 'edit'; strap: UserStrap }
@@ -117,7 +116,7 @@ function StrapDrawerPage() {
   }
 
   return (
-    <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 40px 80px' }}>
+    <div className="sd-page" style={{ maxWidth: 1280, margin: '0 auto' }}>
       <StrapDrawerHeader
         strapCount={stats.strapCount}
         compatibleWatchCount={stats.compatibleWatchCount}
@@ -178,18 +177,6 @@ function StrapDrawerPage() {
           onClose={() => setModal(null)}
         />
       )}
-
-      <div className="sd-mobile-addbar" style={{ position: 'fixed', bottom: 20, left: 18, right: 18, zIndex: brand.zIndex.dropdown }}>
-        {!modal && !selected && (
-          <button onClick={() => setModal({ mode: 'add', suggestLug: focusWatch?.lugWidthMm ?? null })} style={{
-            width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase',
-            padding: 15, background: brand.colors.ink, color: brand.colors.slot, border: 'none', borderRadius: brand.radius.lg, boxShadow: brand.shadow.xl,
-          }}>
-            <StrapIcon name="plus" size={15} /> Add Strap
-          </button>
-        )}
-      </div>
     </div>
   )
 }

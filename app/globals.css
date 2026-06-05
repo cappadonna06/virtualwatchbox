@@ -604,9 +604,20 @@ body {
   .sd-form-2col { grid-template-columns: 1fr !important; }
 }
 
-/* Mobile fixed "Add Strap" bar. */
-.sd-mobile-addbar { display: none; }
+/* Strap Drawer page gutter — tighter on mobile. */
+.sd-page { padding: 0 40px 48px; }
+@media (max-width: 760px) { .sd-page { padding: 0 18px 40px; } }
+
+/* Strap Drawer header — responsive title + Add/stats toolbar (breakpoint 760px). */
+.sd-head-d { display: block; }
+.sd-head-m { display: none; }
+.sd-add-d { display: inline-flex; }
+.sd-add-m { display: none; }
+.sd-stats-d { display: inline-flex; }
+.sd-stats-m { display: none; }
 @media (max-width: 760px) {
-  .sd-mobile-addbar { display: block; }
-  .sd-header-addbtn { display: none !important; }
+  .sd-head-d, .sd-add-d, .sd-stats-d { display: none !important; }
+  .sd-head-m { display: block; }
+  .sd-add-m { display: inline-flex; }
+  .sd-stats-m { display: flex; }
 }

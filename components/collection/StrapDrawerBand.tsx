@@ -35,7 +35,7 @@ function BandCard({ strap, watches, overrides, fixedWidth }: {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        flex: fixedWidth ? `0 0 ${fixedWidth}px` : '1 1 0', minWidth: 0, textDecoration: 'none', display: 'block',
+        flex: fixedWidth ? `0 0 ${fixedWidth}px` : '1 1 0', minWidth: 0, maxWidth: fixedWidth ?? 220, textDecoration: 'none', display: 'block',
         background: brand.colors.slot, border: `1px solid ${hover ? brand.colors.borderLight : brand.colors.borderMid}`,
         borderRadius: brand.radius.md, overflow: 'hidden',
         boxShadow: hover ? '0 8px 22px rgba(26,20,16,0.10)' : brand.shadow.xs,
@@ -74,7 +74,7 @@ function OpenerTile({ remaining, total, fixedWidth }: { remaining: number; total
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        flex: fixedWidth ? `0 0 ${fixedWidth}px` : '1 1 0', minWidth: 0, textDecoration: 'none',
+        flex: fixedWidth ? `0 0 ${fixedWidth}px` : '1 1 0', minWidth: 0, maxWidth: fixedWidth ?? 220, textDecoration: 'none',
         border: `1px solid ${hover ? brand.colors.gold : brand.colors.borderMid}`, borderRadius: brand.radius.md,
         background: hover ? brand.fit.widthBadge.bg : 'transparent',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, padding: 16,
