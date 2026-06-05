@@ -121,6 +121,9 @@ export function parseStrapBody(body: Record<string, unknown>, partial: boolean) 
   if (body.brand !== undefined) payload.brand = str(body.brand, 60)
   if (body.subMaterial !== undefined) payload.sub_material = str(body.subMaterial, 40)
   if (body.colorHex !== undefined) payload.color_hex = str(body.colorHex, 9)
+  // Curated strap templates (Quick pick) pass a hosted image URL straight through on create,
+  // instead of the file-upload path used for user photos.
+  if (body.photoUrl !== undefined) payload.photo_url = str(body.photoUrl, 500)
   if (body.claspType !== undefined) payload.clasp_type = str(body.claspType, 60)
   if (body.purchaseUrl !== undefined) payload.purchase_url = str(body.purchaseUrl, 500)
   if (body.notes !== undefined) payload.notes = str(body.notes, 500)

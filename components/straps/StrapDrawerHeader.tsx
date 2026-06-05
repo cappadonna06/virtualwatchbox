@@ -38,10 +38,9 @@ export function StrapDrawerHeader({
         Collection
       </Link>
 
-      {/* Title — desktop keeps the gold eyebrow + "Strap Drawer" */}
+      {/* Title — desktop (single line, matches mobile copy) */}
       <div className="sd-head-d">
-        <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 6 }}>The Strap Drawer</div>
-        <h1 style={{ fontFamily: brand.font.serif, fontSize: 54, fontWeight: 300, lineHeight: 1, letterSpacing: '-0.02em', color: brand.colors.ink, margin: 0, whiteSpace: 'nowrap' }}>Strap Drawer</h1>
+        <h1 style={{ fontFamily: brand.font.serif, fontSize: 54, fontWeight: 300, lineHeight: 1, letterSpacing: '-0.02em', color: brand.colors.ink, margin: 0, whiteSpace: 'nowrap' }}>The Strap Drawer</h1>
       </div>
       {/* Title — mobile is a single line, no eyebrow */}
       <h1 className="sd-head-m" style={{ fontFamily: brand.font.serif, fontSize: 34, fontWeight: 300, lineHeight: 1.04, letterSpacing: '-0.01em', color: brand.colors.ink, margin: 0 }}>The Strap Drawer</h1>

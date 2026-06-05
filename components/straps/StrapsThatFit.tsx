@@ -5,8 +5,8 @@ import { brand } from '@/lib/brand'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import type { UserStrap } from '@/types/watch'
 import { compatibleStraps, effectiveCompatibility } from '@/lib/strapCompatibility'
-import { deriveSwatchId } from '@/lib/strapDrawer/constants'
-import { StrapSwatch } from './StrapSwatch'
+import { findTemplatePhoto } from '@/lib/strapTemplates'
+import { StrapPhotoFallback } from './StrapPhotoFallback'
 import { strapTitle, type StrapDrawerWatch } from './atoms'
 
 // Horizontal "Straps that fit" thumbnail strip, shown on a watch's surfaces.
@@ -49,18 +49,20 @@ export function StrapsThatFit({
         </button>
       ) : (
         <div className="sd-chiprow" style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4 }}>
-          {fits.map(s => (
+          {fits.map(s => {
+            const photo = s.photoUrl ?? findTemplatePhoto(s.material, s.subMaterial, s.color)
+            return (
             <button key={s.id} onClick={() => openStrap(s)} style={{ flexShrink: 0, width: thumbW, textAlign: 'left', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
               <div style={{ width: thumbW, height: thumbH, borderRadius: brand.radius.md, overflow: 'hidden', border: `1px solid ${brand.colors.borderMid}` }}>
-                {s.photoUrl
-                  ? <div style={{ width: '100%', height: '100%', background: brand.colors.paperWarm, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><img src={s.photoUrl} alt={strapTitle(s)} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 4 }} /></div>
-                  : <StrapSwatch swatchId={deriveSwatchId(s.material, s.subMaterial, s.color)} material={s.material} height={thumbH} bandWidth="40%" />}
+                {photo
+                  ? <div style={{ width: '100%', height: '100%', background: brand.colors.paperWarm, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><img src={photo} alt={strapTitle(s)} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 4 }} /></div>
+                  : <StrapPhotoFallback height={thumbH} />}
               </div>
               <div style={{ marginTop: 6, fontFamily: brand.font.sans, fontSize: 10.5, color: brand.colors.inkSoft, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {s.brand || `${s.color} ${s.material}`}
               </div>
             </button>
-          ))}
+          )})}
         </div>
       )}
 

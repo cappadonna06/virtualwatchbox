@@ -4,8 +4,9 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { brand } from '@/lib/brand'
 import type { StrapWatchOverride, UserStrap } from '@/types/watch'
 import { effectiveCompatibility, findOverride } from '@/lib/strapCompatibility'
-import { deriveSwatchId, materialLabel } from '@/lib/strapDrawer/constants'
-import { StrapSwatch } from './StrapSwatch'
+import { materialLabel } from '@/lib/strapDrawer/constants'
+import { findTemplatePhoto } from '@/lib/strapTemplates'
+import { StrapPhotoFallback } from './StrapPhotoFallback'
 import {
   GhostBtn,
   Kicker,
@@ -89,7 +90,7 @@ function SidebarContent({ strap, watches, overrides, onClose, onSetOverride, onR
   const fits = watches.filter(w => effectiveCompatibility(strap, w, overrides) === 'fits')
   const others = watches.filter(w => effectiveCompatibility(strap, w, overrides) !== 'fits')
   const title = strapTitle(strap)
-  const swatchId = deriveSwatchId(strap.material, strap.subMaterial, strap.color)
+  const photo = strap.photoUrl ?? findTemplatePhoto(strap.material, strap.subMaterial, strap.color)
   const price = money(strap.purchasePrice)
 
   return (
@@ -101,13 +102,13 @@ function SidebarContent({ strap, watches, overrides, onClose, onSetOverride, onR
 
       <div style={{ padding: '0 22px 24px' }}>
         <div style={{ margin: '18px -22px 0', borderBottom: `1px solid ${brand.colors.border}` }}>
-          {strap.photoUrl
+          {photo
             ? (
               <div style={{ background: `radial-gradient(ellipse 120% 80% at 50% 30%, #FFFFFF 0%, #FBF8F2 72%, ${brand.colors.paper} 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 280 }}>
-                <img src={strap.photoUrl} alt={title} style={{ height: '100%', objectFit: 'contain', padding: '20px 0' }} />
+                <img src={photo} alt={title} style={{ height: '100%', objectFit: 'contain', padding: '20px 0' }} />
               </div>
             )
-            : <StrapSwatch swatchId={swatchId} material={strap.material} height={260} />}
+            : <StrapPhotoFallback height={260} />}
         </div>
 
         <div style={{ padding: '20px 0 8px' }}>

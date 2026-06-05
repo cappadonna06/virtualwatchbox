@@ -6,8 +6,8 @@ import { brand } from '@/lib/brand'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import type { StrapWatchOverride, UserStrap } from '@/types/watch'
 import { compatibleWatches, totalCombos } from '@/lib/strapCompatibility'
-import { deriveSwatchId } from '@/lib/strapDrawer/constants'
-import { StrapSwatch } from '@/components/straps/StrapSwatch'
+import { findTemplatePhoto } from '@/lib/strapTemplates'
+import { StrapPhotoFallback } from '@/components/straps/StrapPhotoFallback'
 import { strapTitle, type StrapDrawerWatch } from '@/components/straps/atoms'
 import { useStrapDrawerWatches } from '@/components/straps/useStrapDrawerWatches'
 
@@ -28,6 +28,7 @@ function BandCard({ strap, watches, overrides, fixedWidth }: {
 }) {
   const [hover, setHover] = useState(false)
   const title = strapTitle(strap)
+  const photo = strap.photoUrl ?? findTemplatePhoto(strap.material, strap.subMaterial, strap.color)
   const fitCount = compatibleWatches(strap, watches, overrides).length
   return (
     <Link
@@ -44,13 +45,13 @@ function BandCard({ strap, watches, overrides, fixedWidth }: {
       }}
     >
       <div style={{ aspectRatio: '4 / 5', borderBottom: `1px solid ${brand.colors.borderMid}`, overflow: 'hidden' }}>
-        {strap.photoUrl
+        {photo
           ? (
             <div style={{ width: '100%', height: '100%', background: `radial-gradient(ellipse 120% 80% at 50% 30%, #FFFFFF 0%, #FBF8F2 72%, ${brand.colors.paper} 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <img src={strap.photoUrl} alt={title} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '12px 4px', transform: hover ? 'scale(1.04)' : 'scale(1)', transition: 'transform 0.3s ease' }} />
+              <img src={photo} alt={title} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '12px 4px', transform: hover ? 'scale(1.04)' : 'scale(1)', transition: 'transform 0.3s ease' }} />
             </div>
           )
-          : <StrapSwatch swatchId={deriveSwatchId(strap.material, strap.subMaterial, strap.color)} material={strap.material} height="100%" />}
+          : <StrapPhotoFallback height="100%" />}
       </div>
       <div style={{ padding: '10px 12px 12px' }}>
         <div style={{ fontFamily: brand.font.sans, fontSize: 8.5, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

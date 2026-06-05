@@ -8,13 +8,10 @@ import {
   effectiveCompatibility,
   fitBasis,
 } from '@/lib/strapCompatibility'
-import { deriveSwatchId, materialLabel } from '@/lib/strapDrawer/constants'
-import { StrapSwatch } from './StrapSwatch'
+import { materialLabel } from '@/lib/strapDrawer/constants'
+import { findTemplatePhoto } from '@/lib/strapTemplates'
+import { StrapPhotoFallback } from './StrapPhotoFallback'
 import { Kicker, SpecBadge, StrapIcon, PrimaryBtn, strapTitle, type StrapDrawerWatch } from './atoms'
-
-function swatchIdFor(strap: UserStrap): string {
-  return deriveSwatchId(strap.material, strap.subMaterial, strap.color)
-}
 
 export function StrapCard({
   strap,
@@ -34,6 +31,7 @@ export function StrapCard({
   const [hover, setHover] = useState(false)
   const fitCount = compatibleWatches(strap, watches, overrides).length
   const title = strapTitle(strap)
+  const photo = strap.photoUrl ?? findTemplatePhoto(strap.material, strap.subMaterial, strap.color)
   const focusState = focusWatch ? effectiveCompatibility(strap, focusWatch, overrides) : null
 
   return (
@@ -54,28 +52,20 @@ export function StrapCard({
       }}
     >
       <div style={{ position: 'relative', aspectRatio: '4 / 5', borderBottom: `1px solid ${brand.colors.borderMid}`, overflow: 'hidden' }}>
-        {strap.photoUrl
+        {photo
           ? (
             <div style={{
               width: '100%', height: '100%',
               background: `radial-gradient(ellipse 120% 80% at 50% 30%, #FFFFFF 0%, #FBF8F2 72%, ${brand.colors.paper} 100%)`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <img src={strap.photoUrl} alt={title} style={{
+              <img src={photo} alt={title} style={{
                 width: '100%', height: '100%', objectFit: 'contain', padding: '14px 6px',
                 transform: hover ? 'scale(1.035)' : 'scale(1)', transition: 'transform 0.3s ease',
               }} />
             </div>
           )
-          : <StrapSwatch swatchId={swatchIdFor(strap)} material={strap.material} height="100%" />}
-        <div style={{
-          position: 'absolute', top: 10, right: 10,
-          fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.12em',
-          textTransform: 'uppercase', color: strap.photoUrl ? brand.colors.muted : brand.colors.borderLight,
-          background: 'rgba(255,252,247,0.82)', padding: '2px 6px', borderRadius: 3, backdropFilter: 'blur(2px)',
-        }}>
-          {strap.photoUrl ? 'Photo' : 'Swatch'}
-        </div>
+          : <StrapPhotoFallback height="100%" />}
       </div>
 
       <div style={{ padding: '14px 16px 15px', flex: 1, display: 'flex', flexDirection: 'column' }}>

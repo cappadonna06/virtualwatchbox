@@ -7,15 +7,15 @@ import { watchesAtWidth } from '@/lib/strapCompatibility'
 import {
   COMMON_COLORS,
   COMMON_WIDTHS,
-  deriveSwatchId,
   MATERIALS,
   materialLabel,
   STYLES,
   SUB_MATERIALS,
 } from '@/lib/strapDrawer/constants'
-import { StrapSwatch } from './StrapSwatch'
+import { StrapPhotoFallback } from './StrapPhotoFallback'
 import { GhostBtn, Kicker, PrimaryBtn, SpecBadge, StrapIcon, type StrapDrawerWatch } from './atoms'
 import type { StrapInput } from '@/app/collection/CollectionSessionProvider'
+import { findTemplatePhoto, getTemplatesByMaterial, type StrapTemplate } from '@/lib/strapTemplates'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', fontFamily: brand.font.sans, fontSize: 16, color: brand.colors.ink, background: brand.colors.slot,
@@ -128,6 +128,25 @@ export function StrapModal({
   const fileRef = useRef<HTMLInputElement>(null)
   const set = (patch: Partial<FormState>) => setF(prev => ({ ...prev, ...patch }))
 
+  // Quick-pick template selection (new straps only): stages a hosted template image URL that
+  // flows straight through createStrap (no file upload). Cleared if the user changes material.
+  const templateGroups = useMemo(() => getTemplatesByMaterial(), [])
+  const [templateId, setTemplateId] = useState<string | null>(null)
+  const [templatePhotoUrl, setTemplatePhotoUrl] = useState<string | null>(null)
+  const [tplTab, setTplTab] = useState<string>(templateGroups[0]?.material ?? 'leather')
+
+  const clearTemplate = () => {
+    setTemplateId(null)
+    setTemplatePhotoUrl(null)
+    if (!photoFile) setPhotoPreview(initial?.photoUrl ?? null)
+  }
+  const pickTemplate = (t: StrapTemplate) => {
+    setF(prev => ({ ...prev, material: t.material, subMaterial: t.subMaterial, color: t.color, colorHex: t.colorHex, style: (t.style as StrapStyle) ?? prev.style }))
+    setTemplateId(t.id)
+    setTemplatePhotoUrl(t.imageUrl || null)
+    if (t.imageUrl) { setPhotoFile(null); setPhotoPreview(t.imageUrl) }
+  }
+
   const widthCounts = useMemo(() => {
     const m: Record<string, number> = {}
     COMMON_WIDTHS.forEach(w => { m[String(w)] = watchesAtWidth(watches, w) })
@@ -135,7 +154,7 @@ export function StrapModal({
   }, [watches])
 
   const subs = SUB_MATERIALS[f.material as keyof typeof SUB_MATERIALS] ?? []
-  const swatchId = deriveSwatchId(f.material, f.subMaterial, f.color)
+  const previewPhoto = photoPreview ?? findTemplatePhoto(f.material, f.subMaterial, f.color)
   const canSave = !!f.material && !!f.color.trim() && !!f.lugWidthMm && !saving
   const previewTitle = f.name.trim() || (f.color ? `${f.color} ${materialLabel(f.material)}` : `New ${materialLabel(f.material)} strap`)
 
@@ -152,6 +171,7 @@ export function StrapModal({
       subMaterial: f.subMaterial || undefined,
       color: f.color.trim(),
       colorHex: f.colorHex,
+      photoUrl: templatePhotoUrl ?? undefined,
       lugWidthMm: f.lugWidthMm!,
       name: f.name.trim() || undefined,
       brand: f.brand.trim() || undefined,
@@ -187,9 +207,9 @@ export function StrapModal({
         <div className="sd-modal-body" style={{ display: 'flex', minHeight: 0, flex: 1 }}>
           <div className="sd-modal-preview" style={{ width: 270, flexShrink: 0, borderRight: `1px solid ${brand.colors.border}`, padding: 22, display: 'flex', flexDirection: 'column', background: brand.colors.bg }}>
             <div style={{ borderRadius: brand.radius.lg, overflow: 'hidden', border: `1px solid ${brand.colors.borderMid}` }}>
-              {photoPreview
-                ? <div style={{ height: 230, background: brand.colors.white, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><img src={photoPreview} alt="preview" style={{ height: '100%', objectFit: 'contain', padding: 16 }} /></div>
-                : <StrapSwatch swatchId={swatchId} material={f.material} height={230} />}
+              {previewPhoto
+                ? <div style={{ height: 230, background: brand.colors.white, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><img src={previewPhoto} alt="preview" style={{ height: '100%', objectFit: 'contain', padding: 16 }} /></div>
+                : <StrapPhotoFallback height={230} />}
             </div>
             <div style={{ marginTop: 16 }}>
               <Kicker color={brand.colors.gold} style={{ marginBottom: 5 }}>{f.brand || 'Your strap'}</Kicker>
@@ -209,8 +229,45 @@ export function StrapModal({
           </div>
 
           <div className="sd-modal-form" style={{ flex: 1, overflowY: 'auto', padding: '22px 24px' }}>
+            {!editing && templateGroups.length > 0 && (
+              <div style={{ marginBottom: 18, paddingBottom: 16, borderBottom: `1px solid ${brand.colors.border}` }}>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 9.5, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
+                  Quick pick from common straps
+                </div>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 11 }}>
+                  {templateGroups.map(g => {
+                    const on = tplTab === g.material
+                    return (
+                      <button key={g.material} type="button" onClick={() => setTplTab(g.material)} style={{
+                        fontFamily: brand.font.sans, fontSize: 11, fontWeight: on ? 600 : 500, letterSpacing: '0.02em',
+                        padding: '6px 11px', borderRadius: 7, cursor: 'pointer',
+                        background: on ? brand.colors.ink : brand.colors.slot, color: on ? brand.colors.slot : brand.colors.inkSoft,
+                        border: `1px solid ${on ? brand.colors.ink : brand.colors.borderMid}`, transition: 'all 0.13s',
+                      }}>{materialLabel(g.material)}</button>
+                    )
+                  })}
+                </div>
+                <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4 }}>
+                  {(templateGroups.find(g => g.material === tplTab)?.templates ?? []).map(t => {
+                    const selected = templateId === t.id
+                    return (
+                      <button key={t.id} type="button" onClick={() => pickTemplate(t)} title={`${t.color} ${t.subMaterial}`} style={{ flexShrink: 0, width: 78, background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+                        <div style={{ width: 78, height: 96, borderRadius: brand.radius.md, overflow: 'hidden', border: `1.5px solid ${selected ? brand.colors.gold : brand.colors.borderMid}`, background: brand.colors.white, boxShadow: selected ? brand.shadow.gold : 'none' }}>
+                          {t.imageUrl
+                            ? <img src={t.imageUrl} alt={`${t.color} ${t.subMaterial}`} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 4 }} />
+                            : <StrapPhotoFallback height={96} />}
+                        </div>
+                        <div style={{ fontFamily: brand.font.sans, fontSize: 10, color: selected ? brand.colors.ink : brand.colors.inkSoft, fontWeight: selected ? 600 : 400, marginTop: 4, textAlign: 'center', lineHeight: 1.2 }}>{t.color}</div>
+                      </button>
+                    )
+                  })}
+                </div>
+                <div style={{ fontFamily: brand.font.serif, fontStyle: 'italic', fontSize: 13, color: brand.colors.muted, marginTop: 11 }}>Or add your own below ↓</div>
+              </div>
+            )}
+
             <Field label="Material">
-              <PillRow options={MATERIALS.map(m => [m, materialLabel(m)] as [string, string])} value={f.material} onChange={(m) => set({ material: m, subMaterial: (SUB_MATERIALS[m as keyof typeof SUB_MATERIALS] ?? [])[0] ?? '' })} />
+              <PillRow options={MATERIALS.map(m => [m, materialLabel(m)] as [string, string])} value={f.material} onChange={(m) => { clearTemplate(); set({ material: m, subMaterial: (SUB_MATERIALS[m as keyof typeof SUB_MATERIALS] ?? [])[0] ?? '' }) }} />
             </Field>
 
             {subs.length > 0 && (

@@ -26,7 +26,7 @@ export type ProcessedImage = {
   backgroundRemovalApplied: boolean
 }
 
-type EdgeBackground = {
+export type EdgeBackground = {
   background: { r: number; g: number; b: number }
   classification: 'lightStudio' | 'darkStudio' | 'uniformEdge'
 }
@@ -128,7 +128,7 @@ async function combineAlphaWithSourceRgb(colorSource: Buffer, alphaSource: Buffe
 // ML primary path. Pure JS (onnxruntime-node), no Python deps. Returns null on
 // any failure — module not installed, model fetch failed, OOM, etc. — so the
 // deterministic pipeline below can take over without a hard error.
-async function applyMlBackgroundRemoval(input: Buffer): Promise<Buffer | null> {
+export async function applyMlBackgroundRemoval(input: Buffer): Promise<Buffer | null> {
   try {
     // Dynamic import keeps the dep optional from the bundler's POV — Vercel
     // routes that never call this don't need to load the 150MB ONNX runtime.
@@ -166,7 +166,7 @@ async function applyMlBackgroundRemoval(input: Buffer): Promise<Buffer | null> {
   }
 }
 
-async function cropToAlphaBounds(input: Buffer) {
+export async function cropToAlphaBounds(input: Buffer) {
   const { data, info } = await sharp(input)
     .ensureAlpha()
     .raw()
@@ -207,7 +207,7 @@ async function cropToAlphaBounds(input: Buffer) {
 // scarce. In that case we fall back to a light-studio assumption with a pure
 // white parent — the BFS's saturation + per-step budget make it a no-op for
 // inputs that don't actually have a grey shadow on a light background.
-async function sampleEdgeBackground(input: Buffer): Promise<EdgeBackground | null> {
+export async function sampleEdgeBackground(input: Buffer): Promise<EdgeBackground | null> {
   const { data, info } = await sharp(input)
     .rotate()
     .ensureAlpha()
@@ -491,7 +491,7 @@ async function featherAlpha(input: Buffer, sigma: number): Promise<Buffer> {
   return sharp(out, { raw: { width, height, channels: 4 } }).png().toBuffer()
 }
 
-async function removeConnectedEdgeBackground(input: Buffer, sampled: EdgeBackground) {
+export async function removeConnectedEdgeBackground(input: Buffer, sampled: EdgeBackground) {
   const { data, info } = await sharp(input)
     .rotate()
     .ensureAlpha()
