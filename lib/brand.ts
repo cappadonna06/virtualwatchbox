@@ -25,6 +25,8 @@ export const brand = {
     paperWarm: '#F1ECE2',
     /** Accent: prices, active states, brand labels */
     gold: '#C9A84C',
+    /** Deeper gold — lug-width badge text on gold-wash chips */
+    goldDeep: '#A8862F',
     /** Soft gold wash for selected luxury controls */
     goldWash: 'rgba(201,168,76,0.08)',
     /** Soft gold line for selected luxury controls */
@@ -66,6 +68,22 @@ export const brand = {
     excellent: { bg: '#FFF8E6', text: '#8A6A10' },
     good:      { bg: '#FDF0E0', text: '#8A5010' },
     fair:      { bg: '#FAE8E8', text: '#8A2020' },
+  },
+
+  /**
+   * Strap-fit compatibility palette (Feature 7 / Strap Drawer).
+   * `fits` / `excluded` / `unknown` tint the card footer dot + sidebar rows;
+   * `destructive` is the delete-action ink.
+   */
+  fit: {
+    fits:        { bg: '#EDF4E8', text: '#3A6A2D', dot: '#3A6A2D' },
+    excluded:    { bg: '#F3EEE7', text: '#A89880', dot: '#D4CBBF' },
+    unknown:     { bg: '#FBF3DC', text: '#8A6A10', dot: '#C9A84C' },
+    destructive: '#8A2020',
+    /** Lug-width spec badge — gold-wash chip */
+    widthBadge:  { bg: '#FBF6EA', text: '#A8862F', border: 'rgba(201,168,76,0.35)' },
+    /** Plain spec badge — material / style */
+    plainBadge:  { bg: '#F6F1E9', text: '#6F6353' },
   },
 
   /**

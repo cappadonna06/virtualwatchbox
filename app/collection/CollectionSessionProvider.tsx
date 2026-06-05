@@ -28,6 +28,8 @@ import type {
   ResolvedOwnedWatch,
   ServiceIntervalYears,
   ServiceType,
+  StrapWatchOverride,
+  UserStrap,
   UserWatchPhoto,
   WatchCondition,
   WatchSavedState,
@@ -38,6 +40,15 @@ import type {
 import type { ProfileImageCropState } from '@/types/profile'
 import { brand } from '@/lib/brand'
 import { isDocumentPhotoType, normalizeInterval } from '@/lib/serviceRoom/derive'
+import {
+  rowToOverride,
+  rowToStrap,
+  type OverrideRow,
+  type StrapRow,
+} from '@/lib/strapDrawer/strapsApi'
+
+// Mutable fields accepted when creating or editing a strap.
+export type StrapInput = Partial<Omit<UserStrap, 'id' | 'userId' | 'createdAt'>>
 
 // Mutable fields accepted when logging or editing a service record.
 export type ServiceRecordInput = {
@@ -112,6 +123,8 @@ type SessionSnapshot = {
   watchboxConfig: WatchboxConfig
   photosByWatchId?: Map<string, UserWatchPhoto[]>
   serviceRecordsByWatchId?: Map<string, WatchServiceRecord[]>
+  straps?: UserStrap[]
+  strapOverrides?: StrapWatchOverride[]
   playgroundBoxes?: PlaygroundBox[]
 }
 
@@ -219,6 +232,18 @@ interface CollectionSessionContextValue {
   refreshServiceRecords: (ownedWatchId?: string) => Promise<void>
   // Configurable per-watch full-service cadence.
   setWatchInterval: (ownedWatchId: string, years: ServiceIntervalYears) => Promise<void>
+  // Strap Drawer (user_straps + strap_watch_overrides)
+  straps: UserStrap[]
+  strapOverrides: StrapWatchOverride[]
+  getStraps: () => UserStrap[]
+  createStrap: (data: StrapInput) => Promise<UserStrap>
+  updateStrap: (id: string, data: StrapInput) => Promise<UserStrap>
+  deleteStrap: (id: string) => Promise<void>
+  reorderStraps: (orderedIds: string[]) => Promise<void>
+  setStrapWatchOverride: (strapId: string, watchId: string, override: 'fits' | 'excluded') => Promise<void>
+  removeStrapWatchOverride: (strapId: string, watchId: string) => Promise<void>
+  uploadStrapPhoto: (strapId: string, file: File) => Promise<UserStrap>
+  refreshStraps: () => Promise<void>
   // Playground boxes (synced to Supabase for logged-in users)
   playgroundBoxes: PlaygroundBox[]
   setPlaygroundBoxes: (boxes: PlaygroundBox[] | ((prev: PlaygroundBox[]) => PlaygroundBox[])) => void
@@ -628,7 +653,7 @@ async function loadFromSupabase(
   try {
     const supabase = createClient()
 
-    const [watchesRes, statesRes, configRes, photosRes, serviceRes, playgroundRes] = await Promise.all([
+    const [watchesRes, statesRes, configRes, photosRes, serviceRes, strapsRes, strapOverridesRes, playgroundRes] = await Promise.all([
       supabase.from('watches').select('*').eq('user_id', userId).order('sort_order'),
       supabase.from('watch_states').select('*').eq('user_id', userId),
       supabase.from('watchbox_config').select('*').eq('user_id', userId).maybeSingle(),
@@ -636,6 +661,9 @@ async function loadFromSupabase(
         .order('watch_id').order('sort_order').order('created_at'),
       supabase.from('watch_service_records').select('*').eq('user_id', userId)
         .order('watch_id').order('service_date', { ascending: false }).order('created_at', { ascending: false }),
+      supabase.from('user_straps').select('*').eq('user_id', userId)
+        .order('sort_order', { ascending: true }).order('created_at', { ascending: true }),
+      supabase.from('strap_watch_overrides').select('*').eq('user_id', userId),
       supabase.from('playground_boxes').select('*').eq('user_id', userId).order('sort_order'),
     ])
 
@@ -752,6 +780,12 @@ async function loadFromSupabase(
       serviceRecordsByWatchId.set(watchId, list)
     }
 
+    if (strapsRes.error) console.error('[vwb] loadFromSupabase user_straps error', strapsRes.error)
+    const straps: UserStrap[] = (strapsRes.data ?? []).map(r => rowToStrap(r as StrapRow))
+
+    if (strapOverridesRes.error) console.error('[vwb] loadFromSupabase strap_watch_overrides error', strapOverridesRes.error)
+    const strapOverrides: StrapWatchOverride[] = (strapOverridesRes.data ?? []).map(r => rowToOverride(r as OverrideRow))
+
     // Opportunistic self-heal: any row whose catalog_id was a legacy seed
     // slug gets rewritten to the canonical id, fire-and-forget. First load
     // after deploy cleans up the user's rows; subsequent loads no-op.
@@ -803,6 +837,8 @@ async function loadFromSupabase(
       watchboxConfig,
       photosByWatchId,
       serviceRecordsByWatchId,
+      straps,
+      strapOverrides,
       playgroundBoxes: playgroundBoxes.length > 0 ? playgroundBoxes : undefined,
     }
   } catch (err) {
@@ -893,6 +929,8 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   const [collectionEntries, setCollectionEntries] = useState<OwnedWatch[]>([])
   const [photosByWatchId, setPhotosByWatchId] = useState<Map<string, UserWatchPhoto[]>>(new Map())
   const [serviceRecordsByWatchId, setServiceRecordsByWatchId] = useState<Map<string, WatchServiceRecord[]>>(new Map())
+  const [straps, setStraps] = useState<UserStrap[]>([])
+  const [strapOverrides, setStrapOverrides] = useState<StrapWatchOverride[]>([])
   const [followedWatchIds, setFollowedWatchIds] = useState<string[]>([])
   const [nextTargets, setNextTargets] = useState<WatchTarget[]>([])
   const [grailWatchId, setGrailWatchId] = useState<string | null>(null)
@@ -995,6 +1033,8 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     setCollectionEntries(snapshot.collectionWatches)
     if (snapshot.photosByWatchId) setPhotosByWatchId(snapshot.photosByWatchId)
     if (snapshot.serviceRecordsByWatchId) setServiceRecordsByWatchId(snapshot.serviceRecordsByWatchId)
+    if (snapshot.straps) setStraps(snapshot.straps)
+    if (snapshot.strapOverrides) setStrapOverrides(snapshot.strapOverrides)
     setFollowedWatchIds(snapshot.followedWatchIds)
     setNextTargets(snapshot.nextTargets)
     setGrailWatchId(snapshot.grailWatchId)
@@ -2285,6 +2325,122 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     await trackedSync(syncWatchUpdate(ownedWatchId, { intervalYears: years }, user.id))
   }, [user, trackedSync])
 
+  // ─── Strap Drawer (user_straps + strap_watch_overrides) ──────────────────
+  const getStraps = useCallback(() => straps, [straps])
+
+  const refreshStraps = useCallback(async () => {
+    if (!user) return
+    try {
+      const res = await fetch('/api/user-straps')
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const body = await res.json() as { straps: UserStrap[] }
+      setStraps(body.straps)
+      // Overrides ride along on the next full hydrate; pull them fresh too.
+      const supabase = createClient()
+      const { data } = await supabase.from('strap_watch_overrides').select('*').eq('user_id', user.id)
+      setStrapOverrides((data ?? []).map(r => rowToOverride(r as OverrideRow)))
+    } catch (err) {
+      console.error('[vwb] refreshStraps failed', err)
+    }
+  }, [user])
+
+  const createStrap = useCallback(async (data: StrapInput) => {
+    const res = await fetch('/api/user-straps', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}))
+      throw new Error(errBody.error ?? `HTTP ${res.status}`)
+    }
+    const body = await res.json() as { strap: UserStrap }
+    setStraps(prev => [body.strap, ...prev].sort((a, b) => a.sortOrder - b.sortOrder))
+    return body.strap
+  }, [])
+
+  const updateStrap = useCallback(async (id: string, data: StrapInput) => {
+    const res = await fetch(`/api/user-straps/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}))
+      throw new Error(errBody.error ?? `HTTP ${res.status}`)
+    }
+    const body = await res.json() as { strap: UserStrap }
+    setStraps(prev => prev.map(s => s.id === id ? body.strap : s))
+    return body.strap
+  }, [])
+
+  const deleteStrap = useCallback(async (id: string) => {
+    setStraps(prev => prev.filter(s => s.id !== id))
+    setStrapOverrides(prev => prev.filter(o => o.strapId !== id))
+    const res = await fetch(`/api/user-straps/${id}`, { method: 'DELETE' })
+    if (!res.ok) {
+      await refreshStraps()
+      throw new Error(`HTTP ${res.status}`)
+    }
+  }, [refreshStraps])
+
+  const reorderStraps = useCallback(async (orderedIds: string[]) => {
+    setStraps(prev => {
+      const byId = new Map(prev.map(s => [s.id, s] as const))
+      return orderedIds
+        .map((id, i) => { const s = byId.get(id); return s ? { ...s, sortOrder: i } : null })
+        .filter((s): s is UserStrap => s !== null)
+    })
+    const res = await fetch('/api/user-straps/reorder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderedIds }),
+    })
+    if (!res.ok) {
+      await refreshStraps()
+      throw new Error(`HTTP ${res.status}`)
+    }
+  }, [refreshStraps])
+
+  const setStrapWatchOverride = useCallback(async (strapId: string, watchId: string, override: 'fits' | 'excluded') => {
+    const res = await fetch(`/api/user-straps/${strapId}/overrides`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ watchId, override }),
+    })
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}))
+      throw new Error(errBody.error ?? `HTTP ${res.status}`)
+    }
+    const body = await res.json() as { override: StrapWatchOverride }
+    setStrapOverrides(prev => {
+      const rest = prev.filter(o => !(o.strapId === strapId && o.watchId === watchId))
+      return [...rest, body.override]
+    })
+  }, [])
+
+  const removeStrapWatchOverride = useCallback(async (strapId: string, watchId: string) => {
+    setStrapOverrides(prev => prev.filter(o => !(o.strapId === strapId && o.watchId === watchId)))
+    const res = await fetch(`/api/user-straps/${strapId}/overrides/${watchId}`, { method: 'DELETE' })
+    if (!res.ok) {
+      await refreshStraps()
+      throw new Error(`HTTP ${res.status}`)
+    }
+  }, [refreshStraps])
+
+  const uploadStrapPhoto = useCallback(async (strapId: string, file: File) => {
+    const formData = new FormData()
+    formData.append('image', file, file.name || 'strap.jpg')
+    const res = await fetch(`/api/user-straps/${strapId}/photo`, { method: 'POST', body: formData })
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}))
+      throw new Error(errBody.error ?? `HTTP ${res.status}`)
+    }
+    const body = await res.json() as { strap: UserStrap }
+    setStraps(prev => prev.map(s => s.id === strapId ? body.strap : s))
+    return body.strap
+  }, [])
+
   const value: CollectionSessionContextValue = {
     collectionWatches,
     followedWatchIds,
@@ -2353,6 +2509,17 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     deleteServiceRecord,
     refreshServiceRecords,
     setWatchInterval,
+    straps,
+    strapOverrides,
+    getStraps,
+    createStrap,
+    updateStrap,
+    deleteStrap,
+    reorderStraps,
+    setStrapWatchOverride,
+    removeStrapWatchOverride,
+    uploadStrapPhoto,
+    refreshStraps,
     playgroundBoxes,
     setPlaygroundBoxes,
     playgroundHydrated,

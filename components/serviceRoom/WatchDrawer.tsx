@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { brand } from '@/lib/brand'
 import {
   ACQ_LABEL, formatCost, formatDate, lastFullService, lifetimeCostCents,
-  relTime, serviceStatus, warrantyStatus, type ServiceWatch,
+  relTime, serviceStatus, serviceTypeMeta, warrantyStatus, type ServiceWatch,
 } from '@/lib/serviceRoom/derive'
 import type { ServiceIntervalYears } from '@/types/watch'
 import {
@@ -95,9 +95,11 @@ export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport }: P
 
               <OwnershipStrip sw={w} now={now} />
               <ServiceSummary sw={w} now={now} onLog={onLog} onInterval={onInterval} />
+              <RecentServices sw={w} />
+              <DocumentsPeek sw={w} onClose={onClose} />
 
-              {/* Full record (timeline, Papers & Provenance, attachments) lives
-                  on the watch's Service Dossier tab. */}
+              {/* Full record (timeline, notes, attachments) lives on the
+                  watch's Service Dossier tab. */}
               <Link
                 href={`/collection/watch/${w.watch.id}?tab=service&from=service-room`}
                 onClick={onClose}
@@ -190,6 +192,70 @@ function ServiceSummary({ sw, now, onLog, onInterval }: { sw: ServiceWatch; now:
         <a href={bookingUrl(sw.watch.brand)} target="_blank" rel="noopener noreferrer sponsored" style={{ ...btnSecondary, justifyContent: 'center', padding: '9px 14px' }}>Find a center ↗</a>
       </div>
     </div>
+  )
+}
+
+// ── Recent service records (inline, so you don't have to open the dossier) ──
+function RecentServices({ sw }: { sw: ServiceWatch }) {
+  if (sw.records.length === 0) return null
+  const shown = sw.records.slice(0, 4)
+  const extra = sw.records.length - shown.length
+  return (
+    <div>
+      <Meta style={{ display: 'block', marginBottom: 8 }}>Recent service</Meta>
+      <div>
+        {shown.map(r => {
+          const t = serviceTypeMeta(r.serviceType)
+          return (
+            <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: `1px solid ${brand.colors.border}` }}>
+              <span style={{ width: 16, textAlign: 'center', flexShrink: 0, fontSize: 13, color: t.resets ? brand.colors.gold : brand.colors.muted }}>{t.glyph}</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontFamily: sans, fontSize: 12.5, fontWeight: 600, color: brand.colors.ink, lineHeight: 1.2 }}>{t.label}</div>
+                <div style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted, marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {formatDate(r.serviceDate)}{r.provider ? ` · ${r.provider}` : ''}
+                </div>
+              </div>
+              {r.cost != null && (
+                <span style={{ fontFamily: sans, fontSize: 12.5, fontWeight: 600, color: brand.colors.ink, flexShrink: 0 }}>{formatCost(r.cost)}</span>
+              )}
+            </div>
+          )
+        })}
+      </div>
+      {extra > 0 && (
+        <div style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted, marginTop: 9 }}>+{extra} more in the full dossier</div>
+      )}
+    </div>
+  )
+}
+
+// ── Papers & Provenance peek — document thumbnails linking into the dossier ──
+function DocumentsPeek({ sw, onClose }: { sw: ServiceWatch; onClose: () => void }) {
+  if (sw.documents.length === 0) return null
+  const shown = sw.documents.slice(0, 4)
+  return (
+    <Link
+      href={`/collection/watch/${sw.watch.id}?tab=service&from=service-room`}
+      onClick={onClose}
+      style={{ display: 'block', textDecoration: 'none' }}
+    >
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 8 }}>
+        <Meta>Papers &amp; provenance</Meta>
+        <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted }}>{sw.documents.length} on file →</span>
+      </div>
+      <div style={{ display: 'flex', gap: 8 }}>
+        {shown.map(d => {
+          const isImg = !d.mimeType || d.mimeType.startsWith('image/')
+          return (
+            <div key={d.id} style={{ width: 52, height: 52, borderRadius: brand.radius.sm, overflow: 'hidden', border: `1px solid ${brand.colors.border}`, background: brand.colors.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              {isImg
+                ? <img src={d.photoUrl} alt={d.caption ?? 'Document'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : <span style={{ fontFamily: sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.08em', color: brand.colors.muted }}>DOC</span>}
+            </div>
+          )
+        })}
+      </div>
+    </Link>
   )
 }
 

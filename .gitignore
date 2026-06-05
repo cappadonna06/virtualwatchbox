@@ -46,6 +46,12 @@ public/watch-assets/processed/*
 public/watch-assets/processed/webp/
 !public/watch-assets/processed/manifest.json
 
+# Strap-template generation scratch (scripts/generate-strap-images.ts). Source of truth for
+# strap-template images is the Supabase `strap-images` bucket; data/strap-templates.json is
+# the committed manifest. Raw/processed PNGs are local scratch only.
+public/strap-assets/raw/
+public/strap-assets/processed/
+
 # Generated comparison page (one-off output of scripts/build-preview-compare.ts).
 public/image-review-preview.html
 # Generated tier-batch inspection page (one-off output of scripts/build-tier2-preview.ts).

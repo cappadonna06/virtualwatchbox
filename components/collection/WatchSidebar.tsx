@@ -9,6 +9,8 @@ import { dialColorToHex } from '@/lib/dialColors'
 import { buildChrono24URL } from '@/lib/discover'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { buildServiceWatch, formatDate, nextDueDate } from '@/lib/serviceRoom/derive'
+import { compatibleStraps } from '@/lib/strapCompatibility'
+import { toStrapDrawerWatch } from '@/components/straps/useStrapDrawerWatches'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import WatchPhotoGallery from './WatchPhotoGallery'
 import WatchStateControl from './WatchStateControl'
@@ -134,6 +136,9 @@ export default function WatchSidebar({
     removeFromNextTargets,
     showToast,
     getWatchServiceRecords,
+    getCatalogWatch,
+    straps,
+    strapOverrides,
   } = useCollectionSession()
   const panelStyle: React.CSSProperties = sticky
     ? sidebarPanel
@@ -181,6 +186,11 @@ export default function WatchSidebar({
     && nextDueDate(buildServiceWatch(ownedForService, serviceRecords, [])).getTime() < Date.now()
   const isTarget = isWatchTarget(resolvedCatalogWatchId)
   const marketLabel = !isOwnedWatch && savedState === 'grail' && !isPublicMode ? 'Find on Market ↗' : 'Find For Sale ↗'
+
+  // Strap Drawer wiring (owner-only).
+  const strapWatch = isOwnedWatch ? toStrapDrawerWatch(watch, getCatalogWatch(watch.watchId)) : null
+  const isIntegrated = strapWatch?.braceletType === 'integrated'
+  const fittingStrapCount = strapWatch ? compatibleStraps(strapWatch, straps, strapOverrides).length : 0
 
   return (
     <div style={panelStyle}>
@@ -413,7 +423,17 @@ export default function WatchSidebar({
             >
               Sell This Watch ↗
             </a>
-            <button style={btnSecondary} onClick={() => router.push('/collection/straps')}>Swap Strap →</button>
+            {isIntegrated ? (
+              <span style={{ ...btnSecondary, cursor: 'default', textAlign: 'center', color: brand.colors.muted, fontWeight: 400 }}>
+                Integrated bracelet
+              </span>
+            ) : straps.length === 0 ? (
+              <button style={btnSecondary} onClick={() => router.push('/collection/straps')}>+ Start Strap Drawer →</button>
+            ) : fittingStrapCount === 0 ? (
+              <button style={btnSecondary} onClick={() => router.push(`/collection/straps?addStrap=1&suggestLug=${strapWatch?.lugWidthMm ?? ''}`)}>No matching · Add →</button>
+            ) : (
+              <button style={btnSecondary} onClick={() => router.push(`/collection/straps?watchId=${watch.id}`)}>Swap Strap →</button>
+            )}
           </div>
         </div>
       )}

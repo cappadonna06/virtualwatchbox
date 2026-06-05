@@ -83,6 +83,13 @@ Options for populating:
 
 ## Phase 2 — Strap Image Library
 
+> **Implemented:** the strap-template generation pipeline now lives in
+> [docs/playbooks/strap-image-generation.md](strap-image-generation.md)
+> (`scripts/generate-strap-images.ts` → Supabase `strap-images` bucket →
+> `data/strap-templates.json`). It uses Gemini 2.5 Flash Image with the Delugs reference photos
+> in `public/demo-bands/`, and outputs ONE 1000×1200 transparent master per (material, sub,
+> color) — lug width is CSS-scaled at render time. Read that playbook for the current workflow.
+
 **Objective:** Create a comprehensive library of photorealistic strap images that composite cleanly with the case-only images.
 
 ### Strap image requirements

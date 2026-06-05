@@ -1,0 +1,762 @@
+[
+  {
+    "id": "leather-smooth-black",
+    "material": "leather",
+    "subMaterial": "Smooth",
+    "color": "Black",
+    "colorHex": "#1A1410",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-smooth-black.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-smooth-dark-brown",
+    "material": "leather",
+    "subMaterial": "Smooth",
+    "color": "Dark Brown",
+    "colorHex": "#3A2418",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-smooth-dark-brown.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-smooth-brown",
+    "material": "leather",
+    "subMaterial": "Smooth",
+    "color": "Brown",
+    "colorHex": "#6A4426",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-smooth-brown.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-smooth-cognac",
+    "material": "leather",
+    "subMaterial": "Smooth",
+    "color": "Cognac",
+    "colorHex": "#8A4B24",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-smooth-cognac.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-smooth-tan",
+    "material": "leather",
+    "subMaterial": "Smooth",
+    "color": "Tan",
+    "colorHex": "#B08552",
+    "style": "casual",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-smooth-tan.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-smooth-navy",
+    "material": "leather",
+    "subMaterial": "Smooth",
+    "color": "Navy",
+    "colorHex": "#2A3550",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-smooth-navy.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-smooth-olive",
+    "material": "leather",
+    "subMaterial": "Smooth",
+    "color": "Olive",
+    "colorHex": "#44523B",
+    "style": "casual",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-smooth-olive.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-smooth-grey",
+    "material": "leather",
+    "subMaterial": "Smooth",
+    "color": "Grey",
+    "colorHex": "#6E6A63",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-smooth-grey.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-smooth-burgundy",
+    "material": "leather",
+    "subMaterial": "Smooth",
+    "color": "Burgundy",
+    "colorHex": "#5A2A2E",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-smooth-burgundy.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-shell-cordovan-black",
+    "material": "leather",
+    "subMaterial": "Shell Cordovan",
+    "color": "Black",
+    "colorHex": "#1A1410",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-shell-cordovan-black.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-shell-cordovan-cognac",
+    "material": "leather",
+    "subMaterial": "Shell Cordovan",
+    "color": "Cognac",
+    "colorHex": "#8A4B24",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-shell-cordovan-cognac.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-shell-cordovan-burgundy",
+    "material": "leather",
+    "subMaterial": "Shell Cordovan",
+    "color": "Burgundy",
+    "colorHex": "#5A2A2E",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-shell-cordovan-burgundy.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-shell-cordovan-navy",
+    "material": "leather",
+    "subMaterial": "Shell Cordovan",
+    "color": "Navy",
+    "colorHex": "#2A3550",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-shell-cordovan-navy.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-alligator-black",
+    "material": "leather",
+    "subMaterial": "Alligator",
+    "color": "Black",
+    "colorHex": "#1A1410",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-alligator-black.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-alligator-dark-brown",
+    "material": "leather",
+    "subMaterial": "Alligator",
+    "color": "Dark Brown",
+    "colorHex": "#3A2418",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-alligator-dark-brown.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-alligator-brown",
+    "material": "leather",
+    "subMaterial": "Alligator",
+    "color": "Brown",
+    "colorHex": "#6A4426",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-alligator-brown.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-alligator-cognac",
+    "material": "leather",
+    "subMaterial": "Alligator",
+    "color": "Cognac",
+    "colorHex": "#8A4B24",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-alligator-cognac.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-alligator-navy",
+    "material": "leather",
+    "subMaterial": "Alligator",
+    "color": "Navy",
+    "colorHex": "#2A3550",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-alligator-navy.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-alligator-burgundy",
+    "material": "leather",
+    "subMaterial": "Alligator",
+    "color": "Burgundy",
+    "colorHex": "#5A2A2E",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-alligator-burgundy.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-alligator-grey",
+    "material": "leather",
+    "subMaterial": "Alligator",
+    "color": "Grey",
+    "colorHex": "#6E6A63",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-alligator-grey.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-suede-brown",
+    "material": "leather",
+    "subMaterial": "Suede",
+    "color": "Brown",
+    "colorHex": "#6A4426",
+    "style": "casual",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-suede-brown.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-suede-tan",
+    "material": "leather",
+    "subMaterial": "Suede",
+    "color": "Tan",
+    "colorHex": "#B08552",
+    "style": "casual",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-suede-tan.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-suede-grey",
+    "material": "leather",
+    "subMaterial": "Suede",
+    "color": "Grey",
+    "colorHex": "#6E6A63",
+    "style": "casual",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-suede-grey.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-suede-navy",
+    "material": "leather",
+    "subMaterial": "Suede",
+    "color": "Navy",
+    "colorHex": "#2A3550",
+    "style": "casual",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-suede-navy.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-pebbled-black",
+    "material": "leather",
+    "subMaterial": "Pebbled",
+    "color": "Black",
+    "colorHex": "#1A1410",
+    "style": "casual",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-pebbled-black.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-pebbled-brown",
+    "material": "leather",
+    "subMaterial": "Pebbled",
+    "color": "Brown",
+    "colorHex": "#6A4426",
+    "style": "casual",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-pebbled-brown.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-pebbled-navy",
+    "material": "leather",
+    "subMaterial": "Pebbled",
+    "color": "Navy",
+    "colorHex": "#2A3550",
+    "style": "casual",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-pebbled-navy.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "fabric-sailcloth-black",
+    "material": "fabric",
+    "subMaterial": "Sailcloth",
+    "color": "Black",
+    "colorHex": "#1A1410",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/fabric-sailcloth-black.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "fabric-sailcloth-navy",
+    "material": "fabric",
+    "subMaterial": "Sailcloth",
+    "color": "Navy",
+    "colorHex": "#2A3550",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/fabric-sailcloth-navy.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "fabric-sailcloth-olive",
+    "material": "fabric",
+    "subMaterial": "Sailcloth",
+    "color": "Olive",
+    "colorHex": "#44523B",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/fabric-sailcloth-olive.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "fabric-sailcloth-grey",
+    "material": "fabric",
+    "subMaterial": "Sailcloth",
+    "color": "Grey",
+    "colorHex": "#6E6A63",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/fabric-sailcloth-grey.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "fabric-sailcloth-brown",
+    "material": "fabric",
+    "subMaterial": "Sailcloth",
+    "color": "Brown",
+    "colorHex": "#6A4426",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/fabric-sailcloth-brown.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "rubber-tropical-black",
+    "material": "rubber",
+    "subMaterial": "Tropic",
+    "color": "Black",
+    "colorHex": "#1A1410",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/rubber-tropical-black.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "rubber-tropical-navy",
+    "material": "rubber",
+    "subMaterial": "Tropic",
+    "color": "Navy",
+    "colorHex": "#2A3550",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/rubber-tropical-navy.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "rubber-tropical-orange",
+    "material": "rubber",
+    "subMaterial": "Tropic",
+    "color": "Orange",
+    "colorHex": "#C8581C",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/rubber-tropical-orange.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "rubber-tropical-grey",
+    "material": "rubber",
+    "subMaterial": "Tropic",
+    "color": "Grey",
+    "colorHex": "#6E6A63",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/rubber-tropical-grey.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "rubber-tropical-olive",
+    "material": "rubber",
+    "subMaterial": "Tropic",
+    "color": "Olive",
+    "colorHex": "#44523B",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/rubber-tropical-olive.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "rubber-tropical-blue",
+    "material": "rubber",
+    "subMaterial": "Tropic",
+    "color": "Blue",
+    "colorHex": "#2E4C8A",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/rubber-tropical-blue.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "rubber-tread-black",
+    "material": "rubber",
+    "subMaterial": "Tread",
+    "color": "Black",
+    "colorHex": "#1A1410",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/rubber-tread-black.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "rubber-tread-grey",
+    "material": "rubber",
+    "subMaterial": "Tread",
+    "color": "Grey",
+    "colorHex": "#6E6A63",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/rubber-tread-grey.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  }
+]
