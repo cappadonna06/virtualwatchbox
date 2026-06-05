@@ -3,9 +3,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { ResolvedOwnedWatch } from '@/types/watch'
+import Link from 'next/link'
 import CollectionHeader from '@/components/collection/CollectionHeader'
 import CollectionStats from '@/components/collection/CollectionStats'
-import StrapDrawerSummary from '@/components/collection/StrapDrawerSummary'
+import StrapDrawerBand from '@/components/collection/StrapDrawerBand'
 import SortDropdown from '@/components/collection/SortDropdown'
 import CollectionPhotoView from '@/components/collection/CollectionPhotoView'
 import CollectionEmptyState from '@/components/collection/CollectionEmptyState'
@@ -146,7 +147,27 @@ export default function CollectionPage() {
             summary={
               collectionWatches.length === 0
                 ? 'A virtual home for what you wear, what you want, and what’s next.'
-                : `${collectionWatches.length} ${collectionWatches.length === 1 ? 'watch' : 'watches'} · ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(totalEstimatedValue)} est. value`
+                : (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{ whiteSpace: 'nowrap' }}>
+                      {`${collectionWatches.length} ${collectionWatches.length === 1 ? 'watch' : 'watches'} · ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(totalEstimatedValue)} est.`}
+                    </span>
+                    <Link
+                      href="/collection/straps"
+                      style={{
+                        marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 8,
+                        padding: '7px 7px 7px 13px', borderRadius: brand.radius.pill, textDecoration: 'none',
+                        background: brand.fit.widthBadge.bg, border: `1px solid ${brand.colors.goldLine}`,
+                        boxShadow: '0 1px 3px rgba(201,168,76,0.18)', flexShrink: 0,
+                      }}
+                    >
+                      <span style={{ fontFamily: brand.font.sans, fontSize: 13, fontWeight: 700, color: brand.fit.unknown.text, letterSpacing: '0.01em', whiteSpace: 'nowrap' }}>{straps.length} straps</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, borderRadius: '50%', background: brand.colors.gold, color: brand.colors.ink }} aria-hidden="true">
+                        <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 5l5 5-5 5" /></svg>
+                      </span>
+                    </Link>
+                  </span>
+                )
             }
             primaryAction={{
               label: 'Add Watch',
@@ -272,9 +293,7 @@ export default function CollectionPage() {
           />
         )}
         {collectionWatches.length > 0 ? (
-          <div style={{ marginTop: isMobile ? 48 : 64, paddingTop: isMobile ? 28 : 40, borderTop: `1px solid ${brand.colors.border}` }}>
-            <StrapDrawerSummary />
-          </div>
+          <StrapDrawerBand variant={isMobile ? 'mobile' : 'desktop'} />
         ) : null}
 
         {isMobile ? (

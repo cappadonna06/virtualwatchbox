@@ -30,21 +30,15 @@ export function StrapDrawerHeader({
 }) {
   return (
     <div style={{ paddingTop: 8 }}>
-      {/* Sub-tab: Watches | Straps */}
-      <div style={{ display: 'inline-flex', gap: 2, marginBottom: 18, padding: 3, background: brand.colors.slot, border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.lg }}>
-        <Link href="/collection" style={{
-          fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: brand.radius.sm,
-          textDecoration: 'none', background: 'transparent', color: brand.colors.muted, transition: `all ${brand.transition.fast}`,
-        }}>Watches</Link>
-        <span style={{
-          fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: brand.radius.sm,
-          background: brand.colors.ink, color: brand.colors.slot,
-        }}>Straps</span>
-      </div>
-
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap', marginBottom: 20 }}>
         <div>
-          <Link href="/collection" style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: brand.colors.muted, textDecoration: 'none', display: 'inline-block', marginBottom: 10 }}>← Collection</Link>
+          <Link
+            href="/collection"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: brand.colors.muted, textDecoration: 'none', marginBottom: 12, transition: `color ${brand.transition.fast}` }}
+          >
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M16 10H4" /><path d="M9 5l-5 5 5 5" /></svg>
+            My Collection
+          </Link>
           <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 6 }}>The Strap Drawer</div>
           <h1 style={{ fontFamily: brand.font.serif, fontSize: 54, fontWeight: 300, lineHeight: 1, letterSpacing: '-0.02em', color: brand.colors.ink, margin: 0, whiteSpace: 'nowrap' }}>Strap Drawer</h1>
         </div>

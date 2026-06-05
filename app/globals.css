@@ -505,10 +505,20 @@ body {
 }
 
 /* ─── Strap Drawer (Feature 7) ────────────────────────────────────────── */
-/* Hide scrollbars on the horizontal Fit Finder rail + chip rows. */
+/* Hide scrollbars on the horizontal Fit Finder rail + chip rows + band shelf. */
 .sd-focus-rail::-webkit-scrollbar,
-.sd-chiprow::-webkit-scrollbar { display: none; }
-.sd-focus-rail, .sd-chiprow { scrollbar-width: none; }
+.sd-chiprow::-webkit-scrollbar,
+.mc-band-scroll::-webkit-scrollbar { display: none; }
+.sd-focus-rail, .sd-chiprow, .mc-band-scroll {
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Respect reduced motion on the collection→drawer entry points. */
+@media (prefers-reduced-motion: reduce) {
+  .strap-header-chip,
+  .strap-header-chip * { transition: none !important; transform: none !important; }
+}
 
 /* Detail sheet — right-anchored panel on desktop, bottom sheet on mobile. */
 .sd-sheet-scrim {

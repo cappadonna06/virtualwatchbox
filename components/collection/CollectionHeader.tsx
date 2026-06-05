@@ -1,5 +1,58 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
 import { brand } from '@/lib/brand'
+
+// Decorative "strap spine" bar colors — art constants (like the swatch recipes),
+// not brand tokens.
+const SPINE_COLORS = ['#3A2A1E', '#5A2A2E', '#1C1C1C', '#4A5236']
+
+function StrapHeaderChip({ count }: { count: number }) {
+  const [hover, setHover] = useState(false)
+  return (
+    <Link
+      href="/collection/straps"
+      className="strap-header-chip"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 10,
+        textDecoration: 'none',
+        cursor: 'pointer',
+        padding: '8px 8px 8px 14px',
+        borderRadius: brand.radius.md,
+        border: `1px solid ${hover ? brand.colors.gold : brand.colors.borderMid}`,
+        background: hover ? brand.fit.widthBadge.bg : brand.colors.slot,
+        boxShadow: hover ? '0 6px 16px rgba(201,168,76,0.18)' : brand.shadow.sm,
+        transform: hover ? 'translateY(-1px)' : 'none',
+        transition: 'background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.15s',
+      }}
+    >
+      <span style={{ display: 'flex', gap: 3, alignItems: 'center' }} aria-hidden="true">
+        {SPINE_COLORS.map((c, i) => (
+          <span key={i} style={{ width: 4.5, height: 19, borderRadius: 2, background: c, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.14)' }} />
+        ))}
+      </span>
+      <span style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', color: brand.colors.ink, whiteSpace: 'nowrap' }}>
+        Strap Drawer
+      </span>
+      <span style={{
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 22, height: 22, padding: '0 6px',
+        borderRadius: 11, background: brand.colors.gold, color: brand.colors.ink, fontFamily: brand.font.sans, fontSize: 12, fontWeight: 700,
+      }}>
+        {count}
+      </span>
+      <span style={{ display: 'inline-flex', color: hover ? brand.colors.ink : brand.colors.muted, transform: hover ? 'translateX(2px)' : 'none', transition: 'transform 0.15s, color 0.15s', marginRight: 4 }} aria-hidden="true">
+        <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 10h11" /><path d="M10 5l5 5-5 5" />
+        </svg>
+      </span>
+    </Link>
+  )
+}
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -169,25 +222,8 @@ export default function CollectionHeader({
                 <polyline points="3.5,7.5 7,11 10.5,7.5" />
               </svg>
             </a>
-            <span style={chipDivider} />
-            <Link
-              href="/collection/straps"
-              onMouseEnter={event => { event.currentTarget.style.color = brand.colors.ink }}
-              onMouseLeave={event => { event.currentTarget.style.color = brand.colors.muted }}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 5,
-                ...metaLabel,
-                textDecoration: 'none',
-                cursor: 'pointer',
-                transition: 'color 0.15s',
-              }}
-            >
-              Straps
-              <span style={{ ...metaValue, fontSize: 13 }}>{strapCount}</span>
-              <span aria-hidden="true">→</span>
-            </Link>
+            <span style={{ width: 1, height: 26, background: brand.colors.border }} />
+            <StrapHeaderChip count={strapCount} />
           </div>
         )}
 
