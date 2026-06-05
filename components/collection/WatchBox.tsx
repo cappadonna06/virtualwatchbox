@@ -782,7 +782,7 @@ export default function WatchBox({
               return (
                 <motion.div
                   key={`watch-${w.id}`}
-                  layout={reduceMotion ? false : 'position'}
+                  layout={reduceMotion || draggedIndex !== null ? false : 'position'}
                   initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={
