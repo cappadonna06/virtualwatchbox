@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import type { ResolvedOwnedWatch } from '@/types/watch'
 import Link from 'next/link'
@@ -430,17 +431,20 @@ export default function CollectionPage() {
         </>
       )}
 
-      {editTarget && (
-        <EditWatchModal
-          watch={editTarget}
-          onClose={() => setEditTarget(null)}
-          onSave={updates => {
-            updateCollectionWatch(editTarget.id, updates)
-            setEditTarget(null)
-            showToast('Watch details updated.')
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {editTarget && (
+          <EditWatchModal
+            key={editTarget.id}
+            watch={editTarget}
+            onClose={() => setEditTarget(null)}
+            onSave={updates => {
+              updateCollectionWatch(editTarget.id, updates)
+              setEditTarget(null)
+              showToast('Watch details updated.')
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }

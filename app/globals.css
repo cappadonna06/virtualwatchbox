@@ -414,11 +414,9 @@ body {
     border-radius: 20px 20px 0 0 !important;
     background: var(--color-white) !important;
     overflow: hidden !important;
-    transform: translateY(110%) !important;
-    transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1) !important;
-  }
-  .sidebar-mobile-sheet.is-active {
-    transform: translateY(0) !important;
+    /* The slide transform is owned by framer-motion (ResponsiveSidebarSheet)
+       so AnimatePresence can play it on exit too; an !important transform
+       here would clobber the inline transform framer writes. */
   }
   .sidebar-mobile-sheet .sidebar-content {
     flex: 1 1 auto !important;

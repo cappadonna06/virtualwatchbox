@@ -1,12 +1,43 @@
 'use client'
 
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { animate, useInView, useReducedMotion } from 'framer-motion'
 import type { WatchType } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import { dialColorToHex } from '@/lib/dialColors'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
+}
+
+// Counts a currency figure up from $0 the first time it scrolls into view.
+// Falls straight to the final value under prefers-reduced-motion.
+function AnimatedCurrency({ value, prefix }: { value: number; prefix?: string }) {
+  const ref = useRef<HTMLSpanElement>(null)
+  const inView = useInView(ref, { once: true, amount: 0.4 })
+  const reduce = useReducedMotion()
+  const [display, setDisplay] = useState(() => fmt(0))
+
+  useEffect(() => {
+    if (reduce) {
+      setDisplay(fmt(value))
+      return
+    }
+    if (!inView) return
+    const controls = animate(0, value, {
+      duration: 0.9,
+      ease: [0.22, 1, 0.36, 1],
+      onUpdate: latest => setDisplay(fmt(latest)),
+    })
+    return () => controls.stop()
+  }, [inView, value, reduce])
+
+  return (
+    <span ref={ref}>
+      {prefix}
+      {display}
+    </span>
+  )
 }
 
 const ALL_WATCH_TYPES: WatchType[] = [
@@ -284,18 +315,18 @@ function PortfolioValueRow({ watches, mode }: { watches: Props['watches']; mode:
         marginBottom: 12,
       }}
     >
-      <Cell label="Total Est. Value" value={fmt(total)} />
+      <Cell label="Total Est. Value" value={<AnimatedCurrency value={total} />} />
       {mode === 'collection' ? (
         hasPriced ? (
           <>
             <Cell
               label="Cost Basis"
-              value={fmt(cost)}
+              value={<AnimatedCurrency value={cost} />}
               sub={partial ? `${priced.length} of ${watches.length} priced` : undefined}
             />
             <Cell
               label="Gain / Loss"
-              value={`${gain >= 0 ? '+' : '-'}${fmt(Math.abs(gain))}`}
+              value={<AnimatedCurrency value={Math.abs(gain)} prefix={gain >= 0 ? '+' : '-'} />}
               color={gain >= 0 ? SUCCESS_GREEN : LOSS_RED}
               icon={gain >= 0 ? '↑' : '↓'}
               sub={partial ? `vs ${fmt(pricedTotalValue)} est.` : undefined}
@@ -309,13 +340,13 @@ function PortfolioValueRow({ watches, mode }: { watches: Props['watches']; mode:
           />
         )
       ) : (
-        <Cell label="Average Value" value={fmt(average)} />
+        <Cell label="Average Value" value={<AnimatedCurrency value={average} />} />
       )}
-      {median ? <Cell label="Median Value" value={fmt(median.estimatedValue)} /> : null}
+      {median ? <Cell label="Median Value" value={<AnimatedCurrency value={median.estimatedValue} />} /> : null}
       {highest ? (
         <Cell
           label="Highest"
-          value={fmt(highest.estimatedValue)}
+          value={<AnimatedCurrency value={highest.estimatedValue} />}
           color={brand.colors.gold}
           sub={`${highest.brand} ${highest.model}`}
         />
@@ -332,7 +363,7 @@ function Cell({
   sub,
 }: {
   label: string
-  value: string
+  value: ReactNode
   color?: string
   icon?: string
   sub?: string

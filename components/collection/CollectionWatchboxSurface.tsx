@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { FRAMES, LININGS, SLOT_COUNTS, watchboxSlotPadding } from '@/lib/frameConfig'
 import type { ResolvedOwnedWatch } from '@/types/watch'
 import { brand } from '@/lib/brand'
@@ -333,6 +334,12 @@ export default function CollectionWatchboxSurface({
   const setConfigOpen = onConfigOpenChange ?? setConfigOpenLocal
   const [deleteTarget, setDeleteTarget] = useState<ResolvedOwnedWatch | null>(null)
   const [editTarget, setEditTarget] = useState<ResolvedOwnedWatch | null>(null)
+  const reduceMotion = useReducedMotion()
+  // Hold the last target so the confirm modal keeps its copy while it animates
+  // out (setDeleteTarget(null) clears the live value the moment it closes).
+  const lastDeleteTarget = useRef<ResolvedOwnedWatch | null>(null)
+  if (deleteTarget) lastDeleteTarget.current = deleteTarget
+  const deleteView = deleteTarget ?? lastDeleteTarget.current
   const [screenWidth, setScreenWidth] = useState(0)
   // Measure the actual column width so the slot-grid math doesn't
   // overflow when the column shrinks below viewport width (e.g. when
@@ -662,10 +669,15 @@ export default function CollectionWatchboxSurface({
         </ResponsiveSidebarSheet>
       </div>
 
-      {deleteTarget && (
-        <>
-          <div
+      <AnimatePresence>
+        {deleteTarget && deleteView && (
+          <motion.div
+            key="delete-backdrop"
             onClick={() => setDeleteTarget(null)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.2, ease: 'easeOut' }}
             style={{
               position: 'fixed',
               inset: 0,
@@ -674,12 +686,20 @@ export default function CollectionWatchboxSurface({
               backdropFilter: 'blur(2px)',
             }}
           />
-          <div
+        )}
+        {deleteTarget && deleteView && (
+          <motion.div
+            key="delete-modal"
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.94 }}
+            transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.22, 1, 0.36, 1] }}
             style={{
               position: 'fixed',
               top: '50%',
               left: '50%',
-              transform: 'translate(-50%, -50%)',
+              x: '-50%',
+              y: '-50%',
               width: '90vw',
               maxWidth: 420,
               background: brand.colors.white,
@@ -723,7 +743,7 @@ export default function CollectionWatchboxSurface({
                 lineHeight: 1.5,
               }}
             >
-              {deleteTarget.brand} {deleteTarget.model} will be removed from your collection list.
+              {deleteView.brand} {deleteView.model} will be removed from your collection list.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               <button
@@ -763,21 +783,24 @@ export default function CollectionWatchboxSurface({
                 Delete
               </button>
             </div>
-          </div>
-        </>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {editTarget && (
-        <EditWatchModal
-          watch={editTarget}
-          onClose={() => setEditTarget(null)}
-          onSave={updates => {
-            updateCollectionWatch(editTarget.id, updates)
-            setEditTarget(null)
-            showToast('Watch details updated.')
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {editTarget && (
+          <EditWatchModal
+            key={editTarget.id}
+            watch={editTarget}
+            onClose={() => setEditTarget(null)}
+            onSave={updates => {
+              updateCollectionWatch(editTarget.id, updates)
+              setEditTarget(null)
+              showToast('Watch details updated.')
+            }}
+          />
+        )}
+      </AnimatePresence>
     </>
   )
 }

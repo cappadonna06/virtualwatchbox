@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import type { OwnershipStatus, ResolvedOwnedWatch, WatchCondition } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
@@ -116,6 +117,7 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
   const [hasPapers, setHasPapers] = useState<boolean>(watch.hasPapers ?? false)
   const [acquisitionMethod, setAcquisitionMethod] = useState<AcquisitionMethod | undefined>(watch.acquisitionMethod)
   const [warrantyExpiresAt, setWarrantyExpiresAt] = useState<string>(watch.warrantyExpiresAt ?? '')
+  const reduce = useReducedMotion()
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -142,8 +144,12 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
 
   return (
     <>
-      <div
+      <motion.div
         onClick={onClose}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: reduce ? 0 : 0.2, ease: 'easeOut' }}
         style={{
           position: 'fixed',
           inset: 0,
@@ -152,15 +158,20 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
           backdropFilter: 'blur(2px)',
         }}
       />
-      <div
+      <motion.div
         role="dialog"
         aria-modal="true"
         aria-label={`Edit ${watch.brand} ${watch.model}`}
+        initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
+        transition={{ duration: reduce ? 0 : 0.22, ease: [0.22, 1, 0.36, 1] }}
         style={{
           position: 'fixed',
           top: '50%',
           left: '50%',
-          transform: 'translate(-50%, -50%)',
+          x: '-50%',
+          y: '-50%',
           width: '94vw',
           maxWidth: 680,
           maxHeight: '90vh',
@@ -466,7 +477,7 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
             Save Changes
           </button>
         </div>
-      </div>
+      </motion.div>
     </>
   )
 }

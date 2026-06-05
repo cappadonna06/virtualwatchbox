@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { brand } from '@/lib/brand'
 
 interface ResponsiveSidebarSheetProps {
@@ -16,6 +17,15 @@ export default function ResponsiveSidebarSheet({
   top = 84,
   children,
 }: ResponsiveSidebarSheetProps) {
+  const reduce = useReducedMotion()
+
+  // The parent nulls the selection the instant `active` flips false, so the
+  // live children blank out before the sheet finishes sliding away. Hold the
+  // last populated tree and render that copy while the sheet animates out.
+  const heldChildren = useRef<ReactNode>(children)
+  if (active) heldChildren.current = children
+  const sheetChildren = active ? children : heldChildren.current
+
   useEffect(() => {
     if (!active) return
     document.documentElement.classList.add('sheet-lock')
@@ -35,17 +45,28 @@ export default function ResponsiveSidebarSheet({
         {children}
       </div>
 
-      {active ? (
-        <>
-          <div
+      <AnimatePresence>
+        {active && (
+          <motion.div
+            key="sidebar-backdrop"
             className="sidebar-backdrop is-active"
             onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduce ? 0 : 0.25, ease: 'easeOut' }}
           />
-
-          <div
-            className="sidebar-mobile-sheet is-active"
+        )}
+        {active && (
+          <motion.div
+            key="sidebar-sheet"
+            className="sidebar-mobile-sheet"
             role="dialog"
             aria-modal="true"
+            initial={reduce ? false : { y: '110%' }}
+            animate={{ y: 0 }}
+            exit={reduce ? { opacity: 0 } : { y: '110%' }}
+            transition={{ duration: reduce ? 0 : 0.32, ease: [0.32, 0.72, 0, 1] }}
           >
             <div className="sidebar-drag-pill" style={{ display: 'none', justifyContent: 'center', padding: '12px 0 4px' }}>
               <div style={{ width: 36, height: 4, borderRadius: 2, background: brand.colors.borderLight }} />
@@ -78,11 +99,11 @@ export default function ResponsiveSidebarSheet({
             </button>
 
             <div className="sidebar-content">
-              {children}
+              {sheetChildren}
             </div>
-          </div>
-        </>
-      ) : null}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }
