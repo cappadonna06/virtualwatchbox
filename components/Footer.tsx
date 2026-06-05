@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { isAdminEmail } from '@/lib/auth/admin'
@@ -19,6 +20,10 @@ const linkStyle: React.CSSProperties = {
 export default function Footer() {
   const { user } = useAuth()
   const showAdmin = isAdminEmail(user?.email)
+  const pathname = usePathname()
+
+  // Hidden on the immersive Strap Studio surface (it owns the full viewport).
+  if (pathname?.startsWith('/collection/straps/studio')) return null
 
   return (
     <footer

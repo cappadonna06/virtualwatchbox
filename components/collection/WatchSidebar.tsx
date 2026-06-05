@@ -427,12 +427,10 @@ export default function WatchSidebar({
               <span style={{ ...btnSecondary, cursor: 'default', textAlign: 'center', color: brand.colors.muted, fontWeight: 400 }}>
                 Integrated bracelet
               </span>
-            ) : straps.length === 0 ? (
-              <button style={btnSecondary} onClick={() => router.push('/collection/straps')}>+ Start Strap Drawer →</button>
-            ) : fittingStrapCount === 0 ? (
-              <button style={btnSecondary} onClick={() => router.push(`/collection/straps?addStrap=1&suggestLug=${strapWatch?.lugWidthMm ?? ''}`)}>No matching · Add →</button>
+            ) : straps.length === 0 || fittingStrapCount === 0 ? (
+              <button style={btnSecondary} onClick={() => router.push(`/collection/straps/studio?watchId=${watch.watchId}&source=all`)}>Swap Strap →</button>
             ) : (
-              <button style={btnSecondary} onClick={() => router.push(`/collection/straps?watchId=${watch.id}`)}>Swap Strap →</button>
+              <button style={btnSecondary} onClick={() => router.push(`/collection/straps/studio?watchId=${watch.watchId}&source=compatible`)}>Swap Strap →</button>
             )}
           </div>
         </div>
