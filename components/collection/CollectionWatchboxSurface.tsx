@@ -787,17 +787,20 @@ export default function CollectionWatchboxSurface({
         )}
       </AnimatePresence>
 
-      {editTarget && (
-        <EditWatchModal
-          watch={editTarget}
-          onClose={() => setEditTarget(null)}
-          onSave={updates => {
-            updateCollectionWatch(editTarget.id, updates)
-            setEditTarget(null)
-            showToast('Watch details updated.')
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {editTarget && (
+          <EditWatchModal
+            key={editTarget.id}
+            watch={editTarget}
+            onClose={() => setEditTarget(null)}
+            onSave={updates => {
+              updateCollectionWatch(editTarget.id, updates)
+              setEditTarget(null)
+              showToast('Watch details updated.')
+            }}
+          />
+        )}
+      </AnimatePresence>
     </>
   )
 }

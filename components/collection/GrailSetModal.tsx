@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
+import { AnimatePresence, motion } from 'framer-motion'
 import { brand } from '@/lib/brand'
 import type { CatalogWatch } from '@/types/watch'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
@@ -42,47 +43,33 @@ function CloseIcon() {
   )
 }
 
+const CEREMONY_EASE = [0.4, 0, 0.2, 1] as const
+
 export default function GrailSetModal({ open, watch, previousWatch, onClose }: Props) {
   const isMobile = useIsMobile()
-  const prefersReducedMotion = usePrefersReducedMotion()
-  const [isVisible, setIsVisible] = useState(prefersReducedMotion)
-  const [showPreviousFootnote, setShowPreviousFootnote] = useState(prefersReducedMotion)
+  const reduce = usePrefersReducedMotion()
   const isChange = previousWatch !== null
-  const ceremonialTransition = prefersReducedMotion ? 'none' : '0.42s cubic-bezier(0.4, 0, 0.2, 1)'
 
   useModalEscape(open, onClose)
 
-  useEffect(() => {
-    if (!open) return
+  // The crown moment is driven by a single grailMoment object that the parent
+  // nulls on close, so watch/previousWatch vanish the instant `open` flips
+  // false. Hold them so the ceremony keeps its content while it animates out.
+  const held = useRef<{ watch: CatalogWatch | null; previous: CatalogWatch | null }>({ watch, previous: previousWatch })
+  if (open && watch) held.current = { watch, previous: previousWatch }
+  const shownWatch = open ? watch : held.current.watch
+  const shownPrevious = open ? previousWatch : held.current.previous
+  const shownIsChange = open ? isChange : held.current.previous !== null
 
-    setIsVisible(prefersReducedMotion)
-    setShowPreviousFootnote(prefersReducedMotion || !isChange)
+  if (typeof document === 'undefined') return null
 
-    if (prefersReducedMotion) return
-
-    const enterFrame = requestAnimationFrame(() => setIsVisible(true))
-    let footnoteTimer: ReturnType<typeof setTimeout> | null = null
-
-    if (isChange) {
-      footnoteTimer = setTimeout(() => setShowPreviousFootnote(true), 200)
-    }
-
-    return () => {
-      cancelAnimationFrame(enterFrame)
-      if (footnoteTimer) clearTimeout(footnoteTimer)
-    }
-  }, [isChange, open, prefersReducedMotion])
-
-  if (!open || !watch || typeof document === 'undefined') return null
-
-  const backdropStyle: CSSProperties = {
-    position: 'fixed',
-    inset: 0,
-    background: 'rgba(26,20,16,0.56)',
-    backdropFilter: 'blur(4px)',
-    opacity: isVisible ? 1 : 0,
-    transition: prefersReducedMotion ? 'none' : `opacity ${brand.transition.smooth}`,
-  }
+  // Each ceremony element animates in on mount with the original staggered
+  // delays; exit is carried by the shell fading/scaling out as a whole.
+  const enter = (from: Record<string, number>, delay = 0) => ({
+    initial: reduce ? false : from,
+    animate: Object.keys(from).reduce<Record<string, number>>((acc, k) => ({ ...acc, [k]: k === 'opacity' ? 1 : k === 'scale' ? 1 : 0 }), {}),
+    transition: { duration: reduce ? 0 : 0.42, ease: CEREMONY_EASE, delay: reduce ? 0 : delay },
+  })
 
   const shellStyle: CSSProperties = isMobile
     ? {
@@ -97,258 +84,272 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
         background: brand.colors.bg,
         border: `1px solid ${brand.colors.border}`,
         boxShadow: brand.shadow.xl,
-        transform: `translate(-50%, ${isVisible ? '-50%' : 'calc(-50% + 18px)'})`,
-        opacity: isVisible ? 1 : 0,
-        transition: prefersReducedMotion ? 'none' : `transform ${brand.transition.smooth}, opacity ${brand.transition.smooth}`,
+        zIndex: 361,
       }
     : {
         position: 'fixed',
         top: '50%',
         left: '50%',
         width: 'min(440px, calc(100vw - 32px))',
-        transform: `translate(-50%, ${isVisible ? '-50%' : 'calc(-50% + 18px)'})`,
-        opacity: isVisible ? 1 : 0,
-        transition: prefersReducedMotion ? 'none' : `transform ${brand.transition.smooth}, opacity ${brand.transition.smooth}`,
+        zIndex: 361,
       }
 
   return createPortal(
-    <>
-      <div onClick={onClose} style={{ ...backdropStyle, zIndex: 360 }} />
-      <div role="dialog" aria-modal="true" style={{ ...shellStyle, zIndex: 361 }}>
-        {isMobile && (
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close grail modal"
-            style={{
-              position: 'absolute',
-              top: 12,
-              right: 12,
-              width: 34,
-              height: 34,
-              borderRadius: brand.radius.circle,
-              border: `1px solid ${brand.colors.border}`,
-              background: brand.colors.white,
-              color: brand.colors.ink,
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              boxShadow: brand.shadow.sm,
-              zIndex: 3,
-            }}
-          >
-            <CloseIcon />
-          </button>
-        )}
-
-        <div
+    <AnimatePresence>
+      {open && shownWatch && (
+        <motion.div
+          key="grail-backdrop"
+          onClick={onClose}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: reduce ? 0 : 0.3, ease: CEREMONY_EASE }}
           style={{
-            position: 'relative',
-            padding: isMobile ? '10px 0 0' : '16px 0 0',
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(26,20,16,0.56)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 360,
           }}
+        />
+      )}
+      {open && shownWatch && (
+        <motion.div
+          key="grail-shell"
+          role="dialog"
+          aria-modal="true"
+          initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
+          transition={{ duration: reduce ? 0 : 0.34, ease: CEREMONY_EASE }}
+          style={{ ...shellStyle, x: '-50%', y: '-50%' }}
         >
-          <div
-            aria-hidden="true"
-            style={{
-              position: 'absolute',
-              top: isMobile ? 44 : 28,
-              left: '50%',
-              width: isMobile ? 300 : 368,
-              height: isMobile ? 168 : 228,
-              transform: `translateX(-50%) scale(${isVisible ? 1 : 0.92})`,
-              borderRadius: brand.radius.circle,
-              background: isMobile ? brand.colors.goldWash : brand.colors.bg,
-              opacity: isVisible ? 0.9 : 0.22,
-              filter: isMobile ? 'blur(32px)' : 'blur(34px)',
-              transition: prefersReducedMotion ? 'none' : `transform ${ceremonialTransition}, opacity ${ceremonialTransition}`,
-              pointerEvents: 'none',
-              zIndex: 0,
-            }}
-          />
-
-          <div
-            aria-hidden="true"
-            style={{
-              position: 'absolute',
-              top: isMobile ? 166 : 296,
-              left: '50%',
-              width: isMobile ? 236 : 336,
-              height: isMobile ? 96 : 162,
-              transform: `translateX(-50%) scale(${isVisible ? 1 : 0.94})`,
-              borderTopLeftRadius: 9999,
-              borderTopRightRadius: 9999,
-              borderBottomLeftRadius: 0,
-              borderBottomRightRadius: 0,
-              background: brand.colors.goldWash,
-              border: `1px solid ${brand.colors.goldLine}`,
-              borderBottom: 'none',
-              boxShadow: isVisible ? brand.shadow.gold : 'none',
-              opacity: isVisible ? 0.34 : 0.1,
-              transition: prefersReducedMotion ? 'none' : `transform ${ceremonialTransition}, opacity ${ceremonialTransition}, box-shadow ${ceremonialTransition}`,
-              pointerEvents: 'none',
-              zIndex: 0,
-            }}
-          />
-
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: isMobile ? 14 : 24, position: 'relative', zIndex: 2 }}>
-            <div
+          {isMobile && (
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close grail modal"
               style={{
-                width: isMobile ? 50 : 56,
-                height: isMobile ? 50 : 56,
+                position: 'absolute',
+                top: 12,
+                right: 12,
+                width: 34,
+                height: 34,
                 borderRadius: brand.radius.circle,
-                border: `1px solid ${brand.colors.goldLine}`,
-                background: isMobile ? brand.colors.slot : brand.colors.white,
-                color: brand.colors.gold,
+                border: `1px solid ${brand.colors.border}`,
+                background: brand.colors.white,
+                color: brand.colors.ink,
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: brand.shadow.gold,
-                transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(-12px) scale(0.88)',
-                opacity: isVisible ? 1 : 0,
-                transition: prefersReducedMotion ? 'none' : `transform ${ceremonialTransition}, opacity ${ceremonialTransition}`,
+                cursor: 'pointer',
+                boxShadow: brand.shadow.sm,
+                zIndex: 3,
               }}
             >
-              <CrownIcon size={isMobile ? 20 : 24} />
-            </div>
-          </div>
-
-          <div
-            style={{
-              position: 'relative',
-              zIndex: 1,
-              textAlign: 'center',
-              marginBottom: isMobile ? 16 : 34,
-              transform: isVisible ? 'translateY(0)' : 'translateY(10px)',
-              opacity: isVisible ? 1 : 0,
-              transition: prefersReducedMotion ? 'none' : `transform ${ceremonialTransition} 110ms, opacity ${ceremonialTransition} 110ms`,
-            }}
-          >
-            <div style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 28 : 36, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.02, marginBottom: isMobile ? 10 : 14 }}>
-              Your Grail
-            </div>
-            <div style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 13 : 14, fontWeight: 500, color: brand.colors.ink, marginBottom: isMobile ? 8 : 10 }}>
-              {watch.brand} {watch.model}
-            </div>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted }}>
-              {isChange ? 'The crown moves to a new watch.' : 'The watch worth chasing.'}
-            </div>
-          </div>
-
-          <div
-            style={{
-              position: 'relative',
-              zIndex: 1,
-              maxWidth: isMobile ? 258 : 320,
-              margin: '0 auto',
-              background: brand.colors.white,
-              border: `1px solid ${brand.colors.goldLine}`,
-              borderRadius: brand.radius.xl,
-              boxShadow: brand.shadow.gold,
-              overflow: 'hidden',
-              transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(18px) scale(0.96)',
-              opacity: isVisible ? 1 : 0,
-              transition: prefersReducedMotion ? 'none' : `transform ${ceremonialTransition} 170ms, opacity ${ceremonialTransition} 170ms`,
-            }}
-          >
-            <div
-              style={{
-                background: brand.colors.slot,
-                borderBottom: `1px solid ${brand.colors.border}`,
-                position: 'relative',
-                aspectRatio: isMobile ? '1 / 0.78' : '1 / 1',
-              }}
-            >
-              <WatchImageOrDial
-                watch={watch}
-                fill
-                sizes="320px"
-                imageStyle={{ objectFit: 'contain', padding: isMobile ? 20 : 28, filter: brand.shadow.drop }}
-                dialSize={isMobile ? 126 : 152}
-              />
-            </div>
-            <div style={{ padding: isMobile ? '12px 14px 14px' : '16px 18px 18px' }}>
-              <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 4 }}>
-                {watch.brand}
-              </div>
-              <div style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 22 : 28, fontWeight: 400, lineHeight: 1.06, color: brand.colors.ink, marginBottom: 4 }}>
-                {watch.model}
-              </div>
-              <div style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted, marginBottom: isMobile ? 10 : 14 }}>
-                Ref. {watch.reference}
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: isMobile ? '8px 10px' : '10px 12px',
-                  borderRadius: brand.radius.md,
-                  background: brand.colors.bg,
-                  border: `1px solid ${brand.colors.border}`,
-                }}
-              >
-                <span style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: brand.colors.muted }}>
-                  Est. Market Value
-                </span>
-                <span style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 16 : 18, fontWeight: 600, color: brand.colors.gold }}>
-                  {fmt(watch.estimatedValue)}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {isChange && (
-            <div
-              style={{
-                marginTop: 12,
-                textAlign: 'center',
-                fontFamily: brand.font.sans,
-                fontSize: 13,
-                color: brand.colors.ink,
-                opacity: showPreviousFootnote ? 1 : 0,
-                transition: prefersReducedMotion ? 'none' : `opacity ${ceremonialTransition}`,
-              }}
-            >
-              Previously: {previousWatch?.brand} {previousWatch?.model}
-            </div>
+              <CloseIcon />
+            </button>
           )}
 
           <div
             style={{
-              display: 'flex',
-              justifyContent: 'center',
-              marginTop: isMobile ? 12 : 16,
-              transform: isVisible ? 'translateY(0)' : 'translateY(8px)',
-              opacity: isVisible ? 1 : 0,
-              transition: prefersReducedMotion ? 'none' : `transform ${ceremonialTransition} 240ms, opacity ${ceremonialTransition} 240ms`,
+              position: 'relative',
+              padding: isMobile ? '10px 0 0' : '16px 0 0',
             }}
           >
-            <button
-              type="button"
-              onClick={onClose}
+            <motion.div
+              aria-hidden="true"
+              initial={reduce ? false : { scale: 0.92, opacity: 0.22 }}
+              animate={{ scale: 1, opacity: 0.9 }}
+              transition={{ duration: reduce ? 0 : 0.42, ease: CEREMONY_EASE }}
               style={{
-                minWidth: 132,
-                padding: isMobile ? '10px 18px' : '11px 18px',
-                borderRadius: brand.radius.btn,
+                position: 'absolute',
+                top: isMobile ? 44 : 28,
+                left: '50%',
+                x: '-50%',
+                width: isMobile ? 300 : 368,
+                height: isMobile ? 168 : 228,
+                borderRadius: brand.radius.circle,
+                background: isMobile ? brand.colors.goldWash : brand.colors.bg,
+                filter: isMobile ? 'blur(32px)' : 'blur(34px)',
+                pointerEvents: 'none',
+                zIndex: 0,
+              }}
+            />
+
+            <motion.div
+              aria-hidden="true"
+              initial={reduce ? false : { scale: 0.94, opacity: 0.1 }}
+              animate={{ scale: 1, opacity: 0.34 }}
+              transition={{ duration: reduce ? 0 : 0.42, ease: CEREMONY_EASE }}
+              style={{
+                position: 'absolute',
+                top: isMobile ? 166 : 296,
+                left: '50%',
+                x: '-50%',
+                width: isMobile ? 236 : 336,
+                height: isMobile ? 96 : 162,
+                borderTopLeftRadius: 9999,
+                borderTopRightRadius: 9999,
+                background: brand.colors.goldWash,
                 border: `1px solid ${brand.colors.goldLine}`,
-                background: brand.colors.white,
-                color: brand.colors.ink,
-                cursor: 'pointer',
-                fontFamily: brand.font.sans,
-                fontSize: 11,
-                fontWeight: 600,
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                boxShadow: brand.shadow.md,
+                borderBottom: 'none',
+                boxShadow: brand.shadow.gold,
+                pointerEvents: 'none',
+                zIndex: 0,
+              }}
+            />
+
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: isMobile ? 14 : 24, position: 'relative', zIndex: 2 }}>
+              <motion.div
+                {...enter({ opacity: 0, y: -12, scale: 0.88 })}
+                style={{
+                  width: isMobile ? 50 : 56,
+                  height: isMobile ? 50 : 56,
+                  borderRadius: brand.radius.circle,
+                  border: `1px solid ${brand.colors.goldLine}`,
+                  background: isMobile ? brand.colors.slot : brand.colors.white,
+                  color: brand.colors.gold,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: brand.shadow.gold,
+                }}
+              >
+                <CrownIcon size={isMobile ? 20 : 24} />
+              </motion.div>
+            </div>
+
+            <motion.div
+              {...enter({ opacity: 0, y: 10 }, 0.11)}
+              style={{
+                position: 'relative',
+                zIndex: 1,
+                textAlign: 'center',
+                marginBottom: isMobile ? 16 : 34,
               }}
             >
-              Done
-            </button>
+              <div style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 28 : 36, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.02, marginBottom: isMobile ? 10 : 14 }}>
+                Your Grail
+              </div>
+              <div style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 13 : 14, fontWeight: 500, color: brand.colors.ink, marginBottom: isMobile ? 8 : 10 }}>
+                {shownWatch.brand} {shownWatch.model}
+              </div>
+              <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted }}>
+                {shownIsChange ? 'The crown moves to a new watch.' : 'The watch worth chasing.'}
+              </div>
+            </motion.div>
+
+            <motion.div
+              {...enter({ opacity: 0, y: 18, scale: 0.96 }, 0.17)}
+              style={{
+                position: 'relative',
+                zIndex: 1,
+                maxWidth: isMobile ? 258 : 320,
+                margin: '0 auto',
+                background: brand.colors.white,
+                border: `1px solid ${brand.colors.goldLine}`,
+                borderRadius: brand.radius.xl,
+                boxShadow: brand.shadow.gold,
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                style={{
+                  background: brand.colors.slot,
+                  borderBottom: `1px solid ${brand.colors.border}`,
+                  position: 'relative',
+                  aspectRatio: isMobile ? '1 / 0.78' : '1 / 1',
+                }}
+              >
+                <WatchImageOrDial
+                  watch={shownWatch}
+                  fill
+                  sizes="320px"
+                  imageStyle={{ objectFit: 'contain', padding: isMobile ? 20 : 28, filter: brand.shadow.drop }}
+                  dialSize={isMobile ? 126 : 152}
+                />
+              </div>
+              <div style={{ padding: isMobile ? '12px 14px 14px' : '16px 18px 18px' }}>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 4 }}>
+                  {shownWatch.brand}
+                </div>
+                <div style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 22 : 28, fontWeight: 400, lineHeight: 1.06, color: brand.colors.ink, marginBottom: 4 }}>
+                  {shownWatch.model}
+                </div>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted, marginBottom: isMobile ? 10 : 14 }}>
+                  Ref. {shownWatch.reference}
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: isMobile ? '8px 10px' : '10px 12px',
+                    borderRadius: brand.radius.md,
+                    background: brand.colors.bg,
+                    border: `1px solid ${brand.colors.border}`,
+                  }}
+                >
+                  <span style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: brand.colors.muted }}>
+                    Est. Market Value
+                  </span>
+                  <span style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 16 : 18, fontWeight: 600, color: brand.colors.gold }}>
+                    {fmt(shownWatch.estimatedValue)}
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+
+            {shownIsChange && (
+              <motion.div
+                {...enter({ opacity: 0 }, 0.2)}
+                style={{
+                  marginTop: 12,
+                  textAlign: 'center',
+                  fontFamily: brand.font.sans,
+                  fontSize: 13,
+                  color: brand.colors.ink,
+                }}
+              >
+                Previously: {shownPrevious?.brand} {shownPrevious?.model}
+              </motion.div>
+            )}
+
+            <motion.div
+              {...enter({ opacity: 0, y: 8 }, 0.24)}
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginTop: isMobile ? 12 : 16,
+              }}
+            >
+              <button
+                type="button"
+                onClick={onClose}
+                style={{
+                  minWidth: 132,
+                  padding: isMobile ? '10px 18px' : '11px 18px',
+                  borderRadius: brand.radius.btn,
+                  border: `1px solid ${brand.colors.goldLine}`,
+                  background: brand.colors.white,
+                  color: brand.colors.ink,
+                  cursor: 'pointer',
+                  fontFamily: brand.font.sans,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  boxShadow: brand.shadow.md,
+                }}
+              >
+                Done
+              </button>
+            </motion.div>
           </div>
-        </div>
-      </div>
-    </>,
+        </motion.div>
+      )}
+    </AnimatePresence>,
     document.body,
   )
 }

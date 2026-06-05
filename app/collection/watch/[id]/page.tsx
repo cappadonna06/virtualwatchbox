@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 
@@ -360,13 +361,15 @@ export default function OwnedWatchDetailPage() {
         )}
       </div>
 
-      {editing && (
-        <EditWatchModal
-          watch={watch}
-          onClose={() => setEditing(false)}
-          onSave={handleSave}
-        />
-      )}
+      <AnimatePresence>
+        {editing && (
+          <EditWatchModal
+            watch={watch}
+            onClose={() => setEditing(false)}
+            onSave={handleSave}
+          />
+        )}
+      </AnimatePresence>
 
       {confirmDelete && (
         <div
