@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, type ReactNode } from 'react'
+import { useRouter } from 'next/navigation'
 import { brand } from '@/lib/brand'
 import type { StrapWatchOverride, UserStrap } from '@/types/watch'
 import { effectiveCompatibility, findOverride } from '@/lib/strapCompatibility'
@@ -84,6 +85,7 @@ function SpecLine({ label, value }: { label: string; value: ReactNode }) {
 }
 
 function SidebarContent({ strap, watches, overrides, onClose, onSetOverride, onRemoveOverride, onEdit, onDelete, onOpenWatch }: StrapSidebarProps) {
+  const router = useRouter()
   const [showOther, setShowOther] = useState(false)
   const [confirmDel, setConfirmDel] = useState(false)
 
@@ -131,6 +133,18 @@ function SidebarContent({ strap, watches, overrides, onClose, onSetOverride, onR
           <SpecLine label="Clasp" value={strap.claspType} />
           <SpecLine label="Style" value={strap.style ? strap.style.charAt(0).toUpperCase() + strap.style.slice(1) : null} />
         </div>
+
+        <button
+          onClick={() => router.push(`/collection/straps/studio?strapId=${strap.id}&source=drawer${fits[0]?.watchId ? `&watchId=${fits[0].watchId}` : ''}`)}
+          style={{
+            marginTop: 18, width: '100%', height: 46, border: 'none', borderRadius: brand.radius.lg,
+            background: brand.colors.ink, color: brand.colors.gold, cursor: 'pointer',
+            fontFamily: brand.font.sans, fontSize: 13, fontWeight: 600, letterSpacing: '0.05em',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          }}
+        >
+          Try in Strap Studio →
+        </button>
 
         {price != null && (
           <div style={{ marginTop: 18, background: brand.colors.bg, border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.lg, padding: '14px 16px' }}>

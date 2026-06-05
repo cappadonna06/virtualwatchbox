@@ -234,6 +234,40 @@ export const brand = {
       radius: 6,
     },
   },
+
+  /**
+   * Strap Studio dark-canvas surface (Feature 7). The Studio replaces the cream
+   * app shell with a warm-gold-glow-over-ink ambient canvas. rgba channels map to
+   * colors.gold (201,168,76) and colors.ink (26,20,16); `void` is the deep floor.
+   */
+  studio: {
+    /** Page canvas — ambient warm gold glow fading to deep ink. */
+    canvas: 'radial-gradient(ellipse 70% 50% at 50% 42%, rgba(201,168,76,0.10) 0%, rgba(26,20,16,0.96) 55%, #0A0806 100%)',
+    /** Deepest background floor. */
+    void: '#0A0806',
+    /** Panels / trays / dropdowns on the dark canvas. */
+    panel: 'rgba(26,20,16,0.86)',
+    panelSolid: '#1e1b16',
+    /** Hairline borders on dark. */
+    hairline: 'rgba(201,168,76,0.20)',
+    hairlineSoft: 'rgba(255,255,255,0.09)',
+    /** Text tiers on dark. */
+    textHi: 'rgba(255,255,255,0.94)',
+    textMid: 'rgba(255,255,255,0.60)',
+    textLow: 'rgba(255,255,255,0.38)',
+    /** Soft warm shadow beneath the composite. */
+    compositeShadow: '0 36px 70px rgba(0,0,0,0.5)',
+    /** Subtle material-tinted ambient glow behind the composite, by category. */
+    glow: {
+      Leather:   'rgba(201,168,76,0.13)',
+      Rubber:    'rgba(150,152,160,0.07)',
+      NATO:      'rgba(120,140,108,0.09)',
+      Sailcloth: 'rgba(120,132,152,0.09)',
+      Metal:     'rgba(184,194,208,0.11)',
+      Exotic:    'rgba(172,120,86,0.11)',
+      Other:     'rgba(201,168,76,0.08)',
+    },
+  },
 } as const
 
 /**

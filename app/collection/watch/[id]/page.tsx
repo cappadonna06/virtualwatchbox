@@ -338,6 +338,16 @@ export default function OwnedWatchDetailPage() {
         {strapWatch && strapWatch.braceletType !== 'integrated' && (
           <div style={{ marginBottom: 28, paddingBottom: 24, borderBottom: `1px solid ${brand.colors.border}` }}>
             <StrapsThatFit watch={strapWatch} variant="detail" />
+            <button
+              onClick={() => router.push(`/collection/straps/studio?watchId=${watch.watchId}&source=compatible`)}
+              style={{
+                marginTop: 14, background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.06em',
+                color: brand.colors.gold, display: 'inline-flex', alignItems: 'center', gap: 6,
+              }}
+            >
+              Try in Strap Studio →
+            </button>
           </div>
         )}
 

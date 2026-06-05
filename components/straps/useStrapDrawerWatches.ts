@@ -16,6 +16,7 @@ export function toStrapDrawerWatch(
 ): StrapDrawerWatch {
   return {
     id: ow.id,
+    watchId: ow.watchId,
     brand: ow.brand,
     model: ow.model,
     reference: ow.reference,
