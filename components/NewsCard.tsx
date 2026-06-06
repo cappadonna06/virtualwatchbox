@@ -66,7 +66,7 @@ export default function NewsCard({ item, variant, sponsored = false }: Props) {
             background: brand.colors.goldWash,
             color: brand.colors.muted,
             fontFamily: brand.font.sans,
-            fontSize: 9,
+            fontSize: 11,
             fontWeight: 500,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
@@ -126,7 +126,7 @@ export default function NewsCard({ item, variant, sponsored = false }: Props) {
             gap: 8,
             marginBottom: 5,
             fontFamily: brand.font.sans,
-            fontSize: 10,
+            fontSize: 12,
             fontWeight: 500,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
@@ -143,7 +143,7 @@ export default function NewsCard({ item, variant, sponsored = false }: Props) {
                 background: brand.colors.gold,
                 color: brand.colors.ink,
                 borderRadius: brand.radius.pill,
-                fontSize: 8,
+                fontSize: 11,
                 fontWeight: 700,
                 letterSpacing: '0.14em',
                 lineHeight: 1.2,
@@ -178,7 +178,7 @@ export default function NewsCard({ item, variant, sponsored = false }: Props) {
             style={{
               margin: 0,
               fontFamily: brand.font.sans,
-              fontSize: 12,
+              fontSize: 14,
               lineHeight: 1.6,
               color: brand.colors.muted,
               display: '-webkit-box',
@@ -197,7 +197,7 @@ export default function NewsCard({ item, variant, sponsored = false }: Props) {
             style={{
               margin: 0,
               fontFamily: brand.font.sans,
-              fontSize: 12,
+              fontSize: 14,
               lineHeight: 1.6,
               color: brand.colors.muted,
               display: '-webkit-box',
@@ -218,13 +218,13 @@ export default function NewsCard({ item, variant, sponsored = false }: Props) {
                 style={{
                   padding: '2px 8px',
                   fontFamily: brand.font.sans,
-                  fontSize: 9,
+                  fontSize: 11,
                   fontWeight: 500,
                   letterSpacing: '0.06em',
                   textTransform: 'uppercase',
                   borderRadius: brand.radius.pill,
                   background: t.kind === 'brand' ? brand.colors.goldWash : brand.colors.border,
-                  color: t.kind === 'brand' ? brand.colors.gold : brand.colors.muted,
+                  color: t.kind === 'brand' ? brand.colors.goldDeep : brand.colors.muted,
                 }}
               >
                 {t.label}

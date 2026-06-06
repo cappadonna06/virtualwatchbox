@@ -72,8 +72,8 @@ const sidebarPanel: React.CSSProperties = {
 
 const metaLabel: React.CSSProperties = {
   fontFamily: brand.font.sans,
-  fontSize: 10,
-  fontWeight: 500,
+  fontSize: 12,
+  fontWeight: 600,
   letterSpacing: '0.12em',
   textTransform: 'uppercase',
   color: brand.colors.muted,
@@ -82,8 +82,8 @@ const metaLabel: React.CSSProperties = {
 const btnPrimary: React.CSSProperties = {
   display: 'block',
   fontFamily: brand.font.sans,
-  fontSize: 10,
-  fontWeight: 500,
+  fontSize: 12,
+  fontWeight: 600,
   letterSpacing: '0.08em',
   padding: '9px 18px',
   background: brand.colors.ink,
@@ -98,8 +98,8 @@ const btnPrimary: React.CSSProperties = {
 
 const btnSecondary: React.CSSProperties = {
   fontFamily: brand.font.sans,
-  fontSize: 10,
-  fontWeight: 500,
+  fontSize: 12,
+  fontWeight: 600,
   letterSpacing: '0.08em',
   padding: '9px 18px',
   background: 'transparent',
@@ -192,6 +192,22 @@ export default function WatchSidebar({
   const isIntegrated = strapWatch?.braceletType === 'integrated'
   const fittingStrapCount = strapWatch ? compatibleStraps(strapWatch, straps, strapOverrides).length : 0
 
+  // Owned mode shows a trimmed, glanceable spec set; the full sheet lives on
+  // /collection/watch/[id]. Non-owned modes keep the fuller set — they have no
+  // detail-page fallback, so dropping rows there would lose the data.
+  const specRows: [string, string][] = [
+    ['Case Size', `${watch.caseSizeMm}mm`],
+    ...(watch.lugWidthMm ? [['Lug Width', `${watch.lugWidthMm}mm`] as [string, string]] : []),
+    ['Case Material', watch.caseMaterial],
+    ...(isOwnedWatch
+      ? []
+      : [
+          ['Dial Color', watch.dialColor] as [string, string],
+          ['Movement', watch.movement] as [string, string],
+          ['Complications', watch.complications.join(', ') || '—'] as [string, string],
+        ]),
+  ]
+
   return (
     <div style={panelStyle}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -269,7 +285,7 @@ export default function WatchSidebar({
               padding: '3px 10px',
               borderRadius: brand.radius.pill,
               fontFamily: brand.font.sans,
-              fontSize: 10,
+              fontSize: 11,
               fontWeight: 600,
               letterSpacing: '0.04em',
               background: colors.bg,
@@ -288,7 +304,7 @@ export default function WatchSidebar({
       )}
       <div style={{ fontSize: 12, color: brand.colors.muted, marginBottom: 4 }}>Ref. {watch.reference}</div>
       {watch.notes && (
-        <div style={{ fontSize: 11, color: brand.colors.gold, fontStyle: 'italic', marginBottom: 16 }}>
+        <div style={{ fontSize: 12, color: brand.colors.goldDeep, fontStyle: 'italic', marginBottom: 16 }}>
           &ldquo;{watch.notes}&rdquo;
         </div>
       )}
@@ -298,31 +314,21 @@ export default function WatchSidebar({
           background: brand.colors.bg,
           border: `1px solid ${brand.colors.border}`,
           borderRadius: brand.radius.md,
-          padding: '12px 16px',
+          padding: '10px 16px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          margin: '16px 0',
+          margin: '14px 0',
         }}
       >
         <span style={metaLabel}>Est. Market Value</span>
-        <span style={{ fontFamily: brand.font.sans, fontSize: 18, fontWeight: 600, color: brand.colors.gold }}>
+        <span style={{ fontFamily: brand.font.sans, fontSize: 18, fontWeight: 600, color: brand.colors.goldDeep }}>
           {fmt(watch.estimatedValue)}
         </span>
       </div>
 
       <div style={{ marginBottom: 16 }}>
-        {(
-          [
-            ['Case Size', `${watch.caseSizeMm}mm`],
-            ...(watch.lugWidthMm ? [['Lug Width', `${watch.lugWidthMm}mm`] as [string, string]] : []),
-            ['Case Material', watch.caseMaterial],
-            ['Dial Color', watch.dialColor],
-            ['Movement', watch.movement],
-            ['Complications', watch.complications.join(', ') || '—'],
-            ...('purchasePrice' in watch ? [['Price Paid', fmt(watch.purchasePrice)] as [string, string]] : []),
-          ] as [string, string][]
-        ).map(([label, value]) => (
+        {specRows.map(([label, value]) => (
           <div
             key={label}
             style={{
@@ -354,10 +360,10 @@ export default function WatchSidebar({
       </div>
 
       {isOwnedWatch && lastServicedDate && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: -4, marginBottom: 16, fontFamily: brand.font.sans, fontSize: 11.5, color: brand.colors.muted }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: -4, marginBottom: 16, fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
           <span>Last serviced: {formatDate(lastServicedDate, { year: 'numeric', month: 'short', day: 'numeric' })}</span>
           {serviceOverdue && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: brand.radius.pill, background: brand.serviceStatus.due.bg, color: brand.serviceStatus.due.fg, fontSize: 10, fontWeight: 600, letterSpacing: '0.04em' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: brand.radius.pill, background: brand.serviceStatus.due.bg, color: brand.serviceStatus.due.fg, fontSize: 11, fontWeight: 600, letterSpacing: '0.04em' }}>
               Service overdue
             </span>
           )}
@@ -382,7 +388,7 @@ export default function WatchSidebar({
                   : promoteToNextTarget(resolvedCatalogWatchId))}
                 style={isTarget
                   ? btnSecondary
-                  : { ...btnSecondary, borderColor: brand.colors.goldLine, color: brand.colors.gold }}
+                  : { ...btnSecondary, borderColor: brand.colors.goldLine, color: brand.colors.goldDeep }}
               >
                 {isTarget ? 'Remove Target' : 'Set as Target'}
               </button>
@@ -403,6 +409,33 @@ export default function WatchSidebar({
               Add to My Collection
             </button>
           )}
+        </div>
+      ) : isOwnedWatch ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <Link href={`/collection/watch/${watch.id}`} style={btnPrimary}>
+            View full detail →
+          </Link>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <a
+              href={buildChrono24URL(watch.brand, watch.model, 'sell')}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ ...btnSecondary, textAlign: 'center', textDecoration: 'none' }}
+            >
+              Sell This Watch ↗
+            </a>
+            {isIntegrated ? (
+              <span style={{ ...btnSecondary, cursor: 'default', textAlign: 'center', color: brand.colors.muted, fontWeight: 400 }}>
+                Integrated bracelet
+              </span>
+            ) : straps.length === 0 ? (
+              <button style={btnSecondary} onClick={() => router.push('/collection/straps')}>+ Start Strap Drawer →</button>
+            ) : fittingStrapCount === 0 ? (
+              <button style={btnSecondary} onClick={() => router.push(`/collection/straps?addStrap=1&suggestLug=${strapWatch?.lugWidthMm ?? ''}`)}>No matching · Add →</button>
+            ) : (
+              <button style={btnSecondary} onClick={() => router.push(`/collection/straps?watchId=${watch.id}`)}>Swap Strap →</button>
+            )}
+          </div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -441,24 +474,12 @@ export default function WatchSidebar({
       {/* Photo gallery — owner-only, hidden on followed/public surfaces */}
       {isOwnedWatch && (
         <div style={{
-          marginTop: 18,
-          paddingTop: 18,
+          marginTop: 14,
+          paddingTop: 14,
           borderTop: `1px solid ${brand.colors.borderLight}`,
         }}>
           <WatchPhotoGallery ownedWatchId={watch.id} variant="sidebar" />
           <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-            <Link
-              href={`/collection/watch/${watch.id}`}
-              style={{
-                fontFamily: brand.font.sans,
-                fontSize: 11,
-                color: brand.colors.gold,
-                textDecoration: 'none',
-                letterSpacing: '0.04em',
-              }}
-            >
-              View full detail →
-            </Link>
             <Link
               href="/service-room"
               style={{

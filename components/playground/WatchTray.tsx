@@ -309,7 +309,7 @@ export default function WatchTray({
             <div
               style={{
                 fontFamily: brand.font.sans,
-                fontSize: 11,
+                fontSize: 12,
                 color: brand.colors.muted,
                 padding: '14px 6px',
                 lineHeight: 1.5,
@@ -372,11 +372,11 @@ export default function WatchTray({
                   <div
                     style={{
                       fontFamily: brand.font.sans,
-                      fontSize: isDesktop ? 10 : 8.5,
+                      fontSize: isDesktop ? 12 : 11,
                       fontWeight: 600,
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
-                      color: brand.colors.gold,
+                      color: brand.colors.goldDeep,
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -388,7 +388,7 @@ export default function WatchTray({
                   <div
                     style={{
                       fontFamily: brand.font.serif,
-                      fontSize: isDesktop ? 14 : 11,
+                      fontSize: isDesktop ? 14 : 12,
                       color: brand.colors.ink,
                       lineHeight: 1.15,
                       whiteSpace: 'nowrap',
@@ -450,7 +450,7 @@ export default function WatchTray({
           marginTop: 6,
           textAlign: 'center',
           fontFamily: brand.font.sans,
-          fontSize: 9.5,
+          fontSize: 11,
           color: brand.colors.borderLight,
           letterSpacing: '0.06em',
           pointerEvents: 'none',
@@ -493,12 +493,12 @@ function TabButton({ label, count, active, onSelect }: { label: string; count: n
       <span
         style={{
           fontVariantNumeric: 'tabular-nums',
-          fontSize: 9.5,
+          fontSize: 11,
           fontWeight: 500,
           padding: '1px 7px',
           borderRadius: brand.radius.pill,
           background: active ? brand.colors.goldWash : brand.colors.bg,
-          color: active ? brand.colors.gold : brand.colors.muted,
+          color: active ? brand.colors.goldDeep : brand.colors.muted,
           border: `1px solid ${active ? brand.colors.goldLine : brand.colors.borderLight}`,
         }}
       >

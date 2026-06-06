@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { brand } from '@/lib/brand'
+import { brand, masthead } from '@/lib/brand'
 import NewsCard from '@/components/NewsCard'
 import NewsCardSkeleton from '@/components/NewsCardSkeleton'
 import NewsHeroCard from '@/components/NewsHeroCard'
@@ -226,7 +226,7 @@ export default function NewsPage() {
                 borderRadius: brand.radius.lg,
                 textAlign: 'center',
                 fontFamily: brand.font.sans,
-                fontSize: 13,
+                fontSize: 15,
                 color: brand.colors.muted,
               }}
             >
@@ -274,7 +274,7 @@ export default function NewsPage() {
               style={{
                 marginTop: 12,
                 fontFamily: brand.font.sans,
-                fontSize: 13,
+                fontSize: 15,
                 color: brand.colors.muted,
                 textAlign: 'center',
               }}
@@ -354,12 +354,7 @@ function Header({ articleCount }: { articleCount: number | null }) {
     <header style={{ marginBottom: 24 }}>
       <div
         style={{
-          fontFamily: brand.font.sans,
-          fontSize: 10,
-          fontWeight: 500,
-          letterSpacing: '0.18em',
-          textTransform: 'uppercase',
-          color: brand.colors.muted,
+          ...masthead.eyebrow,
           marginBottom: 12,
           display: 'flex',
           alignItems: 'center',
@@ -373,17 +368,7 @@ function Header({ articleCount }: { articleCount: number | null }) {
         </span>
       </div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, flexWrap: 'wrap' }}>
-        <h1
-          style={{
-            margin: 0,
-            fontFamily: brand.font.serif,
-            fontSize: 42,
-            fontWeight: 400,
-            lineHeight: 1.1,
-            color: brand.colors.ink,
-            letterSpacing: '-0.01em',
-          }}
-        >
+        <h1 style={masthead.title}>
           Horological <em>Intelligence.</em>
         </h1>
         {articleCount !== null && (
@@ -406,14 +391,7 @@ function Header({ articleCount }: { articleCount: number | null }) {
         )}
       </div>
       <p
-        style={{
-          margin: '10px 0 0',
-          fontFamily: brand.font.sans,
-          fontSize: 13,
-          lineHeight: 1.6,
-          color: brand.colors.muted,
-          maxWidth: 520,
-        }}
+        style={{ ...masthead.subtitle, margin: '10px 0 0', maxWidth: 520 }}
       >
         The watch world&apos;s best writing, in one place.
       </p>
@@ -450,12 +428,12 @@ function ContextBanner({
         gap: 6,
         alignItems: 'center',
         fontFamily: brand.font.sans,
-        fontSize: 12,
+        fontSize: 14,
       }}
     >
       <span
         style={{
-          fontSize: 9,
+          fontSize: 11,
           fontWeight: 600,
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
@@ -471,7 +449,7 @@ function ContextBanner({
           style={{
             padding: '3px 10px',
             background: 'rgba(201,168,76,0.18)',
-            color: brand.colors.gold,
+            color: brand.colors.goldDeep,
             borderRadius: brand.radius.pill,
             fontSize: 11,
             fontWeight: 500,
@@ -490,7 +468,7 @@ function ContextBanner({
           style={{
             marginLeft: 'auto',
             color: brand.colors.ink,
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: 500,
             textDecoration: 'none',
           }}
@@ -599,7 +577,7 @@ function EmptyState({
         </p>
         <p
           style={{
-            fontSize: 13,
+            fontSize: 15,
             color: brand.colors.muted,
             margin: '0 0 16px',
           }}
@@ -632,7 +610,7 @@ function EmptyState({
         padding: '40px 20px 20px',
         textAlign: 'center',
         fontFamily: brand.font.sans,
-        fontSize: 13,
+        fontSize: 15,
         color: brand.colors.muted,
       }}
     >
@@ -644,7 +622,7 @@ function EmptyState({
             background: 'none',
             border: 'none',
             padding: 0,
-            color: brand.colors.gold,
+            color: brand.colors.goldDeep,
             fontFamily: 'inherit',
             fontSize: 'inherit',
             cursor: 'pointer',

@@ -34,14 +34,14 @@ export function StrapsThatFit({
     <div id="straps-that-fit">
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 10 }}>
         <h3 style={{ fontFamily: brand.font.serif, fontSize: variant === 'detail' ? 22 : 16, fontWeight: 500, color: brand.colors.ink, margin: 0 }}>Straps that fit</h3>
-        <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, color: brand.colors.gold }}>{fits.length}</span>
+        <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, color: brand.colors.goldDeep }}>{fits.length}</span>
       </div>
 
       {fits.length === 0 ? (
         <button
           onClick={() => router.push(`/collection/straps?addStrap=1&suggestLug=${watch.lugWidthMm ?? ''}`)}
           style={{
-            fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, color: brand.colors.gold,
+            fontFamily: brand.font.sans, fontSize: 14, fontWeight: 500, color: brand.colors.goldDeep,
             background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', textAlign: 'left',
           }}
         >
@@ -58,7 +58,7 @@ export function StrapsThatFit({
                   ? <div style={{ width: '100%', height: '100%', background: brand.colors.paperWarm, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><img src={photo} alt={strapTitle(s)} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 4 }} /></div>
                   : <StrapPhotoFallback height={thumbH} />}
               </div>
-              <div style={{ marginTop: 6, fontFamily: brand.font.sans, fontSize: 10.5, color: brand.colors.inkSoft, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ marginTop: 6, fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.inkSoft, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {s.brand || `${s.color} ${s.material}`}
               </div>
             </button>
@@ -67,12 +67,12 @@ export function StrapsThatFit({
       )}
 
       <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-        <span style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted }}>
+        <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
           {fits.length} compatible · {excludedCount} excluded
         </span>
         <button
           onClick={() => router.push(`/collection/straps?watchId=${watch.id}`)}
-          style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.gold, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.goldDeep, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
         >
           View all in Strap Drawer →
         </button>

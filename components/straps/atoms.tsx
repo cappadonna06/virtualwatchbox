@@ -25,7 +25,7 @@ export interface StrapDrawerWatch {
 export function Kicker({
   children,
   color = brand.colors.muted,
-  size = 9,
+  size = 11,
   style = {},
 }: {
   children: ReactNode
@@ -54,7 +54,7 @@ export function SpecBadge({ children, tone = 'plain', style = {} }: { children: 
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 4,
-      fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.04em',
+      fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.04em',
       padding: '3px 8px', borderRadius: brand.radius.btn, whiteSpace: 'nowrap',
       background: t.bg, color: t.col, border: `1px solid ${t.bd}`, ...style,
     }}>

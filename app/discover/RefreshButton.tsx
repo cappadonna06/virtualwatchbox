@@ -118,7 +118,7 @@ export default function RefreshButton({ section, seedKey, variant = 'inline', to
       aria-label="Refresh recommendation"
       style={{
         fontFamily: brand.font.sans,
-        fontSize: 10,
+        fontSize: 12,
         fontWeight: 600,
         letterSpacing: '0.16em',
         textTransform: 'uppercase',

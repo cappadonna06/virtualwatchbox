@@ -104,7 +104,7 @@ function matchDialColor(raw: string): string | null {
 
 const microLabel = {
   fontFamily: brand.font.sans,
-  fontSize: 10,
+  fontSize: 12,
   fontWeight: 500,
   letterSpacing: '0.14em',
   textTransform: 'uppercase' as const,
@@ -161,7 +161,7 @@ export default function CollectionStats({ watches, mode = 'collection' }: Props)
           <p
             style={{
               fontFamily: brand.font.sans,
-              fontSize: 11,
+              fontSize: 12,
               color: brand.colors.muted,
               margin: 0,
               lineHeight: 1.55,
@@ -209,7 +209,7 @@ export default function CollectionStats({ watches, mode = 'collection' }: Props)
           <p
             style={{
               fontFamily: brand.font.sans,
-              fontSize: 13,
+              fontSize: 15,
               color: brand.colors.muted,
               margin: '6px 0 0',
             }}
@@ -347,7 +347,7 @@ function PortfolioValueRow({ watches, mode }: { watches: Props['watches']; mode:
         <Cell
           label="Highest"
           value={<AnimatedCurrency value={highest.estimatedValue} />}
-          color={brand.colors.gold}
+          color={brand.colors.goldDeep}
           sub={`${highest.brand} ${highest.model}`}
         />
       ) : null}
@@ -390,7 +390,7 @@ function Cell({
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 11,
+            fontSize: 12,
             color: brand.colors.muted,
             marginTop: 4,
             whiteSpace: 'nowrap',
@@ -510,7 +510,7 @@ function RevealToggle({
       onClick={() => setOpen(!open)}
       style={{
         fontFamily: brand.font.sans,
-        fontSize: 10,
+        fontSize: 12,
         fontWeight: 500,
         letterSpacing: '0.10em',
         textTransform: 'uppercase',
@@ -553,7 +553,7 @@ function DialColorsRow({ watches, isMobile }: { watches: Props['watches']; isMob
   return (
     <DataRow label="Dial Colors" open={open} setOpen={setOpen} hiddenCount={zero.length} isMobile={isMobile}>
       {list.length === 0 ? (
-        <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>None recorded yet.</span>
+        <span style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted }}>None recorded yet.</span>
       ) : (
         list.map(c => (
           <div
@@ -580,7 +580,7 @@ function DialColorsRow({ watches, isMobile }: { watches: Props['watches']; isMob
               {c.name}
             </span>
             {c.count > 0 ? (
-              <span style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted }}>{c.count}</span>
+              <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>{c.count}</span>
             ) : null}
           </div>
         ))
@@ -609,7 +609,7 @@ function ChipRow({
   return (
     <DataRow label={label} open={open} setOpen={setOpen} hiddenCount={zero.length} isMobile={isMobile}>
       {list.length === 0 ? (
-        <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>None recorded yet.</span>
+        <span style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted }}>None recorded yet.</span>
       ) : (
         list.map(it => <StatChip key={it.name} label={it.name} count={it.count} dim={it.count === 0} />)
       )}
@@ -636,7 +636,7 @@ function StatChip({ label, count, dim }: { label: string; count: number; dim?: b
       }}
     >
       {label}
-      <span style={{ fontSize: 10, opacity: 0.65 }}>{count}</span>
+      <span style={{ fontSize: 12, opacity: 0.65 }}>{count}</span>
     </span>
   )
 }
@@ -651,7 +651,7 @@ function BrandsRow({ watches, isMobile }: { watches: Props['watches']; isMobile:
   return (
     <DataRow label="Brands" isLast isMobile={isMobile}>
       {sorted.length === 0 ? (
-        <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>None yet.</span>
+        <span style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted }}>None yet.</span>
       ) : (
         sorted.map(([name, n]) => (
           <span
@@ -670,7 +670,7 @@ function BrandsRow({ watches, isMobile }: { watches: Props['watches']; isMobile:
             }}
           >
             {name}
-            <span style={{ fontSize: 10, opacity: 0.6 }}>×{n}</span>
+            <span style={{ fontSize: 12, opacity: 0.6 }}>×{n}</span>
           </span>
         ))
       )}
@@ -720,21 +720,21 @@ function GraphicalView({ watches, isMobile }: { watches: Props['watches']; isMob
       <div style={cardStyle}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 18, flexWrap: 'wrap', gap: 8 }}>
           <div style={microLabel}>Value By Brand</div>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
             {entries.length} {entries.length === 1 ? 'brand' : 'brands'} · {fmt(total)} total
           </div>
         </div>
         {entries.length === 0 ? (
-          <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>No data yet.</div>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted }}>No data yet.</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {entries.map(([brandName, value]) => (
               <div key={brandName}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5, flexWrap: 'wrap', gap: 4 }}>
-                  <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink, fontWeight: 500 }}>
+                  <span style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.ink, fontWeight: 500 }}>
                     {brandName}
                   </span>
-                  <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
+                  <span style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted }}>
                     {fmt(value)} · {Math.round((value / total) * 100)}%
                   </span>
                 </div>
@@ -766,10 +766,10 @@ function GraphicalView({ watches, isMobile }: { watches: Props['watches']; isMob
               {dialCounts.map(c => (
                 <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <DialSwatch hex={c.hex} light={LIGHT_COLORS.has(c.name)} size={16} />
-                  <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink, fontWeight: 500, flex: 1 }}>
+                  <span style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.ink, fontWeight: 500, flex: 1 }}>
                     {c.name}
                   </span>
-                  <span style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted }}>{c.count}</span>
+                  <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>{c.count}</span>
                 </div>
               ))}
             </div>
@@ -784,7 +784,7 @@ function GraphicalView({ watches, isMobile }: { watches: Props['watches']; isMob
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {typeCounts.map(t => (
               <div key={t.name} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink, fontWeight: 500, width: isMobile ? 80 : 120, flexShrink: 0 }}>
+                <span style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.ink, fontWeight: 500, width: isMobile ? 80 : 120, flexShrink: 0 }}>
                   {t.name}
                 </span>
                 <div style={{ flex: 1, height: 6, borderRadius: 3, background: '#F0EBE3', overflow: 'hidden' }}>
@@ -796,7 +796,7 @@ function GraphicalView({ watches, isMobile }: { watches: Props['watches']; isMob
                     transition: 'width 0.4s ease',
                   }} />
                 </div>
-                <span style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, width: 20, textAlign: 'right' }}>
+                <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, width: 20, textAlign: 'right' }}>
                   {t.count}
                 </span>
               </div>
@@ -818,7 +818,7 @@ function GraphicalView({ watches, isMobile }: { watches: Props['watches']; isMob
                   alignItems: 'center',
                   gap: 5,
                   fontFamily: brand.font.sans,
-                  fontSize: 10 + Math.min(3, Math.round((c.count / compMax) * 3)),
+                  fontSize: 12 + Math.min(3, Math.round((c.count / compMax) * 3)),
                   fontWeight: 500,
                   padding: '5px 12px',
                   borderRadius: brand.radius.pill,

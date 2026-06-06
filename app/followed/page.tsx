@@ -8,7 +8,7 @@ import WatchCard from '@/components/collection/WatchCard'
 import WatchSidebar from '@/components/collection/WatchSidebar'
 import { useIsMobile } from '@/components/collection/useResponsiveState'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
-import { brand } from '@/lib/brand'
+import { brand, masthead } from '@/lib/brand'
 import { createCatalogDisplayWatch } from '@/lib/watchData'
 
 type SortMode = 'brand' | 'value' | 'type'
@@ -62,13 +62,13 @@ export default function FollowedPage() {
             textAlign: 'center',
           }}
         >
-          <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
             Followed Watches
           </div>
           <h1 style={{ fontFamily: brand.font.serif, fontSize: 40, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05, margin: '0 0 12px' }}>
             Nothing followed yet.
           </h1>
-          <p style={{ margin: '0 0 22px', fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.7 }}>
+          <p style={{ margin: '0 0 22px', fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.muted, lineHeight: 1.7 }}>
             Save watches from the homepage, Collection, or Playground flows and they&apos;ll collect here as your canonical aspirational pool.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
@@ -80,7 +80,7 @@ export default function FollowedPage() {
                 background: brand.colors.ink,
                 color: brand.colors.bg,
                 fontFamily: brand.font.sans,
-                fontSize: 10,
+                fontSize: 12,
                 fontWeight: 600,
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
@@ -97,7 +97,7 @@ export default function FollowedPage() {
                 border: `1px solid ${brand.colors.borderLight}`,
                 color: brand.colors.ink,
                 fontFamily: brand.font.sans,
-                fontSize: 10,
+                fontSize: 12,
                 fontWeight: 600,
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
@@ -117,24 +117,14 @@ export default function FollowedPage() {
       <div style={{ marginBottom: 28 }}>
         <Link
           href="/collection"
-          style={{
-            display: 'inline-block',
-            fontFamily: brand.font.sans,
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            color: brand.colors.muted,
-            textDecoration: 'none',
-            marginBottom: 10,
-          }}
+          style={{ ...masthead.eyebrow, display: 'inline-block', textDecoration: 'none', marginBottom: 10 }}
         >
           Collection →
         </Link>
-        <h1 style={{ fontFamily: brand.font.serif, fontSize: 42, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05, margin: '0 0 6px' }}>
+        <h1 style={{ ...masthead.title, margin: '0 0 6px' }}>
           Followed Watches
         </h1>
-        <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted }}>
+        <p style={masthead.subtitle}>
           Your canonical aspirational pool. Promote up to three Next Targets and keep one Grail in focus.
         </p>
       </div>
@@ -142,7 +132,7 @@ export default function FollowedPage() {
       <div className="collection-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}>
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
               {displayWatches.length} followed {displayWatches.length === 1 ? 'watch' : 'watches'}
             </div>
             <SortDropdown

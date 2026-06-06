@@ -232,10 +232,10 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
               <div style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 28 : 36, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.02, marginBottom: isMobile ? 10 : 14 }}>
                 Your Grail
               </div>
-              <div style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 13 : 14, fontWeight: 500, color: brand.colors.ink, marginBottom: isMobile ? 8 : 10 }}>
+              <div style={{ fontFamily: brand.font.sans, fontSize: 14, fontWeight: 500, color: brand.colors.ink, marginBottom: isMobile ? 8 : 10 }}>
                 {shownWatch.brand} {shownWatch.model}
               </div>
-              <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted }}>
+              <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
                 {shownIsChange ? 'The crown moves to a new watch.' : 'The watch worth chasing.'}
               </div>
             </motion.div>
@@ -271,13 +271,13 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
                 />
               </div>
               <div style={{ padding: isMobile ? '12px 14px 14px' : '16px 18px 18px' }}>
-                <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 4 }}>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.goldDeep, marginBottom: 4 }}>
                   {shownWatch.brand}
                 </div>
                 <div style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 22 : 28, fontWeight: 400, lineHeight: 1.06, color: brand.colors.ink, marginBottom: 4 }}>
                   {shownWatch.model}
                 </div>
-                <div style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted, marginBottom: isMobile ? 10 : 14 }}>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, marginBottom: isMobile ? 10 : 14 }}>
                   Ref. {shownWatch.reference}
                 </div>
                 <div
@@ -291,10 +291,10 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
                     border: `1px solid ${brand.colors.border}`,
                   }}
                 >
-                  <span style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: brand.colors.muted }}>
+                  <span style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: brand.colors.muted }}>
                     Est. Market Value
                   </span>
-                  <span style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 16 : 18, fontWeight: 600, color: brand.colors.gold }}>
+                  <span style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 16 : 18, fontWeight: 600, color: brand.colors.goldDeep }}>
                     {fmt(shownWatch.estimatedValue)}
                   </span>
                 </div>
@@ -308,7 +308,7 @@ export default function GrailSetModal({ open, watch, previousWatch, onClose }: P
                   marginTop: 12,
                   textAlign: 'center',
                   fontFamily: brand.font.sans,
-                  fontSize: 13,
+                  fontSize: 15,
                   color: brand.colors.ink,
                 }}
               >

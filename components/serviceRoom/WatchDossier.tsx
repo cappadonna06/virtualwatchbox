@@ -29,7 +29,7 @@ function SectionTitle({ children, count, action }: { children: React.ReactNode; 
   return (
     <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 16, paddingBottom: 12, borderBottom: `1px solid ${brand.colors.borderLight}` }}>
       <h2 style={{ fontFamily: serif, fontSize: 22, fontWeight: 400, color: brand.colors.ink, margin: 0 }}>{children}</h2>
-      {count != null && <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted }}>{count} on file</span>}
+      {count != null && <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>{count} on file</span>}
       {action && <span style={{ marginLeft: 'auto' }}>{action}</span>}
     </div>
   )
@@ -117,7 +117,7 @@ export default function WatchDossier({ watch }: { watch: ResolvedOwnedWatch }) {
               <DocCard key={d.id} doc={d} onOpen={() => setLightbox({ list: documents, startId: d.id })} />
             ))}
           </div>
-          <div style={{ marginTop: 10, fontFamily: sans, fontSize: 11, color: brand.colors.muted }}>Tap to view full size</div>
+          <div style={{ marginTop: 10, fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>Tap to view full size</div>
         </section>
       )}
 
@@ -138,7 +138,7 @@ export default function WatchDossier({ watch }: { watch: ResolvedOwnedWatch }) {
             padding: '28px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textAlign: 'center',
           }}>
             <div style={{ fontFamily: serif, fontSize: 18, color: brand.colors.ink }}>No service history yet</div>
-            <div style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>Track services, receipts, and what&apos;s next.</div>
+            <div style={{ fontFamily: sans, fontSize: 14, color: brand.colors.muted }}>Track services, receipts, and what&apos;s next.</div>
             <button type="button" onClick={() => setLogging(true)} style={primaryBtn}>+ Log a service</button>
           </div>
         ) : (
@@ -151,11 +151,11 @@ export default function WatchDossier({ watch }: { watch: ResolvedOwnedWatch }) {
                 color: overdue ? brand.serviceStatus.due.fg : brand.colors.mutedDark,
               }}>
                 <Icon name={overdue ? 'clock' : 'calendar'} size={15} color={overdue ? brand.serviceStatus.due.fg : brand.colors.muted} />
-                <span style={{ fontFamily: sans, fontSize: 12.5, fontWeight: 500 }}>
+                <span style={{ fontFamily: sans, fontSize: 14, fontWeight: 500 }}>
                   Next full service: ~{formatMonthYear(due)}{overdue ? ' · overdue' : ''}
                 </span>
                 <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontFamily: sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: brand.colors.muted }}>Every</span>
+                  <span style={{ fontFamily: sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: brand.colors.muted }}>Every</span>
                   <span style={{ display: 'inline-flex', border: `1px solid ${brand.colors.borderLight}`, borderRadius: brand.radius.sm, overflow: 'hidden', background: brand.colors.white }}>
                     {INTERVALS.map(n => (
                       <button key={n} type="button" onClick={() => void setWatchInterval(watch.id, n)} style={{
@@ -189,17 +189,17 @@ export default function WatchDossier({ watch }: { watch: ResolvedOwnedWatch }) {
                         style={{ cursor: 'pointer' }}
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 4 }}>
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 12.5, fontWeight: 600, color: brand.colors.ink }}>
-                            <span style={{ color: t.resets ? brand.colors.gold : brand.colors.muted, fontSize: 13 }}>{t.glyph}</span>{t.label}
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 14, fontWeight: 600, color: brand.colors.ink }}>
+                            <span style={{ color: t.resets ? brand.colors.goldDeep : brand.colors.muted, fontSize: 13 }}>{t.glyph}</span>{t.label}
                           </span>
-                          <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted, whiteSpace: 'nowrap', flexShrink: 0 }}>{formatDate(r.serviceDate)}</span>
+                          <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted, whiteSpace: 'nowrap', flexShrink: 0 }}>{formatDate(r.serviceDate)}</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          {r.provider && <span style={{ fontFamily: sans, fontSize: 11.5, color: brand.colors.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.provider}</span>}
-                          {r.cost ? <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 700, color: brand.colors.ink, marginLeft: 'auto', whiteSpace: 'nowrap' }}>{formatCost(r.cost)}</span> : <span style={{ fontFamily: sans, fontSize: 11.5, color: brand.serviceStatus.ok.fg, marginLeft: 'auto' }}>No charge</span>}
+                          {r.provider && <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.provider}</span>}
+                          {r.cost ? <span style={{ fontFamily: sans, fontSize: 14, fontWeight: 700, color: brand.colors.ink, marginLeft: 'auto', whiteSpace: 'nowrap' }}>{formatCost(r.cost)}</span> : <span style={{ fontFamily: sans, fontSize: 12, color: brand.serviceStatus.ok.fg, marginLeft: 'auto' }}>No charge</span>}
                         </div>
                         {r.notes && (
-                          <p style={{ fontFamily: sans, fontSize: 11.5, color: brand.colors.ink, opacity: 0.75, lineHeight: 1.5, margin: '6px 0 0', ...(expanded ? {} : { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }) }}>{r.notes}</p>
+                          <p style={{ fontFamily: sans, fontSize: 12, color: brand.colors.ink, opacity: 0.75, lineHeight: 1.5, margin: '6px 0 0', ...(expanded ? {} : { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }) }}>{r.notes}</p>
                         )}
                       </div>
 
@@ -218,7 +218,7 @@ export default function WatchDossier({ watch }: { watch: ResolvedOwnedWatch }) {
 
                       {expanded && (
                         <div style={{ marginTop: 8 }}>
-                          <button type="button" onClick={() => void onDelete(r.id)} style={{ fontFamily: sans, fontSize: 10.5, color: brand.serviceStatus.overdue.fg, cursor: 'pointer', letterSpacing: '0.04em', background: 'none', border: 'none', padding: 0 }}>Remove record</button>
+                          <button type="button" onClick={() => void onDelete(r.id)} style={{ fontFamily: sans, fontSize: 12, color: brand.serviceStatus.overdue.fg, cursor: 'pointer', letterSpacing: '0.04em', background: 'none', border: 'none', padding: 0 }}>Remove record</button>
                         </div>
                       )}
                     </div>
@@ -228,8 +228,8 @@ export default function WatchDossier({ watch }: { watch: ResolvedOwnedWatch }) {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 20, paddingTop: 16, borderTop: `1px solid ${brand.colors.borderLight}`, flexWrap: 'wrap' }}>
-              <span style={{ fontFamily: sans, fontSize: 12.5, color: brand.colors.ink }}>
-                Total service cost: <span style={{ fontWeight: 700, color: brand.colors.gold }}>{formatCost(totalCents)}</span>
+              <span style={{ fontFamily: sans, fontSize: 14, color: brand.colors.ink }}>
+                Total service cost: <span style={{ fontWeight: 700, color: brand.colors.goldDeep }}>{formatCost(totalCents)}</span>
               </span>
               <button type="button" onClick={() => setLogging(true)} style={primaryBtn}>+ Log a service</button>
             </div>
@@ -256,7 +256,7 @@ function DocCard({ doc, onOpen }: { doc: UserWatchPhoto; onOpen: () => void }) {
           : <DocTile type={type} size={44} />}
         <span style={{ position: 'absolute', top: 5, left: 5 }}><DocTile type={type} size={20} /></span>
       </div>
-      <div style={{ marginTop: 6, fontFamily: sans, fontSize: 9.5, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: brand.colors.gold, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{docTypeMeta(type).label}</div>
+      <div style={{ marginTop: 6, fontFamily: sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: brand.colors.goldDeep, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{docTypeMeta(type).label}</div>
     </button>
   )
 }

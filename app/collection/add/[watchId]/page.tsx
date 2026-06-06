@@ -44,7 +44,7 @@ function StepHeading({
           alignItems: 'center',
           justifyContent: 'center',
           fontFamily: 'var(--font-dm-sans)',
-          fontSize: 10,
+          fontSize: 12,
           fontWeight: 600,
           color: '#A89880',
           flexShrink: 0,
@@ -55,7 +55,7 @@ function StepHeading({
       <span
         style={{
           fontFamily: 'var(--font-dm-sans)',
-          fontSize: 9,
+          fontSize: 11,
           fontWeight: 600,
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
@@ -181,7 +181,7 @@ export default function AddWatchConfirmPage() {
             padding: '120px 40px',
             textAlign: 'center',
             fontFamily: brand.font.sans,
-            fontSize: 13,
+            fontSize: 15,
             color: brand.colors.muted,
           }}
         >
@@ -314,7 +314,7 @@ export default function AddWatchConfirmPage() {
       <div
         style={{
           fontFamily: 'var(--font-dm-sans)',
-          fontSize: 10.5,
+          fontSize: 12,
           color: '#A89880',
           textAlign: 'center',
           marginTop: 10,
@@ -333,7 +333,7 @@ export default function AddWatchConfirmPage() {
             padding: 0,
             cursor: 'pointer',
             fontFamily: 'var(--font-dm-sans)',
-            fontSize: 11,
+            fontSize: 12,
             color: '#A89880',
             textDecoration: 'underline',
             textUnderlineOffset: 2,
@@ -420,7 +420,7 @@ export default function AddWatchConfirmPage() {
               <span
                 style={{
                   fontFamily: 'var(--font-dm-sans)',
-                  fontSize: 9,
+                  fontSize: 11,
                   fontWeight: 500,
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',
@@ -431,7 +431,7 @@ export default function AddWatchConfirmPage() {
               </span>
             </div>
 
-            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: 8 }}>
+            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 12, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.goldDeep, marginBottom: 8 }}>
               {resolvedWatch.brand}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 10 }}>
@@ -447,7 +447,7 @@ export default function AddWatchConfirmPage() {
                     background: 'rgba(232,244,232,0.92)',
                     color: '#2D6A2D',
                     fontFamily: 'var(--font-dm-sans)',
-                    fontSize: 9,
+                    fontSize: 11,
                     fontWeight: 600,
                     letterSpacing: '0.06em',
                     textTransform: 'uppercase',
@@ -457,7 +457,7 @@ export default function AddWatchConfirmPage() {
                 </span>
               )}
             </div>
-            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 13, color: '#A89880', letterSpacing: '0.02em', marginBottom: 16 }}>
+            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 15, color: '#A89880', letterSpacing: '0.02em', marginBottom: 16 }}>
               {resolvedWatch.reference}
             </div>
 
@@ -468,7 +468,7 @@ export default function AddWatchConfirmPage() {
                 alignItems: 'center',
                 rowGap: 4,
                 fontFamily: 'var(--font-dm-sans)',
-                fontSize: 13,
+                fontSize: 15,
                 color: '#1A1410',
                 lineHeight: 1.5,
                 marginBottom: 14,
@@ -492,10 +492,10 @@ export default function AddWatchConfirmPage() {
                 flexWrap: 'wrap',
               }}
             >
-              <span style={{ fontFamily: 'var(--font-cormorant)', fontSize: isCompact ? 34 : 38, fontWeight: 400, color: '#C9A84C', lineHeight: 1 }}>
+              <span style={{ fontFamily: 'var(--font-cormorant)', fontSize: isCompact ? 34 : 38, fontWeight: 400, color: brand.colors.goldDeep, lineHeight: 1 }}>
                 {fmt(resolvedWatch.estimatedValue)}
               </span>
-              <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A89880' }}>
+              <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 12, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A89880' }}>
                 Est. Market Value
               </span>
             </div>
@@ -522,7 +522,7 @@ export default function AddWatchConfirmPage() {
                   }}
                 >
                   <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: '#A89880' }}>{label}</span>
-                  <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 500, color: '#1A1410', textAlign: 'right' }}>{value}</span>
+                  <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 12, fontWeight: 500, color: '#1A1410', textAlign: 'right' }}>{value}</span>
                 </div>
               ))}
             </div>
@@ -538,14 +538,14 @@ export default function AddWatchConfirmPage() {
                 marginBottom: 18,
               }}>
                 <div style={{
-                  fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600,
+                  fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600,
                   letterSpacing: '0.12em', textTransform: 'uppercase', color: '#2D6A2D', marginBottom: 6,
                 }}>
                   ✓ {ownedInstances.length === 1 ? 'You already have one of these' : `You have ${ownedInstances.length} of these`}
                 </div>
 
                 {ownedInstances.length === 1 ? (
-                  <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#1A1410', lineHeight: 1.5, marginBottom: 14 }}>
+                  <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 14, color: '#1A1410', lineHeight: 1.5, marginBottom: 14 }}>
                     Added{ownedInstances[0].purchaseDate ? ` ${ownedInstances[0].purchaseDate}` : ''}{ownedInstances[0].condition ? ` · ${ownedInstances[0].condition}` : ''}.
                   </div>
                 ) : (
@@ -563,7 +563,7 @@ export default function AddWatchConfirmPage() {
                           border: '1px solid #DCEAD9',
                           borderRadius: 6,
                           fontFamily: 'var(--font-dm-sans)',
-                          fontSize: 11,
+                          fontSize: 12,
                           color: '#1A1410',
                         }}
                       >
@@ -573,7 +573,7 @@ export default function AddWatchConfirmPage() {
                         </span>
                         <Link
                           href={`/collection/watch/${inst.id}`}
-                          style={{ color: '#C9A84C', textDecoration: 'none', fontWeight: 500 }}
+                          style={{ color: brand.colors.goldDeep, textDecoration: 'none', fontWeight: 500 }}
                         >
                           Manage →
                         </Link>
@@ -704,7 +704,7 @@ export default function AddWatchConfirmPage() {
                       <div
                         style={{
                           fontFamily: 'var(--font-dm-sans)',
-                          fontSize: 10.5,
+                          fontSize: 12,
                           letterSpacing: '0.03em',
                           paddingLeft: 20,
                           color: active ? 'rgba(250,248,244,0.6)' : '#A89880',
@@ -719,7 +719,7 @@ export default function AddWatchConfirmPage() {
               <div
                 style={{
                   fontFamily: 'var(--font-dm-sans)',
-                  fontSize: 11,
+                  fontSize: 12,
                   color: '#A89880',
                   lineHeight: 1.5,
                   marginTop: 9,
@@ -740,7 +740,7 @@ export default function AddWatchConfirmPage() {
                       <span
                         style={{
                           fontFamily: 'var(--font-dm-sans)',
-                          fontSize: 10.5,
+                          fontSize: 12,
                           color: conditionNudge ? '#8A6A10' : '#A89880',
                           fontStyle: 'italic',
                           transition: 'color 0.2s',
@@ -857,12 +857,12 @@ export default function AddWatchConfirmPage() {
                           <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: 20, color: '#1A1410', lineHeight: 1.1 }}>
                             {box.name}
                           </div>
-                          <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, color: '#A89880', marginTop: 2 }}>
+                          <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#A89880', marginTop: 2 }}>
                             {box.entries.length} watches
                           </div>
                         </div>
                         {active && (
-                          <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#C9A84C' }}>
+                          <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: brand.colors.goldDeep }}>
                             Selected
                           </span>
                         )}

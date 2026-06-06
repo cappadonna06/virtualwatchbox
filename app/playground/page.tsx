@@ -37,7 +37,7 @@ import CollectionStats from '@/components/collection/CollectionStats'
 import ShareBoxModal, { type ShareFlags } from '@/components/collection/ShareBoxModal'
 import SyncRibbon from '@/components/collection/SyncRibbon'
 import WatchboxHeader from '@/components/collection/WatchboxHeader'
-import { brand } from '@/lib/brand'
+import { brand, masthead } from '@/lib/brand'
 
 const PV_W_PAD = 38
 const PV_H_PAD = 45
@@ -440,10 +440,10 @@ function PlaygroundPageInner() {
         <>
           <div style={{ padding: '40px 56px 0' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 18, flexWrap: 'wrap', marginBottom: 28 }}>
-              <h1 style={{ fontFamily: brand.font.serif, fontSize: 48, fontWeight: 400, color: brand.colors.ink, margin: 0, lineHeight: 1.1 }}>
+              <h1 style={masthead.title}>
                 Playground
               </h1>
-              <p style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, margin: 0, letterSpacing: '0.02em' }}>
+              <p style={masthead.subtitle}>
                 Build your dream collection. No limits.
               </p>
             </div>
@@ -476,7 +476,7 @@ function PlaygroundPageInner() {
                   }}
                 >
                   {box.name}
-                  <span style={{ fontSize: 10, color: isActive ? brand.colors.muted : brand.colors.borderLight, fontVariantNumeric: 'tabular-nums' }}>
+                  <span style={{ fontSize: 12, color: isActive ? brand.colors.muted : brand.colors.borderLight, fontVariantNumeric: 'tabular-nums' }}>
                     · {box.entries.length}
                   </span>
                 </button>
@@ -592,7 +592,7 @@ function PlaygroundPageInner() {
                       key={tag}
                       style={{
                         fontFamily: brand.font.sans,
-                        fontSize: 9.5,
+                        fontSize: 11,
                         padding: '2px 9px',
                         borderRadius: brand.radius.pill,
                         border: `1px solid ${brand.colors.border}`,
@@ -610,7 +610,7 @@ function PlaygroundPageInner() {
               <span
                 style={{
                   fontFamily: brand.font.sans,
-                  fontSize: 10.5,
+                  fontSize: 12,
                   fontWeight: 500,
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',
@@ -684,7 +684,7 @@ function PlaygroundPageInner() {
                     onClick={() => setDeleteConfirmId(null)}
                     style={{
                       fontFamily: brand.font.sans,
-                      fontSize: 10,
+                      fontSize: 12,
                       fontWeight: 500,
                       letterSpacing: '0.06em',
                       padding: '6px 10px',
@@ -701,7 +701,7 @@ function PlaygroundPageInner() {
                     onClick={handleDeleteBox}
                     style={{
                       fontFamily: brand.font.sans,
-                      fontSize: 10,
+                      fontSize: 12,
                       fontWeight: 600,
                       letterSpacing: '0.06em',
                       padding: '6px 10px',
@@ -947,13 +947,13 @@ function PlaygroundPageInner() {
               padding: 18,
             }}
           >
-            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 6 }}>
+            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 6 }}>
               Remove Watch
             </div>
             <div style={{ fontFamily: 'var(--font-cormorant)', fontSize: 28, color: '#1A1410', lineHeight: 1.1, marginBottom: 8 }}>
               Delete from Playground?
             </div>
-            <p style={{ margin: '0 0 16px', fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#A89880', lineHeight: 1.5 }}>
+            <p style={{ margin: '0 0 16px', fontFamily: 'var(--font-dm-sans)', fontSize: 14, color: '#A89880', lineHeight: 1.5 }}>
               {deleteEntryTarget.displayWatch.brand} {deleteEntryTarget.displayWatch.model} will be removed from this box.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
@@ -1044,7 +1044,7 @@ function RenameBoxModal({
         </div>
 
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, fontFamily: brand.font.sans, marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, fontFamily: brand.font.sans, marginBottom: 8 }}>
             Box Name
           </div>
           <input
@@ -1153,13 +1153,13 @@ function DeleteBoxConfirmModal({
           padding: 18,
         }}
       >
-        <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
           Delete Box
         </div>
         <div style={{ fontFamily: brand.font.serif, fontSize: 28, color: brand.colors.ink, lineHeight: 1.1, marginBottom: 8 }}>
           Remove this box?
         </div>
-        <p style={{ margin: '0 0 16px', fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.5 }}>
+        <p style={{ margin: '0 0 16px', fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, lineHeight: 1.5 }}>
           This removes the current playground box and its watch list.
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
@@ -1309,11 +1309,11 @@ function WatchboxView({
             <div
               style={{
                 fontFamily: brand.font.sans,
-                fontSize: 9.5,
+                fontSize: 11,
                 fontWeight: 600,
                 letterSpacing: '0.14em',
                 textTransform: 'uppercase',
-                color: brand.colors.gold,
+                color: brand.colors.goldDeep,
                 marginBottom: 6,
               }}
             >
@@ -1334,7 +1334,7 @@ function WatchboxView({
               style={{
                 margin: '0 0 14px',
                 fontFamily: brand.font.sans,
-                fontSize: 12,
+                fontSize: 14,
                 color: brand.colors.mutedDark,
                 lineHeight: 1.5,
               }}
@@ -1391,7 +1391,7 @@ function WatchboxView({
           <div
             style={{
               fontFamily: brand.font.sans,
-              fontSize: 11,
+              fontSize: 12,
               letterSpacing: '0.06em',
               color: brand.colors.muted,
               textAlign: 'center',
@@ -1422,7 +1422,7 @@ function WatchboxView({
 
         <div ref={customizerRef} className="configurator-wrap" style={{ marginTop: 10, position: 'relative' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, color: '#A89880' }}>
+            <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#A89880' }}>
               {fr.label} · {ln.label} · {sc.n} slots
             </span>
             <button
@@ -1432,7 +1432,7 @@ function WatchboxView({
                 alignItems: 'center',
                 gap: 5,
                 fontFamily: 'var(--font-dm-sans)',
-                fontSize: 10,
+                fontSize: 12,
                 fontWeight: 500,
                 letterSpacing: '0.06em',
                 padding: '5px 12px',
@@ -1470,7 +1470,7 @@ function WatchboxView({
             }}
           >
             <div style={{ padding: '9px 12px', borderBottom: '1px solid #F0EBE3', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', flexShrink: 0, width: 48 }}>
+              <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', flexShrink: 0, width: 48 }}>
                 Slots
               </span>
               <div style={{ display: 'flex', gap: 4 }}>
@@ -1480,13 +1480,13 @@ function WatchboxView({
                     onClick={() => onSlotCountChange(slot.n)}
                     style={{
                       fontFamily: 'var(--font-dm-sans)',
-                      fontSize: 10,
+                      fontSize: 12,
                       fontWeight: 500,
                       padding: '3px 9px',
                       borderRadius: 4,
                       border: box.slotCount === slot.n ? '1px solid #C9A84C' : '1px solid #E0DAD0',
                       background: box.slotCount === slot.n ? 'rgba(201,168,76,0.06)' : 'transparent',
-                      color: box.slotCount === slot.n ? '#C9A84C' : '#A89880',
+                      color: box.slotCount === slot.n ? brand.colors.goldDeep : '#A89880',
                       cursor: 'pointer',
                       transition: 'all 0.15s',
                     }}
@@ -1497,7 +1497,7 @@ function WatchboxView({
               </div>
             </div>
             <div style={{ padding: '9px 12px', borderBottom: '1px solid #F0EBE3', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', flexShrink: 0, width: 48 }}>
+              <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', flexShrink: 0, width: 48 }}>
                 Frame
               </span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 24px)', gap: 7 }}>
@@ -1517,7 +1517,7 @@ function WatchboxView({
                         transition: 'border-color 0.15s',
                       }}
                     />
-                    <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 8, color: box.frame === frame.id ? '#1A1410' : '#A89880', fontWeight: box.frame === frame.id ? 700 : 400, textAlign: 'center', marginTop: 6 }}>
+                    <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: box.frame === frame.id ? '#1A1410' : '#A89880', fontWeight: box.frame === frame.id ? 700 : 400, textAlign: 'center', marginTop: 6 }}>
                       {frame.label.split(' ')[0]}
                     </div>
                   </div>
@@ -1525,7 +1525,7 @@ function WatchboxView({
               </div>
             </div>
             <div style={{ padding: '9px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', flexShrink: 0, width: 48 }}>
+              <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', flexShrink: 0, width: 48 }}>
                 Lining
               </span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 24px)', gap: 7 }}>
@@ -1545,7 +1545,7 @@ function WatchboxView({
                         transition: 'border-color 0.15s',
                       }}
                     />
-                    <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 8, color: box.lining === lining.id ? '#1A1410' : '#A89880', fontWeight: box.lining === lining.id ? 700 : 400, textAlign: 'center', marginTop: 6 }}>
+                    <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: box.lining === lining.id ? '#1A1410' : '#A89880', fontWeight: box.lining === lining.id ? 700 : 400, textAlign: 'center', marginTop: 6 }}>
                       {lining.label}
                     </div>
                   </div>
@@ -1564,7 +1564,7 @@ function WatchboxView({
           margin: '14px auto 0',
           width: 'fit-content',
           fontFamily: 'var(--font-dm-sans)',
-          fontSize: 10,
+          fontSize: 12,
           fontWeight: 600,
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
@@ -1609,7 +1609,7 @@ function WatchboxView({
           </div>
           <div style={{ padding: '12px 20px 0', flexShrink: 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880' }}>
+              <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880' }}>
                 Customize Watchbox
               </span>
               <button
@@ -1635,7 +1635,7 @@ function WatchboxView({
           </div>
           <div style={{ padding: '0 20px 32px', background: '#FFFFFF', flexShrink: 0 }}>
             <div style={{ padding: '14px 0', borderBottom: '1px solid #F0EBE3' }}>
-              <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
+              <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
                 Slots
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
@@ -1646,13 +1646,13 @@ function WatchboxView({
                     style={{
                       flex: 1,
                       fontFamily: 'var(--font-dm-sans)',
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: 500,
                       padding: '8px 0',
                       borderRadius: 6,
                       border: box.slotCount === slot.n ? '1px solid #C9A84C' : '1px solid #E0DAD0',
                       background: box.slotCount === slot.n ? 'rgba(201,168,76,0.06)' : 'transparent',
-                      color: box.slotCount === slot.n ? '#C9A84C' : '#A89880',
+                      color: box.slotCount === slot.n ? brand.colors.goldDeep : '#A89880',
                       cursor: 'pointer',
                       transition: 'all 0.15s',
                     }}
@@ -1663,27 +1663,27 @@ function WatchboxView({
               </div>
             </div>
             <div style={{ padding: '14px 0', borderBottom: '1px solid #F0EBE3' }}>
-              <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
-                Frame · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0, fontSize: 10 }}>{fr.label}</span>
+              <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
+                Frame · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0, fontSize: 12 }}>{fr.label}</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 4 }}>
                 {FRAMES.map(frame => (
                   <div key={frame.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, cursor: 'pointer' }} onClick={() => onFrameChange(frame.id)}>
                     <div style={{ width: 34, height: 34, borderRadius: '50%', background: frame.swatchColor, border: box.frame === frame.id ? '2.5px solid #C9A84C' : '2.5px solid transparent', outline: box.frame === frame.id ? '1.5px solid rgba(201,168,76,0.3)' : '1.5px solid transparent', outlineOffset: 2, boxShadow: '0 1px 4px rgba(0,0,0,0.18)', transition: 'border-color 0.15s, outline-color 0.15s' }} />
-                    <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, color: box.frame === frame.id ? '#1A1410' : '#A89880', textAlign: 'center', letterSpacing: '0.02em', transition: 'color 0.15s' }}>{frame.label.split(' ')[0]}</span>
+                    <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: box.frame === frame.id ? '#1A1410' : '#A89880', textAlign: 'center', letterSpacing: '0.02em', transition: 'color 0.15s' }}>{frame.label.split(' ')[0]}</span>
                   </div>
                 ))}
               </div>
             </div>
             <div style={{ padding: '14px 0 0' }}>
-              <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
-                Lining · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0, fontSize: 10 }}>{ln.label}</span>
+              <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
+                Lining · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0, fontSize: 12 }}>{ln.label}</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 4 }}>
                 {LININGS.map(lining => (
                   <div key={lining.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, cursor: 'pointer' }} onClick={() => onLiningChange(lining.id)}>
                     <div style={{ width: 34, height: 34, borderRadius: '50%', background: lining.color, border: box.lining === lining.id ? '2.5px solid #C9A84C' : lining.id === 'cream' ? '2.5px solid #e0dbd0' : '2.5px solid transparent', outline: box.lining === lining.id ? '1.5px solid rgba(201,168,76,0.3)' : '1.5px solid transparent', outlineOffset: 2, boxShadow: '0 1px 4px rgba(0,0,0,0.18)', transition: 'border-color 0.15s, outline-color 0.15s' }} />
-                    <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, color: box.lining === lining.id ? '#1A1410' : '#A89880', textAlign: 'center', letterSpacing: '0.02em', transition: 'color 0.15s' }}>{lining.label.split(' ')[0]}</span>
+                    <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, color: box.lining === lining.id ? '#1A1410' : '#A89880', textAlign: 'center', letterSpacing: '0.02em', transition: 'color 0.15s' }}>{lining.label.split(' ')[0]}</span>
                   </div>
                 ))}
               </div>
@@ -1766,7 +1766,7 @@ function NewBoxModal({ onClose, onCreate }: NewBoxModalProps) {
           zIndex: 201,
         }}
       >
-        <div style={{ fontFamily: brand.font.sans, fontSize: 9.5, fontWeight: 500, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
           New Box
         </div>
         <h3 style={{ fontFamily: brand.font.serif, fontSize: 28, fontWeight: 400, color: brand.colors.ink, margin: '0 0 18px', lineHeight: 1.1 }}>
@@ -1774,7 +1774,7 @@ function NewBoxModal({ onClose, onCreate }: NewBoxModalProps) {
         </h3>
 
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', fontFamily: 'var(--font-dm-sans)', marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', fontFamily: 'var(--font-dm-sans)', marginBottom: 8 }}>
             Box Name
           </div>
           <input
@@ -1803,7 +1803,7 @@ function NewBoxModal({ onClose, onCreate }: NewBoxModalProps) {
         </div>
 
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', fontFamily: 'var(--font-dm-sans)', marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', fontFamily: 'var(--font-dm-sans)', marginBottom: 8 }}>
             Tags (Optional)
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -1815,12 +1815,12 @@ function NewBoxModal({ onClose, onCreate }: NewBoxModalProps) {
                   onClick={() => toggleTag(tag)}
                   style={{
                     fontFamily: 'var(--font-dm-sans)',
-                    fontSize: 10,
+                    fontSize: 12,
                     padding: '5px 10px',
                     borderRadius: 20,
                     border: active ? '1px solid #C9A84C' : '1px solid #E0DAD0',
                     background: active ? 'rgba(201,168,76,0.08)' : '#FFFFFF',
-                    color: active ? '#C9A84C' : '#A89880',
+                    color: active ? brand.colors.goldDeep : '#A89880',
                     cursor: 'pointer',
                   }}
                 >

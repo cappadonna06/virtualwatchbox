@@ -72,13 +72,13 @@ export default function OwnedWatchDetailPage() {
         <div style={{ fontFamily: brand.font.serif, fontSize: 22, color: brand.colors.ink, marginBottom: 8 }}>
           Watch not found
         </div>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, marginBottom: 18 }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.muted, marginBottom: 18 }}>
           We couldn&apos;t find this watch in your collection.
         </div>
         <Link
           href={backHref}
           style={{
-            fontFamily: brand.font.sans, fontSize: 12,
+            fontFamily: brand.font.sans, fontSize: 14,
             color: brand.colors.ink, textDecoration: 'underline',
             textUnderlineOffset: 2,
           }}
@@ -197,7 +197,7 @@ export default function OwnedWatchDetailPage() {
             }}>
               <span style={{ width: 16, height: 1, background: brand.colors.borderMid }} />
               <span style={{
-                fontFamily: brand.font.sans, fontSize: 9, fontWeight: 500,
+                fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500,
                 letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.muted,
               }}>
                 {from === 'service-room' ? 'Service Dossier' : 'My Watch'}
@@ -205,8 +205,8 @@ export default function OwnedWatchDetailPage() {
             </div>
 
             <div style={{
-              fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600,
-              letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 8,
+              fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600,
+              letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.goldDeep, marginBottom: 8,
             }}>
               {watch.brand}
             </div>
@@ -245,7 +245,7 @@ export default function OwnedWatchDetailPage() {
             </div>
 
             <div style={{
-              fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, letterSpacing: '0.02em',
+              fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.muted, letterSpacing: '0.02em',
               marginBottom: 16,
             }}>
               Ref. {watch.reference}
@@ -259,12 +259,12 @@ export default function OwnedWatchDetailPage() {
               }}>
                 <span style={{
                   fontFamily: brand.font.serif, fontSize: isCompact ? 32 : 36,
-                  fontWeight: 400, color: brand.colors.gold, lineHeight: 1,
+                  fontWeight: 400, color: brand.colors.goldDeep, lineHeight: 1,
                 }}>
                   {fmt(watch.estimatedValue)}
                 </span>
                 <span style={{
-                  fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500,
+                  fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500,
                   letterSpacing: '0.1em', textTransform: 'uppercase', color: brand.colors.muted,
                 }}>
                   Est. Market Value
@@ -286,7 +286,7 @@ export default function OwnedWatchDetailPage() {
                   }}
                 >
                   <span style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted }}>{label}</span>
-                  <span style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, color: brand.colors.ink, textAlign: 'right' }}>{value}</span>
+                  <span style={{ fontFamily: brand.font.sans, fontSize: 14, fontWeight: 500, color: brand.colors.ink, textAlign: 'right' }}>{value}</span>
                 </div>
               ))}
             </div>
@@ -303,7 +303,7 @@ export default function OwnedWatchDetailPage() {
                       background: brand.colors.slot,
                       border: `1px solid ${brand.colors.borderLight}`,
                       fontFamily: brand.font.sans,
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: 600,
                       letterSpacing: '0.08em',
                       textTransform: 'uppercase',
@@ -410,7 +410,7 @@ export default function OwnedWatchDetailPage() {
             <div style={{ fontFamily: brand.font.serif, fontSize: 20, color: brand.colors.ink, marginBottom: 8 }}>
               Remove this watch?
             </div>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, marginBottom: 20, lineHeight: 1.5 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.muted, marginBottom: 20, lineHeight: 1.5 }}>
               {watch.brand} {watch.model} will be removed from your collection. Photos you uploaded for this watch will also be deleted.
             </div>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>

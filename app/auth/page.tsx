@@ -155,7 +155,7 @@ function AuthPageInner() {
               <p
                 style={{
                   fontFamily: brand.font.sans,
-                  fontSize: 13,
+                  fontSize: 15,
                   color: brand.colors.muted,
                   margin: '0 0 24px',
                   lineHeight: 1.6,
@@ -168,7 +168,7 @@ function AuthPageInner() {
                 onClick={() => setAuthState('idle')}
                 style={{
                   fontFamily: brand.font.sans,
-                  fontSize: 12,
+                  fontSize: 14,
                   color: brand.colors.muted,
                   background: 'none',
                   border: 'none',
@@ -199,7 +199,7 @@ function AuthPageInner() {
               <p
                 style={{
                   fontFamily: brand.font.sans,
-                  fontSize: 13,
+                  fontSize: 15,
                   color: brand.colors.muted,
                   margin: '0 0 18px',
                   textAlign: 'center',
@@ -216,7 +216,7 @@ function AuthPageInner() {
                   margin: '0 0 26px',
                   textAlign: 'center',
                   fontFamily: brand.font.sans,
-                  fontSize: 12,
+                  fontSize: 14,
                   color: brand.colors.muted,
                   lineHeight: 1.7,
                   letterSpacing: '0.01em',
@@ -230,7 +230,7 @@ function AuthPageInner() {
               <p
                 style={{
                   fontFamily: brand.font.sans,
-                  fontSize: 12,
+                  fontSize: 14,
                   color: brand.colors.muted,
                   margin: '0 0 10px',
                   textAlign: 'center',
@@ -238,9 +238,9 @@ function AuthPageInner() {
                 }}
               >
                 By continuing, you agree to our{' '}
-                <Link href="/terms" style={{ color: brand.colors.gold, textDecoration: 'none' }}>Terms</Link>{' '}
+                <Link href="/terms" style={{ color: brand.colors.goldDeep, textDecoration: 'none' }}>Terms</Link>{' '}
                 and{' '}
-                <Link href="/privacy" style={{ color: brand.colors.gold, textDecoration: 'none' }}>Privacy Policy</Link>.
+                <Link href="/privacy" style={{ color: brand.colors.goldDeep, textDecoration: 'none' }}>Privacy Policy</Link>.
               </p>
 
               <button
@@ -341,7 +341,7 @@ function AuthPageInner() {
                   <p
                     style={{
                       fontFamily: brand.font.sans,
-                      fontSize: 12,
+                      fontSize: 14,
                       color: '#D04040',
                       margin: '0 0 12px',
                     }}
@@ -360,7 +360,7 @@ function AuthPageInner() {
                     border: 'none',
                     borderRadius: brand.radius.md,
                     fontFamily: brand.font.sans,
-                    fontSize: 13,
+                    fontSize: 15,
                     fontWeight: 500,
                     letterSpacing: '0.04em',
                     cursor: busy ? 'not-allowed' : 'pointer',
@@ -380,7 +380,7 @@ function AuthPageInner() {
             href="/"
             style={{
               fontFamily: brand.font.sans,
-              fontSize: 13,
+              fontSize: 15,
               color: brand.colors.muted,
               textDecoration: 'none',
               letterSpacing: '0.02em',

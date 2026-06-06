@@ -258,14 +258,14 @@ const PhotoSearch = forwardRef<PhotoSearchHandle, Props>(function PhotoSearch(
               isMobile={isMobile}
             />
           )}
-          <div style={{ marginTop: 22, fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
+          <div style={{ marginTop: 22, fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted }}>
             Not the right watch?{' '}
             <button
               type="button"
               onClick={() => { onSwitchToSearch(prefillFromAi()); reset() }}
               style={{
                 background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-                fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink,
+                fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.ink,
                 textDecoration: 'underline', textUnderlineOffset: 2,
               }}
             >
@@ -296,14 +296,14 @@ const PhotoSearch = forwardRef<PhotoSearchHandle, Props>(function PhotoSearch(
               variant="no_match"
             />
           )}
-          <div style={{ marginTop: 22, fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center' }}>
+          <div style={{ marginTop: 22, fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center' }}>
             <span>Not the right watch?</span>
             <button
               type="button"
               onClick={() => { onSwitchToSearch(prefillFromAi()); reset() }}
               style={{
                 background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-                fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink,
+                fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.ink,
                 textDecoration: 'underline', textUnderlineOffset: 2,
               }}
             >
@@ -315,7 +315,7 @@ const PhotoSearch = forwardRef<PhotoSearchHandle, Props>(function PhotoSearch(
                 `Catalog request: ${aiResult.brand} ${aiResult.model}${referenceCandidates[0] ? ` ${referenceCandidates[0].reference}` : ''}`,
               )}`}
               style={{
-                fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink,
+                fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.ink,
                 textDecoration: 'underline', textUnderlineOffset: 2,
               }}
             >
@@ -364,7 +364,7 @@ const PhotoSearch = forwardRef<PhotoSearchHandle, Props>(function PhotoSearch(
             gap: 14, padding: '60px 20px', textAlign: 'center',
           }}
         >
-          <div style={{ fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.ink, maxWidth: 360 }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.ink, maxWidth: 360 }}>
             Couldn&apos;t identify this watch — try a clearer photo of the dial.
           </div>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -474,7 +474,7 @@ function ConciergeChip() {
       background: 'rgba(26, 20, 16, 0.92)',
       color: brand.colors.bg,
       fontFamily: brand.font.sans,
-      fontSize: 10,
+      fontSize: 12,
       fontWeight: 500,
       letterSpacing: '0.12em',
       textTransform: 'uppercase',
@@ -592,7 +592,7 @@ function ConciergeLoading({
         </div>
         <div style={{
           fontFamily: brand.font.sans,
-          fontSize: 12,
+          fontSize: 14,
           color: brand.colors.muted,
           marginBottom: 18,
         }}>
@@ -628,7 +628,7 @@ function ConciergeLoading({
                 <div style={{ flex: 1 }}>
                   <div style={{
                     fontFamily: brand.font.sans,
-                    fontSize: 13,
+                    fontSize: 15,
                     fontWeight: isCurrent ? 600 : 500,
                     color: isCurrent ? brand.colors.ink : (isDone ? brand.colors.muted : brand.colors.ink),
                     letterSpacing: '0.02em',
@@ -638,7 +638,7 @@ function ConciergeLoading({
                   {isCurrent && (
                     <div style={{
                       fontFamily: brand.font.sans,
-                      fontSize: 11,
+                      fontSize: 12,
                       color: brand.colors.muted,
                       marginTop: 2,
                     }}>
@@ -792,7 +792,7 @@ function PrimaryMatchCard({
           background: '#E8F4E8',
           color: '#2D6A2D',
           fontFamily: brand.font.sans,
-          fontSize: 10,
+          fontSize: 12,
           fontWeight: 600,
           letterSpacing: '0.1em',
           textTransform: 'uppercase',
@@ -800,18 +800,18 @@ function PrimaryMatchCard({
         }}>
           ✓ Match found
         </div>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 4 }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.goldDeep, marginBottom: 4 }}>
           {watch.brand}
         </div>
         <div style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 26 : 32, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05, marginBottom: 4 }}>
           {watch.model}
         </div>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, letterSpacing: '0.02em', marginBottom: 14 }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, letterSpacing: '0.02em', marginBottom: 14 }}>
           Ref. {watch.reference}
         </div>
         <div style={{
           display: 'flex', flexWrap: 'wrap', gap: '4px 12px',
-          fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink,
+          fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.ink,
           marginBottom: 18,
         }}>
           <span>{watch.caseSizeMm}mm</span>
@@ -822,7 +822,7 @@ function PrimaryMatchCard({
           {watch.estimatedValue ? (
             <>
               <span style={{ color: brand.colors.borderMid }}>·</span>
-              <span style={{ color: brand.colors.gold, fontFamily: brand.font.serif, fontSize: 14 }}>
+              <span style={{ color: brand.colors.goldDeep, fontFamily: brand.font.serif, fontSize: 14 }}>
                 {fmt(watch.estimatedValue)}
               </span>
             </>
@@ -854,7 +854,7 @@ function PrimaryMatchCard({
           {busy ? 'Saving photo…' : 'Add to my watchbox →'}
         </Link>
         {ai.identificationNotes && (
-          <div style={{ marginTop: 14, fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, fontStyle: 'italic' }}>
+          <div style={{ marginTop: 14, fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, fontStyle: 'italic' }}>
             Concierge note: {ai.identificationNotes}
           </div>
         )}
@@ -893,7 +893,7 @@ function NextBestMatches({
           <span style={{ color: brand.colors.gold, fontSize: 12, lineHeight: 1 }}>✦</span>
           <span style={{
             fontFamily: brand.font.sans,
-            fontSize: 10,
+            fontSize: 12,
             fontWeight: 600,
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
@@ -918,7 +918,7 @@ function NextBestMatches({
       </div>
       <div style={{
         fontFamily: brand.font.sans,
-        fontSize: 12,
+        fontSize: 14,
         color: brand.colors.muted,
         marginBottom: 22,
         textAlign: 'center',
@@ -999,7 +999,7 @@ function NextBestMatchCard({
         right: 12,
         fontFamily: brand.font.serif,
         fontSize: 12,
-        color: brand.colors.gold,
+        color: brand.colors.goldDeep,
         letterSpacing: '0.04em',
       }}>
         #{rank}
@@ -1029,11 +1029,11 @@ function NextBestMatchCard({
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingRight: 18 }}>
         <div style={{
           fontFamily: brand.font.sans,
-          fontSize: 9.5,
+          fontSize: 11,
           fontWeight: 600,
           letterSpacing: '0.14em',
           textTransform: 'uppercase',
-          color: brand.colors.gold,
+          color: brand.colors.goldDeep,
           marginBottom: 2,
         }}>
           {watch.brand}
@@ -1053,7 +1053,7 @@ function NextBestMatchCard({
         </div>
         <div style={{
           fontFamily: brand.font.sans,
-          fontSize: 11,
+          fontSize: 12,
           color: brand.colors.muted,
           letterSpacing: '0.02em',
           marginBottom: 8,
@@ -1072,7 +1072,7 @@ function NextBestMatchCard({
         }}>
           <span style={{
             fontFamily: brand.font.sans,
-            fontSize: 11,
+            fontSize: 12,
             color: brand.colors.ink,
             whiteSpace: 'nowrap',
           }}>
@@ -1082,7 +1082,7 @@ function NextBestMatchCard({
             <span style={{
               fontFamily: brand.font.serif,
               fontSize: 14,
-              color: brand.colors.gold,
+              color: brand.colors.goldDeep,
               whiteSpace: 'nowrap',
             }}>
               {fmt(watch.estimatedValue)}
@@ -1170,7 +1170,7 @@ function DiscoveredWatchCard({
           background: brand.colors.goldWash,
           color: brand.colors.ink,
           fontFamily: brand.font.sans,
-          fontSize: 10,
+          fontSize: 12,
           fontWeight: 600,
           letterSpacing: '0.1em',
           textTransform: 'uppercase',
@@ -1180,25 +1180,25 @@ function DiscoveredWatchCard({
           <span style={{ color: brand.colors.gold, fontSize: 11, lineHeight: 1 }}>✦</span>
           Discovered by Concierge
         </div>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 4 }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.goldDeep, marginBottom: 4 }}>
           {ai.brand || 'Unknown brand'}
         </div>
         <div style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 26 : 32, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05, marginBottom: 4 }}>
           {ai.model || 'Unknown model'}
         </div>
         {primaryRef && (
-          <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, letterSpacing: '0.02em', marginBottom: altRefs.length > 0 ? 2 : 14 }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, letterSpacing: '0.02em', marginBottom: altRefs.length > 0 ? 2 : 14 }}>
             Likely ref. {primaryRef}
           </div>
         )}
         {altRefs.length > 0 && (
-          <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginBottom: 14 }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, marginBottom: 14 }}>
             Or: {altRefs.join(', ')}
           </div>
         )}
         <div style={{
           display: 'flex', flexWrap: 'wrap', gap: '4px 12px',
-          fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink,
+          fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.ink,
           marginBottom: 14,
         }}>
           {ai.caseSize ? <span>{ai.caseSize}mm</span> : null}
@@ -1212,7 +1212,7 @@ function DiscoveredWatchCard({
           background: brand.colors.slot,
           border: `1px solid ${brand.colors.borderLight}`,
           fontFamily: brand.font.sans,
-          fontSize: 11,
+          fontSize: 12,
           color: brand.colors.muted,
           lineHeight: 1.5,
         }}>
@@ -1394,7 +1394,7 @@ function NotAWatchPanel({
               background: 'rgba(255,255,255,0.92)',
               border: `1px solid ${brand.colors.border}`,
               fontFamily: brand.font.sans,
-              fontSize: 9.5,
+              fontSize: 11,
               fontWeight: 600,
               letterSpacing: '0.1em',
               textTransform: 'uppercase',
@@ -1414,7 +1414,7 @@ function NotAWatchPanel({
           background: brand.colors.goldWash,
           color: brand.colors.ink,
           fontFamily: brand.font.sans,
-          fontSize: 10,
+          fontSize: 12,
           fontWeight: 600,
           letterSpacing: '0.1em',
           textTransform: 'uppercase',
@@ -1436,7 +1436,7 @@ function NotAWatchPanel({
         </div>
         <div style={{
           fontFamily: brand.font.sans,
-          fontSize: 13,
+          fontSize: 15,
           color: brand.colors.muted,
           lineHeight: 1.55,
           marginBottom: 18,
@@ -1454,7 +1454,7 @@ function NotAWatchPanel({
           border: `1px solid ${brand.colors.borderLight}`,
           borderRadius: brand.radius.md,
         }}>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 4 }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 4 }}>
             Tips for a great identification
           </div>
           <TipRow text="Fill the frame with the watch — wrist or close-up dial both work." />
@@ -1529,7 +1529,7 @@ function TipRow({ text }: { text: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
       <span style={{ color: brand.colors.gold, fontSize: 11, lineHeight: 1.5, flexShrink: 0 }}>·</span>
-      <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink, lineHeight: 1.5 }}>
+      <span style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.ink, lineHeight: 1.5 }}>
         {text}
       </span>
     </div>
@@ -1617,7 +1617,7 @@ function CameraModal({
               padding: 0,
               cursor: 'pointer',
               fontFamily: brand.font.sans,
-              fontSize: 12,
+              fontSize: 14,
               color: brand.colors.muted,
               textDecoration: 'underline',
               textUnderlineOffset: 2,
@@ -1663,7 +1663,7 @@ function ResultHeader({
           onClick={onChange}
           style={{
             background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-            fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted,
+            fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted,
             textDecoration: 'underline', textUnderlineOffset: 2, alignSelf: 'flex-start',
           }}
         >
@@ -1671,7 +1671,7 @@ function ResultHeader({
         </button>
         <div
           style={{
-            fontFamily: brand.font.sans, fontSize: 12,
+            fontFamily: brand.font.sans, fontSize: 14,
             color: brand.colors.muted, fontStyle: 'italic',
           }}
         >

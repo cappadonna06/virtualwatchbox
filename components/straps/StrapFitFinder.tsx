@@ -34,14 +34,14 @@ function WatchTile({ watch, count, active, isAll, onClick }: { watch?: StrapDraw
         )}
       </div>
       <div style={{ padding: '11px 2px 0' }}>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 8.5, fontWeight: 600, letterSpacing: '0.13em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.13em', textTransform: 'uppercase', color: brand.colors.goldDeep, marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {isAll ? 'Everything' : watch?.brand}
         </div>
         <div style={{ fontFamily: brand.font.serif, fontSize: 17, color: active ? brand.colors.ink : brand.colors.inkSoft, lineHeight: 1.1, marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {isAll ? 'All straps' : watch?.model}
         </div>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, color: count > 0 ? brand.colors.mutedDark : brand.colors.muted }}>
-          <span style={{ color: count > 0 ? brand.colors.gold : brand.colors.muted, fontWeight: 600 }}>{count}</span>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, color: count > 0 ? brand.colors.mutedDark : brand.colors.muted }}>
+          <span style={{ color: count > 0 ? brand.colors.goldDeep : brand.colors.muted, fontWeight: 600 }}>{count}</span>
           {isAll ? ' in drawer' : (count === 1 ? ' strap fits' : ' straps fit')}
         </div>
       </div>
@@ -65,7 +65,7 @@ export function WatchFocusBar({
   return (
     <section style={{ paddingTop: 4, paddingBottom: 22 }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 14 }}>
-        <Kicker color={brand.colors.gold}>Fit Finder</Kicker>
+        <Kicker color={brand.colors.goldDeep}>Fit Finder</Kicker>
         <span style={{ fontFamily: brand.font.serif, fontStyle: 'italic', fontSize: 15, color: brand.colors.muted }}>
           {focusId ? 'Showing straps for one watch' : 'Pick a watch to see only what fits it'}
         </span>
@@ -96,7 +96,7 @@ export function FocusBanner({ watch, count, onClear }: { watch: StrapDrawerWatch
           : <span style={{ fontFamily: brand.font.serif, fontSize: 24, color: 'rgba(250,248,244,0.6)' }}>{watch.brand.charAt(0)}</span>}
       </div>
       <div style={{ flex: 1, minWidth: 160 }}>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 3 }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 3 }}>
           {watch.braceletType === 'integrated' ? 'Integrated bracelet' : `${watch.lugWidthMm} mm lugs`}
         </div>
         <div style={{ fontFamily: brand.font.serif, fontSize: 18, color: brand.colors.slot, lineHeight: 1.1 }}>
@@ -106,7 +106,7 @@ export function FocusBanner({ watch, count, onClear }: { watch: StrapDrawerWatch
         </div>
       </div>
       <button onClick={onClear} style={{
-        fontFamily: brand.font.sans, fontSize: 10.5, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase',
+        fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase',
         color: brand.colors.slot, background: 'transparent', border: '1px solid rgba(250,248,244,0.3)', borderRadius: brand.radius.btn,
         padding: '8px 14px', cursor: 'pointer', flexShrink: 0,
       }}>Clear</button>

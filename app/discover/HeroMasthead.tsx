@@ -1,6 +1,6 @@
 'use client'
 
-import { brand } from '@/lib/brand'
+import { brand, masthead } from '@/lib/brand'
 
 type Props = {
   personalized: boolean
@@ -31,18 +31,18 @@ export default function HeroMasthead({ personalized, bylineRight, bylineLeft, in
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <Kicker color={brand.colors.ink} size={9.5}>Discover</Kicker>
-              <span style={{ color: brand.colors.borderMid, fontSize: 10 }}>—</span>
-              <Kicker color={brand.colors.muted} size={9.5}>{bylineLeft}</Kicker>
+              <Kicker color={brand.colors.ink}>Discover</Kicker>
+              <span style={{ color: brand.colors.borderMid, fontSize: 12 }}>—</span>
+              <Kicker color={brand.colors.muted}>{bylineLeft}</Kicker>
             </div>
-            <Kicker color={brand.colors.muted} size={9.5}>{bylineRight}</Kicker>
+            <Kicker color={brand.colors.muted}>{bylineRight}</Kicker>
           </div>
 
           <h1
             className="discover-hero-h1"
             style={{
               fontFamily: brand.font.serif,
-              fontWeight: 300,
+              fontWeight: 400,
               fontSize: 72,
               lineHeight: 1,
               letterSpacing: '-0.022em',
@@ -88,27 +88,10 @@ export default function HeroMasthead({ personalized, bylineRight, bylineLeft, in
         }}
       >
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '24px 16px 20px' }}>
-          <h1
-            style={{
-              fontFamily: brand.font.serif,
-              fontSize: 48,
-              fontWeight: 400,
-              lineHeight: 1.08,
-              color: brand.colors.slot,
-              margin: 0,
-            }}
-          >
+          <h1 style={masthead.titleOnDark}>
             Discover
           </h1>
-          <p
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 14,
-              color: 'rgba(250,248,244,0.55)',
-              margin: '6px 0 0',
-              letterSpacing: '0.02em',
-            }}
-          >
+          <p style={{ ...masthead.subtitleOnDark, marginTop: 6 }}>
             {personalized ? (
               <>Personalized picks based on your collection.</>
             ) : (
@@ -121,18 +104,9 @@ export default function HeroMasthead({ personalized, bylineRight, bylineLeft, in
   )
 }
 
-function Kicker({ children, color, size = 10 }: { children: React.ReactNode; color: string; size?: number }) {
+function Kicker({ children, color }: { children: React.ReactNode; color: string }) {
   return (
-    <div
-      style={{
-        fontFamily: brand.font.sans,
-        fontSize: size,
-        fontWeight: 600,
-        letterSpacing: '0.18em',
-        textTransform: 'uppercase',
-        color,
-      }}
-    >
+    <div style={{ ...masthead.eyebrow, color }}>
       {children}
     </div>
   )

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { brand } from '@/lib/brand'
+import { usePrefersReducedMotion } from '@/components/collection/useResponsiveState'
 import { formatRelativeDate } from '@/lib/relativeDate'
 import type { NewsItem } from '@/types/news'
 
@@ -48,6 +49,7 @@ const FALLBACK_ARTICLES: NewsItem[] = [
 
 export default function FeaturesSection() {
   const [articles, setArticles] = useState<NewsItem[] | null>(null)
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   useEffect(() => {
     const ctrl = new AbortController()
@@ -87,16 +89,26 @@ export default function FeaturesSection() {
         position: 'relative',
       }}
     >
-      <header style={{ marginBottom: 36 }}>
+      {/* Desktop-only grid ratio/gap; below 1024px the existing
+          .editorial-news-grid media-query rules in globals.css take over. */}
+      <style jsx>{`
+        @media (min-width: 1024px) {
+          .features-news-grid {
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+            gap: 52px;
+          }
+        }
+      `}</style>
+      <header style={{ marginBottom: 44 }}>
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 10,
-            fontWeight: 500,
-            letterSpacing: '0.18em',
+            fontSize: brand.text.label,
+            fontWeight: 600,
+            letterSpacing: '0.14em',
             textTransform: 'uppercase',
             color: brand.colors.muted,
-            marginBottom: 10,
+            marginBottom: 14,
           }}
         >
           From the Watch World
@@ -105,17 +117,18 @@ export default function FeaturesSection() {
           style={{
             margin: 0,
             fontFamily: brand.font.serif,
-            fontSize: 38,
+            fontSize: brand.text.h2,
             fontWeight: 400,
-            lineHeight: 1.1,
+            lineHeight: 1.08,
+            letterSpacing: '-0.005em',
             color: brand.colors.ink,
           }}
         >
-          What Collectors <em>Are Reading.</em>
+          What Collectors <em style={{ fontStyle: 'italic' }}>Are Reading.</em>
         </h2>
       </header>
 
-      <div className="editorial-news-grid">
+      <div className="editorial-news-grid features-news-grid" style={{ alignItems: 'start' }}>
         {/* Featured story (left) */}
         {!articles ? (
           <FeaturedSkeleton />
@@ -124,35 +137,42 @@ export default function FeaturesSection() {
         ) : null}
 
         {/* Side list (right) */}
-        <div className="editorial-news-side" style={{ display: 'flex', flexDirection: 'column' }}>
+        <div
+          className="editorial-news-side"
+          style={{ display: 'flex', flexDirection: 'column', height: 'auto' }}
+        >
           {!articles &&
             Array.from({ length: 3 }).map((_, i) => (
-              <SideRowSkeleton key={i} isLast={i === 2} />
+              <SideRowSkeleton key={i} isFirst={i === 0} isLast={i === 2} />
             ))}
           {articles &&
             sideList.map((it, i) => (
-              <SideRow key={it.id} item={it} isLast={i === sideList.length - 1} />
+              <SideRow
+                key={it.id}
+                item={it}
+                isFirst={i === 0}
+                isLast={i === sideList.length - 1}
+              />
             ))}
 
           <Link
             href="/news"
             className="features-see-all"
             style={{
-              marginTop: 18,
-              alignSelf: 'flex-end',
+              marginTop: 26,
+              alignSelf: 'flex-start',
               fontFamily: brand.font.sans,
-              fontSize: 11,
-              fontWeight: 500,
-              letterSpacing: '0.18em',
+              fontSize: brand.text.label,
+              fontWeight: 600,
+              letterSpacing: '0.1em',
               textTransform: 'uppercase',
-              color: brand.colors.ink,
+              color: brand.colors.goldDeep,
               textDecoration: 'none',
               display: 'inline-flex',
               alignItems: 'center',
               gap: 10,
-              padding: '8px 0',
-              borderBottom: `1px solid ${brand.colors.borderLight}`,
-              transition: `color ${brand.transition.base}, border-color ${brand.transition.base}`,
+              padding: '4px 0',
+              transition: `color ${brand.transition.base}`,
               flexShrink: 0,
             }}
           >
@@ -161,7 +181,7 @@ export default function FeaturesSection() {
               aria-hidden
               style={{
                 display: 'inline-block',
-                transition: `transform ${brand.transition.base}`,
+                transition: prefersReducedMotion ? 'none' : `transform ${brand.transition.base}`,
               }}
             >
               →
@@ -178,6 +198,7 @@ export default function FeaturesSection() {
 function FeaturedStory({ item }: { item: NewsItem }) {
   const [hovered, setHovered] = useState(false)
   const [imgFailed, setImgFailed] = useState(false)
+  const prefersReducedMotion = usePrefersReducedMotion()
   const showImage = !!item.imageUrl && !imgFailed
 
   return (
@@ -196,11 +217,11 @@ function FeaturedStory({ item }: { item: NewsItem }) {
       <div
         style={{
           width: '100%',
-          aspectRatio: '16 / 10',
+          aspectRatio: '16 / 11',
           background: `linear-gradient(135deg, ${brand.colors.placeholderStart}, ${brand.colors.placeholderEnd})`,
-          borderRadius: brand.radius.lg,
+          borderRadius: 14,
           overflow: 'hidden',
-          marginBottom: 18,
+          marginBottom: 20,
           position: 'relative',
           boxShadow: hovered ? brand.shadow.lg : brand.shadow.sm,
           transition: `box-shadow ${brand.transition.base}`,
@@ -220,8 +241,10 @@ function FeaturedStory({ item }: { item: NewsItem }) {
               height: '100%',
               objectFit: 'cover',
               display: 'block',
-              transform: hovered ? 'scale(1.025)' : 'scale(1)',
-              transition: `transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1)`,
+              transform: hovered && !prefersReducedMotion ? 'scale(1.025)' : 'scale(1)',
+              transition: prefersReducedMotion
+                ? 'none'
+                : 'transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1)',
             }}
           />
         ) : (
@@ -233,8 +256,8 @@ function FeaturedStory({ item }: { item: NewsItem }) {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: brand.colors.muted,
-              opacity: 0.4,
+              color: brand.colors.faint,
+              opacity: 0.55,
               fontSize: 72,
               lineHeight: 1,
             }}
@@ -242,38 +265,32 @@ function FeaturedStory({ item }: { item: NewsItem }) {
             ◷
           </div>
         )}
-        {/* Featured ribbon */}
+        {/* Featured pill */}
         <div
           style={{
             position: 'absolute',
-            top: 14,
-            left: 14,
-            padding: '4px 10px 4px 8px',
-            background: 'rgba(15,12,10,0.55)',
-            backdropFilter: 'blur(10px)',
-            WebkitBackdropFilter: 'blur(10px)',
+            top: 16,
+            left: 16,
+            padding: '7px 13px',
+            background: brand.colors.ink,
             borderRadius: brand.radius.pill,
             fontFamily: brand.font.sans,
-            fontSize: 9,
+            fontSize: brand.text.labelSm,
             fontWeight: 600,
-            letterSpacing: '0.16em',
+            letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            color: '#fff',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
+            color: brand.colors.bg,
           }}
         >
-          <span style={{ color: brand.colors.gold, fontSize: 9 }}>◆</span>
           Featured
         </div>
       </div>
       <div
         style={{
           fontFamily: brand.font.sans,
-          fontSize: 10,
-          fontWeight: 500,
-          letterSpacing: '0.14em',
+          fontSize: brand.text.label,
+          fontWeight: 600,
+          letterSpacing: '0.12em',
           textTransform: 'uppercase',
           color: brand.colors.muted,
           marginBottom: 10,
@@ -285,16 +302,16 @@ function FeaturedStory({ item }: { item: NewsItem }) {
         style={{
           margin: 0,
           fontFamily: brand.font.serif,
-          fontSize: 26,
+          fontSize: 30,
           fontWeight: 400,
-          lineHeight: 1.2,
-          color: hovered ? brand.colors.gold : brand.colors.ink,
+          lineHeight: 1.16,
+          color: hovered ? brand.colors.goldDeep : brand.colors.ink,
           transition: `color ${brand.transition.base}`,
           display: '-webkit-box',
           WebkitLineClamp: 3,
           WebkitBoxOrient: 'vertical',
           overflow: 'hidden',
-          marginBottom: 10,
+          marginBottom: 12,
           letterSpacing: '-0.005em',
         }}
       >
@@ -305,9 +322,10 @@ function FeaturedStory({ item }: { item: NewsItem }) {
           style={{
             margin: 0,
             fontFamily: brand.font.sans,
-            fontSize: 13,
-            lineHeight: 1.6,
+            fontSize: brand.text.body,
+            lineHeight: 1.65,
             color: brand.colors.muted,
+            maxWidth: 520,
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
@@ -321,9 +339,18 @@ function FeaturedStory({ item }: { item: NewsItem }) {
   )
 }
 
-function SideRow({ item, isLast }: { item: NewsItem; isLast: boolean }) {
+function SideRow({
+  item,
+  isFirst,
+  isLast,
+}: {
+  item: NewsItem
+  isFirst: boolean
+  isLast: boolean
+}) {
   const [hovered, setHovered] = useState(false)
   const [imgFailed, setImgFailed] = useState(false)
+  const prefersReducedMotion = usePrefersReducedMotion()
   const showImage = !!item.imageUrl && !imgFailed
 
   return (
@@ -335,9 +362,11 @@ function SideRow({ item, isLast }: { item: NewsItem; isLast: boolean }) {
       onMouseLeave={() => setHovered(false)}
       className="editorial-news-row"
       style={{
-        display: 'flex',
-        gap: 14,
-        padding: '18px 0',
+        display: 'grid',
+        gridTemplateColumns: '92px 1fr',
+        gap: 18,
+        alignItems: 'center',
+        padding: isFirst ? '0 0 22px' : '22px 0',
         borderBottom: isLast ? 'none' : `1px solid ${brand.colors.border}`,
         textDecoration: 'none',
         color: 'inherit',
@@ -345,10 +374,8 @@ function SideRow({ item, isLast }: { item: NewsItem; isLast: boolean }) {
     >
       <div
         style={{
-          width: 88,
-          height: 88,
-          flexShrink: 0,
-          borderRadius: brand.radius.sm,
+          aspectRatio: '1',
+          borderRadius: brand.radius.lg,
           overflow: 'hidden',
           background: `linear-gradient(135deg, ${brand.colors.placeholderStart}, ${brand.colors.placeholderEnd})`,
           display: 'flex',
@@ -370,24 +397,24 @@ function SideRow({ item, isLast }: { item: NewsItem; isLast: boolean }) {
               height: '100%',
               objectFit: 'cover',
               display: 'block',
-              transform: hovered ? 'scale(1.04)' : 'scale(1)',
-              transition: `transform ${brand.transition.smooth}`,
+              transform: hovered && !prefersReducedMotion ? 'scale(1.04)' : 'scale(1)',
+              transition: prefersReducedMotion ? 'none' : `transform ${brand.transition.smooth}`,
             }}
           />
         ) : (
-          <span aria-hidden style={{ fontSize: 28, color: brand.colors.muted, opacity: 0.5 }}>
+          <span aria-hidden style={{ fontSize: 28, color: brand.colors.faint, opacity: 0.6 }}>
             ◷
           </span>
         )}
       </div>
 
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 9,
-            fontWeight: 500,
-            letterSpacing: '0.14em',
+            fontSize: brand.text.labelSm,
+            fontWeight: 600,
+            letterSpacing: '0.12em',
             textTransform: 'uppercase',
             color: brand.colors.muted,
             marginBottom: 6,
@@ -399,10 +426,10 @@ function SideRow({ item, isLast }: { item: NewsItem; isLast: boolean }) {
           style={{
             margin: 0,
             fontFamily: brand.font.serif,
-            fontSize: 17,
+            fontSize: brand.text.cardTitle,
             fontWeight: 400,
-            lineHeight: 1.25,
-            color: hovered ? brand.colors.gold : brand.colors.ink,
+            lineHeight: 1.22,
+            color: hovered ? brand.colors.goldDeep : brand.colors.ink,
             transition: `color ${brand.transition.base}`,
             display: '-webkit-box',
             WebkitLineClamp: 3,
@@ -417,33 +444,33 @@ function SideRow({ item, isLast }: { item: NewsItem; isLast: boolean }) {
   )
 }
 
-function SideRowSkeleton({ isLast }: { isLast: boolean }) {
+function SideRowSkeleton({ isFirst, isLast }: { isFirst: boolean; isLast: boolean }) {
   return (
     <div
       aria-hidden
       className="editorial-news-row"
       style={{
-        display: 'flex',
-        gap: 14,
-        padding: '18px 0',
+        display: 'grid',
+        gridTemplateColumns: '92px 1fr',
+        gap: 18,
+        alignItems: 'center',
+        padding: isFirst ? '0 0 22px' : '22px 0',
         borderBottom: isLast ? 'none' : `1px solid ${brand.colors.border}`,
         animation: 'vw-news-pulse 1.4s ease-in-out infinite',
       }}
     >
       <div
         style={{
-          width: 88,
-          height: 88,
-          flexShrink: 0,
-          borderRadius: brand.radius.sm,
+          aspectRatio: '1',
+          borderRadius: brand.radius.lg,
           background: brand.colors.slot,
           border: `1px dashed ${brand.colors.borderLight}`,
         }}
       />
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 8 }}>
+      <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 8 }}>
         <div style={{ height: 8, width: '40%', background: brand.colors.slot, borderRadius: 4 }} />
-        <div style={{ height: 16, width: '95%', background: brand.colors.slot, borderRadius: 4 }} />
-        <div style={{ height: 16, width: '70%', background: brand.colors.slot, borderRadius: 4 }} />
+        <div style={{ height: 18, width: '95%', background: brand.colors.slot, borderRadius: 4 }} />
+        <div style={{ height: 18, width: '70%', background: brand.colors.slot, borderRadius: 4 }} />
       </div>
     </div>
   )
@@ -455,17 +482,17 @@ function FeaturedSkeleton() {
       <div
         style={{
           width: '100%',
-          aspectRatio: '16 / 10',
+          aspectRatio: '16 / 11',
           background: brand.colors.slot,
           border: `1px dashed ${brand.colors.borderLight}`,
-          borderRadius: brand.radius.lg,
-          marginBottom: 18,
+          borderRadius: 14,
+          marginBottom: 20,
         }}
       />
       <div style={{ height: 10, width: '30%', background: brand.colors.slot, borderRadius: 4, marginBottom: 12 }} />
-      <div style={{ height: 26, width: '95%', background: brand.colors.slot, borderRadius: 4, marginBottom: 8 }} />
-      <div style={{ height: 26, width: '70%', background: brand.colors.slot, borderRadius: 4, marginBottom: 14 }} />
-      <div style={{ height: 12, width: '85%', background: brand.colors.slot, borderRadius: 4 }} />
+      <div style={{ height: 30, width: '95%', background: brand.colors.slot, borderRadius: 4, marginBottom: 8 }} />
+      <div style={{ height: 30, width: '70%', background: brand.colors.slot, borderRadius: 4, marginBottom: 14 }} />
+      <div style={{ height: 15, width: '85%', background: brand.colors.slot, borderRadius: 4 }} />
     </div>
   )
 }

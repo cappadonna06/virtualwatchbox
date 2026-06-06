@@ -22,8 +22,8 @@ const serif = brand.font.serif
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <Meta style={{ display: 'block', marginBottom: 3, fontSize: 9, whiteSpace: 'nowrap' }}>{label}</Meta>
-      <span style={{ fontFamily: sans, fontSize: 13, fontWeight: 600, color: brand.colors.ink, whiteSpace: 'nowrap' }}>{value}</span>
+      <Meta style={{ display: 'block', marginBottom: 3, fontSize: 11, whiteSpace: 'nowrap' }}>{label}</Meta>
+      <span style={{ fontFamily: sans, fontSize: 15, fontWeight: 600, color: brand.colors.ink, whiteSpace: 'nowrap' }}>{value}</span>
     </div>
   )
 }
@@ -58,14 +58,14 @@ function AttentionCard({ sw, now, onPick, onLog, isMobile }: { sw: ServiceWatch;
           <div onClick={() => onPick(sw)} style={{ cursor: 'pointer', flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 5 }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
               <Meta style={{ whiteSpace: 'nowrap' }}>{sw.watch.brand}</Meta>
-              <span style={{ fontFamily: sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', color: brand.colors.muted, whiteSpace: 'nowrap' }}>REF {sw.watch.reference}</span>
+              <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.06em', color: brand.colors.muted, whiteSpace: 'nowrap' }}>REF {sw.watch.reference}</span>
             </div>
             <div style={{ fontFamily: serif, fontSize: isMobile ? 20 : 23, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.06 }}>{sw.watch.model}</div>
           </div>
           <StatusChip status={st} size={isMobile ? 'sm' : 'md'} />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginTop: isMobile ? 10 : 12, marginBottom: isMobile ? 12 : 14, fontFamily: sans, fontSize: 12.5, fontWeight: 500, color: st.fg }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginTop: isMobile ? 10 : 12, marginBottom: isMobile ? 12 : 14, fontFamily: sans, fontSize: 14, fontWeight: 500, color: st.fg }}>
           <Icon name={overdue ? 'clock' : 'calendar'} size={14} color={st.fg} style={{ flexShrink: 0, marginTop: 1 }} />{need}
         </div>
 
@@ -103,10 +103,10 @@ function OnTrackRow({ sw, now, onPick, onLog, isMobile }: { sw: ServiceWatch; no
           <WatchShot watch={sw.watch} size={52} shadow="0 4px 8px rgba(26,20,16,0.18)" />
         </button>
         <div onClick={() => onPick(sw)} style={{ cursor: 'pointer', minWidth: 0 }}>
-          <div style={{ fontFamily: sans, fontSize: 13, fontWeight: 600, color: brand.colors.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div style={{ fontFamily: sans, fontSize: 15, fontWeight: 600, color: brand.colors.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {sw.watch.brand} <span style={{ fontWeight: 400, color: brand.colors.muted }}>{sw.watch.model}</span>
           </div>
-          <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted }}>Next {formatDate(st.due, { year: 'numeric', month: 'short' })} · {formatCost(lifetimeCostCents(sw))}</span>
+          <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>Next {formatDate(st.due, { year: 'numeric', month: 'short' })} · {formatCost(lifetimeCostCents(sw))}</span>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 7 }}>
           <StatusChip status={st} size="sm" />
@@ -130,13 +130,13 @@ function OnTrackRow({ sw, now, onPick, onLog, isMobile }: { sw: ServiceWatch; no
         <div style={{ fontFamily: sans, fontSize: 13, fontWeight: 600, color: brand.colors.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {sw.watch.brand} <span style={{ fontWeight: 400, color: brand.colors.muted }}>{sw.watch.model}</span>
         </div>
-        <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted }}>Last full · {lf ? formatMonthYear(lf.serviceDate) : 'Never serviced'}</span>
+        <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>Last full · {lf ? formatMonthYear(lf.serviceDate) : 'Never serviced'}</span>
       </div>
       <div><Meta style={{ display: 'block', marginBottom: 2 }}>Next due</Meta>
-        <span style={{ fontFamily: sans, fontSize: 12.5, color: brand.colors.ink }}>{formatDate(st.due, { year: 'numeric', month: 'short' })}</span>
+        <span style={{ fontFamily: sans, fontSize: 14, color: brand.colors.ink }}>{formatDate(st.due, { year: 'numeric', month: 'short' })}</span>
       </div>
       <div><Meta style={{ display: 'block', marginBottom: 2 }}>Upkeep</Meta>
-        <span style={{ fontFamily: sans, fontSize: 12.5, color: brand.colors.ink }}>{formatCost(lifetimeCostCents(sw))}</span>
+        <span style={{ fontFamily: sans, fontSize: 14, color: brand.colors.ink }}>{formatCost(lifetimeCostCents(sw))}</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <StatusChip status={st} size="sm" />

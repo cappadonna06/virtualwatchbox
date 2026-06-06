@@ -108,11 +108,11 @@ function OverflowGridCard({
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 9,
+            fontSize: 11,
             fontWeight: 600,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            color: brand.colors.gold,
+            color: brand.colors.goldDeep,
             marginBottom: 4,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
@@ -138,7 +138,7 @@ function OverflowGridCard({
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 10,
+            fontSize: 12,
             color: brand.colors.muted,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
@@ -206,11 +206,11 @@ function OverflowListItem({
           <div
             style={{
               fontFamily: brand.font.sans,
-              fontSize: 9,
+              fontSize: 11,
               fontWeight: 600,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              color: brand.colors.gold,
+              color: brand.colors.goldDeep,
             }}
           >
             {watch.brand}
@@ -238,7 +238,7 @@ function OverflowListItem({
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 10,
+            fontSize: 12,
             color: brand.colors.muted,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
@@ -638,7 +638,7 @@ export default function WatchBox({
                       }}
                     >
                       {readonly ? (
-                        <span style={{ fontFamily: brand.font.sans, fontSize: 8, letterSpacing: '0.1em', color: emptyPrimaryColor }}>
+                        <span style={{ fontFamily: brand.font.sans, fontSize: 11, letterSpacing: '0.1em', color: emptyPrimaryColor }}>
                           EMPTY
                         </span>
                       ) : showFirstSlotLabel ? (
@@ -648,7 +648,7 @@ export default function WatchBox({
                           <span
                             style={{
                               fontFamily: brand.font.sans,
-                              fontSize: 9,
+                              fontSize: 11,
                               fontWeight: 500,
                               letterSpacing: '0.06em',
                               color: emptyPrimaryColor,
@@ -674,7 +674,7 @@ export default function WatchBox({
                           <span
                             style={{
                               fontFamily: brand.font.sans,
-                              fontSize: 7.5,
+                              fontSize: 11,
                               letterSpacing: '0.08em',
                               color: emptyPrimaryColor,
                             }}
@@ -719,7 +719,7 @@ export default function WatchBox({
                           top: 5,
                           left: 6,
                           fontFamily: brand.font.sans,
-                          fontSize: 8,
+                          fontSize: 11,
                           fontWeight: 500,
                           letterSpacing: '0.08em',
                           color: slotMetaColor,
@@ -742,7 +742,7 @@ export default function WatchBox({
                       <div
                         style={{
                           fontFamily: brand.font.sans,
-                          fontSize: 9,
+                          fontSize: 11,
                           fontWeight: 600,
                           letterSpacing: '0.12em',
                           textTransform: 'uppercase',
@@ -963,7 +963,7 @@ export default function WatchBox({
                         top: 5,
                         left: 6,
                         fontFamily: 'var(--font-dm-sans)',
-                        fontSize: 8,
+                        fontSize: 11,
                         fontWeight: 500,
                         letterSpacing: '0.08em',
                         color: slotMetaColor,
@@ -1063,7 +1063,7 @@ export default function WatchBox({
                     <div
                       style={{
                         fontFamily: brand.font.sans,
-                        fontSize: 9.5,
+                        fontSize: 11,
                         fontWeight: 600,
                         letterSpacing: '0.14em',
                         textTransform: 'uppercase',
@@ -1151,7 +1151,7 @@ export default function WatchBox({
                       <div
                         style={{
                           fontFamily: brand.font.sans,
-                          fontSize: 10,
+                          fontSize: 12,
                           fontWeight: 600,
                           letterSpacing: '0.12em',
                           textTransform: 'uppercase',
@@ -1161,7 +1161,7 @@ export default function WatchBox({
                       >
                         Hidden Watches
                       </div>
-                      <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.ink }}>
+                      <div style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.ink }}>
                         {overflow.overflowCount} more in this box
                       </div>
                     </div>

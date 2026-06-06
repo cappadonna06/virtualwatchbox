@@ -226,7 +226,7 @@ export default function WatchPhotoLightbox({ photos, startId, ownedWatchId, onCl
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.06em',
+                fontFamily: brand.font.sans, fontSize: 14, fontWeight: 600, letterSpacing: '0.06em',
                 padding: '10px 20px', background: brand.colors.ink, color: brand.colors.slot,
                 borderRadius: brand.radius.btn, textDecoration: 'none',
               }}
@@ -335,7 +335,7 @@ export default function WatchPhotoLightbox({ photos, startId, ownedWatchId, onCl
           <>
             <span style={{
               fontFamily: brand.font.sans,
-              fontSize: 12,
+              fontSize: 14,
               color: 'rgba(250,248,244,0.85)',
               marginRight: 4,
             }}>
@@ -387,7 +387,7 @@ export default function WatchPhotoLightbox({ photos, startId, ownedWatchId, onCl
                   {PHOTO_TYPE_GROUPS.map((group, gi) => (
                     <div key={group.label}>
                       {gi > 0 && <div style={{ height: 1, background: brand.colors.border, margin: '5px 0' }} />}
-                      <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, padding: '6px 14px 2px' }}>{group.label}</div>
+                      <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, padding: '6px 14px 2px' }}>{group.label}</div>
                       {group.types.map(t => {
                         const selected = active.photoType === t
                         return (
@@ -401,10 +401,10 @@ export default function WatchPhotoLightbox({ photos, startId, ownedWatchId, onCl
                               display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
                               width: '100%', textAlign: 'left', background: selected ? brand.colors.goldWash : 'transparent',
                               border: 'none', cursor: 'pointer', padding: '8px 14px',
-                              fontFamily: brand.font.sans, fontSize: 12.5, color: brand.colors.ink,
+                              fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.ink,
                             }}
                           >
-                            {PHOTO_TYPE_LABELS[t]}{selected && <span style={{ color: brand.colors.gold }}>✓</span>}
+                            {PHOTO_TYPE_LABELS[t]}{selected && <span style={{ color: brand.colors.goldDeep }}>✓</span>}
                           </button>
                         )
                       })}
@@ -417,7 +417,7 @@ export default function WatchPhotoLightbox({ photos, startId, ownedWatchId, onCl
                         type="button"
                         role="menuitem"
                         onClick={() => handleSetType(null)}
-                        style={{ display: 'block', width: '100%', textAlign: 'left', background: 'transparent', border: 'none', cursor: 'pointer', padding: '8px 14px', fontFamily: brand.font.sans, fontSize: 12.5, color: brand.colors.muted }}
+                        style={{ display: 'block', width: '100%', textAlign: 'left', background: 'transparent', border: 'none', cursor: 'pointer', padding: '8px 14px', fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted }}
                       >
                         Clear type
                       </button>

@@ -20,8 +20,8 @@ const serif = brand.font.serif
 function Field({ label, value, accent }: { label: string; value: string; accent?: string }) {
   return (
     <div>
-      <Meta style={{ display: 'block', marginBottom: 4, fontSize: 9 }}>{label}</Meta>
-      <span style={{ fontFamily: sans, fontSize: 13.5, fontWeight: 600, color: accent ?? brand.colors.ink }}>{value}</span>
+      <Meta style={{ display: 'block', marginBottom: 4, fontSize: 11 }}>{label}</Meta>
+      <span style={{ fontFamily: sans, fontSize: 15, fontWeight: 600, color: accent ?? brand.colors.ink }}>{value}</span>
     </div>
   )
 }
@@ -54,7 +54,7 @@ function GalleryCard({ sw, now, onPick, onLog, active }: { sw: ServiceWatch; now
         <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           <Meta>{sw.watch.brand}</Meta>
           <div style={{ fontFamily: serif, fontSize: 23, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.08 }}>{sw.watch.model}</div>
-          <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted }}>Ref. {sw.watch.reference} · {sw.watch.caseSizeMm}mm</span>
+          <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>Ref. {sw.watch.reference} · {sw.watch.caseSizeMm}mm</span>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 16px', padding: '14px 0', borderTop: `1px solid ${brand.colors.border}`, borderBottom: `1px solid ${brand.colors.border}` }}>

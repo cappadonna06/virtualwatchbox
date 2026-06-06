@@ -7,11 +7,11 @@ import { isAdminEmail } from '@/lib/auth/admin'
 
 const linkStyle: React.CSSProperties = {
   fontFamily: brand.font.sans,
-  fontSize: 11,
-  fontWeight: 500,
+  fontSize: brand.text.label,
+  fontWeight: 600,
   letterSpacing: '0.1em',
   textTransform: 'uppercase',
-  color: brand.colors.gold,
+  color: brand.colors.goldDeep,
   textDecoration: 'none',
   whiteSpace: 'nowrap',
 }
@@ -41,7 +41,7 @@ export default function Footer() {
           flexWrap: 'wrap',
         }}
       >
-        <span style={{ fontFamily: brand.font.serif, fontSize: 16, fontWeight: 500, color: brand.colors.ink }}>
+        <span style={{ fontFamily: brand.font.serif, fontSize: brand.text.cardTitle, fontWeight: 500, color: brand.colors.ink }}>
           Virtual Watchbox
         </span>
 
@@ -59,7 +59,7 @@ export default function Footer() {
           )}
         </div>
 
-        <span style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+        <span style={{ fontFamily: brand.font.sans, fontSize: brand.text.bodySm, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: brand.colors.muted }}>
           © 2026 · virtualwatchbox.com
         </span>
       </div>

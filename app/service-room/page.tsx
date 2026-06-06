@@ -5,7 +5,7 @@
 // on our real stack (CollectionSessionProvider + brand tokens).
 
 import { useMemo, useState } from 'react'
-import { brand } from '@/lib/brand'
+import { brand, masthead } from '@/lib/brand'
 import { useCollectionSession, type ServiceRecordInput } from '@/app/collection/CollectionSessionProvider'
 import {
   buildServiceWatch,
@@ -98,11 +98,11 @@ export default function ServiceRoomPage() {
         {/* header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 24, marginBottom: 26, flexWrap: 'wrap' }}>
           <div>
-            <Meta style={{ color: brand.colors.gold, display: 'block', marginBottom: 10 }}>Maintenance &amp; provenance</Meta>
-            <h1 style={{ fontFamily: serif, fontSize: isMobile ? 34 : 'clamp(38px, 6vw, 52px)', fontWeight: 300, color: brand.colors.ink, lineHeight: 0.98, letterSpacing: '-0.01em', margin: 0 }}>
+            <div style={{ ...masthead.eyebrow, marginBottom: 10 }}>Maintenance &amp; provenance</div>
+            <h1 style={masthead.title}>
               The Service Room
             </h1>
-            <p style={{ fontFamily: sans, fontSize: 14, color: brand.colors.mutedDark, lineHeight: 1.6, margin: '12px 0 0', maxWidth: 460 }}>
+            <p style={{ ...masthead.subtitle, margin: '12px 0 0', maxWidth: 460 }}>
               Every service, document, and cost for your collection — and a clear read on what to send to the bench next.
             </p>
           </div>

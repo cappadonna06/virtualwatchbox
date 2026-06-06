@@ -110,7 +110,7 @@ function WatchboxConfigControls({
   const toneBorder = `1px solid ${brand.colors.border}`
   const labelStyle: CSSProperties = {
     fontFamily: brand.font.sans,
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: 600,
     letterSpacing: '0.12em',
     textTransform: 'uppercase',
@@ -127,7 +127,7 @@ function WatchboxConfigControls({
       >
         <div style={{ ...labelStyle, marginBottom: compact ? 0 : 10, display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
           <span>Slots</span>
-          {!compact && <span style={{ color: brand.colors.ink, fontSize: 10, fontWeight: 600, textTransform: 'none', letterSpacing: 0 }}>{slotCount} slots</span>}
+          {!compact && <span style={{ color: brand.colors.ink, fontSize: 12, fontWeight: 600, textTransform: 'none', letterSpacing: 0 }}>{slotCount} slots</span>}
         </div>
         <div style={{ display: 'flex', gap: compact ? 4 : 8, marginTop: compact ? 0 : undefined }}>
           {SLOT_COUNTS.map(item => {
@@ -139,13 +139,13 @@ function WatchboxConfigControls({
                 style={{
                   flex: compact ? '0 0 auto' : 1,
                   fontFamily: brand.font.sans,
-                  fontSize: compact ? 10 : 12,
+                  fontSize: 12,
                   fontWeight: 500,
                   padding: compact ? '3px 9px' : '8px 0',
                   borderRadius: compact ? brand.radius.btn : brand.radius.sm,
                   border: isActive ? `1px solid ${brand.colors.gold}` : `1px solid ${brand.colors.borderLight}`,
                   background: isActive ? 'rgba(201,168,76,0.06)' : 'transparent',
-                  color: isActive ? brand.colors.gold : brand.colors.muted,
+                  color: isActive ? brand.colors.goldDeep : brand.colors.muted,
                   cursor: 'pointer',
                   transition: brand.transition.fast,
                 }}
@@ -200,7 +200,7 @@ function WatchboxConfigControls({
                 <span
                   style={{
                     fontFamily: brand.font.sans,
-                    fontSize: compact ? 8 : 9,
+                    fontSize: 11,
                     color: isActive ? brand.colors.ink : brand.colors.muted,
                     fontWeight: compact && isActive ? 700 : undefined,
                     textAlign: 'center',
@@ -261,7 +261,7 @@ function WatchboxConfigControls({
                 <span
                   style={{
                     fontFamily: brand.font.sans,
-                    fontSize: compact ? 8 : 9,
+                    fontSize: 11,
                     color: isActive ? brand.colors.ink : brand.colors.muted,
                     fontWeight: compact && isActive ? 700 : undefined,
                     textAlign: 'center',
@@ -467,7 +467,7 @@ export default function CollectionWatchboxSurface({
               <span
                 style={{
                   fontFamily: brand.font.sans,
-                  fontSize: 10,
+                  fontSize: 12,
                   fontWeight: 600,
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
@@ -568,7 +568,7 @@ export default function CollectionWatchboxSurface({
 
             <div ref={customizerRef} className="configurator-wrap" style={{ marginTop: 10, position: 'relative' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
-                <span style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted }}>
+                <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
                   {frame.label} · {lining.label} · {slotConfig.n} slots
                 </span>
                 <button
@@ -578,7 +578,7 @@ export default function CollectionWatchboxSurface({
                     alignItems: 'center',
                     gap: 5,
                     fontFamily: brand.font.sans,
-                    fontSize: 10,
+                    fontSize: 12,
                     fontWeight: 500,
                     letterSpacing: '0.06em',
                     padding: '5px 12px',
@@ -636,7 +636,7 @@ export default function CollectionWatchboxSurface({
               margin: '14px auto 0',
               width: 'fit-content',
               fontFamily: brand.font.sans,
-              fontSize: 10,
+              fontSize: 12,
               fontWeight: 600,
               letterSpacing: '0.08em',
               textTransform: 'uppercase',
@@ -713,7 +713,7 @@ export default function CollectionWatchboxSurface({
             <div
               style={{
                 fontFamily: brand.font.sans,
-                fontSize: 9,
+                fontSize: 11,
                 fontWeight: 600,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
@@ -738,7 +738,7 @@ export default function CollectionWatchboxSurface({
               style={{
                 margin: '0 0 16px',
                 fontFamily: brand.font.sans,
-                fontSize: 12,
+                fontSize: 14,
                 color: brand.colors.muted,
                 lineHeight: 1.5,
               }}

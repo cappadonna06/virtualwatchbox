@@ -75,7 +75,7 @@ export default function SectionNav({ showTargets = false }: { showTargets?: bool
           style={{
             fontFamily: brand.font.serif,
             fontStyle: 'italic',
-            fontSize: 13,
+            fontSize: 15,
             color: brand.colors.muted,
             whiteSpace: 'nowrap',
             paddingRight: 14,
@@ -119,8 +119,8 @@ export default function SectionNav({ showTargets = false }: { showTargets?: bool
                 style={{
                   fontFamily: brand.font.serif,
                   fontStyle: 'italic',
-                  fontSize: 13,
-                  color: isActive ? brand.colors.gold : brand.colors.muted,
+                  fontSize: 15,
+                  color: isActive ? brand.colors.goldDeep : brand.colors.muted,
                   fontWeight: 400,
                   letterSpacing: '0.04em',
                 }}

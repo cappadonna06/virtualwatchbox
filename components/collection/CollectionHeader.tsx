@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { brand } from '@/lib/brand'
+import { brand, masthead } from '@/lib/brand'
 
 // Decorative "strap spine" bar colors — art constants (like the swatch recipes),
 // not brand tokens.
@@ -69,7 +69,7 @@ interface Props {
 
 const metaLabel = {
   fontFamily: brand.font.sans,
-  fontSize: 9.5,
+  fontSize: 11,
   fontWeight: 500,
   letterSpacing: '0.14em',
   textTransform: 'uppercase' as const,
@@ -108,27 +108,10 @@ export default function CollectionHeader({
           flexWrap: 'wrap',
         }}
       >
-        <h1
-          style={{
-            fontFamily: brand.font.serif,
-            fontSize: 48,
-            fontWeight: 400,
-            lineHeight: 1.1,
-            color: brand.colors.ink,
-            margin: 0,
-          }}
-        >
+        <h1 style={masthead.title}>
           My Collection
         </h1>
-        <p
-          style={{
-            fontFamily: brand.font.sans,
-            fontSize: 14,
-            color: brand.colors.muted,
-            margin: 0,
-            letterSpacing: '0.02em',
-          }}
-        >
+        <p style={masthead.subtitle}>
           Your source of truth.
         </p>
       </div>
@@ -174,7 +157,7 @@ export default function CollectionHeader({
           <span
             style={{
               fontFamily: brand.font.sans,
-              fontSize: 13,
+              fontSize: 15,
               color: brand.colors.muted,
               letterSpacing: '0.02em',
               lineHeight: 1.5,
@@ -232,8 +215,8 @@ export default function CollectionHeader({
             style={{
               marginLeft: 'auto',
               fontFamily: brand.font.sans,
-              fontSize: 11,
-              color: brand.colors.gold,
+              fontSize: 12,
+              color: brand.colors.goldDeep,
               opacity: 0.85,
               letterSpacing: '0.02em',
             }}

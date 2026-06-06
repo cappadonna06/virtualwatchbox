@@ -57,11 +57,11 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
         <SectionHead eyebrow="The file cabinet" title="Every piece, on the record" hint="Tap a card to open the dossier" />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <span style={{ fontFamily: sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>Sort</span>
+          <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>Sort</span>
           <select
             value={sort.key}
             onChange={e => setSort({ key: e.target.value as ColId, dir: 1 })}
-            style={{ fontFamily: sans, fontSize: 13, color: brand.colors.ink, background: brand.colors.white, border: `1px solid ${brand.colors.borderLight}`, borderRadius: brand.radius.md, padding: '8px 11px', flex: 1, outline: 'none' }}
+            style={{ fontFamily: sans, fontSize: 15, color: brand.colors.ink, background: brand.colors.white, border: `1px solid ${brand.colors.borderLight}`, borderRadius: brand.radius.md, padding: '8px 11px', flex: 1, outline: 'none' }}
           >
             <option value="next">Next due</option>
             <option value="last">Last serviced</option>
@@ -88,7 +88,7 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span style={{ width: 48, height: 48, flexShrink: 0 }}><WatchShot watch={sw.watch} size={48} shadow="0 4px 8px rgba(26,20,16,0.18)" /></span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontFamily: sans, fontSize: 13, fontWeight: 600, color: brand.colors.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sw.watch.brand}</div>
+                    <div style={{ fontFamily: sans, fontSize: 15, fontWeight: 600, color: brand.colors.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sw.watch.brand}</div>
                     <div style={{ fontFamily: serif, fontSize: 15, color: brand.colors.muted, lineHeight: 1.1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sw.watch.model}</div>
                   </div>
                   <StatusChip status={st} size="sm" />
@@ -104,10 +104,10 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: brand.colors.muted }}>
                     <Icon name="doc" size={14} color={brand.colors.muted} />
-                    <span style={{ fontFamily: sans, fontSize: 12.5, color: brand.colors.ink }}>{sw.documents.length} on file</span>
-                    {sw.watch.hasPapers === false && <span style={{ fontFamily: sans, fontSize: 9.5, color: brand.serviceStatus.due.fg, background: brand.serviceStatus.due.bg, padding: '1px 7px', borderRadius: 10 }}>no papers</span>}
+                    <span style={{ fontFamily: sans, fontSize: 14, color: brand.colors.ink }}>{sw.documents.length} on file</span>
+                    {sw.watch.hasPapers === false && <span style={{ fontFamily: sans, fontSize: 11, color: brand.serviceStatus.due.fg, background: brand.serviceStatus.due.bg, padding: '1px 7px', borderRadius: 10 }}>no papers</span>}
                   </span>
-                  <button type="button" onClick={e => { e.stopPropagation(); onLog(sw) }} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', padding: '8px 14px', background: 'transparent', color: brand.colors.ink, border: `1px solid ${brand.colors.borderLight}`, borderRadius: brand.radius.btn, cursor: 'pointer' }}>
+                  <button type="button" onClick={e => { e.stopPropagation(); onLog(sw) }} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.04em', padding: '8px 14px', background: 'transparent', color: brand.colors.ink, border: `1px solid ${brand.colors.borderLight}`, borderRadius: brand.radius.btn, cursor: 'pointer' }}>
                     <Icon name="plus" size={13} color={brand.colors.ink} />Log
                   </button>
                 </div>
@@ -118,7 +118,7 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, padding: '14px 16px', background: brand.colors.bg, border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.lg }}>
           <span style={{ fontFamily: sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: brand.colors.ink }}>{watches.length} piece{watches.length === 1 ? '' : 's'} · {totalDocs} docs</span>
-          <span style={{ fontFamily: serif, fontSize: 20, fontWeight: 500, color: brand.colors.gold }}>{formatCost(totalCost)}</span>
+          <span style={{ fontFamily: serif, fontSize: 20, fontWeight: 500, color: brand.colors.goldDeep }}>{formatCost(totalCost)}</span>
         </div>
       </div>
     )
@@ -135,7 +135,7 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
               <button key={c.id} type="button" onClick={() => toggleSort(c.id)} style={{
                 display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', padding: 0,
                 justifyContent: c.align === 'right' ? 'flex-end' : 'flex-start',
-                fontFamily: sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase',
+                fontFamily: sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase',
                 color: sort.key === c.id ? brand.colors.ink : brand.colors.muted,
               }}>
                 {c.label}
@@ -162,23 +162,23 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 0 }}>
                   <span style={{ width: 56, height: 56, flexShrink: 0 }}><WatchShot watch={sw.watch} size={56} shadow="0 4px 9px rgba(26,20,16,0.18)" /></span>
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ fontFamily: sans, fontSize: 13, fontWeight: 600, color: brand.colors.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sw.watch.brand}</div>
+                    <div style={{ fontFamily: sans, fontSize: 15, fontWeight: 600, color: brand.colors.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sw.watch.brand}</div>
                     <div style={{ fontFamily: serif, fontSize: 15, color: brand.colors.muted, lineHeight: 1.1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sw.watch.model}</div>
                   </div>
                 </div>
-                <div style={{ fontFamily: sans, fontSize: 12.5, color: la ? brand.colors.ink : brand.colors.muted }}>
-                  {la ? <>{formatMonthYear(la.serviceDate)}<div style={{ fontSize: 10.5, color: brand.colors.muted }}>{serviceTypeMeta(la.serviceType).label}</div></> : '—'}
+                <div style={{ fontFamily: sans, fontSize: 14, color: la ? brand.colors.ink : brand.colors.muted }}>
+                  {la ? <>{formatMonthYear(la.serviceDate)}<div style={{ fontSize: 12, color: brand.colors.muted }}>{serviceTypeMeta(la.serviceType).label}</div></> : '—'}
                 </div>
                 <div><StatusChip status={st} size="sm" showDate /></div>
-                <div style={{ fontFamily: sans, fontSize: 12.5, color: brand.colors.ink }}>{sw.intervalYears} yr</div>
-                <div style={{ fontFamily: sans, fontSize: 13, fontWeight: 600, color: brand.colors.ink, textAlign: 'right' }}>{formatCost(lifetimeCostCents(sw))}</div>
+                <div style={{ fontFamily: sans, fontSize: 14, color: brand.colors.ink }}>{sw.intervalYears} yr</div>
+                <div style={{ fontFamily: sans, fontSize: 15, fontWeight: 600, color: brand.colors.ink, textAlign: 'right' }}>{formatCost(lifetimeCostCents(sw))}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: brand.colors.muted }}>
                   <Icon name="doc" size={14} color={brand.colors.muted} />
-                  <span style={{ fontFamily: sans, fontSize: 12.5, color: brand.colors.ink }}>{sw.documents.length}</span>
-                  {sw.watch.hasPapers === false && <span title="Missing original papers" style={{ fontFamily: sans, fontSize: 9.5, color: brand.serviceStatus.due.fg, background: brand.serviceStatus.due.bg, padding: '1px 6px', borderRadius: 10 }}>no papers</span>}
+                  <span style={{ fontFamily: sans, fontSize: 14, color: brand.colors.ink }}>{sw.documents.length}</span>
+                  {sw.watch.hasPapers === false && <span title="Missing original papers" style={{ fontFamily: sans, fontSize: 11, color: brand.serviceStatus.due.fg, background: brand.serviceStatus.due.bg, padding: '1px 6px', borderRadius: 10 }}>no papers</span>}
                 </div>
                 <div>
-                  {ws ? <span style={{ fontFamily: sans, fontSize: 11.5, color: ws.fg, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                  {ws ? <span style={{ fontFamily: sans, fontSize: 12, color: ws.fg, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                     <span style={{ width: 6, height: 6, borderRadius: 6, background: ws.fg, opacity: 0.7 }} />
                     {ws.key === 'expired' ? 'Expired' : formatMonthYear(ws.date)}
                   </span> : <span style={{ color: brand.colors.muted, fontSize: 12 }}>—</span>}
@@ -194,8 +194,8 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
           <div style={{ display: 'grid', gridTemplateColumns: gridTemplate, gap: 14, alignItems: 'center', padding: '14px 20px', borderTop: `1.5px solid ${brand.colors.borderLight}`, background: brand.colors.bg }}>
             <div style={{ fontFamily: sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: brand.colors.ink }}>{watches.length} piece{watches.length === 1 ? '' : 's'}</div>
             <div /><div /><div />
-            <div style={{ fontFamily: sans, fontSize: 15, fontWeight: 700, color: brand.colors.gold, textAlign: 'right' }}>{formatCost(totalCost)}</div>
-            <div style={{ fontFamily: sans, fontSize: 12.5, color: brand.colors.muted }}>{totalDocs} docs</div>
+            <div style={{ fontFamily: sans, fontSize: 15, fontWeight: 700, color: brand.colors.goldDeep, textAlign: 'right' }}>{formatCost(totalCost)}</div>
+            <div style={{ fontFamily: sans, fontSize: 14, color: brand.colors.muted }}>{totalDocs} docs</div>
             <div /><div />
           </div>
         </div>
@@ -207,9 +207,9 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
 function LedgerCell({ label, value, sub, accent }: { label: string; value: string; sub?: string; accent?: string }) {
   return (
     <div>
-      <span style={{ display: 'block', marginBottom: 3, fontFamily: sans, fontSize: 9, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>{label}</span>
-      <span style={{ fontFamily: sans, fontSize: 13, fontWeight: 600, color: accent ?? brand.colors.ink }}>{value}</span>
-      {sub && <div style={{ fontFamily: sans, fontSize: 10.5, color: brand.colors.muted, marginTop: 1 }}>{sub}</div>}
+      <span style={{ display: 'block', marginBottom: 3, fontFamily: sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>{label}</span>
+      <span style={{ fontFamily: sans, fontSize: 15, fontWeight: 600, color: accent ?? brand.colors.ink }}>{value}</span>
+      {sub && <div style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted, marginTop: 1 }}>{sub}</div>}
     </div>
   )
 }

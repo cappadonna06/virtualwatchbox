@@ -42,9 +42,9 @@ function WatchRow({ strap, watch, overrides, state, onSetOverride, onRemoveOverr
     <div style={{ display: 'flex', alignItems: 'center', gap: 13, padding: '12px 0', borderBottom: `1px solid ${brand.colors.border}` }}>
       <WatchThumb watch={watch} size={56} />
       <div onClick={() => onOpenWatch?.(watch)} style={{ flex: 1, minWidth: 0, cursor: onOpenWatch ? 'pointer' : 'default' }}>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 2 }}>{watch.brand}</div>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.goldDeep, marginBottom: 2 }}>{watch.brand}</div>
         <div style={{ fontFamily: brand.font.serif, fontSize: 16, color: brand.colors.ink, lineHeight: 1.1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{watch.model}</div>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 10.5, color: brand.colors.muted, marginTop: 2, letterSpacing: '0.02em' }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, marginTop: 2, letterSpacing: '0.02em' }}>
           {watch.braceletType === 'integrated' ? `${watch.caseSizeMm} mm · integrated` : `${watch.lugWidthMm} mm lugs · ${reason}`}
         </div>
       </div>
@@ -54,7 +54,7 @@ function WatchRow({ strap, watch, overrides, state, onSetOverride, onRemoveOverr
             const on = state === val
             return (
               <button key={val} onClick={() => onSetOverride(watch.id, val)} style={{
-                fontFamily: brand.font.sans, fontSize: 9.5, fontWeight: 600, letterSpacing: '0.04em',
+                fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.04em',
                 textTransform: 'uppercase', padding: '5px 8px', borderRadius: brand.radius.btn, border: 'none', cursor: 'pointer',
                 background: on ? (val === 'fits' ? brand.fit.fits.dot : brand.colors.dark) : 'transparent',
                 color: on ? brand.colors.white : brand.colors.muted, transition: 'background 0.12s, color 0.12s',
@@ -77,7 +77,7 @@ function SpecLine({ label, value }: { label: string; value: ReactNode }) {
   if (value == null || value === '') return null
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '8px 0', borderBottom: `1px solid ${brand.colors.border}`, gap: 16 }}>
-      <span style={{ fontFamily: brand.font.sans, fontSize: 11.5, color: brand.colors.muted }}>{label}</span>
+      <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>{label}</span>
       <span style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, color: brand.colors.ink, textAlign: 'right' }}>{value}</span>
     </div>
   )
@@ -112,9 +112,9 @@ function SidebarContent({ strap, watches, overrides, onClose, onSetOverride, onR
         </div>
 
         <div style={{ padding: '20px 0 8px' }}>
-          {strap.brand && <Kicker color={brand.colors.gold} style={{ marginBottom: 6 }}>{strap.brand}</Kicker>}
+          {strap.brand && <Kicker color={brand.colors.goldDeep} style={{ marginBottom: 6 }}>{strap.brand}</Kicker>}
           <h2 style={{ fontFamily: brand.font.serif, fontSize: 28, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.08, margin: '0 0 4px' }}>{title}</h2>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted }}>
             {strap.color}{strap.subMaterial ? ` · ${strap.subMaterial} ${materialLabel(strap.material).toLowerCase()}` : ` ${materialLabel(strap.material).toLowerCase()}`}
           </div>
           {strap.notes && (
@@ -137,11 +137,11 @@ function SidebarContent({ strap, watches, overrides, onClose, onSetOverride, onR
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <Kicker color={brand.colors.muted} style={{ marginBottom: 4 }}>{strap.purchaseUrl ? `Bought from ${hostOf(strap.purchaseUrl)}` : 'Paid'}</Kicker>
-                <div style={{ fontFamily: brand.font.sans, fontSize: 18, fontWeight: 600, color: brand.colors.gold }}>{price}</div>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 18, fontWeight: 600, color: brand.colors.goldDeep }}>{price}</div>
               </div>
               {strap.purchaseUrl && (
                 <a href={strap.purchaseUrl} target="_blank" rel="noopener noreferrer" style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: brand.font.sans, fontSize: 10.5,
+                  display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: brand.font.sans, fontSize: 12,
                   fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: brand.colors.ink,
                   textDecoration: 'none', border: `1px solid ${brand.colors.borderLight}`, borderRadius: brand.radius.btn, padding: '8px 12px',
                 }}>Buy another <StrapIcon name="arrowUpRight" size={12} /></a>
@@ -153,7 +153,7 @@ function SidebarContent({ strap, watches, overrides, onClose, onSetOverride, onR
         <div style={{ marginTop: 26 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 6 }}>
             <h3 style={{ fontFamily: brand.font.serif, fontSize: 19, fontWeight: 500, color: brand.colors.ink, margin: 0 }}>Fits these watches</h3>
-            <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, color: brand.colors.gold }}>{fits.length}</span>
+            <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, color: brand.colors.goldDeep }}>{fits.length}</span>
           </div>
           {fits.length === 0
             ? <div style={{ fontFamily: brand.font.serif, fontStyle: 'italic', fontSize: 14, color: brand.colors.muted, padding: '8px 0 4px' }}>None of your current watches match this strap.</div>
@@ -176,7 +176,7 @@ function SidebarContent({ strap, watches, overrides, onClose, onSetOverride, onR
             </button>
             {showOther && (
               <div style={{ marginTop: 2 }}>
-                <p style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, lineHeight: 1.5, margin: '2px 0 8px' }}>Override the automatic call when you know better.</p>
+                <p style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.5, margin: '2px 0 8px' }}>Override the automatic call when you know better.</p>
                 {others.map(w => (
                   <WatchRow key={w.id} strap={strap} watch={w} overrides={overrides} state={effectiveCompatibility(strap, w, overrides)} onSetOverride={onSetOverride} onRemoveOverride={onRemoveOverride} onOpenWatch={onOpenWatch} />
                 ))}
@@ -199,7 +199,7 @@ function SidebarContent({ strap, watches, overrides, onClose, onSetOverride, onR
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(26,20,16,0.45)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div style={{ background: brand.colors.slot, borderRadius: brand.radius.xl, padding: 24, maxWidth: 300, textAlign: 'center', boxShadow: '0 12px 40px rgba(26,20,16,0.3)' }}>
             <h3 style={{ fontFamily: brand.font.serif, fontSize: 21, fontWeight: 400, color: brand.colors.ink, margin: '0 0 8px' }}>Delete this strap?</h3>
-            <p style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.mutedDark, lineHeight: 1.5, margin: '0 0 18px' }}>This removes the strap and any fit overrides you set for it.</p>
+            <p style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.mutedDark, lineHeight: 1.5, margin: '0 0 18px' }}>This removes the strap and any fit overrides you set for it.</p>
             <div style={{ display: 'flex', gap: 8 }}>
               <GhostBtn full onClick={() => setConfirmDel(false)}>Cancel</GhostBtn>
               <button onClick={() => { setConfirmDel(false); onDelete(strap) }} style={{

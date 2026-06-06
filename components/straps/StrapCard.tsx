@@ -69,9 +69,9 @@ export function StrapCard({
       </div>
 
       <div style={{ padding: '14px 16px 15px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {strap.brand && <Kicker color={brand.colors.gold} style={{ marginBottom: 5 }}>{strap.brand}</Kicker>}
+        {strap.brand && <Kicker color={brand.colors.goldDeep} style={{ marginBottom: 5 }}>{strap.brand}</Kicker>}
         <h3 style={{ fontFamily: brand.font.serif, fontSize: 19, fontWeight: 400, lineHeight: 1.12, color: brand.colors.ink, margin: '0 0 3px' }}>{title}</h3>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, letterSpacing: '0.02em', marginBottom: 12 }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, letterSpacing: '0.02em', marginBottom: 12 }}>
           {strap.color}{strap.subMaterial ? ` · ${strap.subMaterial}` : ''}
         </div>
 
@@ -85,14 +85,14 @@ export function StrapCard({
           {focusWatch && focusState ? (
             <>
               <span style={{ width: 6, height: 6, borderRadius: '50%', flexShrink: 0, background: focusState === 'fits' ? brand.fit.fits.dot : focusState === 'unknown' ? brand.colors.gold : brand.colors.borderLight }} />
-              <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, color: focusState === 'fits' ? brand.colors.inkSoft : brand.colors.muted, letterSpacing: '0.02em' }}>
+              <span style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, color: focusState === 'fits' ? brand.colors.inkSoft : brand.colors.muted, letterSpacing: '0.02em' }}>
                 {fitBasis(strap, focusWatch, overrides)}
               </span>
             </>
           ) : (
             <>
               <span style={{ width: 6, height: 6, borderRadius: '50%', flexShrink: 0, background: fitCount > 0 ? brand.colors.gold : brand.colors.borderLight }} />
-              <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: fitCount > 0 ? 500 : 400, color: fitCount > 0 ? brand.colors.inkSoft : brand.colors.muted, letterSpacing: '0.02em' }}>
+              <span style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: fitCount > 0 ? 500 : 400, color: fitCount > 0 ? brand.colors.inkSoft : brand.colors.muted, letterSpacing: '0.02em' }}>
                 {fitCount > 0 ? `Fits ${fitCount} of your watches` : 'No matching watches yet'}
               </span>
             </>
@@ -143,7 +143,7 @@ export function EmptyDrawer({ onAdd }: { onAdd: () => void }) {
           <div style={{ width: 9, height: 30, borderRadius: 3, background: brand.colors.borderLight, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4)' }} />
         </div>
         <h2 style={{ fontFamily: brand.font.serif, fontSize: 28, fontWeight: 400, color: brand.colors.ink, margin: '0 0 12px' }}>Your strap drawer is empty</h2>
-        <p style={{ fontFamily: brand.font.sans, fontSize: 13, lineHeight: 1.65, color: brand.colors.mutedDark, margin: '0 auto 26px', maxWidth: 340 }}>
+        <p style={{ fontFamily: brand.font.sans, fontSize: 15, lineHeight: 1.65, color: brand.colors.mutedDark, margin: '0 auto 26px', maxWidth: 340 }}>
           Track the leathers, rubbers, NATOs and bracelets you swap between. We&rsquo;ll tell you which watches each one fits.
         </p>
         <PrimaryBtn onClick={onAdd}>

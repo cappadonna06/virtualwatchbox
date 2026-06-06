@@ -85,9 +85,9 @@ export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport }: P
               <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
                 <WatchTile watch={w.watch} size={116} radius={brand.radius.xl} pad={0.1} />
                 <div style={{ minWidth: 0 }}>
-                  <Meta style={{ color: brand.colors.gold }}>{w.watch.brand}</Meta>
+                  <Meta style={{ color: brand.colors.goldDeep }}>{w.watch.brand}</Meta>
                   <h2 style={{ fontFamily: serif, fontSize: 30, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.02, margin: '2px 0 5px' }}>{w.watch.model}</h2>
-                  <div style={{ fontFamily: sans, fontSize: 11.5, color: brand.colors.muted, lineHeight: 1.5 }}>
+                  <div style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.5 }}>
                     Ref. {w.watch.reference}<br />{w.watch.caseSizeMm}mm · {w.watch.caseMaterial}<br />{w.watch.movement}
                   </div>
                 </div>
@@ -110,12 +110,12 @@ export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport }: P
                 }}
               >
                 <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <span style={{ fontFamily: sans, fontSize: 12.5, fontWeight: 600, color: brand.colors.ink }}>Open full dossier</span>
-                  <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted }}>
+                  <span style={{ fontFamily: sans, fontSize: 14, fontWeight: 600, color: brand.colors.ink }}>Open full dossier</span>
+                  <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>
                     {w.records.length} service{w.records.length === 1 ? '' : 's'} · {w.documents.length} document{w.documents.length === 1 ? '' : 's'}
                   </span>
                 </span>
-                <span style={{ fontFamily: sans, fontSize: 16, color: brand.colors.gold }}>→</span>
+                <span style={{ fontFamily: sans, fontSize: 16, color: brand.colors.goldDeep }}>→</span>
               </Link>
             </div>
           </>
@@ -163,20 +163,20 @@ function ServiceSummary({ sw, now, onLog, onInterval }: { sw: ServiceWatch; now:
     <div style={{ background: brand.colors.bg, border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.xl, padding: 18 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
         <StatusChip status={st} showDate />
-        <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted }}>
+        <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>
           {st.key === 'overdue' ? `${Math.round(Math.abs(st.months))} mo overdue` : `due ${relTime(st.due, now)}`}
         </span>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px 12px', marginBottom: 16 }}>
         <SumStat label="Last full service" value={lf ? formatDate(lf.serviceDate) : 'Never serviced'} />
-        <SumStat label="Lifetime upkeep" value={formatCost(lifetimeCostCents(sw))} accent={brand.colors.gold} />
+        <SumStat label="Lifetime upkeep" value={formatCost(lifetimeCostCents(sw))} accent={brand.colors.goldDeep} />
         <div>
-          <Meta style={{ display: 'block', marginBottom: 5, fontSize: 9 }}>Service every</Meta>
+          <Meta style={{ display: 'block', marginBottom: 5, fontSize: 11 }}>Service every</Meta>
           <div style={{ display: 'inline-flex', border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.sm, overflow: 'hidden', background: brand.colors.white }}>
             {INTERVALS.map(n => (
               <button key={n} type="button" onClick={() => onInterval(sw, n)} style={{
-                fontFamily: sans, fontSize: 11.5, fontWeight: 600, padding: '5px 9px', border: 'none', cursor: 'pointer',
+                fontFamily: sans, fontSize: 12, fontWeight: 600, padding: '5px 9px', border: 'none', cursor: 'pointer',
                 background: sw.intervalYears === n ? brand.colors.ink : 'transparent', color: sw.intervalYears === n ? brand.colors.slot : brand.colors.muted,
               }}>{n}y</button>
             ))}
@@ -210,20 +210,20 @@ function RecentServices({ sw }: { sw: ServiceWatch }) {
             <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: `1px solid ${brand.colors.border}` }}>
               <span style={{ width: 16, textAlign: 'center', flexShrink: 0, fontSize: 13, color: t.resets ? brand.colors.gold : brand.colors.muted }}>{t.glyph}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: sans, fontSize: 12.5, fontWeight: 600, color: brand.colors.ink, lineHeight: 1.2 }}>{t.label}</div>
-                <div style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted, marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div style={{ fontFamily: sans, fontSize: 14, fontWeight: 600, color: brand.colors.ink, lineHeight: 1.2 }}>{t.label}</div>
+                <div style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted, marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {formatDate(r.serviceDate)}{r.provider ? ` · ${r.provider}` : ''}
                 </div>
               </div>
               {r.cost != null && (
-                <span style={{ fontFamily: sans, fontSize: 12.5, fontWeight: 600, color: brand.colors.ink, flexShrink: 0 }}>{formatCost(r.cost)}</span>
+                <span style={{ fontFamily: sans, fontSize: 14, fontWeight: 600, color: brand.colors.ink, flexShrink: 0 }}>{formatCost(r.cost)}</span>
               )}
             </div>
           )
         })}
       </div>
       {extra > 0 && (
-        <div style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted, marginTop: 9 }}>+{extra} more in the full dossier</div>
+        <div style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted, marginTop: 9 }}>+{extra} more in the full dossier</div>
       )}
     </div>
   )
@@ -241,7 +241,7 @@ function DocumentsPeek({ sw, onClose }: { sw: ServiceWatch; onClose: () => void 
     >
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 8 }}>
         <Meta>Papers &amp; provenance</Meta>
-        <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted }}>{sw.documents.length} on file →</span>
+        <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>{sw.documents.length} on file →</span>
       </div>
       <div style={{ display: 'flex', gap: 8 }}>
         {shown.map(d => {
@@ -250,7 +250,7 @@ function DocumentsPeek({ sw, onClose }: { sw: ServiceWatch; onClose: () => void 
             <div key={d.id} style={{ width: 52, height: 52, borderRadius: brand.radius.sm, overflow: 'hidden', border: `1px solid ${brand.colors.border}`, background: brand.colors.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               {isImg
                 ? <img src={d.photoUrl} alt={d.caption ?? 'Document'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                : <span style={{ fontFamily: sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.08em', color: brand.colors.muted }}>DOC</span>}
+                : <span style={{ fontFamily: sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: brand.colors.muted }}>DOC</span>}
             </div>
           )
         })}
@@ -262,7 +262,7 @@ function DocumentsPeek({ sw, onClose }: { sw: ServiceWatch; onClose: () => void 
 function SumStat({ label, value, accent }: { label: string; value: string; accent?: string }) {
   return (
     <div>
-      <Meta style={{ display: 'block', marginBottom: 4, fontSize: 9 }}>{label}</Meta>
+      <Meta style={{ display: 'block', marginBottom: 4, fontSize: 11 }}>{label}</Meta>
       <span style={{ fontFamily: sans, fontSize: 14, fontWeight: 600, color: accent ?? brand.colors.ink }}>{value}</span>
     </div>
   )

@@ -75,7 +75,7 @@ export default function ViewSwitcher({ activeView, setActiveView, availableViews
               alignItems: 'center',
               gap: 6,
               fontFamily: brand.font.sans,
-              fontSize: 10.5,
+              fontSize: 12,
               fontWeight: 500,
               letterSpacing: '0.08em',
               textTransform: 'uppercase',
@@ -95,7 +95,7 @@ export default function ViewSwitcher({ activeView, setActiveView, availableViews
             {disabled && (
               <span
                 style={{
-                  fontSize: 7.5,
+                  fontSize: 11,
                   fontWeight: 600,
                   letterSpacing: '0.10em',
                   textTransform: 'uppercase',

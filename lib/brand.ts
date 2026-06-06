@@ -5,6 +5,8 @@
  * See docs/DESIGN_SYSTEM.md for usage guidance.
  */
 
+import type { CSSProperties } from 'react'
+
 export const brand = {
   colors: {
     /** Page background — warm cream */
@@ -13,26 +15,31 @@ export const brand = {
     slot: '#FFFCF7',
     /** Primary text, dark buttons */
     ink: '#1A1410',
-    /** Body text — slightly softer than ink */
-    inkSoft: '#3F362C',
-    /** Secondary text, meta labels */
-    muted: '#A89880',
-    /** Subtitle body color — darker than muted */
+    /** Strong secondary / body text — softer than ink (readability pass) */
+    inkSoft: '#43392E',
+    /** Secondary/meta text — readability pass (WAS #A89880 ~2.5:1 → 6.2:1 AA on cream) */
+    muted: '#6A5B48',
+    /** Subtitle body color — companion to muted */
     mutedDark: '#6F6353',
+    /** Decorative ONLY — slot numbers, hairlines. Never load-bearing text */
+    faint: '#9A8B73',
     /** Watch image card backdrop */
     paper: '#F4EFE6',
     /** Strap / news thumb backdrop */
     paperWarm: '#F1ECE2',
-    /** Accent: prices, active states, brand labels */
+    /** BRIGHT gold — dark surfaces & decorative accents ONLY (fails as text on cream) */
     gold: '#C9A84C',
-    /** Deeper gold — lug-width badge text on gold-wash chips */
-    goldDeep: '#A8862F',
+    /** Antique gold — prices, labels, links & accents on LIGHT surfaces (4.9:1 AA) */
+    goldDeep: '#876A12',
     /** Soft gold wash for selected luxury controls */
     goldWash: 'rgba(201,168,76,0.08)',
     /** Soft gold line for selected luxury controls */
     goldLine: 'rgba(201,168,76,0.34)',
     /** Dark badge background */
     dark: '#2A2520',
+    /** Empty-state sample tray — oak frame gradient (start → end) */
+    trayStart: '#C99A5B',
+    trayEnd: '#B6863F',
     /** Pure white — card surfaces */
     white: '#FFFFFF',
     /** Primary dividers */
@@ -47,6 +54,10 @@ export const brand = {
     heroDark1: '#1e1b16',
     /** Hero dark panel — end */
     heroDark2: '#2a2420',
+    /** Body/heading text on dark surfaces */
+    onDark: '#F5F1E9',
+    /** Muted/meta text on dark surfaces (7.8:1 on #1C1814) */
+    onDarkMuted: '#B8AB95',
     /** News card image placeholder gradient — start */
     placeholderStart: '#EDE9E2',
     /** News card image placeholder gradient — end */
@@ -132,6 +143,42 @@ export const brand = {
     sans: 'var(--font-dm-sans)',
   },
 
+  /**
+   * Type scale (px) — Readability pass. Hard 11px floor for any real text.
+   * Display roles use the serif; body/label/price roles use the sans.
+   * Source of truth for new code; legacy inline sizes migrate toward these.
+   */
+  text: {
+    /** Hero H1 */
+    hero:       'clamp(54px, 6vw, 90px)',
+    /** Section H2 */
+    h2:         'clamp(33px, 3.6vw, 46px)',
+    /** Page masthead title — one per page; sits below the homepage hero */
+    pageTitle:  'clamp(34px, 4.5vw, 48px)',
+    /** H3 / sidebar title */
+    h3:          26,
+    /** Card title */
+    cardTitle:   21,
+    /** Lead / intro copy */
+    lead:        18,
+    /** Body default */
+    body:        15,
+    /** Caption — paragraph floor */
+    bodySm:      14,
+    /** Small body / dense UI */
+    bodyXs:      13,
+    /** Uppercase UI label */
+    label:       12,
+    /** Smallest label — hard floor, tertiary only */
+    labelSm:     11,
+    /** Large price */
+    priceLg:     27,
+    /** Price */
+    price:       20,
+    /** Small price */
+    priceSm:     18,
+  },
+
   /** Border radius scale (px) */
   radius: {
     btn:    4,
@@ -188,3 +235,44 @@ export const brand = {
     },
   },
 } as const
+
+/**
+ * Page masthead type system — eyebrow -> serif title -> subtitle.
+ * One canonical treatment for every page title. Spread into inline styles,
+ * or use <PageMasthead/>. The *OnDark variants are for dark-surface mastheads.
+ */
+const mastheadEyebrow: CSSProperties = {
+  fontFamily: brand.font.sans,
+  fontSize: brand.text.label,
+  fontWeight: 600,
+  letterSpacing: '0.14em',
+  textTransform: 'uppercase',
+  color: brand.colors.muted,
+}
+const mastheadTitle: CSSProperties = {
+  fontFamily: brand.font.serif,
+  fontSize: brand.text.pageTitle,
+  fontWeight: 400,
+  lineHeight: 1.1,
+  letterSpacing: '-0.01em',
+  color: brand.colors.ink,
+  margin: 0,
+}
+const mastheadSubtitle: CSSProperties = {
+  fontFamily: brand.font.sans,
+  fontSize: brand.text.body,
+  fontWeight: 400,
+  lineHeight: 1.6,
+  color: brand.colors.muted,
+  margin: 0,
+}
+export const masthead: Record<
+  'eyebrow' | 'title' | 'subtitle' | 'titleOnDark' | 'subtitleOnDark',
+  CSSProperties
+> = {
+  eyebrow: mastheadEyebrow,
+  title: mastheadTitle,
+  subtitle: mastheadSubtitle,
+  titleOnDark: { ...mastheadTitle, color: brand.colors.onDark },
+  subtitleOnDark: { ...mastheadSubtitle, color: brand.colors.onDarkMuted },
+}

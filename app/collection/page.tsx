@@ -162,7 +162,7 @@ export default function CollectionPage() {
                         boxShadow: '0 1px 3px rgba(201,168,76,0.18)', flexShrink: 0,
                       }}
                     >
-                      <span style={{ fontFamily: brand.font.sans, fontSize: 13, fontWeight: 700, color: brand.fit.unknown.text, letterSpacing: '0.01em', whiteSpace: 'nowrap' }}>{straps.length} straps</span>
+                      <span style={{ fontFamily: brand.font.sans, fontSize: 15, fontWeight: 700, color: brand.fit.unknown.text, letterSpacing: '0.01em', whiteSpace: 'nowrap' }}>{straps.length} straps</span>
                       <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, borderRadius: '50%', background: brand.colors.gold, color: brand.colors.ink }} aria-hidden="true">
                         <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 5l5 5-5 5" /></svg>
                       </span>
@@ -182,6 +182,7 @@ export default function CollectionPage() {
             }}
             activeView={activeView}
             onViewChange={setActiveView}
+            availableViews={collectionWatches.length === 0 ? ['watchbox', 'photo'] : ['watchbox', 'cards', 'photo']}
             menuItems={[
               {
                 label: 'Customize Watchbox',
@@ -218,7 +219,11 @@ export default function CollectionPage() {
                 paddingRight: isMobile ? 0 : 332,
               }}
             >
-              <ViewSwitcher activeView={activeView} setActiveView={setActiveView} />
+              <ViewSwitcher
+                activeView={activeView}
+                setActiveView={setActiveView}
+                availableViews={collectionWatches.length === 0 ? ['watchbox', 'photo'] : ['watchbox', 'cards', 'photo']}
+              />
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
               {activeView === 'cards' ? (
                 <SortDropdown
@@ -260,7 +265,9 @@ export default function CollectionPage() {
       </div>
 
       <div style={{ padding: `0 ${isMobile ? 10 : 56}px` }}>
-        {activeView === 'watchbox' ? (
+        {collectionWatches.length === 0 && activeView !== 'photo' ? (
+          <CollectionEmptyState />
+        ) : activeView === 'watchbox' ? (
           <>
             <SyncRibbon />
             <CollectionWatchboxSurface
@@ -270,9 +277,6 @@ export default function CollectionPage() {
               configOpen={collectionConfigOpen}
               onConfigOpenChange={setCollectionConfigOpen}
             />
-            {collectionWatches.length === 0 ? (
-              <CollectionEmptyState variant="collection" />
-            ) : null}
           </>
         ) : activeView === 'photo' ? (
           <CollectionPhotoView
@@ -380,13 +384,13 @@ export default function CollectionPage() {
               padding: 18,
             }}
           >
-            <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
               Remove Watch
             </div>
             <div style={{ fontFamily: brand.font.serif, fontSize: 28, color: brand.colors.ink, lineHeight: 1.1, marginBottom: 8 }}>
               Delete from My Collection?
             </div>
-            <p style={{ margin: '0 0 16px', fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.5 }}>
+            <p style={{ margin: '0 0 16px', fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, lineHeight: 1.5 }}>
               {deleteTarget.brand} {deleteTarget.model} will be removed from your collection list.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>

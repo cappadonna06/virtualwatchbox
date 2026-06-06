@@ -2542,7 +2542,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
             background: brand.colors.ink,
             color: brand.colors.bg,
             fontFamily: brand.font.sans,
-            fontSize: 11,
+            fontSize: 12,
             fontWeight: 500,
             letterSpacing: '0.04em',
             boxShadow: brand.shadow.xl,
@@ -2591,7 +2591,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
             <p
               style={{
                 fontFamily: brand.font.sans,
-                fontSize: 13,
+                fontSize: 15,
                 margin: 0,
                 letterSpacing: '0.02em',
                 color: 'rgba(250,248,244,0.78)',

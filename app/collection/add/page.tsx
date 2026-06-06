@@ -7,7 +7,7 @@ import { useCatalog, type CatalogSearchParams } from '@/lib/catalog/CatalogProvi
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import { normalizePlaygroundBoxes } from '@/lib/playground'
 import { createSeededPlaygroundBoxes } from '@/lib/playgroundData'
-import { brand } from '@/lib/brand'
+import { brand, masthead } from '@/lib/brand'
 import { dialColorToHex } from '@/lib/dialColors'
 import AddSearchWatchCard from '@/components/collection/AddSearchWatchCard'
 import PhotoSearch, { type PhotoSearchHandle } from '@/components/PhotoSearch'
@@ -110,7 +110,7 @@ function FacetChip({
 }) {
   const padY = size === 'sm' ? 4 : 6
   const padX = size === 'sm' ? 10 : 12
-  const fs = size === 'sm' ? 10.5 : 11.5
+  const fs = 12
   return (
     <button
       type="button"
@@ -149,7 +149,7 @@ function FacetChip({
       {count != null && (
         <span
           style={{
-            fontSize: fs - 2.5,
+            fontSize: 11,
             padding: '1px 6px',
             borderRadius: brand.radius.pill,
             fontWeight: 600,
@@ -245,10 +245,10 @@ function PhotosToggleRow({
           <PhotoIcon size={16} />
         </div>
         <div>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 13, fontWeight: 600, color: brand.colors.ink, marginBottom: 2 }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 15, fontWeight: 600, color: brand.colors.ink, marginBottom: 2 }}>
             Show only watches with photos
           </div>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 11.5, color: brand.colors.muted, lineHeight: 1.45 }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.45 }}>
             We&apos;re still adding photos. Turn off to see the full catalog.
           </div>
         </div>
@@ -289,7 +289,7 @@ function FacetGroup({
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 9.5,
+            fontSize: 11,
             fontWeight: 600,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
@@ -299,7 +299,7 @@ function FacetGroup({
           {label}
         </div>
         {selected ? (
-          <span style={{ fontFamily: brand.font.sans, fontSize: 10.5, color: brand.colors.gold, fontWeight: 500 }}>
+          <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.goldDeep, fontWeight: 500 }}>
             {selected}
           </span>
         ) : null}
@@ -330,7 +330,7 @@ function FacetGroup({
               border: 'none',
               cursor: 'pointer',
               fontFamily: brand.font.sans,
-              fontSize: 11,
+              fontSize: 12,
               color: brand.colors.muted,
               textDecoration: 'underline',
               textUnderlineOffset: 2,
@@ -477,7 +477,7 @@ function MobileFilterSheet({
               border: 'none',
               cursor: 'pointer',
               fontFamily: brand.font.sans,
-              fontSize: 11,
+              fontSize: 12,
               color: brand.colors.muted,
               fontWeight: 500,
               letterSpacing: '0.04em',
@@ -957,23 +957,22 @@ function AddWatchSearchInner() {
     : 'Search by brand, model, or reference number'
 
   return (
-    <div style={{ padding: isMobile ? '28px 20px 80px' : '56px 56px 120px', borderTop: '1px solid #EAE5DC' }}>
+    <div style={{ padding: isMobile ? '28px 20px 80px' : '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}>
       <button
         onClick={() => router.push(backHref)}
         style={{
+          ...masthead.eyebrow,
           background: 'none', border: 'none', padding: 0, marginBottom: 14,
-          cursor: 'pointer', color: '#A89880',
-          fontFamily: 'var(--font-dm-sans)', fontSize: 11,
-          letterSpacing: '0.08em', textTransform: 'uppercase',
+          cursor: 'pointer',
         }}
       >
         {backLabel}
       </button>
 
-      <h1 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 28, fontWeight: 400, color: '#1A1410', margin: '0 0 6px' }}>
+      <h1 style={{ ...masthead.title, margin: '0 0 6px' }}>
         {pageTitle}
       </h1>
-      <p style={{ margin: '0 0 20px', fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#A89880' }}>
+      <p style={{ ...masthead.subtitle, margin: '0 0 20px' }}>
         {pageSubtitle}
       </p>
 
@@ -1046,7 +1045,7 @@ function AddWatchSearchInner() {
           <div
             style={{
               fontFamily: brand.font.sans,
-              fontSize: 9.5,
+              fontSize: 11,
               fontWeight: 600,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
@@ -1076,7 +1075,7 @@ function AddWatchSearchInner() {
                 border: 'none',
                 cursor: 'pointer',
                 fontFamily: brand.font.sans,
-                fontSize: 11,
+                fontSize: 12,
                 color: brand.colors.muted,
                 textDecoration: 'underline',
                 textUnderlineOffset: 2,
@@ -1141,7 +1140,7 @@ function AddWatchSearchInner() {
                 <span>Filters</span>
                 {activeCount > 0 ? (
                   <span style={{
-                    fontSize: 10,
+                    fontSize: 12,
                     fontWeight: 600,
                     background: brand.colors.gold,
                     color: brand.colors.ink,
@@ -1206,7 +1205,7 @@ function AddWatchSearchInner() {
                       background: CHIP_FILL,
                       border: `1px solid ${brand.colors.border}`,
                       fontFamily: brand.font.sans,
-                      fontSize: 11.5,
+                      fontSize: 12,
                       fontWeight: 500,
                       color: brand.colors.ink,
                       cursor: 'pointer',
@@ -1239,7 +1238,7 @@ function AddWatchSearchInner() {
                       border: 'none',
                       cursor: 'pointer',
                       fontFamily: brand.font.sans,
-                      fontSize: 11,
+                      fontSize: 12,
                       color: brand.colors.muted,
                       textDecoration: 'underline',
                       textUnderlineOffset: 2,
