@@ -1,39 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { brand } from '@/lib/brand'
-import { renderableWatches } from '@/lib/renderableWatches'
-import { withVersion } from '@/lib/watchImages/cacheBust'
-import { useIsMobile, usePrefersReducedMotion } from './useResponsiveState'
-
-// Iconic "dream box" preview — faded, non-interactive sample watches that show
-// the payoff of a filled box. Static design assets, never persisted or counted.
-const SAMPLE_IDS = [
-  'rolex-126334',
-  'omega-310-30-42-50-01-001',
-  'rolex-116500ln',
-  'rolex-126710blro',
-  'rolex-124270',
-]
-
-const PHANTOMS: Array<{ id: string; img: string }> = (() => {
-  const byId = new Map(renderableWatches.map(w => [w.id, w]))
-  const picked: typeof renderableWatches = []
-  const seen = new Set<string>()
-  for (const id of SAMPLE_IDS) {
-    const w = byId.get(id)
-    if (w && !seen.has(id)) { picked.push(w); seen.add(id) }
-  }
-  // Top up to 5 from the heat-ranked, image-having catalog if any id is missing.
-  for (const w of renderableWatches) {
-    if (picked.length >= 5) break
-    if (!seen.has(w.id) && w.imageUrl) { picked.push(w); seen.add(w.id) }
-  }
-  return picked.slice(0, 5).map(w => ({ id: w.id, img: withVersion(w.imageUrl) ?? '' }))
-})()
+import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import { SAMPLE_BOX_GHOSTS } from '@/lib/sampleBox'
+import { useIsMobile } from './useResponsiveState'
+import WatchBox from './WatchBox'
 
 const BENEFITS = [
   { title: 'Synced everywhere', desc: 'Your box on desktop, tablet and phone — always current.', Icon: SyncIcon },
@@ -44,12 +17,9 @@ const BENEFITS = [
 export default function CollectionEmptyState() {
   const router = useRouter()
   const isMobile = useIsMobile()
-  const prefersReducedMotion = usePrefersReducedMotion()
-  const [addHover, setAddHover] = useState(false)
+  const { watchboxConfig } = useCollectionSession()
 
   const handleAdd = () => router.push('/collection/add')
-  const ringSize = isMobile ? 30 : 46
-  const lift = addHover && !prefersReducedMotion
 
   return (
     <div
@@ -60,118 +30,19 @@ export default function CollectionEmptyState() {
         alignItems: 'stretch',
       }}
     >
-      {/* Left — sample tray */}
+      {/* Left — sample box: the real watchbox (texture + dramatic add slot + ghosts) */}
       <div>
-        <div
-          style={{
-            background: `linear-gradient(155deg, ${brand.colors.trayStart} 0%, ${brand.colors.trayEnd} 100%)`,
-            borderRadius: isMobile ? 15 : 18,
-            padding: isMobile ? 13 : 20,
-            boxShadow: 'inset 0 2px 6px rgba(255,255,255,0.25), 0 14px 36px rgba(26,20,16,0.16)',
-          }}
-        >
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: isMobile ? 9 : 14 }}>
-            {/* Slot 1 — focal add affordance */}
-            <button
-              onClick={handleAdd}
-              onMouseEnter={() => setAddHover(true)}
-              onMouseLeave={() => setAddHover(false)}
-              aria-label="Add your first watch"
-              style={{
-                position: 'relative',
-                aspectRatio: '3 / 4',
-                borderRadius: brand.radius.lg,
-                background: brand.colors.white,
-                border: `1.5px dashed ${addHover ? brand.colors.gold : brand.colors.goldDeep}`,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: isMobile ? 8 : 12,
-                padding: 8,
-                cursor: 'pointer',
-                boxShadow: lift ? '0 0 0 3px rgba(201,168,76,0.18), 0 10px 28px rgba(201,168,76,0.16)' : 'none',
-                transform: lift ? 'translateY(-2px)' : 'none',
-                transition: prefersReducedMotion ? 'none' : 'border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease',
-              }}
-            >
-              <span
-                style={{
-                  width: ringSize,
-                  height: ringSize,
-                  borderRadius: '50%',
-                  border: `1.5px solid ${brand.colors.goldDeep}`,
-                  background: addHover ? brand.colors.goldDeep : 'transparent',
-                  color: addHover ? brand.colors.white : brand.colors.goldDeep,
-                  display: 'grid',
-                  placeItems: 'center',
-                  transition: prefersReducedMotion ? 'none' : 'background 0.16s ease, color 0.16s ease',
-                }}
-              >
-                <PlusIcon size={isMobile ? 15 : 22} />
-              </span>
-              <span
-                style={{
-                  fontFamily: brand.font.sans,
-                  fontSize: isMobile ? brand.text.labelSm : brand.text.label,
-                  fontWeight: 600,
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                  color: brand.colors.ink,
-                  textAlign: 'center',
-                  lineHeight: 1.3,
-                }}
-              >
-                {isMobile ? 'Add watch' : 'Add your first watch'}
-              </span>
-            </button>
-
-            {/* Slots 2–6 — faded sample watches */}
-            {PHANTOMS.map((p, i) => (
-              <div
-                key={p.id}
-                aria-hidden="true"
-                style={{
-                  position: 'relative',
-                  aspectRatio: '3 / 4',
-                  borderRadius: brand.radius.lg,
-                  background: brand.colors.slot,
-                  border: `1px solid ${brand.colors.borderMid}`,
-                  display: 'grid',
-                  placeItems: 'center',
-                  padding: 10,
-                  overflow: 'hidden',
-                }}
-              >
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: isMobile ? 6 : 9,
-                    left: isMobile ? 8 : 11,
-                    fontFamily: brand.font.sans,
-                    fontSize: brand.text.labelSm,
-                    fontWeight: 600,
-                    color: brand.colors.faint,
-                    opacity: 0.7,
-                  }}
-                >
-                  0{i + 2}
-                </span>
-                {p.img ? (
-                  <div style={{ position: 'relative', width: '84%', height: '80%' }}>
-                    <Image
-                      src={p.img}
-                      alt=""
-                      fill
-                      sizes="140px"
-                      style={{ objectFit: 'contain', filter: 'grayscale(1) brightness(1.08)', opacity: 0.16 }}
-                    />
-                  </div>
-                ) : null}
-              </div>
-            ))}
-          </div>
-        </div>
+        <WatchBox
+          watches={[]}
+          activeSlot={null}
+          onSlotClick={() => {}}
+          onEmptySlotClick={handleAdd}
+          frame={watchboxConfig.frame}
+          lining={watchboxConfig.lining}
+          slotCount={watchboxConfig.slotCount}
+          mode="collection"
+          ghostWatches={SAMPLE_BOX_GHOSTS}
+        />
 
         <p
           style={{

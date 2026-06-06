@@ -13,9 +13,9 @@ type NavLink = { label: string; href: string; coming?: boolean; icon: NavIconNam
 
 const LINKS: NavLink[] = [
   { label: 'My Collection', href: '/collection', icon: 'collection' },
-  { label: 'Service Room', href: '/service-room', icon: 'service' },
   { label: 'Playground', href: '/playground', icon: 'playground' },
   { label: 'Discover', href: '/discover', icon: 'discover' },
+  { label: 'Service Room', href: '/service-room', icon: 'service' },
   { label: 'News', href: '/news', icon: 'news' },
 ]
 

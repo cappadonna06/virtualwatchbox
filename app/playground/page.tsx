@@ -37,6 +37,8 @@ import CollectionStats from '@/components/collection/CollectionStats'
 import ShareBoxModal, { type ShareFlags } from '@/components/collection/ShareBoxModal'
 import SyncRibbon from '@/components/collection/SyncRibbon'
 import WatchboxHeader from '@/components/collection/WatchboxHeader'
+import PlaygroundEmptyState from '@/components/collection/PlaygroundEmptyState'
+import { SAMPLE_BOX_GHOSTS } from '@/lib/sampleBox'
 import { brand, masthead } from '@/lib/brand'
 
 const PV_W_PAD = 38
@@ -212,6 +214,18 @@ function PlaygroundPageInner() {
   const displayWatches = sortedEntries.map(item => item.displayWatch)
   const selectedItem = sortedEntries.find(item => item.entry.id === selectedEntryId) ?? null
   const activeSlot = selectedItem ? selectedItem.slot : -1
+
+  // No entries → empty state. Mirror My Collection: no card view, no box stats.
+  const boxIsEmpty = resolvedEntries.length === 0
+  // Empty active box in watchbox view → drop the detail sidebar so the empty
+  // state spans full width like My Collection's.
+  const playgroundBoxEmpty = activeView === 'watchbox' && boxIsEmpty
+
+  // Cards view has nothing to show on an empty box, and we hide its toggle —
+  // so snap back to the watchbox showcase if the box empties while in cards.
+  useEffect(() => {
+    if (boxIsEmpty && activeView !== 'watchbox') setActiveView('watchbox')
+  }, [boxIsEmpty, activeView])
 
   const sc = SLOT_COUNTS.find(slot => slot.n === (activeBox?.slotCount ?? 6)) ?? SLOT_COUNTS[1]
   const isMobile = screenW > 0 && screenW < 768
@@ -404,7 +418,7 @@ function PlaygroundPageInner() {
             summary={activeBox?.tags.length ? activeBox.tags.join(' · ') : undefined}
             activeView={activeView}
             onViewChange={setActiveView}
-            availableViews={['watchbox', 'cards']}
+            availableViews={boxIsEmpty ? ['watchbox'] : ['watchbox', 'cards']}
             menuItems={[
               {
                 label: 'Customize Watchbox',
@@ -418,10 +432,10 @@ function PlaygroundPageInner() {
                 label: 'Rename Box',
                 onSelect: openRenameModal,
               },
-              {
+              ...(boxIsEmpty ? [] : [{
                 label: mobileStatsOpen ? 'Hide Box Stats' : 'Show Box Stats',
                 onSelect: () => setMobileStatsOpen(open => !open),
-              },
+              }]),
               {
                 label: 'Share Box',
                 onSelect: () => {
@@ -734,8 +748,8 @@ function PlaygroundPageInner() {
               paddingRight: isMobile ? 0 : 332,
             }}
           >
-            <ViewSwitcher activeView={activeView} setActiveView={setActiveView} availableViews={['watchbox', 'cards']} />
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+            <ViewSwitcher activeView={activeView} setActiveView={setActiveView} availableViews={boxIsEmpty ? ['watchbox'] : ['watchbox', 'cards']} />
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginLeft: 'auto' }}>
             {activeView === 'cards' ? (
               <SortDropdown
                 value={sortBy}
@@ -782,7 +796,7 @@ function PlaygroundPageInner() {
 
         <div
           className="collection-grid"
-          style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 32, alignItems: 'start' }}
+          style={{ display: 'grid', gridTemplateColumns: playgroundBoxEmpty ? '1fr 360px' : '1fr 300px', gap: 32, alignItems: 'start' }}
         >
           {/* minWidth:0 — grid tracks default to min-width:auto, which
               lets `flex-shrink:0` descendants (e.g. WatchTray items) push
@@ -817,8 +831,6 @@ function PlaygroundPageInner() {
                   onTrashDrop={handleTrashDrop}
                   externalHoverIndex={touchHoverSlot}
                   wobble={wobbling}
-                  collectionWatchCount={collectionWatches.length}
-                  onImportCollection={handleImportCollection}
                   configOpen={playgroundConfigOpen}
                   onConfigOpenChange={setPlaygroundConfigOpen}
                 />
@@ -842,23 +854,31 @@ function PlaygroundPageInner() {
             )}
           </div>
 
-          <ResponsiveSidebarSheet active={Boolean(selectedItem)} onClose={() => setSelectedEntryId(null)}>
-            <WatchSidebar
-              watch={selectedItem?.displayWatch ?? null}
-              sticky={false}
-              catalogWatchId={selectedItem?.sourceWatch.id ?? null}
-              mode="playground"
-              onRequestDelete={() => setDeleteEntryTarget(selectedItem)}
-              onRequestEdit={() => {
-                if (!selectedItem) return
-                router.push(`/playground/edit/${activeBoxId}/${selectedItem.entry.id}`)
-              }}
+          {playgroundBoxEmpty ? (
+            <PlaygroundEmptyState
+              collectionWatchCount={collectionWatches.length}
+              onBuild={() => router.push(`/collection/add?dest=playground&boxId=${activeBoxId}&slot=0`)}
+              onImport={handleImportCollection}
             />
-          </ResponsiveSidebarSheet>
+          ) : (
+            <ResponsiveSidebarSheet active={Boolean(selectedItem)} onClose={() => setSelectedEntryId(null)}>
+              <WatchSidebar
+                watch={selectedItem?.displayWatch ?? null}
+                sticky={false}
+                catalogWatchId={selectedItem?.sourceWatch.id ?? null}
+                mode="playground"
+                onRequestDelete={() => setDeleteEntryTarget(selectedItem)}
+                onRequestEdit={() => {
+                  if (!selectedItem) return
+                  router.push(`/playground/edit/${activeBoxId}/${selectedItem.entry.id}`)
+                }}
+              />
+            </ResponsiveSidebarSheet>
+          )}
         </div>
       </div>
 
-      {isMobile && !mobileStatsOpen ? null : (
+      {boxIsEmpty || (isMobile && !mobileStatsOpen) ? null : (
       <div id="playground-stats" style={{ marginTop: isMobile ? 56 : 72, padding: `${isMobile ? 28 : 48}px ${isMobile ? 20 : 56}px 0`, borderTop: `1px solid ${brand.colors.border}` }}>
         <CollectionStats watches={displayWatches} mode="playground" />
       </div>
@@ -1223,8 +1243,6 @@ interface WatchboxViewProps {
   onTrashDrop?: (slotIndex: number) => void
   externalHoverIndex?: number | null
   wobble?: boolean
-  collectionWatchCount: number
-  onImportCollection: () => void
   configOpen?: boolean
   onConfigOpenChange?: (open: boolean) => void
 }
@@ -1247,12 +1265,9 @@ function WatchboxView({
   onTrashDrop,
   externalHoverIndex,
   wobble = false,
-  collectionWatchCount,
-  onImportCollection,
   configOpen: configOpenProp,
   onConfigOpenChange,
 }: WatchboxViewProps) {
-  const [importDismissed, setImportDismissed] = useState(false)
   const [customizerOpen, setCustomizerOpen] = useState(false)
   const [configOpenLocal, setConfigOpenLocal] = useState(false)
   const configOpen = configOpenProp ?? configOpenLocal
@@ -1293,115 +1308,6 @@ function WatchboxView({
           ...(watchboxMaxW !== undefined ? { maxWidth: watchboxMaxW, width: '100%', margin: '0 auto' } : {}),
         }}
       >
-        {watches.length === 0 && collectionWatchCount > 0 && !importDismissed && (
-          <div
-            style={{
-              maxWidth: 520,
-              margin: '0 auto 18px',
-              background: brand.colors.white,
-              border: `1px solid ${brand.colors.goldLine}`,
-              borderRadius: brand.radius.xl,
-              padding: '18px 20px',
-              boxShadow: brand.shadow.gold,
-              textAlign: 'center',
-            }}
-          >
-            <div
-              style={{
-                fontFamily: brand.font.sans,
-                fontSize: 11,
-                fontWeight: 600,
-                letterSpacing: '0.14em',
-                textTransform: 'uppercase',
-                color: brand.colors.goldDeep,
-                marginBottom: 6,
-              }}
-            >
-              Quick start
-            </div>
-            <div
-              style={{
-                fontFamily: brand.font.serif,
-                fontSize: 22,
-                color: brand.colors.ink,
-                lineHeight: 1.2,
-                marginBottom: 6,
-              }}
-            >
-              Start from your collection
-            </div>
-            <p
-              style={{
-                margin: '0 0 14px',
-                fontFamily: brand.font.sans,
-                fontSize: 14,
-                color: brand.colors.mutedDark,
-                lineHeight: 1.5,
-              }}
-            >
-              Pre-fill this box with your {collectionWatchCount} owned {collectionWatchCount === 1 ? 'watch' : 'watches'}, then swap, replace, or add new ones to see how the box would look.
-            </p>
-            <div style={{ display: 'inline-flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <button
-                onClick={onImportCollection}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 7,
-                  fontFamily: brand.font.sans,
-                  fontSize: 11,
-                  fontWeight: 600,
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
-                  padding: '10px 18px',
-                  background: brand.colors.ink,
-                  color: brand.colors.bg,
-                  border: 'none',
-                  borderRadius: brand.radius.sm,
-                  cursor: 'pointer',
-                }}
-              >
-                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <polyline points="3,7 6.5,10.5 11,4" />
-                </svg>
-                Import {collectionWatchCount} {collectionWatchCount === 1 ? 'watch' : 'watches'}
-              </button>
-              <button
-                onClick={() => setImportDismissed(true)}
-                style={{
-                  fontFamily: brand.font.sans,
-                  fontSize: 11,
-                  fontWeight: 500,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  padding: '10px 14px',
-                  background: 'transparent',
-                  color: brand.colors.muted,
-                  border: `1px solid ${brand.colors.borderLight}`,
-                  borderRadius: brand.radius.sm,
-                  cursor: 'pointer',
-                }}
-              >
-                Start empty
-              </button>
-            </div>
-          </div>
-        )}
-        {watches.length === 0 && (collectionWatchCount === 0 || importDismissed) && (
-          <div
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 12,
-              letterSpacing: '0.06em',
-              color: brand.colors.muted,
-              textAlign: 'center',
-              marginBottom: 14,
-              lineHeight: 1.5,
-            }}
-          >
-            This box is empty. Tap any slot to add your first watch, or drag from your followed list below.
-          </div>
-        )}
         <WatchBox
           watches={watches}
           watchBySlot={watchBySlot}
@@ -1418,6 +1324,7 @@ function WatchboxView({
           slotCount={box.slotCount}
           slotWidth={watchboxSlotPx}
           mode="playground"
+          ghostWatches={SAMPLE_BOX_GHOSTS}
         />
 
         <div ref={customizerRef} className="configurator-wrap" style={{ marginTop: 10, position: 'relative' }}>

@@ -10,6 +10,7 @@ import { createSeededPlaygroundBoxes } from '@/lib/playgroundData'
 import { brand, masthead } from '@/lib/brand'
 import { dialColorToHex } from '@/lib/dialColors'
 import AddSearchWatchCard from '@/components/collection/AddSearchWatchCard'
+import AddSearchEmptyState from '@/components/collection/AddSearchEmptyState'
 import PhotoSearch, { type PhotoSearchHandle } from '@/components/PhotoSearch'
 import SortDropdown from '@/components/collection/SortDropdown'
 
@@ -816,6 +817,10 @@ function AddWatchSearchInner() {
     })
   }, [baseResults, colorFilter, materialFilter, sizeFilter])
 
+  // No query and no brand chosen → show curated discovery (popular models +
+  // browse-by-brand) instead of an unframed top-heat dump.
+  const isDefaultState = !searchTerm.trim() && !brandFilter
+
   // ── Brand filter options ─────────────────────────────────────────────
   // Two modes:
   //   • search active (and no brand filter yet) → derive chips from the
@@ -1322,6 +1327,15 @@ function AddWatchSearchInner() {
             )
           })()}
 
+          {isDefaultState && (
+            <AddSearchEmptyState
+              catalogWatches={catalogWatches}
+              getImageUrl={getImageUrl}
+              onPickModel={q => setSearchTerm(q)}
+              onPickBrand={b => setBrandFilter(b)}
+            />
+          )}
+
           {filteredResults.length === 0 && !searchLoading && (
             <div style={{ textAlign: 'center', color: '#A89880', fontFamily: 'var(--font-dm-sans)', fontSize: 12, padding: '28px 12px' }}>
               No watches found. Try a different search or adjust filters.
@@ -1329,7 +1343,6 @@ function AddWatchSearchInner() {
           )}
 
           {(filteredResults.length > 0 || searchLoading) && (() => {
-            const isDefaultState = !searchTerm.trim() && !brandFilter
             const noun = isDefaultState ? 'watches' : 'matches'
             const singular = isDefaultState ? 'watch' : 'match'
             return (
@@ -1354,7 +1367,7 @@ function AddWatchSearchInner() {
                 </span>
                 {isDefaultState && filteredResults.length > 0 ? (
                   <span style={{ color: brand.colors.muted, fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                    Trending
+                    Trending now
                   </span>
                 ) : null}
               </div>

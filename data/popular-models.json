@@ -1,0 +1,14 @@
+[
+  { "brand": "Rolex", "model": "Submariner", "query": "Submariner" },
+  { "brand": "Rolex", "model": "Daytona", "query": "Daytona" },
+  { "brand": "Rolex", "model": "Datejust", "query": "Datejust" },
+  { "brand": "Rolex", "model": "Day-Date", "query": "Day-Date" },
+  { "brand": "Rolex", "model": "GMT-Master II", "query": "GMT-Master" },
+  { "brand": "Rolex", "model": "Explorer", "query": "Explorer" },
+  { "brand": "Omega", "model": "Speedmaster", "query": "Speedmaster" },
+  { "brand": "Omega", "model": "Seamaster", "query": "Seamaster" },
+  { "brand": "Audemars Piguet", "model": "Royal Oak", "query": "Royal Oak" },
+  { "brand": "Patek Philippe", "model": "Nautilus", "query": "Nautilus" },
+  { "brand": "Cartier", "model": "Tank", "query": "Tank" },
+  { "brand": "Tudor", "model": "Black Bay", "query": "Black Bay" }
+]
