@@ -151,7 +151,7 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
             {t.resets && (
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 7, marginTop: 10 }}>
                 <Icon name="spark" size={13} color={brand.colors.gold} style={{ flexShrink: 0, marginTop: 1 }} />
-                <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.goldDeep, lineHeight: 1.45 }}>Resets the service clock — next due recalculates to {sw.intervalYears} years out.</span>
+                <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.goldDeep, lineHeight: 1.45 }}>Resets the service clock. Next due recalculates to {sw.intervalYears} years out.</span>
               </div>
             )}
           </Field>
@@ -200,7 +200,7 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
               Upload receipt, warranty card or service record
             </button>
             <div style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted, marginTop: 7 }}>
-              Keep proof of work with the record — receipts, certificates, before/after photos.
+              Keep proof of work with the record: receipts, certificates, before/after photos.
             </div>
 
             {docs.length > 0 && (

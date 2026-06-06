@@ -233,7 +233,7 @@ export default function WatchPhotoGallery({ ownedWatchId, variant = 'sidebar' }:
               maxWidth: 360,
               lineHeight: 1.5,
             }}>
-              Wrist shots, the day you got it, service receipts — anything you want to remember about this watch.
+              Wrist shots, the day you got it, service receipts. Anything you want to remember about this watch.
             </div>
           )}
           <div style={{

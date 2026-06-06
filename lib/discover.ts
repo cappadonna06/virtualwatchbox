@@ -756,7 +756,7 @@ export function computeBoxRead(collection: CatalogWatch[]): string {
 
 export function computeStrapSummary(collection: CatalogWatch[]): string {
   const lugs = collection.map(w => w.lugWidthMm).filter((n): n is number => typeof n === 'number')
-  if (lugs.length === 0) return 'Swap-friendly across most boxes — bring your lug widths in by adding watches.'
+  if (lugs.length === 0) return 'Swap-friendly across most boxes. Bring your lug widths in by adding watches.'
 
   const counts = new Map<number, number>()
   for (const n of lugs) counts.set(n, (counts.get(n) ?? 0) + 1)

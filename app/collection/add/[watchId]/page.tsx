@@ -340,7 +340,7 @@ export default function AddWatchConfirmPage() {
             alignSelf: 'flex-start',
           }}
         >
-          Cancel — don&apos;t add another
+          Cancel, don&apos;t add another
         </button>
       )}
     </>
@@ -628,7 +628,7 @@ export default function AddWatchConfirmPage() {
             {(!alreadyInCollection || addAnotherOpen || submitting) && (
             <>
             <StepHeading n={1}>
-              {alreadyInCollection ? 'Add another copy — where does it go?' : 'Where does it go?'}
+              {alreadyInCollection ? 'Add another copy. Where does it go?' : 'Where does it go?'}
             </StepHeading>
             <div style={{ marginBottom: 20 }}>
               <div
@@ -725,7 +725,7 @@ export default function AddWatchConfirmPage() {
                   marginTop: 9,
                 }}
               >
-                Pick where it lives — you&apos;ll confirm with the button below.
+                Pick where it lives. You&apos;ll confirm with the button below.
               </div>
             </div>
 

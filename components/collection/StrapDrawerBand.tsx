@@ -110,7 +110,7 @@ function Header({ strapCount, comboCount, variant }: { strapCount: number; combo
         <h2 style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 26 : 34, fontWeight: 400, lineHeight: isMobile ? 1 : 1.04, color: brand.colors.ink, margin: '0 0 8px' }}>The Strap Drawer</h2>
         {isMobile
           ? <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>{strapCount} straps · {comboCount} combinations</div>
-          : <p style={{ fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.mutedDark, lineHeight: 1.5, margin: 0, maxWidth: 440 }}>The leathers, rubbers and bracelets you swap between — and which of your watches each one fits.</p>}
+          : <p style={{ fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.mutedDark, lineHeight: 1.5, margin: 0, maxWidth: 440 }}>The leathers, rubbers, and bracelets you swap between, and which of your watches each one fits.</p>}
       </div>
       {isMobile ? (
         <Link href="/collection/straps" style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: brand.colors.ink, textDecoration: 'none', borderBottom: `1.5px solid ${brand.colors.gold}`, paddingBottom: 3 }}>
@@ -151,7 +151,7 @@ function Promo({ variant }: { variant: 'desktop' | 'mobile' }) {
         <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: brand.colors.goldDeep, marginBottom: isMobile ? 7 : 10 }}>Also in your collection</div>
         <h2 style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 26 : 34, fontWeight: 400, lineHeight: 1.04, color: brand.colors.ink, margin: '0 0 8px' }}>The Strap Drawer</h2>
         <p style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 14 : 15, color: brand.colors.mutedDark, lineHeight: 1.55, margin: 0, maxWidth: 440 }}>
-          Track the leathers, rubbers, NATOs and bracelets you swap between — we&rsquo;ll tell you which of your watches each one fits.
+          Track the leathers, rubbers, NATOs, and bracelets you swap between. We&rsquo;ll tell you which of your watches each one fits.
         </p>
       </div>
       <Link href="/collection/straps" style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 9, textDecoration: 'none', fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '11px 20px', background: brand.colors.ink, color: brand.colors.bg, borderRadius: brand.radius.btn }}>

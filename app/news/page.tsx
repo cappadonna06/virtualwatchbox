@@ -21,7 +21,7 @@ const SPONSORED_STUB: NewsItem = {
   source: 'Hodinkee', // placeholder; visible source label is overridden below
   title: 'Explore watches on Chrono24',
   excerpt:
-    "The world's largest marketplace for luxury watches — over 500,000 references from trusted dealers and private sellers.",
+    "The world's largest marketplace for luxury watches, with over 500,000 references from trusted dealers and private sellers.",
   url: 'https://chrono24.com',
   publishedAt: new Date().toISOString(),
   imageUrl: undefined,
