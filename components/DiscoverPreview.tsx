@@ -16,6 +16,7 @@ import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import { usePrefersReducedMotion } from '@/components/collection/useResponsiveState'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
+import { renderableWatches } from '@/lib/renderableWatches'
 
 const HAIRLINE = 'rgba(245,241,233,0.14)'
 const OUTLINE_BORDER = 'rgba(245,241,233,0.2)'
@@ -68,6 +69,14 @@ export default function DiscoverPreview() {
   const prefersReducedMotion = usePrefersReducedMotion()
   const isGuest = !user
 
+  // The dynamic catalog loads async (~1s); fall back to the static, module-load
+  // set so the band paints on first render instead of popping in late. It
+  // upgrades to the dynamic pick once `catalogWatches` hydrates.
+  const catalogPool = useMemo(
+    () => (catalogWatches.length > 0 ? catalogWatches : renderableWatches),
+    [catalogWatches],
+  )
+
   const hasImage = useMemo(
     () => (watch: CatalogWatch) => Boolean(getImageUrl(watch.id) ?? watch.imageUrl),
     [getImageUrl],
@@ -75,16 +84,16 @@ export default function DiscoverPreview() {
 
   const realCollection = useMemo(() => ownedToCatalog(session.collectionWatches), [session.collectionWatches])
   const demoCollection = useMemo(
-    () => pickDemoCollection(catalogWatches, { hasImage, count: 4 }),
-    [catalogWatches, hasImage],
+    () => pickDemoCollection(catalogPool, { hasImage, count: 4 }),
+    [catalogPool, hasImage],
   )
   const personalized = !isGuest && realCollection.length > 0
   const collection = realCollection.length > 0 ? realCollection : demoCollection
 
   const priceAnchor = useMemo(() => collectionPriceAnchor(collection), [collection])
   const boxInsight = useMemo(
-    () => getBoxInsight(collection, catalogWatches, { hasImage, priceAnchor }),
-    [collection, catalogWatches, hasImage, priceAnchor],
+    () => getBoxInsight(collection, catalogPool, { hasImage, priceAnchor }),
+    [collection, catalogPool, hasImage, priceAnchor],
   )
 
   const heroSeedKey = boxInsight ? `hero::${boxInsight.missingType}` : 'hero::none'
@@ -95,11 +104,11 @@ export default function DiscoverPreview() {
 
   const fallbackWatch = useMemo(() => {
     if (leadWatch) return null
-    const withImg = catalogWatches
+    const withImg = catalogPool
       .filter(w => hasImage(w))
       .sort((a, b) => (b.market?.heatScore ?? 0) - (a.market?.heatScore ?? 0))
     return withImg[0] ?? null
-  }, [leadWatch, catalogWatches, hasImage])
+  }, [leadWatch, catalogPool, hasImage])
 
   const displayWatch = leadWatch ?? fallbackWatch
   if (!displayWatch) return null
@@ -127,7 +136,7 @@ export default function DiscoverPreview() {
         borderTop: `1px solid ${brand.colors.border}`,
       }}
     >
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '56px 56px' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '40px 56px 48px' }}>
         <div
           className="discover-preview-grid"
           style={{
@@ -138,7 +147,7 @@ export default function DiscoverPreview() {
           }}
         >
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
               <div style={{ height: 1, width: 28, background: brand.colors.gold }} />
               <span
                 style={{

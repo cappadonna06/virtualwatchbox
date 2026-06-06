@@ -48,6 +48,9 @@ const DEFAULT_VIEWS: View[] = ['watchbox', 'cards', 'photo']
 
 export default function ViewSwitcher({ activeView, setActiveView, availableViews = DEFAULT_VIEWS }: Props) {
   const visibleTabs = TABS.filter(tab => availableViews.includes(tab.id))
+  // A toggle with a single option is meaningless — hide it (e.g. an empty
+  // playground box where only "watchbox" remains).
+  if (visibleTabs.length <= 1) return null
   return (
     <div
       role="tablist"

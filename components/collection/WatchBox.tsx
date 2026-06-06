@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import type { ResolvedWatch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS, watchboxFrameMetrics } from '@/lib/frameConfig'
 import { getWatchboxOverflow } from '@/lib/watchboxOverflow'
+import Image from 'next/image'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import { brand } from '@/lib/brand'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
@@ -39,6 +40,13 @@ interface Props {
   readonly?: boolean
   jewelWatchIds?: string[]
   showFirstSlotLabel?: boolean
+  /**
+   * When provided and the box is empty, render the "sample box" showcase:
+   * slot 0 gets the dramatic add affordance, the rest fill with faded ghost
+   * watches. Slots stay live drop targets; the moment a real watch lands the
+   * box reverts to its normal rendering.
+   */
+  ghostWatches?: Array<{ id: string; img: string }>
 }
 
 function OverflowGridCard({
@@ -295,10 +303,12 @@ export default function WatchBox({
   readonly = false,
   jewelWatchIds,
   showFirstSlotLabel = false,
+  ghostWatches,
 }: Props) {
   const isSparse = watchBySlot !== undefined
   const { isWatchJewel } = useCollectionSession()
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null)
+  const [addSlotHover, setAddSlotHover] = useState(false)
   const reduceMotion = useReducedMotion()
   const [overflowOpen, setOverflowOpen] = useState(false)
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
@@ -493,6 +503,10 @@ export default function WatchBox({
   const emptyPrimaryColor = useHighContrastSlotText ? brand.colors.gold : ln.emptyColor
   const overflowPrimaryColor = useHighContrastSlotText ? brand.colors.gold : brand.colors.ink
   const overflowSecondaryColor = useHighContrastSlotText ? 'rgba(201,168,76,0.82)' : brand.colors.muted
+  // Empty box + ghosts supplied → render the "sample box" showcase. Self-gating
+  // on watches.length so adding/dropping a watch auto-reverts to normal slots.
+  const showcase = !readonly && watches.length === 0 && (ghostWatches?.length ?? 0) > 0
+  const addRingSize = isMobile ? 26 : 44
   const shouldShowJewel = (watchId: string) => (
     jewelWatchIds
       ? publicJewelSet.has(watchId)
@@ -616,24 +630,39 @@ export default function WatchBox({
                   >
                     <div
                       onClick={readonly ? undefined : (onEmptySlotClick ? () => onEmptySlotClick(i) : undefined)}
+                      onMouseEnter={showcase && isFirstSlot ? () => setAddSlotHover(true) : undefined}
+                      onMouseLeave={showcase && isFirstSlot ? () => setAddSlotHover(false) : undefined}
                       style={{
                         width: '100%',
                         height: '100%',
                         borderRadius: 3,
+                        position: 'relative',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
                         cursor: readonly ? 'default' : 'pointer',
-                        opacity: useHighContrastSlotText ? 0.88 : showDropAffordance ? 1 : 0.55,
-                        background: showDropAffordance ? 'rgba(201,168,76,0.10)' : ln.slotBg,
+                        opacity: showcase ? 1 : useHighContrastSlotText ? 0.88 : showDropAffordance ? 1 : 0.55,
+                        background: showDropAffordance
+                          ? 'rgba(201,168,76,0.10)'
+                          : showcase && isFirstSlot
+                          ? brand.colors.white
+                          : ln.slotBg,
                         border: showDropAffordance
                           ? '2px dashed rgba(201,168,76,0.95)'
+                          : showcase && isFirstSlot
+                          ? `1.5px dashed ${addSlotHover ? brand.colors.gold : brand.colors.goldDeep}`
                           : '1.5px solid transparent',
                         boxShadow: showDropAffordance
                           ? 'inset 0 0 0 2px rgba(255,252,247,0.4), 0 0 0 2px rgba(201,168,76,0.55), 0 6px 22px rgba(201,168,76,0.28)'
+                          : showcase && isFirstSlot && addSlotHover && !reduceMotion
+                          ? '0 0 0 3px rgba(201,168,76,0.18), 0 10px 28px rgba(201,168,76,0.16)'
                           : undefined,
-                        transform: showDropAffordance ? 'scale(1.04)' : 'scale(1)',
+                        transform: showDropAffordance
+                          ? 'scale(1.04)'
+                          : showcase && isFirstSlot && addSlotHover && !reduceMotion
+                          ? 'translateY(-2px)'
+                          : 'scale(1)',
                         transition: 'border-color 0.18s, box-shadow 0.18s, background 0.18s, transform 0.18s, opacity 0.18s',
                       }}
                     >
@@ -641,6 +670,75 @@ export default function WatchBox({
                         <span style={{ fontFamily: brand.font.sans, fontSize: 11, letterSpacing: '0.1em', color: emptyPrimaryColor }}>
                           EMPTY
                         </span>
+                      ) : showcase ? (
+                        isFirstSlot ? (
+                          // Sample box: the dramatic gold-ring "add" affordance.
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMobile ? 7 : 10, padding: 6, textAlign: 'center' }}>
+                            <span
+                              style={{
+                                width: addRingSize,
+                                height: addRingSize,
+                                borderRadius: '50%',
+                                border: `1.5px solid ${brand.colors.goldDeep}`,
+                                background: addSlotHover ? brand.colors.goldDeep : 'transparent',
+                                color: addSlotHover ? brand.colors.white : brand.colors.goldDeep,
+                                display: 'grid',
+                                placeItems: 'center',
+                                transition: reduceMotion ? 'none' : 'background 0.16s ease, color 0.16s ease',
+                              }}
+                            >
+                              <PlusIcon size={isMobile ? 14 : 20} />
+                            </span>
+                            <span
+                              style={{
+                                fontFamily: brand.font.sans,
+                                fontSize: isMobile ? 9 : 11,
+                                fontWeight: 600,
+                                letterSpacing: isMobile ? '0.06em' : '0.1em',
+                                textTransform: 'uppercase',
+                                color: brand.colors.ink,
+                                lineHeight: 1.3,
+                              }}
+                            >
+                              {isMobile ? 'Add watch' : 'Add your first watch'}
+                            </span>
+                          </div>
+                        ) : ghostWatches && ghostWatches[i - 1] ? (
+                          // Sample box: faded ghost watch — pure decoration, the
+                          // slot stays a live drop target via the wrapper above.
+                          <>
+                            <span
+                              aria-hidden="true"
+                              style={{
+                                position: 'absolute',
+                                top: isMobile ? 4 : 6,
+                                left: isMobile ? 6 : 8,
+                                fontFamily: brand.font.sans,
+                                fontSize: 11,
+                                fontWeight: 500,
+                                letterSpacing: '0.08em',
+                                color: slotMetaColor,
+                              }}
+                            >
+                              {String(i + 1).padStart(2, '0')}
+                            </span>
+                            <div style={{ position: 'relative', width: '82%', height: '78%' }}>
+                              <Image
+                                src={ghostWatches[i - 1].img}
+                                alt=""
+                                fill
+                                sizes="120px"
+                                draggable={false}
+                                style={{
+                                  objectFit: 'contain',
+                                  filter: 'grayscale(1) brightness(1.08)',
+                                  opacity: useHighContrastSlotText ? 0.28 : 0.16,
+                                  pointerEvents: 'none',
+                                }}
+                              />
+                            </div>
+                          </>
+                        ) : null
                       ) : showFirstSlotLabel ? (
                         // Empty collection: keep the PR #47 restrained behavior —
                         // first slot carries the onboarding label, others stay blank.
@@ -1297,5 +1395,14 @@ export default function WatchBox({
         </div>
       )}
     </>
+  )
+}
+
+function PlusIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
   )
 }

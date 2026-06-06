@@ -424,6 +424,7 @@ function CompactViewToggle({
     },
   ]
   const tabs = allTabs.filter(tab => availableViews.includes(tab.id))
+  if (tabs.length <= 1) return null
 
   return (
     <div

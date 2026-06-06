@@ -22,7 +22,7 @@ export default function CollectionSection() {
   return (
     <section
       className="collection-section"
-      style={{ padding: isMobile ? '40px 20px 44px' : '56px 56px 60px', borderTop: `1px solid ${brand.colors.border}` }}
+      style={{ padding: isMobile ? '40px 20px 44px' : '56px 56px 44px', borderTop: `1px solid ${brand.colors.border}` }}
     >
       <div style={{ marginBottom: isMobile ? 28 : 32 }}>
         <Link
