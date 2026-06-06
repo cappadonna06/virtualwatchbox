@@ -23,9 +23,10 @@ type Props = {
   watches: CatalogWatch[]
   ownedTypes: Set<WatchType>
   seedKeyByWatchId?: Map<string, string>
+  kicker: string
 }
 
-export default function NextSlotEditorial({ watches, ownedTypes, seedKeyByWatchId }: Props) {
+export default function NextSlotEditorial({ watches, ownedTypes, seedKeyByWatchId, kicker }: Props) {
   const recs = watches.slice(0, 3)
 
   return (
@@ -38,7 +39,7 @@ export default function NextSlotEditorial({ watches, ownedTypes, seedKeyByWatchI
       }}
     >
       <EditorialHeader
-        kicker="§ 04"
+        kicker={kicker}
         title="For your next slot."
         sub="Watches not yet in your box. Three alternative reads across the same gap, in different price tiers."
       />
