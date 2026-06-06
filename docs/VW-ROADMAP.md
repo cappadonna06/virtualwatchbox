@@ -29,6 +29,7 @@ Mark `[x]` when done.
 | May 2026 | **Playground major upgrades** (PRs #62, #63, #65): (1) Import collection on empty box via one-click CTA. (2) Drag watches from tray into slots with long-press reorder, sparse slot support, drag-to-trash. (3) Mobile UI cleanup. (4) **Playground Supabase persistence** — playground boxes now sync to Supabase for logged-in users via debounced auto-sync (`public.playground_boxes`). |
 | May 2026 | **Seed script safety** (PR #56): seed script aborts instead of writing local-path URLs when `SUPABASE_URL` is unset. |
 | May 2026 | **PRD v1.14:** Next Targets moved from `/collection` to `/discover` § 03. Photo type picker promoted to P0. Feature 2F (Service History) added. Feature 7 rewritten as "The Strap Drawer" — first-class strap inventory with auto-match compatibility and combo stats. Replaces old VW-17/VW-18 stubs. Added Phase 1.5 "Ownership Depth." |
+| Jun 2026 | **iOS conversion plan:** added Phase 5 (Native iOS) and a full architecture plan at [docs/IOS-CONVERSION.md](IOS-CONVERSION.md). Codebase review found the app well-suited to a **Capacitor hybrid wrapper** (~90% client components, disciplined `lib/brand.ts` design system, existing PWA manifest). Chosen path: B2 hybrid — static-export consumer surfaces into the native shell, keep API routes + server-only image pipeline (`sharp`/`@imgly`) hosted. Top blockers identified: cookie/SSR/middleware auth → token-based, redirect OAuth → native auth-session, missing safe-area handling, web-shaped nav → bottom tab bar. |
 
 ---
 
@@ -135,4 +136,36 @@ Mark `[x]` when done.
 
 ---
 
-*Last updated: May 23, 2026 · PRD reference: v1.14*
+## Phase 5 — Native iOS (Capacitor Hybrid)
+*Take the product to the App Store. Full architecture, rationale, and blocker analysis in [docs/IOS-CONVERSION.md](IOS-CONVERSION.md) — read it before starting any native work. PRD §1.3 names this as the platform roadmap step.*
+
+> **Chosen path: Capacitor hybrid (Option B2).** Static-export the consumer surfaces (collection · discover · profile · playground · straps) into a native WKWebView shell; keep API routes + the server-only image pipeline (`sharp` + `@imgly`) hosted; talk to Supabase + our APIs over HTTPS. Reuses ~all React/TS/component code and the `lib/brand.ts` design system. React Native rewrite (Option C) deferred unless iOS becomes the primary platform.
+
+### Phase 5.0 — Prep (web-side, low risk; no native project yet)
+- [ ] **IF** Centralize `apiFetch()` with a configurable base URL — migrate the ~38 hardcoded `fetch('/api/...')` callsites. A native bundle needs absolute URLs to the hosted backend.
+- [ ] **IF** Add `env(safe-area-inset-*)` + `viewport-fit=cover` to `app/globals.css` and every sticky surface (`NavBar`, footer, sidebars, bottom sheets). Currently zero safe-area handling — content collides with the Dynamic Island / home indicator.
+- [ ] **IF** Stub `lib/platform/*` abstraction (storage · auth-callback · camera · share · haptics) with web implementations so providers stay untouched.
+- [ ] **IF** Add Playwright smoke tests (login, add watch, reorder, save) — no tests exist today; these protect the upcoming auth refactor.
+
+### Phase 5.1 — Auth refactor (behind platform flag; web unaffected)
+- [ ] **IF** Token-based Supabase session via native secure storage (Capacitor Preferences / Keychain). Decouples the mobile path from cookies + `middleware.ts` + `cookies()`. **Blocker #1.**
+- [ ] **IF** Native Google OAuth — Capacitor Browser + `ASWebAuthenticationSession` + custom URL scheme / universal link → `supabase.auth.exchangeCodeForSession`. Current `app/auth/callback/route.ts` redirect flow won't fire in a webview.
+
+### Phase 5.2 — Capacitor shell
+- [ ] **IF** Stand up the iOS Capacitor project; hybrid bundle of consumer surfaces. Exclude `/admin/*`, `/api/og/box/[slug]`, and image-processing API routes from the mobile bundle (keep hosted).
+- [ ] **IF** Point `apiFetch()` + Supabase at the hosted backend; get login → collection → save working end-to-end on a physical device.
+
+### Phase 5.3 — Native feel
+- [ ] **RM** Bottom tab bar (Collection / Discover / Playground / Profile), platform-gated, replacing the web top-nav drawer on iOS.
+- [ ] **RM** Safe-area polish pass across all surfaces.
+- [ ] **RM** Native camera capture wired into `AddFromPhotoSheet` / `PhotoSearch` (POST to existing server-side `upload-photo` / `create-from-photo` routes).
+- [ ] **RM** Haptics on drag/drop; native share sheet for box/profile share links.
+
+### Phase 5.4 — App Store readiness
+- [ ] **RM** Push notifications — service-due reminders, watch news, "complete the box" nudges (data already exists). Primary guideline-4.2 value-add.
+- [ ] **IF** Offline read-through cache for the collection (promote existing `sessionStorage`/`localStorage` mirrors to a deliberate cache + reconnect sync).
+- [ ] **IF** App Store assets, privacy nutrition labels (we collect photos + profile data), TestFlight beta.
+
+---
+
+*Last updated: June 6, 2026 · PRD reference: v1.14*
