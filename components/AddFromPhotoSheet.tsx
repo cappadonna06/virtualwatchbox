@@ -166,7 +166,7 @@ export default function AddFromPhotoSheet({ imageFile, imageDataUrl, prefill, di
       >
         <header style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 14 }}>
           <div>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 4 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.goldDeep, marginBottom: 4 }}>
               Watchbox Concierge
             </div>
             <h2 style={{
@@ -181,7 +181,7 @@ export default function AddFromPhotoSheet({ imageFile, imageDataUrl, prefill, di
             </h2>
             <p style={{
               fontFamily: brand.font.sans,
-              fontSize: 12,
+              fontSize: 14,
               color: brand.colors.muted,
               marginTop: 6,
               lineHeight: 1.5,
@@ -282,8 +282,8 @@ export default function AddFromPhotoSheet({ imageFile, imageDataUrl, prefill, di
         </div>
 
         <details style={{ marginBottom: 20 }}>
-          <summary style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, cursor: 'pointer', listStyle: 'none' }}>
-            <span style={{ color: brand.colors.gold, marginRight: 6 }}>+</span>Purchase details (optional)
+          <summary style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, cursor: 'pointer', listStyle: 'none' }}>
+            <span style={{ color: brand.colors.goldDeep, marginRight: 6 }}>+</span>Purchase details (optional)
           </summary>
           <div style={{ display: 'grid', gap: 8, marginTop: 10 }}>
             <Field label="Purchase Price" value={purchasePrice} onChange={setPurchasePrice} placeholder="USD" type="number" />
@@ -305,7 +305,7 @@ export default function AddFromPhotoSheet({ imageFile, imageDataUrl, prefill, di
           border: `1px solid ${brand.colors.goldLine}`,
           marginBottom: 16,
           fontFamily: brand.font.sans,
-          fontSize: 11,
+          fontSize: 12,
           color: brand.colors.ink,
           lineHeight: 1.5,
         }}>
@@ -320,7 +320,7 @@ export default function AddFromPhotoSheet({ imageFile, imageDataUrl, prefill, di
             border: '1px solid rgba(208,64,64,0.3)',
             color: '#9A2222',
             fontFamily: brand.font.sans,
-            fontSize: 12,
+            fontSize: 14,
             marginBottom: 12,
           }}>
             {submitError}
@@ -379,7 +379,7 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
     <span style={{
       display: 'block',
       fontFamily: brand.font.sans,
-      fontSize: 9,
+      fontSize: 11,
       fontWeight: 600,
       letterSpacing: '0.12em',
       textTransform: 'uppercase',
@@ -403,7 +403,7 @@ function Field({
 }) {
   return (
     <div>
-      <FieldLabel>{label}{required && <span style={{ color: brand.colors.gold, marginLeft: 4 }}>*</span>}</FieldLabel>
+      <FieldLabel>{label}{required && <span style={{ color: brand.colors.goldDeep, marginLeft: 4 }}>*</span>}</FieldLabel>
       <input
         type={type}
         value={value}

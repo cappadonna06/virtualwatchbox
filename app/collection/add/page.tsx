@@ -245,10 +245,10 @@ function PhotosToggleRow({
           <PhotoIcon size={16} />
         </div>
         <div>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 13, fontWeight: 600, color: brand.colors.ink, marginBottom: 2 }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 15, fontWeight: 600, color: brand.colors.ink, marginBottom: 2 }}>
             Show only watches with photos
           </div>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 11.5, color: brand.colors.muted, lineHeight: 1.45 }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.45 }}>
             We&apos;re still adding photos. Turn off to see the full catalog.
           </div>
         </div>
@@ -289,7 +289,7 @@ function FacetGroup({
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 9.5,
+            fontSize: 11,
             fontWeight: 600,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
@@ -299,7 +299,7 @@ function FacetGroup({
           {label}
         </div>
         {selected ? (
-          <span style={{ fontFamily: brand.font.sans, fontSize: 10.5, color: brand.colors.gold, fontWeight: 500 }}>
+          <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.goldDeep, fontWeight: 500 }}>
             {selected}
           </span>
         ) : null}
@@ -330,7 +330,7 @@ function FacetGroup({
               border: 'none',
               cursor: 'pointer',
               fontFamily: brand.font.sans,
-              fontSize: 11,
+              fontSize: 12,
               color: brand.colors.muted,
               textDecoration: 'underline',
               textUnderlineOffset: 2,
@@ -477,7 +477,7 @@ function MobileFilterSheet({
               border: 'none',
               cursor: 'pointer',
               fontFamily: brand.font.sans,
-              fontSize: 11,
+              fontSize: 12,
               color: brand.colors.muted,
               fontWeight: 500,
               letterSpacing: '0.04em',
@@ -1046,7 +1046,7 @@ function AddWatchSearchInner() {
           <div
             style={{
               fontFamily: brand.font.sans,
-              fontSize: 9.5,
+              fontSize: 11,
               fontWeight: 600,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
@@ -1076,7 +1076,7 @@ function AddWatchSearchInner() {
                 border: 'none',
                 cursor: 'pointer',
                 fontFamily: brand.font.sans,
-                fontSize: 11,
+                fontSize: 12,
                 color: brand.colors.muted,
                 textDecoration: 'underline',
                 textUnderlineOffset: 2,
@@ -1141,7 +1141,7 @@ function AddWatchSearchInner() {
                 <span>Filters</span>
                 {activeCount > 0 ? (
                   <span style={{
-                    fontSize: 10,
+                    fontSize: 12,
                     fontWeight: 600,
                     background: brand.colors.gold,
                     color: brand.colors.ink,
@@ -1206,7 +1206,7 @@ function AddWatchSearchInner() {
                       background: CHIP_FILL,
                       border: `1px solid ${brand.colors.border}`,
                       fontFamily: brand.font.sans,
-                      fontSize: 11.5,
+                      fontSize: 12,
                       fontWeight: 500,
                       color: brand.colors.ink,
                       cursor: 'pointer',
@@ -1239,7 +1239,7 @@ function AddWatchSearchInner() {
                       border: 'none',
                       cursor: 'pointer',
                       fontFamily: brand.font.sans,
-                      fontSize: 11,
+                      fontSize: 12,
                       color: brand.colors.muted,
                       textDecoration: 'underline',
                       textUnderlineOffset: 2,

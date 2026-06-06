@@ -1,4 +1,5 @@
 import type { ResolvedWatch } from '@/types/watch'
+import { brand } from '@/lib/brand'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -30,11 +31,11 @@ export default function HoverCard({ watch }: Props) {
       <div
         style={{
           fontFamily: 'var(--font-dm-sans)',
-          fontSize: 9,
+          fontSize: 11,
           fontWeight: 600,
           letterSpacing: '0.1em',
           textTransform: 'uppercase',
-          color: '#C9A84C',
+          color: brand.colors.goldDeep,
           marginBottom: 3,
         }}
       >
@@ -56,7 +57,7 @@ export default function HoverCard({ watch }: Props) {
       <div
         style={{
           fontFamily: 'var(--font-dm-sans)',
-          fontSize: 10,
+          fontSize: 12,
           color: '#A89880',
           marginBottom: 2,
         }}
@@ -66,7 +67,7 @@ export default function HoverCard({ watch }: Props) {
       <div
         style={{
           fontFamily: 'var(--font-dm-sans)',
-          fontSize: 10,
+          fontSize: 12,
           color: '#A89880',
           marginBottom: 8,
         }}
@@ -87,7 +88,7 @@ export default function HoverCard({ watch }: Props) {
             fontFamily: 'var(--font-cormorant)',
             fontSize: 18,
             fontWeight: 500,
-            color: '#C9A84C',
+            color: brand.colors.goldDeep,
           }}
         >
           {fmt(watch.estimatedValue)}
@@ -95,7 +96,7 @@ export default function HoverCard({ watch }: Props) {
         <span
           style={{
             fontFamily: 'var(--font-dm-sans)',
-            fontSize: 9,
+            fontSize: 11,
             color: '#A89880',
             letterSpacing: '0.04em',
           }}

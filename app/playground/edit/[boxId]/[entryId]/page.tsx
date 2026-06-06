@@ -8,6 +8,7 @@ import { useCollectionSession } from '@/app/collection/CollectionSessionProvider
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import { DEFAULT_RESOLVED_WATCH_CONDITION } from '@/lib/watchData'
+import { brand } from '@/lib/brand'
 
 const CONDITIONS: WatchCondition[] = ['Unworn', 'Like New', 'Excellent', 'Good', 'Fair']
 const WATCH_TYPES: WatchType[] = [
@@ -179,7 +180,7 @@ export default function EditPlaygroundWatchPage() {
       <h1 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 32, fontWeight: 400, color: '#1A1410', margin: '0 0 6px' }}>
         Edit Playground Watch
       </h1>
-      <p style={{ margin: '0 0 24px', fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#A89880' }}>
+      <p style={{ margin: '0 0 24px', fontFamily: 'var(--font-dm-sans)', fontSize: 14, color: '#A89880' }}>
         Update this watch for <span style={{ color: '#1A1410' }}>{activeBox.name}</span> only.
       </p>
 
@@ -194,16 +195,16 @@ export default function EditPlaygroundWatchPage() {
               dialSize={120}
             />
           </div>
-          <div style={{ fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#C9A84C', fontFamily: 'var(--font-dm-sans)' }}>
+          <div style={{ fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: brand.colors.goldDeep, fontFamily: 'var(--font-dm-sans)' }}>
             {previewWatch.brand}
           </div>
           <div style={{ fontSize: 26, fontFamily: 'var(--font-cormorant)', color: '#1A1410', marginTop: 4, lineHeight: 1.1 }}>
             {previewWatch.model}
           </div>
-          <div style={{ fontSize: 11, color: '#A89880', fontFamily: 'var(--font-dm-sans)', marginTop: 4 }}>
+          <div style={{ fontSize: 12, color: '#A89880', fontFamily: 'var(--font-dm-sans)', marginTop: 4 }}>
             Ref. {previewWatch.reference}
           </div>
-          <div style={{ fontSize: 11, color: '#A89880', fontFamily: 'var(--font-dm-sans)', marginTop: 8 }}>
+          <div style={{ fontSize: 12, color: '#A89880', fontFamily: 'var(--font-dm-sans)', marginTop: 8 }}>
             {previewWatch.caseMaterial} · {previewWatch.dialColor} · {previewWatch.caseSizeMm}mm
           </div>
           <div style={{ fontSize: 22, fontFamily: 'var(--font-cormorant)', color: '#1A1410', marginTop: 14 }}>
@@ -315,7 +316,7 @@ export default function EditPlaygroundWatchPage() {
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
-      <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 4 }}>
+      <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 4 }}>
         {label}
       </div>
       {children}
