@@ -69,7 +69,7 @@ interface Props {
 
 const metaLabel = {
   fontFamily: brand.font.sans,
-  fontSize: 9.5,
+  fontSize: 11,
   fontWeight: 500,
   letterSpacing: '0.14em',
   textTransform: 'uppercase' as const,
@@ -174,7 +174,7 @@ export default function CollectionHeader({
           <span
             style={{
               fontFamily: brand.font.sans,
-              fontSize: 13,
+              fontSize: 15,
               color: brand.colors.muted,
               letterSpacing: '0.02em',
               lineHeight: 1.5,
@@ -232,8 +232,8 @@ export default function CollectionHeader({
             style={{
               marginLeft: 'auto',
               fontFamily: brand.font.sans,
-              fontSize: 11,
-              color: brand.colors.gold,
+              fontSize: 12,
+              color: brand.colors.goldDeep,
               opacity: 0.85,
               letterSpacing: '0.02em',
             }}

@@ -98,11 +98,11 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 9,
+            fontSize: 11,
             fontWeight: 600,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            color: brand.colors.gold,
+            color: brand.colors.goldDeep,
             marginBottom: 4,
           }}
         >
@@ -123,7 +123,7 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 11,
+            fontSize: 12,
             color: brand.colors.muted,
             marginBottom: 2,
           }}
@@ -133,7 +133,7 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 11,
+            fontSize: 12,
             color: brand.colors.muted,
             marginBottom: 10,
           }}
@@ -158,7 +158,7 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
           style={{
             display: 'inline-block',
             fontFamily: brand.font.sans,
-            fontSize: 9,
+            fontSize: 11,
             fontWeight: 500,
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
@@ -176,7 +176,7 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
         <div
           style={{
             fontFamily: brand.font.serif,
-            fontSize: 24,
+            fontSize: 27,
             fontWeight: 500,
             color: brand.colors.ink,
             marginBottom: 10,
@@ -191,7 +191,7 @@ export default function WatchCard({ watch, isActive, onSelect, mode = 'collectio
             style={{
               display: 'inline-block',
               fontFamily: brand.font.sans,
-              fontSize: 9,
+              fontSize: 11,
               fontWeight: 600,
               letterSpacing: '0.06em',
               padding: '3px 10px',

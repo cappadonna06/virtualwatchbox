@@ -114,7 +114,7 @@ export default function WatchPhotoGallery({ ownedWatchId, variant = 'sidebar' }:
       }}>
         <div style={{
           fontFamily: brand.font.sans,
-          fontSize: isSidebar ? 9 : 10,
+          fontSize: isSidebar ? 11 : 12,
           fontWeight: 600,
           letterSpacing: isSidebar ? '0.12em' : '0.16em',
           textTransform: 'uppercase',
@@ -134,7 +134,7 @@ export default function WatchPhotoGallery({ ownedWatchId, variant = 'sidebar' }:
               cursor: uploading ? 'not-allowed' : 'pointer',
               fontFamily: brand.font.sans,
               fontSize: 11,
-              color: brand.colors.gold,
+              color: brand.colors.goldDeep,
               letterSpacing: '0.04em',
             }}
           >
@@ -150,7 +150,7 @@ export default function WatchPhotoGallery({ ownedWatchId, variant = 'sidebar' }:
           border: `1px solid ${brand.colors.goldLine}`, borderRadius: brand.radius.lg,
         }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8, marginBottom: 10 }}>
-            <span style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, color: brand.colors.ink }}>
+            <span style={{ fontFamily: brand.font.sans, fontSize: 14, fontWeight: 600, color: brand.colors.ink }}>
               Tag {pendingFiles.length} file{pendingFiles.length === 1 ? '' : 's'} <span style={{ color: brand.colors.muted, fontWeight: 400 }}>· optional</span>
             </span>
             <button type="button" onClick={() => doUpload(null)} disabled={uploading} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, letterSpacing: '0.04em' }}>
@@ -160,7 +160,7 @@ export default function WatchPhotoGallery({ ownedWatchId, variant = 'sidebar' }:
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {PHOTO_TYPE_GROUPS.map(group => (
               <div key={group.label}>
-                <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>{group.label}</div>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>{group.label}</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                   {group.types.map(t => (
                     <button
@@ -227,7 +227,7 @@ export default function WatchPhotoGallery({ ownedWatchId, variant = 'sidebar' }:
           {!isSidebar && (
             <div style={{
               fontFamily: brand.font.sans,
-              fontSize: 12,
+              fontSize: 14,
               color: brand.colors.muted,
               textAlign: 'center',
               maxWidth: 360,
@@ -238,7 +238,7 @@ export default function WatchPhotoGallery({ ownedWatchId, variant = 'sidebar' }:
           )}
           <div style={{
             fontFamily: brand.font.sans,
-            fontSize: 10,
+            fontSize: 12,
             color: brand.colors.muted,
             letterSpacing: '0.04em',
           }}>
@@ -295,7 +295,7 @@ export default function WatchPhotoGallery({ ownedWatchId, variant = 'sidebar' }:
           marginTop: 8,
           padding: '6px 10px',
           fontFamily: brand.font.sans,
-          fontSize: 11,
+          fontSize: 12,
           color: '#9A2222',
           background: 'rgba(208,64,64,0.08)',
           border: '1px solid rgba(208,64,64,0.3)',
@@ -309,7 +309,7 @@ export default function WatchPhotoGallery({ ownedWatchId, variant = 'sidebar' }:
         <div style={{
           marginTop: 14,
           fontFamily: brand.font.sans,
-          fontSize: 11,
+          fontSize: 12,
           color: brand.colors.muted,
         }}>
           Drag to reorder. Click any photo to view, edit, or set as primary.
@@ -395,7 +395,7 @@ function SortableThumb({
           }}>
             <DocTile type={photo.photoType ?? 'service_record'} size={isSidebar ? 24 : 40} />
             {!isSidebar && (
-              <span style={{ fontFamily: brand.font.sans, fontSize: 9.5, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: brand.colors.muted }}>
+              <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: brand.colors.muted }}>
                 {photo.mimeType === 'application/pdf' ? 'PDF' : 'Document'}
               </span>
             )}
@@ -431,7 +431,7 @@ function SortableThumb({
             background: 'rgba(26,20,16,0.72)',
             color: brand.colors.bg,
             fontFamily: brand.font.sans,
-            fontSize: 9.5,
+            fontSize: 11,
             fontWeight: 500,
             letterSpacing: '0.03em',
             lineHeight: 1.4,
@@ -446,7 +446,7 @@ function SortableThumb({
           style={{
             marginTop: 8,
             fontFamily: brand.font.sans,
-            fontSize: 12,
+            fontSize: 14,
             color: brand.colors.muted,
             fontStyle: 'italic',
             overflow: 'hidden',

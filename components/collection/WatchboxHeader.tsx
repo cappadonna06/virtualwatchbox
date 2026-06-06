@@ -101,7 +101,7 @@ export default function WatchboxHeader({
               marginTop: 10,
               fontFamily: brand.font.sans,
               fontSize: 11,
-              color: brand.colors.gold,
+              color: brand.colors.goldDeep,
               letterSpacing: '0.04em',
             }}
           >
@@ -581,7 +581,7 @@ function HeaderOverflowMenu({
               borderRadius: brand.radius.sm,
               border: 'none',
               background: 'transparent',
-              color: item.destructive ? brand.colors.gold : brand.colors.ink,
+              color: item.destructive ? brand.colors.goldDeep : brand.colors.ink,
               fontFamily: brand.font.sans,
               fontSize: 11,
               fontWeight: 500,

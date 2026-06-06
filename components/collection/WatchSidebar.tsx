@@ -72,8 +72,8 @@ const sidebarPanel: React.CSSProperties = {
 
 const metaLabel: React.CSSProperties = {
   fontFamily: brand.font.sans,
-  fontSize: 10,
-  fontWeight: 500,
+  fontSize: 12,
+  fontWeight: 600,
   letterSpacing: '0.12em',
   textTransform: 'uppercase',
   color: brand.colors.muted,
@@ -82,8 +82,8 @@ const metaLabel: React.CSSProperties = {
 const btnPrimary: React.CSSProperties = {
   display: 'block',
   fontFamily: brand.font.sans,
-  fontSize: 10,
-  fontWeight: 500,
+  fontSize: 12,
+  fontWeight: 600,
   letterSpacing: '0.08em',
   padding: '9px 18px',
   background: brand.colors.ink,
@@ -98,8 +98,8 @@ const btnPrimary: React.CSSProperties = {
 
 const btnSecondary: React.CSSProperties = {
   fontFamily: brand.font.sans,
-  fontSize: 10,
-  fontWeight: 500,
+  fontSize: 12,
+  fontWeight: 600,
   letterSpacing: '0.08em',
   padding: '9px 18px',
   background: 'transparent',
@@ -285,7 +285,7 @@ export default function WatchSidebar({
               padding: '3px 10px',
               borderRadius: brand.radius.pill,
               fontFamily: brand.font.sans,
-              fontSize: 10,
+              fontSize: 11,
               fontWeight: 600,
               letterSpacing: '0.04em',
               background: colors.bg,
@@ -304,7 +304,7 @@ export default function WatchSidebar({
       )}
       <div style={{ fontSize: 12, color: brand.colors.muted, marginBottom: 4 }}>Ref. {watch.reference}</div>
       {watch.notes && (
-        <div style={{ fontSize: 11, color: brand.colors.gold, fontStyle: 'italic', marginBottom: 16 }}>
+        <div style={{ fontSize: 12, color: brand.colors.goldDeep, fontStyle: 'italic', marginBottom: 16 }}>
           &ldquo;{watch.notes}&rdquo;
         </div>
       )}
@@ -322,7 +322,7 @@ export default function WatchSidebar({
         }}
       >
         <span style={metaLabel}>Est. Market Value</span>
-        <span style={{ fontFamily: brand.font.sans, fontSize: 18, fontWeight: 600, color: brand.colors.gold }}>
+        <span style={{ fontFamily: brand.font.sans, fontSize: 18, fontWeight: 600, color: brand.colors.goldDeep }}>
           {fmt(watch.estimatedValue)}
         </span>
       </div>
@@ -360,10 +360,10 @@ export default function WatchSidebar({
       </div>
 
       {isOwnedWatch && lastServicedDate && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: -4, marginBottom: 16, fontFamily: brand.font.sans, fontSize: 11.5, color: brand.colors.muted }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: -4, marginBottom: 16, fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
           <span>Last serviced: {formatDate(lastServicedDate, { year: 'numeric', month: 'short', day: 'numeric' })}</span>
           {serviceOverdue && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: brand.radius.pill, background: brand.serviceStatus.due.bg, color: brand.serviceStatus.due.fg, fontSize: 10, fontWeight: 600, letterSpacing: '0.04em' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: brand.radius.pill, background: brand.serviceStatus.due.bg, color: brand.serviceStatus.due.fg, fontSize: 11, fontWeight: 600, letterSpacing: '0.04em' }}>
               Service overdue
             </span>
           )}
@@ -388,7 +388,7 @@ export default function WatchSidebar({
                   : promoteToNextTarget(resolvedCatalogWatchId))}
                 style={isTarget
                   ? btnSecondary
-                  : { ...btnSecondary, borderColor: brand.colors.goldLine, color: brand.colors.gold }}
+                  : { ...btnSecondary, borderColor: brand.colors.goldLine, color: brand.colors.goldDeep }}
               >
                 {isTarget ? 'Remove Target' : 'Set as Target'}
               </button>

@@ -182,6 +182,7 @@ export default function CollectionPage() {
             }}
             activeView={activeView}
             onViewChange={setActiveView}
+            availableViews={collectionWatches.length === 0 ? ['watchbox', 'photo'] : ['watchbox', 'cards', 'photo']}
             menuItems={[
               {
                 label: 'Customize Watchbox',
@@ -218,7 +219,11 @@ export default function CollectionPage() {
                 paddingRight: isMobile ? 0 : 332,
               }}
             >
-              <ViewSwitcher activeView={activeView} setActiveView={setActiveView} />
+              <ViewSwitcher
+                activeView={activeView}
+                setActiveView={setActiveView}
+                availableViews={collectionWatches.length === 0 ? ['watchbox', 'photo'] : ['watchbox', 'cards', 'photo']}
+              />
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
               {activeView === 'cards' ? (
                 <SortDropdown
@@ -260,21 +265,19 @@ export default function CollectionPage() {
       </div>
 
       <div style={{ padding: `0 ${isMobile ? 10 : 56}px` }}>
-        {activeView === 'watchbox' ? (
-          collectionWatches.length === 0 ? (
-            <CollectionEmptyState />
-          ) : (
-            <>
-              <SyncRibbon />
-              <CollectionWatchboxSurface
-                watches={collectionWatches}
-                onEmptySlotClick={slot => router.push(`/collection/add?slot=${slot}`)}
-                onReorder={handleReorder}
-                configOpen={collectionConfigOpen}
-                onConfigOpenChange={setCollectionConfigOpen}
-              />
-            </>
-          )
+        {collectionWatches.length === 0 && activeView !== 'photo' ? (
+          <CollectionEmptyState />
+        ) : activeView === 'watchbox' ? (
+          <>
+            <SyncRibbon />
+            <CollectionWatchboxSurface
+              watches={collectionWatches}
+              onEmptySlotClick={slot => router.push(`/collection/add?slot=${slot}`)}
+              onReorder={handleReorder}
+              configOpen={collectionConfigOpen}
+              onConfigOpenChange={setCollectionConfigOpen}
+            />
+          </>
         ) : activeView === 'photo' ? (
           <CollectionPhotoView
             photoUrl={watchboxPhotoUrl}

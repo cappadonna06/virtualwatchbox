@@ -54,13 +54,13 @@ function BandCard({ strap, watches, overrides, fixedWidth }: {
           : <StrapPhotoFallback height="100%" />}
       </div>
       <div style={{ padding: '10px 12px 12px' }}>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 8.5, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.goldDeep, marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {strap.brand || strap.color}
         </div>
         <div style={{ fontFamily: brand.font.serif, fontSize: 16, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.1, marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{title}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
-          <span style={{ fontFamily: brand.font.sans, fontSize: 9.5, fontWeight: 500, color: brand.fit.widthBadge.text, background: brand.fit.widthBadge.bg, border: `1px solid ${brand.fit.widthBadge.border}`, borderRadius: brand.radius.btn, padding: '2px 6px', flexShrink: 0 }}>{strap.lugWidthMm} mm</span>
-          <span style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted }}>Fits {fitCount}</span>
+          <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, color: brand.fit.widthBadge.text, background: brand.fit.widthBadge.bg, border: `1px solid ${brand.fit.widthBadge.border}`, borderRadius: brand.radius.btn, padding: '2px 6px', flexShrink: 0 }}>{strap.lugWidthMm} mm</span>
+          <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>Fits {fitCount}</span>
         </div>
       </div>
     </Link>
@@ -93,7 +93,7 @@ function OpenerTile({ remaining, total, fixedWidth }: { remaining: number; total
         <span style={{ display: 'block', fontFamily: brand.font.serif, fontSize: 26, fontWeight: 500, color: brand.colors.ink, lineHeight: 1 }}>+{remaining}</span>
         <span style={{ display: 'block', fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.mutedDark, marginTop: 4 }}>more straps</span>
       </span>
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: hover ? brand.colors.ink : brand.fit.widthBadge.text }}>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: hover ? brand.colors.ink : brand.fit.widthBadge.text }}>
         View all {total}<ArrowRight size={12} />
       </span>
     </Link>
@@ -106,14 +106,14 @@ function Header({ strapCount, comboCount, variant }: { strapCount: number; combo
   return (
     <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: isMobile ? 12 : 24, flexWrap: 'wrap', marginBottom: isMobile ? 14 : 22 }}>
       <div>
-        <div style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 9 : 9.5, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: isMobile ? 7 : 10 }}>Also in your collection</div>
+        <div style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 11 : 11, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: brand.colors.goldDeep, marginBottom: isMobile ? 7 : 10 }}>Also in your collection</div>
         <h2 style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 26 : 34, fontWeight: 400, lineHeight: isMobile ? 1 : 1.04, color: brand.colors.ink, margin: '0 0 8px' }}>The Strap Drawer</h2>
         {isMobile
-          ? <div style={{ fontFamily: brand.font.sans, fontSize: 11.5, color: brand.colors.muted }}>{strapCount} straps · {comboCount} combinations</div>
-          : <p style={{ fontFamily: brand.font.sans, fontSize: 13.5, color: brand.colors.mutedDark, lineHeight: 1.5, margin: 0, maxWidth: 440 }}>The leathers, rubbers and bracelets you swap between — and which of your watches each one fits.</p>}
+          ? <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>{strapCount} straps · {comboCount} combinations</div>
+          : <p style={{ fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.mutedDark, lineHeight: 1.5, margin: 0, maxWidth: 440 }}>The leathers, rubbers and bracelets you swap between — and which of your watches each one fits.</p>}
       </div>
       {isMobile ? (
-        <Link href="/collection/straps" style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: brand.font.sans, fontSize: 10.5, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: brand.colors.ink, textDecoration: 'none', borderBottom: `1.5px solid ${brand.colors.gold}`, paddingBottom: 3 }}>
+        <Link href="/collection/straps" style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: brand.colors.ink, textDecoration: 'none', borderBottom: `1.5px solid ${brand.colors.gold}`, paddingBottom: 3 }}>
           Open<ArrowRight size={12} />
         </Link>
       ) : (
@@ -148,9 +148,9 @@ function Promo({ variant }: { variant: 'desktop' | 'mobile' }) {
   return (
     <div style={{ display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap', flexDirection: isMobile ? 'column' : 'row' }}>
       <div>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 9.5, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: isMobile ? 7 : 10 }}>Also in your collection</div>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: brand.colors.goldDeep, marginBottom: isMobile ? 7 : 10 }}>Also in your collection</div>
         <h2 style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 26 : 34, fontWeight: 400, lineHeight: 1.04, color: brand.colors.ink, margin: '0 0 8px' }}>The Strap Drawer</h2>
-        <p style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 12.5 : 13.5, color: brand.colors.mutedDark, lineHeight: 1.55, margin: 0, maxWidth: 440 }}>
+        <p style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 14 : 15, color: brand.colors.mutedDark, lineHeight: 1.55, margin: 0, maxWidth: 440 }}>
           Track the leathers, rubbers, NATOs and bracelets you swap between — we&rsquo;ll tell you which of your watches each one fits.
         </p>
       </div>

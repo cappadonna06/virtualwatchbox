@@ -79,16 +79,16 @@ export default function AddSearchWatchCard({ watch, dest = null, boxId = null }:
         />
       </div>
       <div style={{ padding: '14px 16px 16px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 9.5, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.goldDeep }}>
           {watch.brand}
         </div>
         <div style={{ fontFamily: brand.font.serif, fontSize: 20, fontWeight: 400, lineHeight: 1.1, color: brand.colors.ink }}>
           {watch.model}
         </div>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           Ref. {watch.reference}
         </div>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginTop: 2 }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, marginTop: 2 }}>
           {watch.caseSizeMm}mm · {watch.caseMaterial} ·{' '}
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, verticalAlign: 'middle' }}>
             <span style={{
@@ -109,16 +109,16 @@ export default function AddSearchWatchCard({ watch, dest = null, boxId = null }:
           </span>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
             {!watchHasImage && (
-              <span style={{ fontFamily: brand.font.sans, fontSize: 9, padding: '2px 7px', borderRadius: brand.radius.pill, border: `1px solid ${brand.colors.border}`, color: brand.colors.muted, fontStyle: 'italic' }}>
+              <span style={{ fontFamily: brand.font.sans, fontSize: 11, padding: '2px 7px', borderRadius: brand.radius.pill, border: `1px solid ${brand.colors.border}`, color: brand.colors.muted, fontStyle: 'italic' }}>
                 no photo
               </span>
             )}
             {inCollection ? (
-              <span style={{ fontFamily: brand.font.sans, fontSize: 9, padding: '2px 8px', borderRadius: brand.radius.pill, background: '#E8F4E8', color: '#2D6A2D' }}>
+              <span style={{ fontFamily: brand.font.sans, fontSize: 11, padding: '2px 8px', borderRadius: brand.radius.pill, background: '#E8F4E8', color: '#2D6A2D' }}>
                 In Collection
               </span>
             ) : (
-              <span style={{ fontFamily: brand.font.sans, fontSize: 9, padding: '2px 8px', borderRadius: brand.radius.pill, background: brand.colors.ink, color: brand.colors.bg }}>
+              <span style={{ fontFamily: brand.font.sans, fontSize: 11, padding: '2px 8px', borderRadius: brand.radius.pill, background: brand.colors.ink, color: brand.colors.bg }}>
                 {watch.watchType}
               </span>
             )}

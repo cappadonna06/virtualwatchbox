@@ -106,7 +106,7 @@ export default function SortDropdown({
               <span
                 style={{
                   fontFamily: brand.font.sans,
-                  fontSize: 9,
+                  fontSize: 11,
                   fontWeight: 600,
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
@@ -129,7 +129,7 @@ export default function SortDropdown({
           <span
             style={{
               fontFamily: brand.font.sans,
-              fontSize: compact ? 11.5 : 12,
+              fontSize: 12,
               fontWeight: 500,
               letterSpacing: '0.02em',
               color: brand.colors.ink,

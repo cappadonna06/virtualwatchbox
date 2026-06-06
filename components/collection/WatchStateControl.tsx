@@ -334,7 +334,7 @@ export default function WatchStateControl({
                   style={{
                     padding: '0 12px 10px 36px',
                     fontFamily: brand.font.sans,
-                    fontSize: 10,
+                    fontSize: 12,
                     lineHeight: 1.45,
                     color: brand.colors.muted,
                   }}
