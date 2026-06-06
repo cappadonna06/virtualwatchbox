@@ -64,7 +64,7 @@ export function Icon({
 export function Meta({ children, style, color = brand.colors.muted }: { children: ReactNode; style?: CSSProperties; color?: string }) {
   return (
     <span style={{
-      fontFamily: sans, fontSize: 10, fontWeight: 500, letterSpacing: '0.12em',
+      fontFamily: sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.12em',
       textTransform: 'uppercase', color, ...style,
     }}>{children}</span>
   )
@@ -76,7 +76,7 @@ export function StatusChip({ status, size = 'md', showDate = false }: { status: 
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 6,
-      fontFamily: sans, fontSize: small ? 10 : 11, fontWeight: 600,
+      fontFamily: sans, fontSize: 12, fontWeight: 600,
       letterSpacing: '0.04em', padding: small ? '3px 9px' : '4px 11px',
       borderRadius: brand.radius.pill, background: status.bg, color: status.fg, whiteSpace: 'nowrap',
     }}>
@@ -97,7 +97,7 @@ export function WarrantyChip({ warranty, size = 'md' }: { warranty: WarrantyStat
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 5,
-      fontFamily: sans, fontSize: small ? 10 : 11, fontWeight: 500,
+      fontFamily: sans, fontSize: 12, fontWeight: 500,
       letterSpacing: '0.02em', padding: small ? '3px 9px' : '4px 10px',
       borderRadius: brand.radius.pill, background: warranty.bg, color: warranty.fg, whiteSpace: 'nowrap',
     }}>
@@ -117,7 +117,7 @@ export function TypeTag({ type, active = false, onClick }: { type: string; activ
       disabled={!interactive}
       style={{
         display: 'inline-flex', alignItems: 'center', gap: 7,
-        fontFamily: sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.01em',
+        fontFamily: sans, fontSize: 14, fontWeight: 500, letterSpacing: '0.01em',
         padding: '7px 13px', borderRadius: brand.radius.pill, cursor: interactive ? 'pointer' : 'default',
         background: active ? brand.colors.ink : 'transparent',
         color: active ? brand.colors.slot : brand.colors.ink,
@@ -149,9 +149,9 @@ export function DocChip({ active, label, count, onClick }: { active: boolean; la
 export function SectionHead({ eyebrow, title, hint }: { eyebrow: string; title: string; hint?: string }) {
   return (
     <div style={{ marginBottom: 16 }}>
-      <Meta style={{ color: brand.colors.gold, display: 'block', marginBottom: 5 }}>{eyebrow}</Meta>
+      <Meta style={{ color: brand.colors.goldDeep, display: 'block', marginBottom: 5 }}>{eyebrow}</Meta>
       <h2 style={{ fontFamily: serif, fontSize: 28, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05, margin: 0 }}>{title}</h2>
-      {hint && <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted, display: 'block', marginTop: 6 }}>{hint}</span>}
+      {hint && <span style={{ fontFamily: sans, fontSize: 14, color: brand.colors.muted, display: 'block', marginTop: 6 }}>{hint}</span>}
     </div>
   )
 }
@@ -218,12 +218,12 @@ export function bookingUrl(brandName: string): string {
 
 // ─── Shared button styles ────────────────────────────────────────────────
 export const btnPrimary: CSSProperties = {
-  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontFamily: sans, fontSize: 11,
+  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontFamily: sans, fontSize: 12,
   fontWeight: 500, letterSpacing: '0.06em', padding: '9px 16px', background: brand.colors.ink,
   color: brand.colors.slot, border: 'none', borderRadius: brand.radius.btn, cursor: 'pointer', textDecoration: 'none', whiteSpace: 'nowrap',
 }
 export const btnSecondary: CSSProperties = {
-  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontFamily: sans, fontSize: 11,
+  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontFamily: sans, fontSize: 12,
   fontWeight: 500, letterSpacing: '0.06em', padding: '8px 15px', background: 'transparent',
   color: brand.colors.ink, border: `1px solid ${brand.colors.borderLight}`, borderRadius: brand.radius.btn, cursor: 'pointer', textDecoration: 'none', whiteSpace: 'nowrap',
 }

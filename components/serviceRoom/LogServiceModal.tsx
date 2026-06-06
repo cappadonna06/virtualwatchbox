@@ -132,7 +132,7 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '20px 24px', borderBottom: `1px solid ${brand.colors.border}` }}>
           <WatchTile watch={sw.watch} size={48} radius={brand.radius.lg} pad={0.14} />
           <div style={{ flex: 1 }}>
-            <Meta style={{ color: brand.colors.gold }}>Log a service</Meta>
+            <Meta style={{ color: brand.colors.goldDeep }}>Log a service</Meta>
             <div style={{ fontFamily: serif, fontSize: 22, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05 }}>{sw.watch.brand} {sw.watch.model}</div>
           </div>
           <button type="button" onClick={onClose} aria-label="Close" style={{ ...iconBtn, width: 30, height: 30 }}>
@@ -151,7 +151,7 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
             {t.resets && (
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 7, marginTop: 10 }}>
                 <Icon name="spark" size={13} color={brand.colors.gold} style={{ flexShrink: 0, marginTop: 1 }} />
-                <span style={{ fontFamily: sans, fontSize: 11.5, color: brand.colors.gold, lineHeight: 1.45 }}>Resets the service clock — next due recalculates to {sw.intervalYears} years out.</span>
+                <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.goldDeep, lineHeight: 1.45 }}>Resets the service clock — next due recalculates to {sw.intervalYears} years out.</span>
               </div>
             )}
           </Field>
@@ -172,9 +172,9 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
             <input type="text" value={provider} placeholder="Rolex Service Center, local watchmaker, etc." onChange={e => setProvider(e.target.value)} style={inputStyle} />
             <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 7, marginTop: 9 }}>
               {SUGGESTED_PROVIDERS.map(p => (
-                <button key={p} type="button" onClick={() => setProvider(p)} style={{ fontFamily: sans, fontSize: 10.5, color: brand.colors.muted, background: 'transparent', border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.pill, padding: '4px 10px', cursor: 'pointer' }}>{p}</button>
+                <button key={p} type="button" onClick={() => setProvider(p)} style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted, background: 'transparent', border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.pill, padding: '4px 10px', cursor: 'pointer' }}>{p}</button>
               ))}
-              <a href={bookingUrl(sw.watch.brand)} target="_blank" rel="noopener noreferrer sponsored" style={{ fontFamily: sans, fontSize: 10.5, fontWeight: 600, color: brand.colors.gold, marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 4 }}>Find a {sw.watch.brand} center ↗</a>
+              <a href={bookingUrl(sw.watch.brand)} target="_blank" rel="noopener noreferrer sponsored" style={{ fontFamily: sans, fontSize: 12, fontWeight: 600, color: brand.colors.goldDeep, marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 4 }}>Find a {sw.watch.brand} center ↗</a>
             </div>
           </Field>
 
@@ -193,13 +193,13 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
             />
             <button type="button" onClick={() => attachInputRef.current?.click()} style={{
               width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, minHeight: 48,
-              fontFamily: sans, fontSize: 12.5, fontWeight: 500, color: brand.colors.muted, cursor: 'pointer',
+              fontFamily: sans, fontSize: 14, fontWeight: 500, color: brand.colors.muted, cursor: 'pointer',
               background: brand.colors.bg, border: `1.5px dashed ${brand.colors.borderLight}`, borderRadius: brand.radius.lg, padding: '14px 16px',
             }}>
               <Icon name="download" size={15} color={brand.colors.gold} style={{ transform: 'rotate(180deg)' }} />
               Upload receipt, warranty card or service record
             </button>
-            <div style={{ fontFamily: sans, fontSize: 10.5, color: brand.colors.muted, marginTop: 7 }}>
+            <div style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted, marginTop: 7 }}>
               Keep proof of work with the record — receipts, certificates, before/after photos.
             </div>
 
@@ -208,7 +208,7 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
                 {docs.map(d => (
                   <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '9px 11px', background: brand.colors.white, border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.lg }}>
                     <DocTile type={d.type} size={30} />
-                    <span style={{ flex: 1, minWidth: 0, fontFamily: sans, fontSize: 12, fontWeight: 500, color: brand.colors.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{d.file.name}</span>
+                    <span style={{ flex: 1, minWidth: 0, fontFamily: sans, fontSize: 14, fontWeight: 500, color: brand.colors.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{d.file.name}</span>
                     <select
                       value={d.type}
                       onChange={e => setDocType(d.id, e.target.value as PhotoType)}
@@ -225,14 +225,14 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
               </div>
             )}
             {attachError && (
-              <div style={{ marginTop: 8, fontFamily: sans, fontSize: 11, color: brand.serviceStatus.due.fg }}>{attachError}</div>
+              <div style={{ marginTop: 8, fontFamily: sans, fontSize: 12, color: brand.serviceStatus.due.fg }}>{attachError}</div>
             )}
           </Field>
         </div>
 
         {/* footer */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, padding: '16px 24px', borderTop: `1px solid ${brand.colors.border}`, position: 'sticky', bottom: 0, background: brand.colors.slot }}>
-          <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted }}>
+          <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>
             {t.label} · {formatDate(date)}{costCents ? ` · ${formatCost(costCents)}` : ''}{docs.length ? ` · ${docs.length} doc${docs.length > 1 ? 's' : ''}` : ''}
           </span>
           <div style={{ display: 'flex', gap: 10 }}>

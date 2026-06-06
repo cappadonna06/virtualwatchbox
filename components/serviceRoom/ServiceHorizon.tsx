@@ -97,15 +97,15 @@ export function ServiceHorizon({ watches, now, onPick, activeId, isMobile }: Pro
       {/* axis labels */}
       <div style={{ position: 'relative', height: 15, marginBottom: 5 }}>
         <div style={{ position: 'absolute', left: `${zL / 2}%`, transform: 'translateX(-50%)' }}>
-          <Meta style={{ fontSize: 9 }} color={overdueN ? brand.serviceStatus.overdue.fg : brand.colors.muted}>Overdue</Meta>
+          <Meta style={{ fontSize: 11 }} color={overdueN ? brand.serviceStatus.overdue.fg : brand.colors.muted}>Overdue</Meta>
         </div>
         {ticks.map(t => (
           <div key={t} style={{ position: 'absolute', left: `${xOf(t)}%`, transform: 'translateX(-50%)' }}>
-            <Meta style={{ fontSize: 9 }}>{t === 0 ? 'Now' : formatMonthYear(addMonths(now, t))}</Meta>
+            <Meta style={{ fontSize: 11 }}>{t === 0 ? 'Now' : formatMonthYear(addMonths(now, t))}</Meta>
           </div>
         ))}
         <div style={{ position: 'absolute', left: `${(zR + 100) / 2}%`, transform: 'translateX(-50%)' }}>
-          <Meta style={{ fontSize: 9 }}>Beyond</Meta>
+          <Meta style={{ fontSize: 11 }}>Beyond</Meta>
         </div>
       </div>
 
@@ -152,8 +152,8 @@ export function ServiceHorizon({ watches, now, onPick, activeId, isMobile }: Pro
               >
                 <WatchShot watch={p.sw.watch} size={36} shadow="0 2px 5px rgba(26,20,16,0.22)" />
                 <span style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.18, textAlign: 'left' }}>
-                  <span style={{ fontFamily: sans, fontSize: 11.5, fontWeight: 600, color: brand.colors.ink }}>{p.sw.watch.brand}</span>
-                  <span style={{ fontFamily: sans, fontSize: 10, fontWeight: 500, color: p.st.fg, letterSpacing: '0.02em' }}>{sub}</span>
+                  <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 600, color: brand.colors.ink }}>{p.sw.watch.brand}</span>
+                  <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 500, color: p.st.fg, letterSpacing: '0.02em' }}>{sub}</span>
                 </span>
               </button>
             </div>
@@ -167,12 +167,12 @@ export function ServiceHorizon({ watches, now, onPick, activeId, isMobile }: Pro
       {/* legend */}
       <div style={{ display: 'flex', gap: 18, marginTop: 12, flexWrap: 'wrap' }}>
         {[brand.serviceStatus.overdue, brand.serviceStatus.due, brand.serviceStatus.ok].map((s, i) => (
-          <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 11, color: brand.colors.muted }}>
+          <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>
             <span style={{ width: 7, height: 7, borderRadius: 7, background: s.dot }} />
             {['Overdue', 'Due soon', 'On track'][i]}
           </span>
         ))}
-        {beyondN > 0 && <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted, marginLeft: 'auto' }}>{isMobile ? `+${beyondN} past two years` : `${beyondN} resting comfortably past two years`}</span>}
+        {beyondN > 0 && <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted, marginLeft: 'auto' }}>{isMobile ? `+${beyondN} past two years` : `${beyondN} resting comfortably past two years`}</span>}
       </div>
     </div>
   )

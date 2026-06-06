@@ -54,7 +54,7 @@ function PillRow<T extends string | number>({ options, value, onChange, counts }
 function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
     <div style={{ marginBottom: 16 }}>
-      <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
+      <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
         {label}
         {hint && <span style={{ textTransform: 'none', letterSpacing: 0, fontWeight: 400, color: brand.colors.borderLight, marginLeft: 6 }}>{hint}</span>}
       </div>
@@ -231,7 +231,7 @@ export function StrapModal({
           <div className="sd-modal-form" style={{ flex: 1, overflowY: 'auto', padding: '22px 24px' }}>
             {!editing && templateGroups.length > 0 && (
               <div style={{ marginBottom: 18, paddingBottom: 16, borderBottom: `1px solid ${brand.colors.border}` }}>
-                <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
                   Quick pick from common straps
                 </div>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 11 }}>
@@ -281,7 +281,7 @@ export function StrapModal({
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {COMMON_COLORS.map(([name, hex]) => (
                   <button key={name} type="button" onClick={() => set({ color: name, colorHex: hex })} style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500,
+                    display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500,
                     padding: '5px 10px 5px 6px', borderRadius: brand.radius.pill, cursor: 'pointer',
                     background: f.color === name ? brand.colors.ink : brand.colors.slot, color: f.color === name ? brand.colors.slot : brand.colors.inkSoft,
                     border: `1px solid ${f.color === name ? brand.colors.ink : brand.colors.borderMid}`,
@@ -302,7 +302,7 @@ export function StrapModal({
               padding: '14px 0 6px', marginTop: 6, width: '100%', borderTop: `1px solid ${brand.colors.border}`,
             }}>
               <span style={{ color: brand.colors.muted, display: 'flex', transform: showDetails ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}><StrapIcon name="chevDown" size={15} /></span>
-              <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: brand.colors.inkSoft }}>Details</span>
+              <span style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: brand.colors.inkSoft }}>Details</span>
               <span style={{ fontFamily: brand.font.serif, fontStyle: 'italic', fontSize: 13, color: brand.colors.muted }}>optional</span>
             </button>
 
@@ -335,9 +335,9 @@ export function StrapModal({
                   >
                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8, color: brand.colors.borderLight }}><StrapIcon name="photo" size={22} /></div>
                     <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.mutedDark }}>
-                      {photoFile ? photoFile.name : <>Drop a photo, or <span style={{ color: brand.colors.gold, fontWeight: 600 }}>browse</span></>}
+                      {photoFile ? photoFile.name : <>Drop a photo, or <span style={{ color: brand.colors.goldDeep, fontWeight: 600 }}>browse</span></>}
                     </div>
-                    <div style={{ fontFamily: brand.font.sans, fontSize: 10.5, color: brand.colors.muted, marginTop: 4 }}>JPG, PNG, WEBP or HEIC · processed to 1600px</div>
+                    <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, marginTop: 4 }}>JPG, PNG, WEBP or HEIC · processed to 1600px</div>
                   </div>
                 </Field>
               </div>

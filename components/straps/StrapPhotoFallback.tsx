@@ -17,7 +17,7 @@ export function StrapPhotoFallback({ height = '100%' }: { height?: number | stri
       <span
         style={{
           fontFamily: brand.font.sans,
-          fontSize: 10.5,
+          fontSize: 12,
           fontWeight: 600,
           letterSpacing: '0.12em',
           textTransform: 'uppercase',

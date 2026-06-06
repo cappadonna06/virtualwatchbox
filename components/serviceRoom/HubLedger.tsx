@@ -107,7 +107,7 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
                     <span style={{ fontFamily: sans, fontSize: 14, color: brand.colors.ink }}>{sw.documents.length} on file</span>
                     {sw.watch.hasPapers === false && <span style={{ fontFamily: sans, fontSize: 11, color: brand.serviceStatus.due.fg, background: brand.serviceStatus.due.bg, padding: '1px 7px', borderRadius: 10 }}>no papers</span>}
                   </span>
-                  <button type="button" onClick={e => { e.stopPropagation(); onLog(sw) }} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', padding: '8px 14px', background: 'transparent', color: brand.colors.ink, border: `1px solid ${brand.colors.borderLight}`, borderRadius: brand.radius.btn, cursor: 'pointer' }}>
+                  <button type="button" onClick={e => { e.stopPropagation(); onLog(sw) }} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.04em', padding: '8px 14px', background: 'transparent', color: brand.colors.ink, border: `1px solid ${brand.colors.borderLight}`, borderRadius: brand.radius.btn, cursor: 'pointer' }}>
                     <Icon name="plus" size={13} color={brand.colors.ink} />Log
                   </button>
                 </div>
@@ -207,9 +207,9 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
 function LedgerCell({ label, value, sub, accent }: { label: string; value: string; sub?: string; accent?: string }) {
   return (
     <div>
-      <span style={{ display: 'block', marginBottom: 3, fontFamily: sans, fontSize: 9, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>{label}</span>
-      <span style={{ fontFamily: sans, fontSize: 13, fontWeight: 600, color: accent ?? brand.colors.ink }}>{value}</span>
-      {sub && <div style={{ fontFamily: sans, fontSize: 10.5, color: brand.colors.muted, marginTop: 1 }}>{sub}</div>}
+      <span style={{ display: 'block', marginBottom: 3, fontFamily: sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>{label}</span>
+      <span style={{ fontFamily: sans, fontSize: 15, fontWeight: 600, color: accent ?? brand.colors.ink }}>{value}</span>
+      {sub && <div style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted, marginTop: 1 }}>{sub}</div>}
     </div>
   )
 }
