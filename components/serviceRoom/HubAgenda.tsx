@@ -156,12 +156,12 @@ export function HubAgenda({ watches, now, onPick, onLog, activeId, isMobile }: L
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 34 }}>
       <section>
-        <SectionHead eyebrow="Service horizon" title="The next two years" hint="Each colored dot marks the next full-service date" />
+        <SectionHead eyebrow="Service horizon" title="The next two years" />
         <ServiceHorizon watches={watches} now={now} onPick={onPick} activeId={activeId} isMobile={isMobile} />
       </section>
 
       <section>
-        <SectionHead eyebrow={`Needs attention · ${attention.length}`} title="On the bench" hint="Overdue and due-soon pieces, most urgent first" />
+        <SectionHead eyebrow={`Needs attention · ${attention.length}`} title="On the bench" />
         {attention.length ? (
           <div style={{ display: 'grid', gap: 14 }}>
             {attention.map(sw => <AttentionCard key={sw.watch.id} sw={sw} now={now} onPick={onPick} onLog={onLog} isMobile={isMobile} />)}

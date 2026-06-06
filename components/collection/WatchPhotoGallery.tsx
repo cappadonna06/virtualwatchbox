@@ -233,7 +233,7 @@ export default function WatchPhotoGallery({ ownedWatchId, variant = 'sidebar' }:
               maxWidth: 360,
               lineHeight: 1.5,
             }}>
-              Wrist shots, the day you got it, service receipts — anything you want to remember about this watch.
+              Wrist shots, the day you got it, service receipts. Anything you want to remember about this watch.
             </div>
           )}
           <div style={{
@@ -302,17 +302,6 @@ export default function WatchPhotoGallery({ ownedWatchId, variant = 'sidebar' }:
           borderRadius: brand.radius.sm,
         }}>
           {uploadError}
-        </div>
-      )}
-
-      {!isSidebar && photos.length > 0 && (
-        <div style={{
-          marginTop: 14,
-          fontFamily: brand.font.sans,
-          fontSize: 12,
-          color: brand.colors.muted,
-        }}>
-          Drag to reorder. Click any photo to view, edit, or set as primary.
         </div>
       )}
 

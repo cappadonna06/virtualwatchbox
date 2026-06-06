@@ -365,7 +365,7 @@ const PhotoSearch = forwardRef<PhotoSearchHandle, Props>(function PhotoSearch(
           }}
         >
           <div style={{ fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.ink, maxWidth: 360 }}>
-            Couldn&apos;t identify this watch — try a clearer photo of the dial.
+            Couldn&apos;t identify this watch. Try a clearer photo of the dial.
           </div>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
             <button
@@ -878,7 +878,7 @@ function NextBestMatches({
 }) {
   const headline = variant === 'no_match'
     ? 'Closest watches in our catalog'
-    : 'Concierge wasn’t certain — these were the closest alternatives.'
+    : 'Concierge wasn’t certain. These were the closest alternatives.'
   const sub = variant === 'no_match'
     ? 'Not the same watch, but here’s what looks closest. Pick one to add it instead, or keep the discovered watch above.'
     : 'Pick the one that matches your watch, or stick with the primary match above.'
@@ -1259,7 +1259,7 @@ function DiscoveredWatchCard({
               cursor: 'pointer',
             }}
           >
-            Not this — search manually
+            Not this? Search manually
           </button>
         </div>
       </div>
@@ -1275,31 +1275,31 @@ function buildNotAWatchCopy(label: string): { headline: string; body: string } {
   // Specific, charming responses for things people actually upload by accident.
   if (/cat|kitt/.test(cleaned)) {
     return {
-      headline: 'A handsome cat — but not a watch.',
+      headline: 'A handsome cat, but not a watch.',
       body: 'Concierge identifies wristwatches. Your cat is a separate masterpiece.',
     }
   }
   if (/dog|puppy|pup/.test(cleaned)) {
     return {
-      headline: 'Lovely dog — but not a watch.',
+      headline: 'Lovely dog, but not a watch.',
       body: 'Concierge identifies wristwatches. Send the watch on the wrist instead?',
     }
   }
   if (/person|portrait|selfie|face/.test(cleaned)) {
     return {
-      headline: 'Looking sharp — but no watch in frame.',
+      headline: 'Looking sharp, but no watch in frame.',
       body: 'Try a closer photo of the wrist or the dial itself.',
     }
   }
   if (/empty|box without|watch box/.test(cleaned)) {
     return {
-      headline: 'Nice watch box — but the watch is missing.',
+      headline: 'Nice watch box, but the watch is missing.',
       body: 'Place the watch face-up in good light and try again.',
     }
   }
   if (/scenery|landscape|outdoor|sky/.test(cleaned)) {
     return {
-      headline: 'A pretty scene — but not a watch.',
+      headline: 'A pretty scene, but not a watch.',
       body: 'Concierge needs a photo of the watch itself to help.',
     }
   }
@@ -1319,7 +1319,7 @@ function buildNotAWatchCopy(label: string): { headline: string; body: string } {
   }
   return {
     headline: 'Concierge didn’t see a watch in this photo.',
-    body: 'Try a clearer shot of the dial — face-up, well-lit, centered in frame.',
+    body: 'Try a clearer shot of the dial: face-up, well-lit, centered in frame.',
   }
 }
 
@@ -1457,7 +1457,7 @@ function NotAWatchPanel({
           <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 4 }}>
             Tips for a great identification
           </div>
-          <TipRow text="Fill the frame with the watch — wrist or close-up dial both work." />
+          <TipRow text="Fill the frame with the watch. Wrist or close-up dial both work." />
           <TipRow text="Avoid heavy reflections; soft, even light reads best." />
           <TipRow text="Keep the dial roughly upright so brand text is readable." />
         </div>

@@ -80,7 +80,7 @@ export function HubGallery({ watches, now, onPick, onLog, activeId }: LayoutProp
   const noun = watches.length === 1 ? 'piece' : 'pieces'
   return (
     <div>
-      <SectionHead eyebrow="The collection" title={`${watches.length} ${noun} under care`} hint="Ordered by what needs attention first" />
+      <SectionHead eyebrow="The collection" title={`${watches.length} ${noun} under care`} />
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 18 }}>
         {sorted.map(sw => <GalleryCard key={sw.watch.id} sw={sw} now={now} onPick={onPick} onLog={onLog} active={activeId === sw.watch.id} />)}
       </div>

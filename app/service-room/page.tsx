@@ -103,7 +103,7 @@ export default function ServiceRoomPage() {
               The Service Room
             </h1>
             <p style={{ ...masthead.subtitle, margin: '12px 0 0', maxWidth: 460 }}>
-              Every service, document, and cost for your collection — and a clear read on what to send to the bench next.
+              Every service, document, and cost for your collection.
             </p>
           </div>
           {!isMobile && (
@@ -117,14 +117,10 @@ export default function ServiceRoomPage() {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, margin: '28px 0 4px', flexWrap: 'wrap' }}>
           <LayoutSwitch value={layout} onChange={setLayout} />
-          {isMobile ? (
+          {isMobile && (
             <button type="button" onClick={onExportAll} style={{ ...btnSecondary, padding: '9px 14px' }}>
               <Icon name="download" size={13} color={brand.colors.ink} />Export
             </button>
-          ) : (
-            <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>
-              Three reads on the same box — pick the one that suits the moment.
-            </span>
           )}
         </div>
       </div>
@@ -139,8 +135,7 @@ export default function ServiceRoomPage() {
         <PartnerBand />
       </div>
 
-      <footer style={{ padding: `24px ${gx}px 48px`, borderTop: `1px solid ${brand.colors.border}`, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-        <span style={{ fontFamily: serif, fontSize: 17, color: brand.colors.muted, fontStyle: 'italic' }}>Your source of truth — for the life of every piece.</span>
+      <footer style={{ padding: `24px ${gx}px 48px`, borderTop: `1px solid ${brand.colors.border}`, display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 12 }}>
         <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted, letterSpacing: '0.04em' }}>VIRTUAL WATCHBOX · THE SERVICE ROOM</span>
       </footer>
 

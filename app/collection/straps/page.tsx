@@ -146,7 +146,7 @@ function StrapDrawerPage() {
 
           {focusWatch && visible.length === 0 ? (
             <div style={{ fontFamily: brand.font.serif, fontStyle: 'italic', fontSize: 16, color: brand.colors.muted, padding: '24px 0' }}>
-              No straps in your drawer fit the {focusWatch.model} yet — add a {focusWatch.lugWidthMm} mm strap and it shows up here.
+              No straps in your drawer fit the {focusWatch.model} yet. Add a {focusWatch.lugWidthMm} mm strap and it shows up here.
             </div>
           ) : (
             <StrapGrid straps={visible} watches={watches} overrides={strapOverrides} focusWatch={focusWatch} activeId={selectedId} onSelect={(s) => setSelectedId(s.id)} />

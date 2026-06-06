@@ -9,9 +9,9 @@ import { useIsMobile } from './useResponsiveState'
 import WatchBox from './WatchBox'
 
 const BENEFITS = [
-  { title: 'Synced everywhere', desc: 'Your box on desktop, tablet and phone — always current.', Icon: SyncIcon },
+  { title: 'Synced everywhere', desc: 'Always current on desktop, tablet, and phone.', Icon: SyncIcon },
   { title: 'Share a public box', desc: "One link shows your collection exactly as you've arranged it.", Icon: ShareIcon },
-  { title: 'Own your record', desc: 'Values, references and service history — kept privately, for you.', Icon: ShieldIcon },
+  { title: 'Own your record', desc: 'Values, references, and service history stay private to you.', Icon: ShieldIcon },
 ]
 
 export default function CollectionEmptyState() {
@@ -43,19 +43,6 @@ export default function CollectionEmptyState() {
           mode="collection"
           ghostWatches={SAMPLE_BOX_GHOSTS}
         />
-
-        <p
-          style={{
-            margin: '14px 0 0',
-            fontFamily: brand.font.sans,
-            fontSize: brand.text.bodySm,
-            color: brand.colors.muted,
-            lineHeight: 1.5,
-            textAlign: isMobile ? 'center' : 'left',
-          }}
-        >
-          The faded watches are a sample box — yours fills these slots as you add.
-        </p>
       </div>
 
       {/* Right — welcome panel */}
@@ -105,7 +92,7 @@ export default function CollectionEmptyState() {
             maxWidth: '42ch',
           }}
         >
-          Add a watch to open the box. Everything you own, kept in one considered place — and ready wherever you are.
+          Add a watch to open the box. Everything you own in one place, ready wherever you are.
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 12 : 18, marginTop: 26 }}>

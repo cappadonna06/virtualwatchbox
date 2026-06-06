@@ -33,7 +33,7 @@ export const viewport: Viewport = {
 }
 
 const SITE_DESCRIPTION =
-  'Virtual Watchbox is the digital home for watch collectors. Showcase what you own, follow what you love, and discover what’s next — beautifully organized.'
+  'Virtual Watchbox is the digital home for watch collectors. Showcase what you own, follow what you love, and discover what’s next.'
 
 const SOCIAL_DESCRIPTION =
   'Showcase what you own, follow what you love, and discover what’s next. The digital home for watch collectors.'

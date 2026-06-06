@@ -206,18 +206,6 @@ export default function CollectionStats({ watches, mode = 'collection' }: Props)
           >
             {mode === 'playground' ? 'Box Stats' : 'Collection Stats'}
           </h2>
-          <p
-            style={{
-              fontFamily: brand.font.sans,
-              fontSize: 15,
-              color: brand.colors.muted,
-              margin: '6px 0 0',
-            }}
-          >
-            {mode === 'playground'
-              ? 'A market-only breakdown of this playground box.'
-              : 'A factual breakdown of what you own.'}
-          </p>
         </div>
 
         <ModeTogglePill view={view} setView={setView} />

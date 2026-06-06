@@ -117,7 +117,6 @@ export default function WatchDossier({ watch }: { watch: ResolvedOwnedWatch }) {
               <DocCard key={d.id} doc={d} onOpen={() => setLightbox({ list: documents, startId: d.id })} />
             ))}
           </div>
-          <div style={{ marginTop: 10, fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>Tap to view full size</div>
         </section>
       )}
 

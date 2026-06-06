@@ -49,7 +49,7 @@ export default function TargetsGrailSection() {
       <EditorialHeader
         kicker="§ 03"
         title="What you're chasing."
-        sub="Your own shortlist. The grail you've crowned and the targets you're tracking — your curated counterpart to the picks around it."
+        sub="Your own shortlist. The grail you've crowned and the targets you're tracking."
       />
 
       {hasGrail && grailWatch && <GrailCard watch={grailWatch} />}
@@ -99,7 +99,7 @@ export default function TargetsGrailSection() {
         </Link>
         <span style={{ fontFamily: brand.font.serif, fontStyle: 'italic', fontSize: 15, color: brand.colors.muted, letterSpacing: '0.02em' }}>
           {nextTargetWatches.length >= 3
-            ? 'Target list full — remove one from its detail sidebar to add another.'
+            ? 'Target list full. Remove one from its detail sidebar to add another.'
             : 'Open a followed watch and choose “Set as Target” to track it here.'}
         </span>
       </div>

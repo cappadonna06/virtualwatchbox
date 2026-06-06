@@ -65,7 +65,7 @@ export default function PlaygroundEmptyState({ collectionWatchCount, onBuild, on
           maxWidth: '34ch',
         }}
       >
-        Swap in a grail or preview the piece you&rsquo;re eyeing — see it in your box before you buy.
+        Swap in a grail or preview the piece you&rsquo;re eyeing. See it in your box before you buy.
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 12 : 15, marginTop: 22 }}>
