@@ -23,6 +23,7 @@ import DialSVG from '@/components/watchbox/DialSVG'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import { brand, masthead } from '@/lib/brand'
 import { createClient } from '@/lib/supabase/client'
+import { userProfileCacheKey } from '@/lib/storageKeys'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import {
   buildAbsoluteProfileDemoUrl,
@@ -3019,9 +3020,96 @@ function buildProfileSnapshotFromOwnerState({
   })
 }
 
+function SkeletonBlock({ width, height, radius = 4, style }: { width: number | string; height: number; radius?: number; style?: CSSProperties }) {
+  return (
+    <div
+      style={{
+        width,
+        height,
+        borderRadius: radius,
+        background: brand.colors.slot,
+        border: `1px dashed ${brand.colors.borderLight}`,
+        ...style,
+      }}
+    />
+  )
+}
+
+function OwnerProfileSkeleton({ isMobile }: { isMobile: boolean }) {
+  return (
+    <div
+      aria-hidden
+      style={{
+        display: 'grid',
+        gap: isMobile ? 0 : 20,
+        gridTemplateColumns: 'minmax(0, 1fr)',
+        animation: 'vw-news-pulse 1.4s ease-in-out infinite',
+      }}
+    >
+      <div
+        style={{
+          border: `1px solid ${brand.colors.border}`,
+          borderRadius: isMobile ? 0 : brand.radius.lg,
+          overflow: 'hidden',
+          background: brand.colors.white,
+        }}
+      >
+        <SkeletonBlock width="100%" height={isMobile ? 140 : 200} radius={0} />
+        <div style={{ padding: isMobile ? '20px 16px' : 28 }}>
+          <div style={{ display: 'flex', gap: 18, alignItems: 'flex-end', marginTop: isMobile ? -56 : -72 }}>
+            <SkeletonBlock width={isMobile ? 88 : 120} height={isMobile ? 88 : 120} radius={brand.radius.lg} />
+            <div style={{ flex: 1, minWidth: 0, paddingBottom: 8 }}>
+              <SkeletonBlock width="55%" height={22} style={{ marginBottom: 10 }} />
+              <SkeletonBlock width="80%" height={12} style={{ marginBottom: 6 }} />
+              <SkeletonBlock width="68%" height={12} />
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 10, marginTop: 22, flexWrap: 'wrap' }}>
+            <SkeletonBlock width={110} height={28} radius={brand.radius.pill} />
+            <SkeletonBlock width={90} height={28} radius={brand.radius.pill} />
+            <SkeletonBlock width={120} height={28} radius={brand.radius.pill} />
+          </div>
+        </div>
+      </div>
+
+      <div
+        style={{
+          border: `1px solid ${brand.colors.border}`,
+          borderRadius: isMobile ? 0 : brand.radius.lg,
+          padding: isMobile ? '20px 16px' : 28,
+          background: brand.colors.white,
+        }}
+      >
+        <SkeletonBlock width="40%" height={18} style={{ marginBottom: 20 }} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SkeletonBlock key={i} width="100%" height={isMobile ? 110 : 150} radius={brand.radius.md} />
+          ))}
+        </div>
+      </div>
+
+      <div
+        style={{
+          border: `1px solid ${brand.colors.border}`,
+          borderRadius: isMobile ? 0 : brand.radius.lg,
+          padding: isMobile ? '20px 16px' : 28,
+          background: brand.colors.white,
+        }}
+      >
+        <SkeletonBlock width="35%" height={18} style={{ marginBottom: 20 }} />
+        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <SkeletonBlock key={i} width={isMobile ? '100%' : 200} height={88} radius={brand.radius.md} />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function OwnerProfilePage() {
   const isMobile = useIsMobile()
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const {
     collectionWatches,
     followedWatches,
@@ -3029,6 +3117,8 @@ export function OwnerProfilePage() {
     grailWatch,
     collectionJewelWatch,
     watchboxConfig,
+    dataLoading,
+    cacheHydrated,
   } = useCollectionSession()
   const { message, showToast } = useToast()
   const [profile, setProfile] = useState<ProfileDemoState>(createDefaultProfileDemoState())
@@ -3151,6 +3241,15 @@ export function OwnerProfilePage() {
   useEffect(() => {
     if (!user || !hydrated || profileCloudHydrated) return
 
+    // Instant paint from the per-user profile cache while the authoritative
+    // read is in flight, so name/bio/images appear immediately and per-user
+    // correct (overriding the shared local demo state). The cloud read below
+    // overwrites this via the same merge.
+    try {
+      const rawCache = localStorage.getItem(userProfileCacheKey(user.id))
+      if (rawCache) mergeCloudProfileRow(JSON.parse(rawCache) as Record<string, unknown>)
+    } catch {}
+
     let cancelled = false
     ;(async () => {
       try {
@@ -3166,6 +3265,7 @@ export function OwnerProfilePage() {
 
         if (data) {
           mergeCloudProfileRow(data as Record<string, unknown>)
+          try { localStorage.setItem(userProfileCacheKey(user.id), JSON.stringify(data)) } catch {}
         }
         // Snapshot the current change-id as the last-saved baseline. The merge
         // above used `setProfile` (not `updateProfile`), so localChangeIdRef
@@ -3298,6 +3398,16 @@ export function OwnerProfilePage() {
   const showOwnerFeaturedWatch = profile.visibility.showGrail && profile.featuredProfileWatch !== 'none'
   const ownerProfilePrivate = !hasAnyPublicProfileModules(profile.visibility, showOwnerFeaturedWatch)
 
+  // Hold the data-dependent body behind a skeleton until the signed-in user's
+  // authoritative data is available, so we never flash default/empty state
+  // ("Private Collector", 0 watches, "No grail selected"). A warm instant-paint
+  // cache hit (cacheHydrated) opens the gate immediately. Guests (user === null
+  // once auth resolves) fall through to a normal render.
+  const profileBootstrapping =
+    authLoading ||
+    (Boolean(user) && !hydrated) ||
+    (Boolean(user) && !cacheHydrated && (dataLoading || !profileCloudHydrated))
+
   // Local persistence (sessionStorage / localStorage snapshots) — runs immediately
   // regardless of cloud-hydration so guest mode keeps working.
   useEffect(() => {
@@ -3336,7 +3446,7 @@ export function OwnerProfilePage() {
         saveInFlightRef.current = true
         try {
           const supabase = createClient()
-          const { error } = await supabase.from('user_profiles').upsert({
+          const row = {
             id: user.id,
             display_name: profile.displayName,
             bio: profile.bio,
@@ -3346,11 +3456,13 @@ export function OwnerProfilePage() {
             collection_hero_image_url: profile.collectionHeroImageUrl || null,
             featured_profile_watch: profile.featuredProfileWatch,
             visibility: profile.visibility,
-          }, { onConflict: 'id' })
+          }
+          const { error } = await supabase.from('user_profiles').upsert(row, { onConflict: 'id' })
           if (error) {
             console.error('[vwb] profile upsert error', error)
           } else {
             lastSavedChangeIdRef.current = targetChangeId
+            try { localStorage.setItem(userProfileCacheKey(user.id), JSON.stringify(row)) } catch {}
           }
         } catch (err) {
           console.error('[vwb] profile upsert failed', err)
@@ -3436,6 +3548,9 @@ export function OwnerProfilePage() {
   return (
     <div className="profile-page-shell" style={{ padding: isMobile ? '0 0 96px' : '56px 56px 120px', borderTop: isMobile ? 'none' : `1px solid ${brand.colors.border}` }}>
       {authPrompt}
+      {profileBootstrapping ? (
+        <OwnerProfileSkeleton isMobile={isMobile} />
+      ) : (
       <div style={{ display: 'grid', gap: isMobile ? 0 : 20, gridTemplateColumns: 'minmax(0, 1fr)' }}>
         <OwnerProfileHero
           profile={profile}
@@ -3476,6 +3591,7 @@ export function OwnerProfilePage() {
           <PublicRadarSection watches={ownerRadarWatches} actions={<ActionButton href="/followed">Manage</ActionButton>} />
         )}
       </div>
+      )}
 
       <ProfileTextEditModal
         open={textEditOpen}
