@@ -17,7 +17,7 @@ function fmt(n: number) {
 
 const marketCta: React.CSSProperties = {
   fontFamily: brand.font.sans,
-  fontSize: 10.5,
+  fontSize: 12,
   fontWeight: 500,
   letterSpacing: '0.12em',
   textTransform: 'uppercase',
@@ -97,7 +97,7 @@ export default function TargetsGrailSection() {
         >
           + Add a target
         </Link>
-        <span style={{ fontFamily: brand.font.serif, fontStyle: 'italic', fontSize: 13, color: brand.colors.muted, letterSpacing: '0.02em' }}>
+        <span style={{ fontFamily: brand.font.serif, fontStyle: 'italic', fontSize: 15, color: brand.colors.muted, letterSpacing: '0.02em' }}>
           {nextTargetWatches.length >= 3
             ? 'Target list full — remove one from its detail sidebar to add another.'
             : 'Open a followed watch and choose “Set as Target” to track it here.'}
@@ -167,7 +167,7 @@ function GrailCard({ watch }: { watch: CatalogWatch }) {
             borderRadius: brand.radius.pill,
             background: brand.colors.white,
             border: `1px solid ${brand.colors.goldLine}`,
-            color: brand.colors.gold,
+            color: brand.colors.goldDeep,
             boxShadow: brand.shadow.xs,
             marginBottom: 14,
           }}
@@ -176,7 +176,7 @@ function GrailCard({ watch }: { watch: CatalogWatch }) {
           <span
             style={{
               fontFamily: brand.font.sans,
-              fontSize: 9,
+              fontSize: 11,
               fontWeight: 600,
               letterSpacing: '0.16em',
               textTransform: 'uppercase',
@@ -190,7 +190,7 @@ function GrailCard({ watch }: { watch: CatalogWatch }) {
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 10,
+            fontSize: 12,
             fontWeight: 600,
             letterSpacing: '0.16em',
             textTransform: 'uppercase',
@@ -216,7 +216,7 @@ function GrailCard({ watch }: { watch: CatalogWatch }) {
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 11.5,
+            fontSize: 12,
             color: brand.colors.muted,
             letterSpacing: '0.04em',
             marginBottom: 18,
@@ -272,7 +272,7 @@ function TargetCard({ target, watch }: { target: WatchTarget; watch: CatalogWatc
             background: brand.colors.white,
             border: `1px solid ${brand.colors.borderMid}`,
             fontFamily: brand.font.sans,
-            fontSize: 8.5,
+            fontSize: 11,
             fontWeight: 600,
             letterSpacing: '0.14em',
             textTransform: 'uppercase',
@@ -297,7 +297,7 @@ function TargetCard({ target, watch }: { target: WatchTarget; watch: CatalogWatc
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 10,
+            fontSize: 12,
             fontWeight: 600,
             letterSpacing: '0.16em',
             textTransform: 'uppercase',
@@ -323,7 +323,7 @@ function TargetCard({ target, watch }: { target: WatchTarget; watch: CatalogWatc
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 11,
+            fontSize: 12,
             color: brand.colors.muted,
             marginBottom: 14,
             letterSpacing: '0.04em',
@@ -374,7 +374,7 @@ function TargetMeta({ label, value }: { label: string; value: string }) {
       <span
         style={{
           fontFamily: brand.font.sans,
-          fontSize: 9,
+          fontSize: 11,
           fontWeight: 600,
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
@@ -383,7 +383,7 @@ function TargetMeta({ label, value }: { label: string; value: string }) {
       >
         {label}
       </span>
-      <span style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, color: brand.colors.ink }}>
+      <span style={{ fontFamily: brand.font.sans, fontSize: 14, fontWeight: 500, color: brand.colors.ink }}>
         {value}
       </span>
     </div>

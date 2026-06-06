@@ -47,7 +47,7 @@ const SUCCESS_BG = '#E8F4E8'
 
 const microLabel: React.CSSProperties = {
   fontFamily: brand.font.sans,
-  fontSize: 9.5,
+  fontSize: 11,
   fontWeight: 500,
   letterSpacing: '0.14em',
   textTransform: 'uppercase',
@@ -189,7 +189,7 @@ export default function ShareBoxModal({
             }}
           >
             <span>Preview · 1200 × 630</span>
-            <span style={{ color: brand.colors.gold }}>Auto-generated</span>
+            <span style={{ color: brand.colors.goldDeep }}>Auto-generated</span>
           </div>
           <OGPreview
             watches={watches}
@@ -243,7 +243,7 @@ export default function ShareBoxModal({
               style={{
                 flex: 1,
                 fontFamily: brand.font.sans,
-                fontSize: 12,
+                fontSize: 14,
                 color: brand.colors.ink,
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -259,7 +259,7 @@ export default function ShareBoxModal({
                 alignItems: 'center',
                 gap: 6,
                 fontFamily: brand.font.sans,
-                fontSize: 10.5,
+                fontSize: 12,
                 fontWeight: 500,
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
@@ -333,7 +333,7 @@ export default function ShareBoxModal({
             borderTop: `1px solid ${brand.colors.border}`,
             background: brand.colors.bg,
             fontFamily: brand.font.sans,
-            fontSize: 11,
+            fontSize: 12,
             color: brand.colors.muted,
             display: 'flex',
             justifyContent: 'space-between',
@@ -345,7 +345,7 @@ export default function ShareBoxModal({
           <span>Shared links open your public profile.</span>
           <a
             href="/settings"
-            style={{ color: brand.colors.gold, textDecoration: 'none', fontWeight: 500 }}
+            style={{ color: brand.colors.goldDeep, textDecoration: 'none', fontWeight: 500 }}
           >
             Profile settings →
           </a>
@@ -436,7 +436,7 @@ function ShareTargetBtn({
         justifyContent: 'center',
         gap: 8,
         fontFamily: brand.font.sans,
-        fontSize: 10,
+        fontSize: 12,
         fontWeight: 500,
         letterSpacing: '0.1em',
         textTransform: 'uppercase',

@@ -226,7 +226,7 @@ export default function NewsPage() {
                 borderRadius: brand.radius.lg,
                 textAlign: 'center',
                 fontFamily: brand.font.sans,
-                fontSize: 13,
+                fontSize: 15,
                 color: brand.colors.muted,
               }}
             >
@@ -274,7 +274,7 @@ export default function NewsPage() {
               style={{
                 marginTop: 12,
                 fontFamily: brand.font.sans,
-                fontSize: 13,
+                fontSize: 15,
                 color: brand.colors.muted,
                 textAlign: 'center',
               }}
@@ -355,7 +355,7 @@ function Header({ articleCount }: { articleCount: number | null }) {
       <div
         style={{
           fontFamily: brand.font.sans,
-          fontSize: 10,
+          fontSize: 12,
           fontWeight: 500,
           letterSpacing: '0.18em',
           textTransform: 'uppercase',
@@ -409,7 +409,7 @@ function Header({ articleCount }: { articleCount: number | null }) {
         style={{
           margin: '10px 0 0',
           fontFamily: brand.font.sans,
-          fontSize: 13,
+          fontSize: 15,
           lineHeight: 1.6,
           color: brand.colors.muted,
           maxWidth: 520,
@@ -450,12 +450,12 @@ function ContextBanner({
         gap: 6,
         alignItems: 'center',
         fontFamily: brand.font.sans,
-        fontSize: 12,
+        fontSize: 14,
       }}
     >
       <span
         style={{
-          fontSize: 9,
+          fontSize: 11,
           fontWeight: 600,
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
@@ -471,7 +471,7 @@ function ContextBanner({
           style={{
             padding: '3px 10px',
             background: 'rgba(201,168,76,0.18)',
-            color: brand.colors.gold,
+            color: brand.colors.goldDeep,
             borderRadius: brand.radius.pill,
             fontSize: 11,
             fontWeight: 500,
@@ -490,7 +490,7 @@ function ContextBanner({
           style={{
             marginLeft: 'auto',
             color: brand.colors.ink,
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: 500,
             textDecoration: 'none',
           }}
@@ -599,7 +599,7 @@ function EmptyState({
         </p>
         <p
           style={{
-            fontSize: 13,
+            fontSize: 15,
             color: brand.colors.muted,
             margin: '0 0 16px',
           }}
@@ -632,7 +632,7 @@ function EmptyState({
         padding: '40px 20px 20px',
         textAlign: 'center',
         fontFamily: brand.font.sans,
-        fontSize: 13,
+        fontSize: 15,
         color: brand.colors.muted,
       }}
     >
@@ -644,7 +644,7 @@ function EmptyState({
             background: 'none',
             border: 'none',
             padding: 0,
-            color: brand.colors.gold,
+            color: brand.colors.goldDeep,
             fontFamily: 'inherit',
             fontSize: 'inherit',
             cursor: 'pointer',

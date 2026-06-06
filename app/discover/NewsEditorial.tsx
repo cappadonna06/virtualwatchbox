@@ -69,8 +69,8 @@ export default function NewsEditorial({ brandFilter }: Props) {
         sub="The latest from the publications collectors trust. Tagged for your brands of interest."
       />
       {failed ? (
-        <p style={{ fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, margin: 0 }}>
-          Couldn’t load the latest reads. <Link href="/news" style={{ color: brand.colors.gold }}>Try /news →</Link>
+        <p style={{ fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.muted, margin: 0 }}>
+          Couldn’t load the latest reads. <Link href="/news" style={{ color: brand.colors.goldDeep }}>Try /news →</Link>
         </p>
       ) : (
         <div
@@ -91,7 +91,7 @@ export default function NewsEditorial({ brandFilter }: Props) {
           href="/news"
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 10.5,
+            fontSize: 12,
             fontWeight: 500,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
@@ -178,7 +178,7 @@ function NewsCard({ item }: { item: NewsItem }) {
               top: 10,
               right: 10,
               fontFamily: brand.font.sans,
-              fontSize: 8.5,
+              fontSize: 11,
               fontWeight: 600,
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
@@ -196,11 +196,11 @@ function NewsCard({ item }: { item: NewsItem }) {
         <span
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 9,
+            fontSize: 11,
             fontWeight: 600,
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
-            color: brand.colors.gold,
+            color: brand.colors.goldDeep,
           }}
         >
           {item.source}
@@ -208,7 +208,7 @@ function NewsCard({ item }: { item: NewsItem }) {
         <span
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 10,
+            fontSize: 12,
             color: brand.colors.muted,
             letterSpacing: '0.04em',
           }}
@@ -234,7 +234,7 @@ function NewsCard({ item }: { item: NewsItem }) {
         <p
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 12,
+            fontSize: 14,
             color: brand.colors.mutedDark,
             margin: 0,
             lineHeight: 1.55,

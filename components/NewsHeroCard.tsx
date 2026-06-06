@@ -72,7 +72,7 @@ export default function NewsHeroCard({ item }: { item: NewsItem }) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: brand.colors.muted,
+            color: brand.colors.onDarkMuted,
             opacity: 0.4,
             fontSize: 96,
             lineHeight: 1,
@@ -105,7 +105,7 @@ export default function NewsHeroCard({ item }: { item: NewsItem }) {
           border: '1px solid rgba(255,255,255,0.16)',
           borderRadius: brand.radius.pill,
           fontFamily: brand.font.sans,
-          fontSize: 9,
+          fontSize: 11,
           fontWeight: 600,
           letterSpacing: '0.16em',
           textTransform: 'uppercase',
@@ -115,7 +115,7 @@ export default function NewsHeroCard({ item }: { item: NewsItem }) {
           gap: 6,
         }}
       >
-        <span style={{ color: brand.colors.gold, fontSize: 10, lineHeight: 1 }}>◆</span>
+        <span style={{ color: brand.colors.gold, fontSize: 12, lineHeight: 1 }}>◆</span>
         Featured Story
       </div>
 
@@ -131,7 +131,7 @@ export default function NewsHeroCard({ item }: { item: NewsItem }) {
           WebkitBackdropFilter: 'blur(10px)',
           borderRadius: brand.radius.pill,
           fontFamily: brand.font.sans,
-          fontSize: 10,
+          fontSize: 12,
           fontWeight: 600,
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
@@ -172,7 +172,7 @@ export default function NewsHeroCard({ item }: { item: NewsItem }) {
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 10,
+            fontSize: 12,
             fontWeight: 500,
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
@@ -208,7 +208,7 @@ export default function NewsHeroCard({ item }: { item: NewsItem }) {
             style={{
               margin: 0,
               fontFamily: brand.font.sans,
-              fontSize: 13,
+              fontSize: 15,
               lineHeight: 1.55,
               color: 'rgba(255,255,255,0.82)',
               display: '-webkit-box',
@@ -230,7 +230,7 @@ export default function NewsHeroCard({ item }: { item: NewsItem }) {
                 style={{
                   padding: '3px 10px',
                   fontFamily: brand.font.sans,
-                  fontSize: 9,
+                  fontSize: 11,
                   fontWeight: 500,
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',

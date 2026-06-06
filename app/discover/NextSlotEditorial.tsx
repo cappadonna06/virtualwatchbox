@@ -156,7 +156,7 @@ function NextSlotCard({
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 11,
+            fontSize: 12,
             fontWeight: 600,
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
@@ -169,7 +169,7 @@ function NextSlotCard({
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 10,
+            fontSize: 12,
             fontWeight: 600,
             letterSpacing: '0.16em',
             textTransform: 'uppercase',
@@ -195,7 +195,7 @@ function NextSlotCard({
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 11,
+            fontSize: 12,
             color: brand.colors.muted,
             marginBottom: 14,
             letterSpacing: '0.04em',
@@ -208,7 +208,7 @@ function NextSlotCard({
           style={{
             fontFamily: brand.font.serif,
             fontStyle: 'italic',
-            fontSize: 13.5,
+            fontSize: 15,
             lineHeight: 1.55,
             color: brand.colors.inkSoft,
             margin: 0,
@@ -233,7 +233,7 @@ function NextSlotCard({
             <div style={{ fontFamily: brand.font.serif, fontSize: 16, color: brand.colors.ink }}>
               {fmtK(band.low)} – {fmtK(band.high)}
             </div>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted, marginTop: 2 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, marginTop: 2 }}>
               Median {fmt(band.median)}
             </div>
           </div>
@@ -246,7 +246,7 @@ function NextSlotCard({
             })}
             style={{
               fontFamily: brand.font.sans,
-              fontSize: 10.5,
+              fontSize: 12,
               fontWeight: 500,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',

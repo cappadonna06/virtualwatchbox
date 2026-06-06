@@ -43,7 +43,7 @@ interface Props {
 
 const labelStyle: CSSProperties = {
   fontFamily: brand.font.sans,
-  fontSize: 9,
+  fontSize: 11,
   fontWeight: 600,
   letterSpacing: '0.12em',
   textTransform: 'uppercase',
@@ -189,7 +189,7 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
             <div
               style={{
                 fontFamily: brand.font.sans,
-                fontSize: 9,
+                fontSize: 11,
                 fontWeight: 600,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
@@ -202,11 +202,11 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
             <div
               style={{
                 fontFamily: brand.font.sans,
-                fontSize: 10,
+                fontSize: 12,
                 fontWeight: 500,
                 letterSpacing: '0.14em',
                 textTransform: 'uppercase',
-                color: brand.colors.gold,
+                color: brand.colors.goldDeep,
               }}
             >
               {watch.brand}
@@ -284,7 +284,7 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
               <span
                 style={{
                   fontFamily: brand.font.sans,
-                  fontSize: 9,
+                  fontSize: 11,
                   fontWeight: 600,
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
@@ -293,7 +293,7 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
               >
                 Est. Market Value
               </span>
-              <span style={{ fontFamily: brand.font.sans, fontSize: 15, fontWeight: 600, color: brand.colors.gold }}>
+              <span style={{ fontFamily: brand.font.sans, fontSize: 15, fontWeight: 600, color: brand.colors.goldDeep }}>
                 {fmt(watch.estimatedValue)}
               </span>
             </div>
@@ -317,7 +317,7 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
                   padding: '5px 0',
                   borderBottom: '1px solid #F0EBE3',
                   fontFamily: brand.font.sans,
-                  fontSize: 12,
+                  fontSize: 14,
                 }}
               >
                 <span style={{ color: brand.colors.muted }}>{label}</span>
@@ -385,7 +385,7 @@ export default function EditWatchModal({ watch, onClose, onSave }: Props) {
               <div style={{ fontFamily: brand.font.serif, fontSize: 17, color: brand.colors.ink, lineHeight: 1.1 }}>
                 Provenance &amp; Papers
               </div>
-              <div style={{ fontFamily: brand.font.sans, fontSize: 11.5, color: brand.colors.muted, marginTop: 3, lineHeight: 1.45 }}>
+              <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, marginTop: 3, lineHeight: 1.45 }}>
                 Box, papers, and warranty affect a watch&apos;s value and how it sells.
               </div>
             </div>

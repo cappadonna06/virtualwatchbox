@@ -97,13 +97,13 @@ export default function GrailRemoveConfirmation({ open, watch, onCancel, onConfi
             />
           </div>
           <div>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 4 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 4 }}>
               {watch.brand}
             </div>
             <div style={{ fontFamily: brand.font.serif, fontSize: 22, fontWeight: 400, lineHeight: 1.08, color: brand.colors.ink, marginBottom: 4 }}>
               {watch.model}
             </div>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
               Ref. {watch.reference}
             </div>
           </div>
@@ -112,7 +112,7 @@ export default function GrailRemoveConfirmation({ open, watch, onCancel, onConfi
         <div style={{ fontFamily: brand.font.serif, fontSize: 30, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05, marginBottom: 8 }}>
           Remove Grail?
         </div>
-        <p style={{ margin: '0 0 18px', fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.55 }}>
+        <p style={{ margin: '0 0 18px', fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, lineHeight: 1.55 }}>
           This watch will no longer be your Grail.
         </p>
 
