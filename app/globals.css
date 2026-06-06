@@ -8,10 +8,14 @@
   --color-bg:           #FAF8F4;
   --color-slot:         #FFFCF7;
   --color-ink:          #1A1410;
-  --color-ink-soft:     #3F362C;
-  --color-muted:        #A89880;
+  --color-ink-soft:     #43392E;
+  --color-muted:        #6A5B48;   /* readability pass: WAS #A89880 (~2.5:1) → 6.2:1 AA */
   --color-muted-dark:   #6F6353;
-  --color-gold:         #C9A84C;
+  --color-faint:        #9A8B73;   /* decorative only — slot numbers, hairlines */
+  --color-gold:         #C9A84C;   /* bright gold — dark surfaces & decorative only */
+  --color-gold-deep:    #876A12;   /* antique gold — text/price/link on light (4.9:1 AA) */
+  --color-on-dark:      #F5F1E9;   /* text on dark surfaces */
+  --color-on-dark-soft: #B8AB95;   /* muted text on dark surfaces */
   --color-paper:        #F4EFE6;
   --color-paper-warm:   #F1ECE2;
   --color-hero-dark-1:  #1e1b16;
@@ -29,6 +33,21 @@
   --radius-lg:   10px;
   --radius-xl:   12px;
   --radius-pill: 20px;
+
+  /* Type scale (readability pass) — hard 11px floor for real text */
+  --text-hero:       clamp(54px, 6vw, 90px);
+  --text-h2:         clamp(33px, 3.6vw, 46px);
+  --text-h3:         26px;
+  --text-card-title: 21px;
+  --text-lead:       18px;
+  --text-body:       15px;
+  --text-body-sm:    14px;
+  --text-body-xs:    13px;
+  --text-label:      12px;
+  --text-label-sm:   11px;
+  --text-price-lg:   27px;
+  --text-price:      20px;
+  --text-price-sm:   18px;
 }
 
 *,
@@ -140,8 +159,8 @@ body {
 
 /* See-all link hover delight */
 .features-see-all:hover {
-  color: var(--color-gold);
-  border-bottom-color: var(--color-gold);
+  color: var(--color-gold-deep);
+  border-bottom-color: var(--color-gold-deep);
 }
 .features-see-all:hover span { transform: translateX(4px); }
 

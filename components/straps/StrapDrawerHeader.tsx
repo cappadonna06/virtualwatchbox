@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { brand } from '@/lib/brand'
 import { StrapIcon } from './atoms'
 
-function Stat({ value, label, valueSize = 22, labelSize = 11 }: { value: number; label: string; valueSize?: number; labelSize?: number }) {
+function Stat({ value, label, valueSize = 22, labelSize = 12 }: { value: number; label: string; valueSize?: number; labelSize?: number }) {
   return (
     <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, whiteSpace: 'nowrap' }}>
       <span style={{ fontFamily: brand.font.serif, fontSize: valueSize, fontWeight: 500, color: brand.colors.ink, lineHeight: 1 }}>{value}</span>
@@ -80,9 +80,9 @@ export function StrapDrawerHeader({
             </div>
             {/* Mobile: light inline stats, pushed right */}
             <div className="sd-stats-m" style={{ marginLeft: 'auto', alignItems: 'baseline', gap: 8, whiteSpace: 'nowrap' }}>
-              <Stat value={strapCount} label={strapCount === 1 ? 'strap' : 'straps'} valueSize={17} labelSize={10.5} />
+              <Stat value={strapCount} label={strapCount === 1 ? 'strap' : 'straps'} valueSize={17} labelSize={12} />
               <Dot />
-              <Stat value={comboCount} label="combinations" valueSize={17} labelSize={10.5} />
+              <Stat value={comboCount} label="combinations" valueSize={17} labelSize={12} />
             </div>
           </>
         )}

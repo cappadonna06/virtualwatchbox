@@ -112,7 +112,7 @@ export default function CameraCapture({ onCapture, onCancel, onError }: Props) {
             alignItems: 'center',
             justifyContent: 'center',
             color: brand.colors.bg,
-            fontSize: 13,
+            fontSize: 15,
             letterSpacing: '0.04em',
           }}>
             Starting camera…

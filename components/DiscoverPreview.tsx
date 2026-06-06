@@ -14,9 +14,12 @@ import { useAuth } from '@/lib/auth/AuthProvider'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
+import { usePrefersReducedMotion } from '@/components/collection/useResponsiveState'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 
-const PANEL_BG = '#1e1b16'
+const HAIRLINE = 'rgba(245,241,233,0.14)'
+const OUTLINE_BORDER = 'rgba(245,241,233,0.2)'
+const GOLD_RADIAL = 'radial-gradient(ellipse 60% 55% at 50% 50%, rgba(201,168,76,0.12), transparent 70%)'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -62,6 +65,7 @@ export default function DiscoverPreview() {
   const session = useCollectionSession()
   const { getImageUrl } = useWatchImages()
   const { allWatches: catalogWatches } = useCatalog()
+  const prefersReducedMotion = usePrefersReducedMotion()
   const isGuest = !user
 
   const hasImage = useMemo(
@@ -118,8 +122,8 @@ export default function DiscoverPreview() {
     <section
       className="discover-preview"
       style={{
-        background: PANEL_BG,
-        color: brand.colors.slot,
+        background: brand.colors.heroDark1,
+        color: brand.colors.onDark,
         borderTop: `1px solid ${brand.colors.border}`,
       }}
     >
@@ -128,28 +132,37 @@ export default function DiscoverPreview() {
           className="discover-preview-grid"
           style={{
             display: 'grid',
-            gridTemplateColumns: '1.1fr 1fr',
-            gap: 48,
+            gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)',
+            gap: 56,
             alignItems: 'center',
           }}
         >
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-              <GoldKicker>Discover</GoldKicker>
-              <div style={{ height: 1, width: 24, background: 'rgba(201,168,76,0.6)' }} />
-              <GoldKicker>{kickerLabel}</GoldKicker>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22 }}>
+              <div style={{ height: 1, width: 28, background: brand.colors.gold }} />
+              <span
+                style={{
+                  fontFamily: brand.font.sans,
+                  fontSize: brand.text.label,
+                  fontWeight: 600,
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase' as const,
+                  color: brand.colors.gold,
+                }}
+              >
+                Discover · {kickerLabel}
+              </span>
             </div>
 
             <h2
               style={{
                 fontFamily: brand.font.serif,
-                fontWeight: 300,
-                fontSize: 36,
+                fontWeight: 400,
+                fontSize: brand.text.h2,
                 lineHeight: 1.1,
-                letterSpacing: '-0.015em',
-                margin: 0,
-                marginBottom: 16,
-                color: brand.colors.slot,
+                letterSpacing: '-0.005em',
+                margin: '0 0 18px',
+                color: brand.colors.onDark,
               }}
             >
               {headline}
@@ -157,13 +170,11 @@ export default function DiscoverPreview() {
 
             <p
               style={{
-                fontFamily: brand.font.serif,
-                fontStyle: 'italic',
-                fontSize: 16,
-                lineHeight: 1.5,
-                color: 'rgba(250,248,244,0.7)',
-                margin: 0,
-                marginBottom: 24,
+                fontFamily: brand.font.sans,
+                fontSize: brand.text.body,
+                lineHeight: 1.7,
+                color: brand.colors.onDarkMuted,
+                margin: '0 0 32px',
                 maxWidth: 440,
                 textWrap: 'pretty',
               }}
@@ -174,35 +185,36 @@ export default function DiscoverPreview() {
             <div
               className="discover-preview-specs"
               style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, auto)',
-                gap: 24,
-                paddingTop: 18,
-                borderTop: '1px solid rgba(250,248,244,0.15)',
-                marginBottom: 24,
+                display: 'flex',
+                gap: 44,
+                padding: '22px 0',
+                borderTop: `1px solid ${HAIRLINE}`,
+                borderBottom: `1px solid ${HAIRLINE}`,
+                marginBottom: 30,
               }}
             >
               <SpecCell label="Brand" value={displayWatch.brand} />
               <SpecCell label="Reference" value={displayWatch.reference} />
-              <SpecCell label="Market" value={fmt(displayWatch.estimatedValue)} />
+              <SpecCell label="Market" value={fmt(displayWatch.estimatedValue)} isPrice />
             </div>
 
-            <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap' }}>
               <Link
                 href="/discover"
                 style={{
                   fontFamily: brand.font.sans,
-                  fontSize: 10.5,
-                  fontWeight: 500,
-                  letterSpacing: '0.14em',
+                  fontSize: brand.text.labelSm,
+                  fontWeight: 600,
+                  letterSpacing: '0.08em',
                   textTransform: 'uppercase' as const,
-                  padding: '11px 22px',
+                  padding: '13px 26px',
                   background: brand.colors.gold,
                   color: brand.colors.ink,
-                  border: 'none',
-                  borderRadius: 2,
+                  border: '1px solid transparent',
+                  borderRadius: brand.radius.sm,
                   textDecoration: 'none',
                   cursor: 'pointer',
+                  transition: prefersReducedMotion ? undefined : `filter ${brand.transition.fast}`,
                 }}
               >
                 View on Discover →
@@ -211,24 +223,29 @@ export default function DiscoverPreview() {
                 href={`/collection/add/${displayWatch.id}?from=home`}
                 style={{
                   fontFamily: brand.font.sans,
-                  fontSize: 10.5,
-                  fontWeight: 500,
-                  letterSpacing: '0.14em',
+                  fontSize: brand.text.labelSm,
+                  fontWeight: 600,
+                  letterSpacing: '0.08em',
                   textTransform: 'uppercase' as const,
-                  padding: '11px 18px',
+                  padding: '13px 22px',
                   background: 'transparent',
-                  color: brand.colors.slot,
-                  border: '1px solid rgba(250,248,244,0.28)',
-                  borderRadius: 2,
+                  color: brand.colors.onDark,
+                  border: `1px solid ${OUTLINE_BORDER}`,
+                  borderRadius: brand.radius.sm,
                   textDecoration: 'none',
+                  transition: prefersReducedMotion ? undefined : `border-color ${brand.transition.fast}`,
                 }}
               >
-                View details
+                View Details
               </Link>
             </div>
           </div>
 
-          <div style={{ position: 'relative', textAlign: 'center' }}>
+          <div style={{ position: 'relative', display: 'grid', placeItems: 'center' }}>
+            <div
+              aria-hidden
+              style={{ position: 'absolute', inset: 0, background: GOLD_RADIAL, pointerEvents: 'none' }}
+            />
             <Link
               href={`/collection/add/${displayWatch.id}?from=home`}
               style={{
@@ -239,7 +256,7 @@ export default function DiscoverPreview() {
                 maxWidth: 300,
                 height: 370,
                 margin: '0 auto',
-                filter: 'drop-shadow(0 16px 28px rgba(0,0,0,0.4))',
+                filter: 'drop-shadow(0 28px 50px rgba(0,0,0,0.6))',
                 textDecoration: 'none',
                 color: 'inherit',
                 cursor: 'pointer',
@@ -253,21 +270,28 @@ export default function DiscoverPreview() {
                 dialSize={220}
               />
             </Link>
-            <div style={{ marginTop: 14 }}>
+            <div style={{ position: 'relative', zIndex: 1, marginTop: 14, textAlign: 'center' }}>
               <div
                 style={{
                   fontFamily: brand.font.sans,
-                  fontSize: 10,
+                  fontSize: brand.text.label,
                   fontWeight: 600,
-                  letterSpacing: '0.18em',
+                  letterSpacing: '0.14em',
                   textTransform: 'uppercase' as const,
-                  color: 'rgba(250,248,244,0.65)',
+                  color: brand.colors.onDarkMuted,
                   marginBottom: 4,
                 }}
               >
                 {displayWatch.brand}
               </div>
-              <div style={{ fontFamily: brand.font.serif, fontStyle: 'italic', fontSize: 20, color: brand.colors.slot }}>
+              <div
+                style={{
+                  fontFamily: brand.font.serif,
+                  fontStyle: 'italic',
+                  fontSize: brand.text.lead,
+                  color: brand.colors.onDark,
+                }}
+              >
                 {displayWatch.model}
               </div>
             </div>
@@ -278,40 +302,39 @@ export default function DiscoverPreview() {
   )
 }
 
-function GoldKicker({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      style={{
-        fontFamily: brand.font.sans,
-        fontSize: 10,
-        fontWeight: 600,
-        letterSpacing: '0.18em',
-        textTransform: 'uppercase' as const,
-        color: brand.colors.gold,
-      }}
-    >
-      {children}
-    </div>
-  )
-}
-
-function SpecCell({ label, value }: { label: string; value: string }) {
+function SpecCell({ label, value, isPrice = false }: { label: string; value: string; isPrice?: boolean }) {
   return (
     <div>
       <div
         style={{
           fontFamily: brand.font.sans,
-          fontSize: 9,
+          fontSize: brand.text.labelSm,
           fontWeight: 600,
-          letterSpacing: '0.18em',
+          letterSpacing: '0.12em',
           textTransform: 'uppercase' as const,
-          color: 'rgba(250,248,244,0.45)',
-          marginBottom: 5,
+          color: brand.colors.onDarkMuted,
+          marginBottom: 6,
         }}
       >
         {label}
       </div>
-      <div style={{ fontFamily: brand.font.serif, fontSize: 16, color: brand.colors.slot }}>
+      <div
+        style={
+          isPrice
+            ? {
+                fontFamily: brand.font.sans,
+                fontSize: brand.text.lead,
+                fontWeight: 600,
+                color: brand.colors.gold,
+                fontVariantNumeric: 'tabular-nums',
+              }
+            : {
+                fontFamily: brand.font.serif,
+                fontSize: brand.text.lead,
+                color: brand.colors.onDark,
+              }
+        }
+      >
         {value}
       </div>
     </div>

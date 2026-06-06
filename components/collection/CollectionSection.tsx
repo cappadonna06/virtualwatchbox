@@ -32,8 +32,8 @@ export default function CollectionSection() {
           <div
             style={{
               fontFamily: 'var(--font-dm-sans)',
-              fontSize: 10,
-              fontWeight: 500,
+              fontSize: brand.text.label,
+              fontWeight: 600,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
               color: brand.colors.muted,
@@ -45,9 +45,9 @@ export default function CollectionSection() {
           <h2
             style={{
               fontFamily: brand.font.serif,
-              fontSize: 38,
+              fontSize: brand.text.h2,
               fontWeight: 400,
-              lineHeight: 1.15,
+              lineHeight: 1.08,
               color: brand.colors.ink,
               whiteSpace: 'nowrap',
               margin: 0,
@@ -59,7 +59,7 @@ export default function CollectionSection() {
       </div>
 
       {isEmpty ? (
-        <CollectionEmptyState variant="home" />
+        <CollectionEmptyState />
       ) : (
         <>
           <SyncRibbon />

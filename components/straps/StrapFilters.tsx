@@ -35,14 +35,14 @@ function FacetChip({ label, count, active, onClick }: { label: string; count?: n
   return (
     <button type="button" onClick={onClick} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: brand.radius.pill,
-      fontFamily: brand.font.sans, fontSize: 11.5, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', lineHeight: 1.2,
+      fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', lineHeight: 1.2,
       border: `1px solid ${active ? brand.colors.ink : brand.colors.border}`,
       background: active ? brand.colors.ink : 'transparent', color: active ? brand.colors.bg : brand.colors.ink,
       transition: 'all 0.15s',
     }}>
       <span>{label}</span>
       {count != null && (
-        <span style={{ fontSize: 9.5, fontWeight: 600, color: active ? 'rgba(255,255,255,0.7)' : (count > 0 ? brand.colors.gold : brand.colors.muted) }}>({count})</span>
+        <span style={{ fontSize: 11, fontWeight: 600, color: active ? 'rgba(255,255,255,0.7)' : (count > 0 ? brand.colors.goldDeep : brand.colors.muted) }}>({count})</span>
       )}
     </button>
   )
@@ -51,7 +51,7 @@ function FacetChip({ label, count, active, onClick }: { label: string; count?: n
 function FacetGroup({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
-      <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 10 }}>{label}</div>
+      <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 10 }}>{label}</div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>{children}</div>
     </div>
   )
@@ -108,13 +108,13 @@ function FiltersButton({ activeCount, open, onClick }: { activeCount: number; op
       style={{
         display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 14px', borderRadius: brand.radius.pill,
         background: on ? brand.colors.ink : 'transparent', border: `1px solid ${on ? brand.colors.ink : brand.colors.borderLight}`,
-        color: on ? brand.colors.bg : brand.colors.ink, fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, cursor: 'pointer', flexShrink: 0,
+        color: on ? brand.colors.bg : brand.colors.ink, fontFamily: brand.font.sans, fontSize: 14, fontWeight: 500, cursor: 'pointer', flexShrink: 0,
       }}
     >
       <SlidersIcon />
       <span>Filters</span>
       {on && (
-        <span style={{ fontSize: 10, fontWeight: 600, background: brand.colors.gold, color: brand.colors.ink, padding: '1px 7px', borderRadius: brand.radius.pill, minWidth: 18, textAlign: 'center' }}>{activeCount}</span>
+        <span style={{ fontSize: 12, fontWeight: 600, background: brand.colors.gold, color: brand.colors.ink, padding: '1px 7px', borderRadius: brand.radius.pill, minWidth: 18, textAlign: 'center' }}>{activeCount}</span>
       )}
     </button>
   )
@@ -186,7 +186,7 @@ export function FilterBar({
       {facetChips.map(chip => (
         <button key={chip.key} type="button" onClick={chip.clear} style={{
           display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 6px 5px 11px', borderRadius: brand.radius.pill,
-          background: brand.fit.plainBadge.bg, border: `1px solid ${brand.colors.border}`, fontFamily: brand.font.sans, fontSize: 11.5, fontWeight: 500,
+          background: brand.fit.plainBadge.bg, border: `1px solid ${brand.colors.border}`, fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500,
           color: brand.colors.ink, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
         }}>
           <span>{chip.label}</span>
@@ -194,7 +194,7 @@ export function FilterBar({
         </button>
       ))}
       {activeCount > 1 && (
-        <button type="button" onClick={clearAll} style={{ fontFamily: brand.font.sans, fontSize: 10.5, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: brand.colors.muted, background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0, paddingLeft: 4 }}>Clear</button>
+        <button type="button" onClick={clearAll} style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: brand.colors.muted, background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0, paddingLeft: 4 }}>Clear</button>
       )}
     </div>
   )
@@ -254,14 +254,14 @@ export function FilterBar({
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 20px 14px', borderBottom: `1px solid ${brand.colors.border}` }}>
               <h3 style={{ fontFamily: brand.font.serif, fontSize: 22, fontWeight: 400, margin: 0, color: brand.colors.ink }}>Filters</h3>
-              <button type="button" onClick={clearAll} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, fontWeight: 500, letterSpacing: '0.04em' }}>Reset</button>
+              <button type="button" onClick={clearAll} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, fontWeight: 500, letterSpacing: '0.04em' }}>Reset</button>
             </div>
             <div style={{ flex: 1, overflowY: 'auto', padding: '20px 20px 28px' }}>
               <FilterPanelBody straps={straps} filters={filters} setFilters={setFilters} watches={watches} />
             </div>
             <div style={{ padding: '12px 16px calc(12px + env(safe-area-inset-bottom))', borderTop: `1px solid ${brand.colors.border}`, background: brand.colors.slot, display: 'flex', gap: 10 }}>
-              <button type="button" onClick={() => setOpen(false)} style={{ flex: '0 0 auto', padding: '12px 18px', borderRadius: brand.radius.md, background: 'transparent', border: `1px solid ${brand.colors.borderLight}`, fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, color: brand.colors.ink, cursor: 'pointer' }}>Close</button>
-              <button type="button" onClick={() => setOpen(false)} style={{ flex: 1, padding: '12px 18px', borderRadius: brand.radius.md, background: brand.colors.ink, border: 'none', color: brand.colors.bg, fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', cursor: 'pointer' }}>
+              <button type="button" onClick={() => setOpen(false)} style={{ flex: '0 0 auto', padding: '12px 18px', borderRadius: brand.radius.md, background: 'transparent', border: `1px solid ${brand.colors.borderLight}`, fontFamily: brand.font.sans, fontSize: 14, fontWeight: 500, color: brand.colors.ink, cursor: 'pointer' }}>Close</button>
+              <button type="button" onClick={() => setOpen(false)} style={{ flex: 1, padding: '12px 18px', borderRadius: brand.radius.md, background: brand.colors.ink, border: 'none', color: brand.colors.bg, fontFamily: brand.font.sans, fontSize: 14, fontWeight: 600, letterSpacing: '0.04em', cursor: 'pointer' }}>
                 Show {shown} {shown === 1 ? 'strap' : 'straps'}
               </button>
             </div>

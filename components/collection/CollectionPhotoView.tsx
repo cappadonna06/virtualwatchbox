@@ -215,7 +215,7 @@ export default function CollectionPhotoView({
         <p
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 13,
+            fontSize: 15,
             color: brand.colors.muted,
             margin: 0,
             marginTop: 6,
@@ -246,7 +246,7 @@ export default function CollectionPhotoView({
             href="/auth?next=/collection"
             style={{
               fontFamily: brand.font.sans,
-              fontSize: 11,
+              fontSize: 12,
               color: brand.colors.muted,
               marginTop: 14,
               letterSpacing: '0.04em',
@@ -322,7 +322,7 @@ function DropOverlay() {
         alignItems: 'center',
         justifyContent: 'center',
         fontFamily: brand.font.sans,
-        fontSize: 13,
+        fontSize: 15,
         color: brand.colors.ink,
         letterSpacing: '0.04em',
         pointerEvents: 'none',
@@ -345,7 +345,7 @@ function BusyOverlay() {
         alignItems: 'center',
         justifyContent: 'center',
         fontFamily: brand.font.sans,
-        fontSize: 13,
+        fontSize: 15,
         color: brand.colors.muted,
         letterSpacing: '0.04em',
       }}

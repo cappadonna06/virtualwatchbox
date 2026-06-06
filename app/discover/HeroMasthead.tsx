@@ -31,11 +31,11 @@ export default function HeroMasthead({ personalized, bylineRight, bylineLeft, in
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <Kicker color={brand.colors.ink} size={9.5}>Discover</Kicker>
-              <span style={{ color: brand.colors.borderMid, fontSize: 10 }}>—</span>
-              <Kicker color={brand.colors.muted} size={9.5}>{bylineLeft}</Kicker>
+              <Kicker color={brand.colors.ink} size={11}>Discover</Kicker>
+              <span style={{ color: brand.colors.borderMid, fontSize: 12 }}>—</span>
+              <Kicker color={brand.colors.muted} size={11}>{bylineLeft}</Kicker>
             </div>
-            <Kicker color={brand.colors.muted} size={9.5}>{bylineRight}</Kicker>
+            <Kicker color={brand.colors.muted} size={11}>{bylineRight}</Kicker>
           </div>
 
           <h1

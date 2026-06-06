@@ -35,14 +35,14 @@ function PillRow<T extends string | number>({ options, value, onChange, counts }
         return (
           <button key={String(val)} type="button" onClick={() => onChange(val)} style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
-            fontFamily: brand.font.sans, fontSize: 12, fontWeight: on ? 600 : 500, letterSpacing: '0.02em',
+            fontFamily: brand.font.sans, fontSize: 14, fontWeight: on ? 600 : 500, letterSpacing: '0.02em',
             padding: '8px 13px', borderRadius: 7, cursor: 'pointer',
             background: on ? brand.colors.ink : brand.colors.slot, color: on ? brand.colors.slot : brand.colors.inkSoft,
             border: `1px solid ${on ? brand.colors.ink : brand.colors.borderMid}`, transition: 'all 0.13s',
           }}>
             {lbl}
             {counts && counts[String(val)] != null && (
-              <span style={{ fontSize: 9.5, fontWeight: 600, color: on ? 'rgba(255,255,255,0.7)' : (counts[String(val)] > 0 ? brand.colors.gold : brand.colors.muted) }}>({counts[String(val)]})</span>
+              <span style={{ fontSize: 11, fontWeight: 600, color: on ? 'rgba(255,255,255,0.7)' : (counts[String(val)] > 0 ? brand.colors.goldDeep : brand.colors.muted) }}>({counts[String(val)]})</span>
             )}
           </button>
         )
@@ -54,7 +54,7 @@ function PillRow<T extends string | number>({ options, value, onChange, counts }
 function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
     <div style={{ marginBottom: 16 }}>
-      <div style={{ fontFamily: brand.font.sans, fontSize: 9.5, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
+      <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
         {label}
         {hint && <span style={{ textTransform: 'none', letterSpacing: 0, fontWeight: 400, color: brand.colors.borderLight, marginLeft: 6 }}>{hint}</span>}
       </div>
@@ -198,7 +198,7 @@ export function StrapModal({
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: `1px solid ${brand.colors.border}`, flexShrink: 0 }}>
           <div>
-            <Kicker color={brand.colors.gold} style={{ marginBottom: 4 }}>{editing ? 'Edit strap' : 'Add strap'}</Kicker>
+            <Kicker color={brand.colors.goldDeep} style={{ marginBottom: 4 }}>{editing ? 'Edit strap' : 'Add strap'}</Kicker>
             <h2 style={{ fontFamily: brand.font.serif, fontSize: 23, fontWeight: 400, color: brand.colors.ink, margin: 0, whiteSpace: 'nowrap' }}>{editing ? 'Update the details' : 'New strap'}</h2>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: brand.colors.muted, padding: 4, display: 'flex' }}><StrapIcon name="close" size={19} /></button>
@@ -212,7 +212,7 @@ export function StrapModal({
                 : <StrapPhotoFallback height={230} />}
             </div>
             <div style={{ marginTop: 16 }}>
-              <Kicker color={brand.colors.gold} style={{ marginBottom: 5 }}>{f.brand || 'Your strap'}</Kicker>
+              <Kicker color={brand.colors.goldDeep} style={{ marginBottom: 5 }}>{f.brand || 'Your strap'}</Kicker>
               <div style={{ fontFamily: brand.font.serif, fontSize: 20, color: brand.colors.ink, lineHeight: 1.12, marginBottom: 8 }}>{previewTitle}</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                 {f.lugWidthMm && <SpecBadge tone="width">{f.lugWidthMm} mm</SpecBadge>}
@@ -220,8 +220,8 @@ export function StrapModal({
                 {f.style && <SpecBadge>{f.style.charAt(0).toUpperCase() + f.style.slice(1)}</SpecBadge>}
               </div>
               {f.lugWidthMm && (
-                <div style={{ marginTop: 14, fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.mutedDark, lineHeight: 1.5 }}>
-                  <span style={{ color: brand.colors.gold, fontWeight: 600 }}>{watchesAtWidth(watches, f.lugWidthMm)} </span>
+                <div style={{ marginTop: 14, fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.mutedDark, lineHeight: 1.5 }}>
+                  <span style={{ color: brand.colors.goldDeep, fontWeight: 600 }}>{watchesAtWidth(watches, f.lugWidthMm)} </span>
                   of your watches use {f.lugWidthMm} mm lugs.
                 </div>
               )}
@@ -231,7 +231,7 @@ export function StrapModal({
           <div className="sd-modal-form" style={{ flex: 1, overflowY: 'auto', padding: '22px 24px' }}>
             {!editing && templateGroups.length > 0 && (
               <div style={{ marginBottom: 18, paddingBottom: 16, borderBottom: `1px solid ${brand.colors.border}` }}>
-                <div style={{ fontFamily: brand.font.sans, fontSize: 9.5, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
                   Quick pick from common straps
                 </div>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 11 }}>
@@ -239,7 +239,7 @@ export function StrapModal({
                     const on = tplTab === g.material
                     return (
                       <button key={g.material} type="button" onClick={() => setTplTab(g.material)} style={{
-                        fontFamily: brand.font.sans, fontSize: 11, fontWeight: on ? 600 : 500, letterSpacing: '0.02em',
+                        fontFamily: brand.font.sans, fontSize: 12, fontWeight: on ? 600 : 500, letterSpacing: '0.02em',
                         padding: '6px 11px', borderRadius: 7, cursor: 'pointer',
                         background: on ? brand.colors.ink : brand.colors.slot, color: on ? brand.colors.slot : brand.colors.inkSoft,
                         border: `1px solid ${on ? brand.colors.ink : brand.colors.borderMid}`, transition: 'all 0.13s',
@@ -257,12 +257,12 @@ export function StrapModal({
                             ? <img src={t.imageUrl} alt={`${t.color} ${t.subMaterial}`} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 4 }} />
                             : <StrapPhotoFallback height={96} />}
                         </div>
-                        <div style={{ fontFamily: brand.font.sans, fontSize: 10, color: selected ? brand.colors.ink : brand.colors.inkSoft, fontWeight: selected ? 600 : 400, marginTop: 4, textAlign: 'center', lineHeight: 1.2 }}>{t.color}</div>
+                        <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: selected ? brand.colors.ink : brand.colors.inkSoft, fontWeight: selected ? 600 : 400, marginTop: 4, textAlign: 'center', lineHeight: 1.2 }}>{t.color}</div>
                       </button>
                     )
                   })}
                 </div>
-                <div style={{ fontFamily: brand.font.serif, fontStyle: 'italic', fontSize: 13, color: brand.colors.muted, marginTop: 11 }}>Or add your own below ↓</div>
+                <div style={{ fontFamily: brand.font.serif, fontStyle: 'italic', fontSize: 15, color: brand.colors.muted, marginTop: 11 }}>Or add your own below ↓</div>
               </div>
             )}
 

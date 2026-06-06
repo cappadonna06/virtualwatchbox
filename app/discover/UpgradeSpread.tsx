@@ -124,7 +124,7 @@ function UpgradeCard({
           <div
             style={{
               fontFamily: brand.font.sans,
-              fontSize: 8.5,
+              fontSize: 11,
               fontWeight: 600,
               letterSpacing: '0.22em',
               textTransform: 'uppercase',
@@ -141,7 +141,7 @@ function UpgradeCard({
               fontSize: 26,
               fontWeight: 400,
               lineHeight: 1,
-              color: brand.colors.gold,
+              color: brand.colors.goldDeep,
               letterSpacing: '-0.005em',
             }}
           >
@@ -153,7 +153,7 @@ function UpgradeCard({
         <UpgradeSide
           watch={to}
           kicker="Consider"
-          kickerColor={brand.colors.gold}
+          kickerColor={brand.colors.goldDeep}
           modelItalic
           imageShadow="drop-shadow(0 20px 32px rgba(26,20,16,0.26))"
           showHalo
@@ -192,7 +192,7 @@ function UpgradeCard({
           })}
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 10.5,
+            fontSize: 12,
             fontWeight: 500,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
@@ -303,7 +303,7 @@ function UpgradeSide({
           <div
             style={{
               fontFamily: brand.font.sans,
-              fontSize: 10,
+              fontSize: 12,
               fontWeight: 600,
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
@@ -316,7 +316,7 @@ function UpgradeSide({
           <div
             style={{
               fontFamily: brand.font.sans,
-              fontSize: 10,
+              fontSize: 12,
               fontWeight: 600,
               letterSpacing: '0.16em',
               textTransform: 'uppercase',
@@ -340,7 +340,7 @@ function UpgradeSide({
           <div
             style={{
               fontFamily: brand.font.sans,
-              fontSize: 11.5,
+              fontSize: 12,
               color: brand.colors.muted,
               marginTop: 4,
               letterSpacing: '0.04em',

@@ -13,26 +13,31 @@ export const brand = {
     slot: '#FFFCF7',
     /** Primary text, dark buttons */
     ink: '#1A1410',
-    /** Body text — slightly softer than ink */
-    inkSoft: '#3F362C',
-    /** Secondary text, meta labels */
-    muted: '#A89880',
-    /** Subtitle body color — darker than muted */
+    /** Strong secondary / body text — softer than ink (readability pass) */
+    inkSoft: '#43392E',
+    /** Secondary/meta text — readability pass (WAS #A89880 ~2.5:1 → 6.2:1 AA on cream) */
+    muted: '#6A5B48',
+    /** Subtitle body color — companion to muted */
     mutedDark: '#6F6353',
+    /** Decorative ONLY — slot numbers, hairlines. Never load-bearing text */
+    faint: '#9A8B73',
     /** Watch image card backdrop */
     paper: '#F4EFE6',
     /** Strap / news thumb backdrop */
     paperWarm: '#F1ECE2',
-    /** Accent: prices, active states, brand labels */
+    /** BRIGHT gold — dark surfaces & decorative accents ONLY (fails as text on cream) */
     gold: '#C9A84C',
-    /** Deeper gold — lug-width badge text on gold-wash chips */
-    goldDeep: '#A8862F',
+    /** Antique gold — prices, labels, links & accents on LIGHT surfaces (4.9:1 AA) */
+    goldDeep: '#876A12',
     /** Soft gold wash for selected luxury controls */
     goldWash: 'rgba(201,168,76,0.08)',
     /** Soft gold line for selected luxury controls */
     goldLine: 'rgba(201,168,76,0.34)',
     /** Dark badge background */
     dark: '#2A2520',
+    /** Empty-state sample tray — oak frame gradient (start → end) */
+    trayStart: '#C99A5B',
+    trayEnd: '#B6863F',
     /** Pure white — card surfaces */
     white: '#FFFFFF',
     /** Primary dividers */
@@ -47,6 +52,10 @@ export const brand = {
     heroDark1: '#1e1b16',
     /** Hero dark panel — end */
     heroDark2: '#2a2420',
+    /** Body/heading text on dark surfaces */
+    onDark: '#F5F1E9',
+    /** Muted/meta text on dark surfaces (7.8:1 on #1C1814) */
+    onDarkMuted: '#B8AB95',
     /** News card image placeholder gradient — start */
     placeholderStart: '#EDE9E2',
     /** News card image placeholder gradient — end */
@@ -130,6 +139,40 @@ export const brand = {
     serif: 'var(--font-cormorant)',
     /** DM Sans — UI labels, body, buttons, meta */
     sans: 'var(--font-dm-sans)',
+  },
+
+  /**
+   * Type scale (px) — Readability pass. Hard 11px floor for any real text.
+   * Display roles use the serif; body/label/price roles use the sans.
+   * Source of truth for new code; legacy inline sizes migrate toward these.
+   */
+  text: {
+    /** Hero H1 */
+    hero:       'clamp(54px, 6vw, 90px)',
+    /** Section H2 */
+    h2:         'clamp(33px, 3.6vw, 46px)',
+    /** H3 / sidebar title */
+    h3:          26,
+    /** Card title */
+    cardTitle:   21,
+    /** Lead / intro copy */
+    lead:        18,
+    /** Body default */
+    body:        15,
+    /** Caption — paragraph floor */
+    bodySm:      14,
+    /** Small body / dense UI */
+    bodyXs:      13,
+    /** Uppercase UI label */
+    label:       12,
+    /** Smallest label — hard floor, tertiary only */
+    labelSm:     11,
+    /** Large price */
+    priceLg:     27,
+    /** Price */
+    price:       20,
+    /** Small price */
+    priceSm:     18,
   },
 
   /** Border radius scale (px) */

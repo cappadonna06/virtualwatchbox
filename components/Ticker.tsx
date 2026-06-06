@@ -36,7 +36,7 @@ export default function Ticker() {
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 10,
+            fontSize: 12,
             fontWeight: 600,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
@@ -63,7 +63,7 @@ export default function Ticker() {
               key={`${it.ref}-${i}`}
               style={{
                 fontFamily: brand.font.sans,
-                fontSize: 11,
+                fontSize: 12,
                 letterSpacing: '0.05em',
                 color: brand.colors.muted,
                 whiteSpace: 'nowrap',

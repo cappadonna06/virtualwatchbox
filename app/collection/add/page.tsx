@@ -110,7 +110,7 @@ function FacetChip({
 }) {
   const padY = size === 'sm' ? 4 : 6
   const padX = size === 'sm' ? 10 : 12
-  const fs = size === 'sm' ? 10.5 : 11.5
+  const fs = 12
   return (
     <button
       type="button"
@@ -149,7 +149,7 @@ function FacetChip({
       {count != null && (
         <span
           style={{
-            fontSize: fs - 2.5,
+            fontSize: 11,
             padding: '1px 6px',
             borderRadius: brand.radius.pill,
             fontWeight: 600,

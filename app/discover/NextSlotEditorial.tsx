@@ -124,7 +124,7 @@ function NextSlotCard({
             fontFamily: brand.font.serif,
             fontStyle: 'italic',
             fontSize: 14,
-            color: brand.colors.gold,
+            color: brand.colors.goldDeep,
             zIndex: 1,
           }}
         >
@@ -156,11 +156,11 @@ function NextSlotCard({
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 9,
+            fontSize: 11,
             fontWeight: 600,
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
-            color: brand.colors.gold,
+            color: brand.colors.goldDeep,
             marginBottom: 8,
           }}
         >

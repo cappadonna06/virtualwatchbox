@@ -192,6 +192,22 @@ export default function WatchSidebar({
   const isIntegrated = strapWatch?.braceletType === 'integrated'
   const fittingStrapCount = strapWatch ? compatibleStraps(strapWatch, straps, strapOverrides).length : 0
 
+  // Owned mode shows a trimmed, glanceable spec set; the full sheet lives on
+  // /collection/watch/[id]. Non-owned modes keep the fuller set — they have no
+  // detail-page fallback, so dropping rows there would lose the data.
+  const specRows: [string, string][] = [
+    ['Case Size', `${watch.caseSizeMm}mm`],
+    ...(watch.lugWidthMm ? [['Lug Width', `${watch.lugWidthMm}mm`] as [string, string]] : []),
+    ['Case Material', watch.caseMaterial],
+    ...(isOwnedWatch
+      ? []
+      : [
+          ['Dial Color', watch.dialColor] as [string, string],
+          ['Movement', watch.movement] as [string, string],
+          ['Complications', watch.complications.join(', ') || '—'] as [string, string],
+        ]),
+  ]
+
   return (
     <div style={panelStyle}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -298,11 +314,11 @@ export default function WatchSidebar({
           background: brand.colors.bg,
           border: `1px solid ${brand.colors.border}`,
           borderRadius: brand.radius.md,
-          padding: '12px 16px',
+          padding: '10px 16px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          margin: '16px 0',
+          margin: '14px 0',
         }}
       >
         <span style={metaLabel}>Est. Market Value</span>
@@ -312,17 +328,7 @@ export default function WatchSidebar({
       </div>
 
       <div style={{ marginBottom: 16 }}>
-        {(
-          [
-            ['Case Size', `${watch.caseSizeMm}mm`],
-            ...(watch.lugWidthMm ? [['Lug Width', `${watch.lugWidthMm}mm`] as [string, string]] : []),
-            ['Case Material', watch.caseMaterial],
-            ['Dial Color', watch.dialColor],
-            ['Movement', watch.movement],
-            ['Complications', watch.complications.join(', ') || '—'],
-            ...('purchasePrice' in watch ? [['Price Paid', fmt(watch.purchasePrice)] as [string, string]] : []),
-          ] as [string, string][]
-        ).map(([label, value]) => (
+        {specRows.map(([label, value]) => (
           <div
             key={label}
             style={{
@@ -404,6 +410,33 @@ export default function WatchSidebar({
             </button>
           )}
         </div>
+      ) : isOwnedWatch ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <Link href={`/collection/watch/${watch.id}`} style={btnPrimary}>
+            View full detail →
+          </Link>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <a
+              href={buildChrono24URL(watch.brand, watch.model, 'sell')}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ ...btnSecondary, textAlign: 'center', textDecoration: 'none' }}
+            >
+              Sell This Watch ↗
+            </a>
+            {isIntegrated ? (
+              <span style={{ ...btnSecondary, cursor: 'default', textAlign: 'center', color: brand.colors.muted, fontWeight: 400 }}>
+                Integrated bracelet
+              </span>
+            ) : straps.length === 0 ? (
+              <button style={btnSecondary} onClick={() => router.push('/collection/straps')}>+ Start Strap Drawer →</button>
+            ) : fittingStrapCount === 0 ? (
+              <button style={btnSecondary} onClick={() => router.push(`/collection/straps?addStrap=1&suggestLug=${strapWatch?.lugWidthMm ?? ''}`)}>No matching · Add →</button>
+            ) : (
+              <button style={btnSecondary} onClick={() => router.push(`/collection/straps?watchId=${watch.id}`)}>Swap Strap →</button>
+            )}
+          </div>
+        </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <a
@@ -441,24 +474,12 @@ export default function WatchSidebar({
       {/* Photo gallery — owner-only, hidden on followed/public surfaces */}
       {isOwnedWatch && (
         <div style={{
-          marginTop: 18,
-          paddingTop: 18,
+          marginTop: 14,
+          paddingTop: 14,
           borderTop: `1px solid ${brand.colors.borderLight}`,
         }}>
           <WatchPhotoGallery ownedWatchId={watch.id} variant="sidebar" />
           <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-            <Link
-              href={`/collection/watch/${watch.id}`}
-              style={{
-                fontFamily: brand.font.sans,
-                fontSize: 11,
-                color: brand.colors.gold,
-                textDecoration: 'none',
-                letterSpacing: '0.04em',
-              }}
-            >
-              View full detail →
-            </Link>
             <Link
               href="/service-room"
               style={{

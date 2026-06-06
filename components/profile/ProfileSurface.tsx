@@ -220,7 +220,7 @@ function FloatingToast({ message }: { message: string | null }) {
         background: brand.colors.ink,
         color: brand.colors.bg,
         fontFamily: brand.font.sans,
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: 500,
         letterSpacing: '0.04em',
         boxShadow: brand.shadow.xl,
@@ -252,7 +252,7 @@ function SectionHeader({
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 20, marginBottom: 20, flexWrap: 'wrap' }}>
       <div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
-          <span style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+          <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
             {eyebrow}
           </span>
           {hiddenFromPreview && (
@@ -263,10 +263,10 @@ function SectionHeader({
                 padding: '4px 9px',
                 borderRadius: brand.radius.pill,
                 background: brand.colors.goldWash,
-                color: brand.colors.gold,
+                color: brand.colors.goldDeep,
                 border: `1px solid ${brand.colors.goldLine}`,
                 fontFamily: brand.font.sans,
-                fontSize: 9,
+                fontSize: 11,
                 fontWeight: 600,
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
@@ -280,7 +280,7 @@ function SectionHeader({
           {title}
         </h2>
         {description ? (
-          <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.6 }}>
+          <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.muted, lineHeight: 1.6 }}>
             {description}
           </p>
         ) : null}
@@ -312,7 +312,7 @@ function ActionButton({
     background: tone === 'primary' ? brand.colors.ink : brand.colors.white,
     color: tone === 'primary' ? brand.colors.bg : brand.colors.ink,
     fontFamily: brand.font.sans,
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: 600,
     letterSpacing: '0.08em',
     textTransform: 'uppercase',
@@ -351,7 +351,7 @@ function SummaryStat({
         padding: '12px 14px',
       }}
     >
-      <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 4 }}>
+      <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 4 }}>
         {label}
       </div>
       <div style={{ fontFamily: brand.font.serif, fontSize: 24, color: brand.colors.ink, lineHeight: 1 }}>
@@ -443,7 +443,7 @@ function ProfileAvatar({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: brand.colors.gold,
+            color: brand.colors.goldDeep,
             fontFamily: brand.font.serif,
             fontSize: Math.round(size * 0.34),
             letterSpacing: '0.04em',
@@ -488,7 +488,7 @@ function UploadButton({
           background: brand.colors.white,
           color: brand.colors.ink,
           fontFamily: brand.font.sans,
-          fontSize: 10,
+          fontSize: 12,
           fontWeight: 600,
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
@@ -715,7 +715,7 @@ function ProfileTextEditModal({
     <ModalShell open={open} title="Edit Profile" onClose={onClose}>
       <div style={{ display: 'grid', gap: 14 }}>
         <label style={{ display: 'grid', gap: 6 }}>
-          <span style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+          <span style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
             Display Name
           </span>
           <input
@@ -738,7 +738,7 @@ function ProfileTextEditModal({
         </label>
 
         <label style={{ display: 'grid', gap: 6 }}>
-          <span style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+          <span style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
             Bio / Tagline
           </span>
           <textarea
@@ -862,7 +862,7 @@ function ProfileImageCropModal({
 
   return (
     <ModalShell open={open} title="Profile Photo" onClose={onClose}>
-      <p style={{ margin: '0 0 16px', fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.7 }}>
+      <p style={{ margin: '0 0 16px', fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.muted, lineHeight: 1.7 }}>
         Drag to center. Pinch or scroll to zoom.
       </p>
 
@@ -940,7 +940,7 @@ function ProfileImageCropModal({
                     textAlign: 'center',
                     padding: 24,
                     fontFamily: brand.font.sans,
-                    fontSize: 12,
+                    fontSize: 14,
                     color: brand.colors.muted,
                     lineHeight: 1.6,
                   }}
@@ -954,7 +954,7 @@ function ProfileImageCropModal({
           {sourceUrl ? (
             <div style={{ display: 'grid', gap: 12 }}>
               <label style={{ display: 'grid', gap: 8 }}>
-                <span style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+                <span style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
                   Zoom
                 </span>
                 <div style={{ display: 'grid', gridTemplateColumns: '34px minmax(0, 1fr) 34px', gap: 10, alignItems: 'center' }}>
@@ -1066,7 +1066,7 @@ function VisibilityModal({
             <div style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 24 : 30, color: brand.colors.ink, lineHeight: 1.05, marginBottom: 8 }}>
               Profile Visibility
             </div>
-            <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.7 }}>
+            <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.muted, lineHeight: 1.7 }}>
               Choose what appears on your public profile.
             </p>
           </div>
@@ -1094,7 +1094,7 @@ function VisibilityModal({
 
         <div style={{ display: 'grid', gap: 18 }}>
           <div style={{ display: 'grid', gap: 10 }}>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
               Hero
             </div>
             <VisibilityToggle
@@ -1106,7 +1106,7 @@ function VisibilityModal({
           </div>
 
           <div style={{ display: 'grid', gap: 10 }}>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
               Collection
             </div>
             <VisibilityToggle
@@ -1124,7 +1124,7 @@ function VisibilityModal({
           </div>
 
           <div style={{ display: 'grid', gap: 10 }}>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
               Aspirations
             </div>
             <VisibilityToggle
@@ -1152,7 +1152,7 @@ function PrivateProfileNotice() {
       <h2 style={{ margin: '0 0 8px', fontFamily: brand.font.serif, fontSize: 34, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05 }}>
         This profile is private.
       </h2>
-      <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.7 }}>
+      <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.muted, lineHeight: 1.7 }}>
         Choose what appears on your public profile.
       </p>
     </section>
@@ -1187,7 +1187,7 @@ function GrailPickerModal({
 }) {
   return (
     <ModalShell open={open} title={hasGrail ? 'Change Grail' : 'Choose Grail'} onClose={onClose}>
-      <p style={{ margin: '0 0 16px', fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.7 }}>
+      <p style={{ margin: '0 0 16px', fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.muted, lineHeight: 1.7 }}>
         Choose your grail from the watches you already follow.
       </p>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -1227,10 +1227,10 @@ function VisibilityToggle({
       }}
     >
       <div>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, color: brand.colors.ink, marginBottom: 3 }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, color: brand.colors.ink, marginBottom: 3 }}>
           {label}
         </div>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, lineHeight: 1.5 }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.5 }}>
           {description}
         </div>
       </div>
@@ -1421,7 +1421,7 @@ function FeaturedWatchEditPopover({
         }}
       >
         <div style={{ padding: '6px 10px 8px' }}>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
             Featured Watch
           </div>
         </div>
@@ -1461,10 +1461,10 @@ function FeaturedWatchEditPopover({
                   <span style={{ width: 14, display: 'inline-flex' }} />
                 )}
                 <div>
-                  <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, color: brand.colors.ink, marginBottom: 3 }}>
+                  <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, color: brand.colors.ink, marginBottom: 3 }}>
                     {option.label}
                   </div>
-                  <div style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted, lineHeight: 1.45 }}>
+                  <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.45 }}>
                     {option.helper}
                   </div>
                 </div>
@@ -1494,11 +1494,11 @@ function GrailFeature({
     <section style={getSectionShellStyle()}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
         <CrownIcon />
-        <span style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold }}>
+        <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.goldDeep }}>
           Grail
         </span>
         {ownerMode && hiddenFromPreview && (
-          <span style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: brand.colors.muted }}>
+          <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: brand.colors.muted }}>
             Hidden in public preview
           </span>
         )}
@@ -1527,16 +1527,16 @@ function GrailFeature({
           </div>
 
           <div>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
               {grailWatch.brand}
             </div>
             <h3 style={{ fontFamily: brand.font.serif, fontSize: 32, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05, margin: '0 0 6px' }}>
               {grailWatch.model}
             </h3>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, marginBottom: 14 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, marginBottom: 14 }}>
               Ref. {grailWatch.reference}
             </div>
-            <div style={{ fontFamily: brand.font.serif, fontSize: 28, color: brand.colors.gold, marginBottom: 16 }}>
+            <div style={{ fontFamily: brand.font.serif, fontSize: 28, color: brand.colors.goldDeep, marginBottom: 16 }}>
               {fmtCurrency(grailWatch.estimatedValue)}
             </div>
             <a
@@ -1552,7 +1552,7 @@ function GrailFeature({
                 background: brand.colors.ink,
                 color: brand.colors.bg,
                 fontFamily: brand.font.sans,
-                fontSize: 10,
+                fontSize: 12,
                 fontWeight: 600,
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
@@ -1568,7 +1568,7 @@ function GrailFeature({
           <h3 style={{ fontFamily: brand.font.serif, fontSize: 28, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05, margin: '0 0 10px' }}>
             No grail selected yet.
           </h3>
-          <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.6 }}>
+          <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, lineHeight: 1.6 }}>
             Mark one followed watch as your north star and it will be featured here.
           </p>
         </>
@@ -1649,7 +1649,7 @@ function BoxPreviewVisual({
                   }}
                 >
                   <span style={{ fontFamily: brand.font.serif, fontSize: 20, lineHeight: 1 }}>+{overflowCount}</span>
-                  <span style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+                  <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
                     More
                   </span>
                 </div>
@@ -1734,13 +1734,13 @@ function BoxPreviewCarousel({
               <Link href={getBoxSharePath(box.slug, box.source)} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <div>
                   <div style={{ marginBottom: 12 }}>
-                    <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: 5 }}>
+                    <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.goldDeep, marginBottom: 5 }}>
                       {box.subtitle}
                     </div>
                     <div style={{ fontFamily: brand.font.serif, fontSize: 24, color: brand.colors.ink, lineHeight: 1.05, marginBottom: 4 }}>
                       {box.title}
                     </div>
-                    <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted }}>
+                    <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
                       {box.watchCount} watches
                     </div>
                   </div>
@@ -1762,7 +1762,7 @@ function BoxPreviewCarousel({
                         border: `1px solid ${brand.colors.border}`,
                         color: brand.colors.muted,
                         fontFamily: brand.font.sans,
-                        fontSize: 9,
+                        fontSize: 11,
                         fontWeight: 600,
                         letterSpacing: '0.08em',
                         textTransform: 'uppercase',
@@ -1782,7 +1782,7 @@ function BoxPreviewCarousel({
           ))}
         </div>
       ) : (
-        <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.6 }}>
+        <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, lineHeight: 1.6 }}>
           No playground boxes yet. Create a dream box in Playground and it will appear here automatically.
         </p>
       )}
@@ -1821,7 +1821,7 @@ function ReadonlyWatchGridSection({
       />
 
       {watches.length === 0 ? (
-        <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.6 }}>
+        <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, lineHeight: 1.6 }}>
           {emptyCopy}
         </p>
       ) : (
@@ -1928,7 +1928,7 @@ function CompactStatNav({
             maxWidth: '100%',
           }}
         >
-          <span style={{ fontFamily: brand.font.sans, fontSize: isMobile ? 8 : 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+          <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
             {item.label}
           </span>
           <span style={{ fontFamily: brand.font.serif, fontSize: isMobile ? 18 : 20, lineHeight: 1, color: brand.colors.ink }}>
@@ -2005,7 +2005,7 @@ function FeaturedHeroPanel({
             }}
           >
             {FeatureIcon ? <FeatureIcon /> : null}
-            <span style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: featuredProfileWatch === 'none' ? brand.colors.muted : brand.colors.gold }}>
+            <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: featuredProfileWatch === 'none' ? brand.colors.muted : brand.colors.goldDeep }}>
               {label}
             </span>
           </div>
@@ -2044,16 +2044,16 @@ function FeaturedHeroPanel({
             <div style={{ display: 'grid', gridTemplateColumns: '68px minmax(0, 1fr)', gap: 10 }}>
               <div style={{ width: 68 }} />
               <div style={{ minWidth: 0, maxWidth: 120, paddingRight: 2, paddingTop: 2 }}>
-                <div style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 3 }}>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 3 }}>
                   {watch.brand}
                 </div>
                 <div style={{ fontFamily: brand.font.serif, fontSize: 16, color: brand.colors.ink, lineHeight: 1.02, marginBottom: 3, overflowWrap: 'break-word' }}>
                   {watch.model}
                 </div>
-                <div style={{ fontFamily: brand.font.sans, fontSize: 8, color: brand.colors.muted, marginBottom: 5 }}>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginBottom: 5 }}>
                   Ref. {watch.reference}
                 </div>
-                <div style={{ fontFamily: brand.font.serif, fontSize: 15, color: brand.colors.gold }}>
+                <div style={{ fontFamily: brand.font.serif, fontSize: 15, color: brand.colors.goldDeep }}>
                   {fmtCurrency(watch.estimatedValue)}
                 </div>
               </div>
@@ -2064,7 +2064,7 @@ function FeaturedHeroPanel({
             <div style={{ fontFamily: brand.font.serif, fontSize: 18, color: brand.colors.ink, lineHeight: 1.05, marginBottom: 6 }}>
               {featuredProfileWatch === 'none' ? 'No featured watch selected.' : `No ${label.toLowerCase()} selected yet.`}
             </div>
-            <div style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted, lineHeight: 1.55 }}>
+            <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.55 }}>
               {emptyCopy}
             </div>
           </div>
@@ -2111,11 +2111,11 @@ function FeaturedHeroPanel({
           }}
         >
           {FeatureIcon ? <FeatureIcon /> : null}
-          <span style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: featuredProfileWatch === 'none' ? brand.colors.muted : brand.colors.gold }}>
+          <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: featuredProfileWatch === 'none' ? brand.colors.muted : brand.colors.goldDeep }}>
             {label}
           </span>
           {hiddenFromPreview && (
-            <span style={{ fontFamily: brand.font.sans, fontSize: 8, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: brand.colors.muted }}>
+            <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: brand.colors.muted }}>
               Hidden in public preview
             </span>
           )}
@@ -2156,16 +2156,16 @@ function FeaturedHeroPanel({
             <div style={{ width: 130 }} />
 
             <div style={{ paddingRight: 6 }}>
-              <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 7 }}>
+              <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 7 }}>
                 {watch.brand}
               </div>
               <div style={{ fontFamily: brand.font.serif, fontSize: 30, color: brand.colors.ink, lineHeight: 1, marginBottom: 5 }}>
                 {watch.model}
               </div>
-              <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted, marginBottom: 11 }}>
+              <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, marginBottom: 11 }}>
                 Ref. {watch.reference}
               </div>
-              <div style={{ fontFamily: brand.font.serif, fontSize: 28, color: brand.colors.gold }}>
+              <div style={{ fontFamily: brand.font.serif, fontSize: 28, color: brand.colors.goldDeep }}>
                 {fmtCurrency(watch.estimatedValue)}
               </div>
             </div>
@@ -2176,7 +2176,7 @@ function FeaturedHeroPanel({
           <div style={{ fontFamily: brand.font.serif, fontSize: 28, color: brand.colors.ink, lineHeight: 1.02, marginBottom: 8 }}>
             {featuredProfileWatch === 'none' ? 'No featured watch selected.' : `No ${label.toLowerCase()} selected yet.`}
           </div>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.7 }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, lineHeight: 1.7 }}>
             {emptyCopy}
           </div>
         </div>
@@ -2242,7 +2242,7 @@ function PublicProfileHero({
     padding: '8px 12px', borderRadius: brand.radius.btn,
     background: 'rgba(26,20,16,0.62)', backdropFilter: 'blur(8px)',
     border: '1px solid rgba(255,255,255,0.15)', color: brand.colors.white,
-    fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600,
+    fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600,
     letterSpacing: '0.08em', textTransform: 'uppercase',
     textDecoration: 'none', cursor: 'pointer',
   }
@@ -2291,17 +2291,17 @@ function PublicProfileHero({
                   ) : null}
                 </div>
                 <div style={{ minWidth: 0, marginTop: 12 }}>
-                  <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
+                  <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
                     Collector Profile
                   </div>
                   <h1 style={{ fontFamily: brand.font.serif, fontSize: 34, fontWeight: 400, color: brand.colors.ink, lineHeight: 0.98, margin: '0 0 8px', overflowWrap: 'break-word' }}>
                     {snapshot.profile.displayName}
                   </h1>
-                  <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.gold, marginBottom: 10, lineHeight: 1.5, overflowWrap: 'break-word' }}>
+                  <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.goldDeep, marginBottom: 10, lineHeight: 1.5, overflowWrap: 'break-word' }}>
                     {getPublicHandle(snapshot.profile.displayName)}{heroSummary ? ` · ${heroSummary}` : ''}
                   </div>
                   {snapshot.profile.bio ? (
-                    <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.7 }}>
+                    <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.muted, lineHeight: 1.7 }}>
                       {snapshot.profile.bio}
                     </p>
                   ) : null}
@@ -2311,13 +2311,13 @@ function PublicProfileHero({
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 18, flexWrap: 'wrap', marginTop: -62 }}>
                 <ProfileAvatar displayName={snapshot.profile.displayName} imageUrl={snapshot.profile.profileImageUrl} imageCrop={snapshot.profile.profileImageCrop} size={124} />
                 <div style={{ paddingTop: 70, minWidth: 0, flex: 1 }}>
-                  <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
+                  <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
                     Collector Profile
                   </div>
                   <h1 style={{ fontFamily: brand.font.serif, fontSize: 48, fontWeight: 400, color: brand.colors.ink, lineHeight: 0.98, margin: '0 0 8px', overflowWrap: 'anywhere' }}>
                     {snapshot.profile.displayName}
                   </h1>
-                  <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.gold, marginBottom: 10, lineHeight: 1.5, overflowWrap: 'break-word' }}>
+                  <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.goldDeep, marginBottom: 10, lineHeight: 1.5, overflowWrap: 'break-word' }}>
                     {getPublicHandle(snapshot.profile.displayName)}{heroSummary ? ` · ${heroSummary}` : ''}
                   </div>
                   {snapshot.profile.bio ? (
@@ -2376,7 +2376,7 @@ function OwnerProfileHero({
     padding: '8px 12px', borderRadius: brand.radius.btn,
     background: 'rgba(26,20,16,0.62)', backdropFilter: 'blur(8px)',
     border: '1px solid rgba(255,255,255,0.15)', color: brand.colors.white,
-    fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600,
+    fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600,
     letterSpacing: '0.08em', textTransform: 'uppercase',
     textDecoration: 'none', cursor: 'pointer',
   }
@@ -2438,7 +2438,7 @@ function OwnerProfileHero({
                 </div>
                 <div style={{ minWidth: 0, marginTop: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
-                    <span style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+                    <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
                       Collector Profile
                     </span>
                     <IconCircleButton label="Edit name and bio" onClick={onEditText}>
@@ -2448,11 +2448,11 @@ function OwnerProfileHero({
                   <h1 style={{ fontFamily: brand.font.serif, fontSize: 34, fontWeight: 400, color: brand.colors.ink, lineHeight: 0.98, margin: '0 0 8px', overflowWrap: 'break-word' }}>
                     {profile.displayName}
                   </h1>
-                  <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.gold, marginBottom: 10, lineHeight: 1.5, overflowWrap: 'break-word' }}>
+                  <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.goldDeep, marginBottom: 10, lineHeight: 1.5, overflowWrap: 'break-word' }}>
                     {getPublicHandle(profile.displayName)}{heroSummary ? ` · ${heroSummary}` : ''}
                   </div>
                   {profile.bio ? (
-                    <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.7 }}>
+                    <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.muted, lineHeight: 1.7 }}>
                       {profile.bio}
                     </p>
                   ) : null}
@@ -2470,7 +2470,7 @@ function OwnerProfileHero({
                 </div>
                 <div style={{ paddingTop: 70, minWidth: 0, flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
-                    <span style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+                    <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
                       Collector Profile
                     </span>
                     <IconCircleButton label="Edit name and bio" onClick={onEditText}>
@@ -2480,7 +2480,7 @@ function OwnerProfileHero({
                   <h1 style={{ fontFamily: brand.font.serif, fontSize: 48, fontWeight: 400, color: brand.colors.ink, lineHeight: 0.98, margin: '0 0 8px', overflowWrap: 'anywhere' }}>
                     {profile.displayName}
                   </h1>
-                  <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.gold, marginBottom: 10, lineHeight: 1.5, overflowWrap: 'break-word' }}>
+                  <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.04em', color: brand.colors.goldDeep, marginBottom: 10, lineHeight: 1.5, overflowWrap: 'break-word' }}>
                     {getPublicHandle(profile.displayName)}{heroSummary ? ` · ${heroSummary}` : ''}
                   </div>
                   {profile.bio ? (
@@ -2540,7 +2540,7 @@ function PublicBoxFeatureCard({
     <section id={sectionId} style={{ ...(isMobile ? getMobileFlowSectionStyle() : getSectionShellStyle()), scrollMarginTop: 88 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 14 }}>
         <div>
-          <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
+          <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
             Collection
           </div>
           <h2 style={{ fontFamily: brand.font.serif, fontSize: 34, fontWeight: 400, color: brand.colors.ink, margin: 0, lineHeight: 1.02 }}>
@@ -2553,13 +2553,13 @@ function PublicBoxFeatureCard({
 
       {stats ? (
         <div id={SECTION_IDS.stats} style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', padding: '7px 10px', borderRadius: brand.radius.pill, background: brand.colors.bg, border: `1px solid ${brand.colors.border}`, fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', padding: '7px 10px', borderRadius: brand.radius.pill, background: brand.colors.bg, border: `1px solid ${brand.colors.border}`, fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
             {stats.watchCount} watches
           </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', padding: '7px 10px', borderRadius: brand.radius.pill, background: brand.colors.bg, border: `1px solid ${brand.colors.border}`, fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', padding: '7px 10px', borderRadius: brand.radius.pill, background: brand.colors.bg, border: `1px solid ${brand.colors.border}`, fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
             {fmtCurrency(stats.totalEstimatedValue)}
           </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', padding: '7px 10px', borderRadius: brand.radius.pill, background: brand.colors.bg, border: `1px solid ${brand.colors.border}`, fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', padding: '7px 10px', borderRadius: brand.radius.pill, background: brand.colors.bg, border: `1px solid ${brand.colors.border}`, fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
             {stats.brandCount} brands
           </span>
         </div>
@@ -2589,7 +2589,7 @@ function PublicBoxFeatureCard({
       </Link>
 
       <div style={{ marginTop: 12, marginBottom: isMobile ? 6 : 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-        <span style={{ fontFamily: brand.font.sans, fontSize: 10, color: brand.colors.muted }}>
+        <span style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
           {frame.label} · {lining.label} · {slotConfig.n} slots{overflowSummary ? ` · ${overflowSummary}` : ''}
         </span>
       </div>
@@ -2644,7 +2644,7 @@ function PublicDreamBoxesSection({
                 <div style={{ fontFamily: brand.font.serif, fontSize: 24, color: brand.colors.ink, lineHeight: 1.05, marginBottom: 4 }}>
                   {box.title}
                 </div>
-                <div style={{ fontFamily: brand.font.sans, fontSize: 11, color: brand.colors.muted }}>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
                   {box.watchCount} watches
                 </div>
               </div>
@@ -2654,7 +2654,7 @@ function PublicDreamBoxesSection({
           ))}
         </div>
       ) : (
-        <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.6 }}>
+        <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, lineHeight: 1.6 }}>
           No dream boxes are on display right now.
         </p>
       )}
@@ -2713,7 +2713,7 @@ function PublicRadarSection({
       <SectionHeader eyebrow="Followed Watches" title="On the Radar" actions={actions} />
 
       {visibleWatches.length === 0 ? (
-        <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.6 }}>
+        <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, lineHeight: 1.6 }}>
           Nothing is on the radar right now.
         </p>
       ) : (
@@ -2784,7 +2784,7 @@ function OwnerProfileCard({
                 color: brand.colors.muted,
                 cursor: 'pointer',
                 fontFamily: brand.font.sans,
-                fontSize: 10,
+                fontSize: 12,
                 letterSpacing: '0.04em',
               }}
             >
@@ -2796,7 +2796,7 @@ function OwnerProfileCard({
         <div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 18 }}>
             <div>
-              <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
+              <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
                 Profile Demo
               </div>
               <h1 style={{ fontFamily: brand.font.serif, fontSize: 42, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.02, margin: 0 }}>
@@ -2811,7 +2811,7 @@ function OwnerProfileCard({
 
           <div style={{ display: 'grid', gap: 14, marginBottom: 18 }}>
             <label style={{ display: 'grid', gap: 6 }}>
-              <span style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+              <span style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
                 Display Name
               </span>
               <input
@@ -2833,7 +2833,7 @@ function OwnerProfileCard({
             </label>
 
             <label style={{ display: 'grid', gap: 6 }}>
-              <span style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+              <span style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
                 Bio / Tagline
               </span>
               <textarea
@@ -2872,10 +2872,10 @@ function OwnerProfileCard({
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 10 }}>
               <div>
-                <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 6 }}>
                   Collection Hero Image
                 </div>
-                <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted, lineHeight: 1.6 }}>
+                <div style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, lineHeight: 1.6 }}>
                   One optional editorial image for the My Collection section.
                 </div>
               </div>
@@ -2896,7 +2896,7 @@ function OwnerProfileCard({
       </div>
 
       <div style={{ marginTop: 24, paddingTop: 24, borderTop: `1px solid ${brand.colors.border}` }}>
-        <div style={{ fontFamily: brand.font.sans, fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 12 }}>
+        <div style={{ fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 12 }}>
           Public Visibility
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -2968,7 +2968,7 @@ function PublicProfileCard({
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap', marginBottom: 16 }}>
             <div>
-              <div style={{ fontFamily: brand.font.sans, fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
+              <div style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted, marginBottom: 8 }}>
                 Collector Profile
               </div>
               <h1 style={{ fontFamily: brand.font.serif, fontSize: 44, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.02, margin: '0 0 8px' }}>
@@ -3408,7 +3408,7 @@ export function OwnerProfilePage() {
         <p style={{ fontFamily: brand.font.serif, fontSize: 18, fontWeight: 500, color: brand.colors.ink, margin: '0 0 4px' }}>
           Save your profile and share your collection.
         </p>
-        <p style={{ fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, margin: 0 }}>
+        <p style={{ fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.muted, margin: 0 }}>
           Sign in to persist your data and get a shareable profile link.
         </p>
       </div>
@@ -3420,7 +3420,7 @@ export function OwnerProfilePage() {
           background: brand.colors.ink,
           color: brand.colors.bg,
           fontFamily: brand.font.sans,
-          fontSize: 12,
+          fontSize: 14,
           fontWeight: 500,
           letterSpacing: '0.04em',
           textDecoration: 'none',
@@ -3634,7 +3634,7 @@ export function PublicProfilePreviewPage() {
           <h1 style={{ fontFamily: brand.font.serif, fontSize: 40, fontWeight: 400, color: brand.colors.ink, margin: '0 0 10px' }}>
             This collector profile is not available right now.
           </h1>
-          <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, lineHeight: 1.7 }}>
+          <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.muted, lineHeight: 1.7 }}>
             Please check back in a moment.
           </p>
         </section>

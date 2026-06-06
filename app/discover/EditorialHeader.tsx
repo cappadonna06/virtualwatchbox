@@ -29,11 +29,11 @@ export default function EditorialHeader({ kicker, title, italic = true, sub, act
         <div
           style={{
             fontFamily: brand.font.sans,
-            fontSize: 10,
+            fontSize: 12,
             fontWeight: 600,
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
-            color: brand.colors.gold,
+            color: brand.colors.goldDeep,
             marginBottom: 10,
           }}
         >
@@ -68,7 +68,7 @@ export default function EditorialHeader({ kicker, title, italic = true, sub, act
             <div
               style={{
                 fontFamily: brand.font.sans,
-                fontSize: 11.5,
+                fontSize: 12,
                 color: brand.colors.muted,
                 letterSpacing: '0.04em',
                 textAlign: 'right',

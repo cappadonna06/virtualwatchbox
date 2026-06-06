@@ -199,10 +199,10 @@ export default function NavBar() {
 
   const desktopLinkStyle = (active: boolean) => ({
     '--nav-link-color': active ? brand.colors.ink : brand.colors.muted,
-    '--nav-link-underline': active ? brand.colors.gold : 'transparent',
+    '--nav-link-underline': active ? brand.colors.goldDeep : 'transparent',
     fontFamily: brand.font.sans,
-    fontSize: 12,
-    fontWeight: 400,
+    fontSize: brand.text.bodySm,
+    fontWeight: 500,
     letterSpacing: '0.04em',
     textDecoration: 'none',
   }) as CSSProperties

@@ -135,7 +135,7 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
                 })}
                 style={{
                   fontFamily: brand.font.sans,
-                  fontSize: 10.5,
+                  fontSize: 12,
                   fontWeight: 500,
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',
@@ -159,7 +159,7 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
                 })}
                 style={{
                   fontFamily: brand.font.sans,
-                  fontSize: 10.5,
+                  fontSize: 12,
                   fontWeight: 500,
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',
@@ -178,7 +178,7 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
                   href={`/playground?lead=${encodeURIComponent(watch.id)}`}
                   style={{
                     fontFamily: brand.font.sans,
-                    fontSize: 10.5,
+                    fontSize: 12,
                     fontWeight: 500,
                     letterSpacing: '0.14em',
                     textTransform: 'uppercase',
@@ -267,7 +267,7 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
               <div
                 style={{
                   fontFamily: brand.font.sans,
-                  fontSize: 10,
+                  fontSize: 12,
                   fontWeight: 600,
                   letterSpacing: '0.18em',
                   textTransform: 'uppercase',
@@ -283,7 +283,7 @@ export default function CompleteTheBoxLead({ watch, gapLabel, gapType, insight, 
               <div
                 style={{
                   fontFamily: brand.font.sans,
-                  fontSize: 11,
+                  fontSize: 12,
                   color: 'rgba(250,248,244,0.55)',
                   marginTop: 4,
                   letterSpacing: '0.04em',
@@ -334,7 +334,7 @@ function GoldKicker({ children }: { children: React.ReactNode }) {
     <div
       style={{
         fontFamily: brand.font.sans,
-        fontSize: 10,
+        fontSize: 12,
         fontWeight: 600,
         letterSpacing: '0.18em',
         textTransform: 'uppercase',
@@ -352,7 +352,7 @@ function SpecCell({ label, value }: { label: string; value: string }) {
       <div
         style={{
           fontFamily: brand.font.sans,
-          fontSize: 10,
+          fontSize: 12,
           fontWeight: 600,
           letterSpacing: '0.18em',
           textTransform: 'uppercase',
