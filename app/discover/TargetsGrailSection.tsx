@@ -25,7 +25,7 @@ const marketCta: React.CSSProperties = {
   textDecoration: 'none',
 }
 
-export default function TargetsGrailSection() {
+export default function TargetsGrailSection({ kicker }: { kicker: string }) {
   const { user } = useAuth()
   const { nextTargetWatches, grailWatch, grailWatchId } = useCollectionSession()
 
@@ -47,7 +47,7 @@ export default function TargetsGrailSection() {
       }}
     >
       <EditorialHeader
-        kicker="§ 03"
+        kicker={kicker}
         title="What you're chasing."
         sub="Your own shortlist. The grail you've crowned and the targets you're tracking."
       />

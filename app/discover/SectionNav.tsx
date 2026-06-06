@@ -5,16 +5,14 @@ import { brand } from '@/lib/brand'
 
 const NAV_HEIGHT = 61
 
-export default function SectionNav({ showTargets = false }: { showTargets?: boolean }) {
-  const [active, setActive] = useState<string>('lead')
+type NavSection = { id: string; num: string; label: string }
 
-  const navSections = [
-    { id: 'lead',      num: '01', label: 'Lead' },
-    { id: 'upgrade',   num: '02', label: 'Upgrade' },
-    ...(showTargets ? [{ id: 'targets', num: '03', label: 'Targets' }] : []),
-    { id: 'next-slot', num: showTargets ? '04' : '03', label: 'Next Slot' },
-    { id: 'news',      num: showTargets ? '05' : '04', label: 'News' },
-  ]
+export default function SectionNav({ sections }: { sections: NavSection[] }) {
+  const [active, setActive] = useState<string>(sections[0]?.id ?? 'lead')
+
+  // Stable key over the present section ids so the observer re-registers when
+  // section membership changes (e.g. sign-in/out adds or drops Upgrade/Targets).
+  const sectionIds = sections.map(s => s.id).join(',')
 
   useEffect(() => {
     if (typeof IntersectionObserver === 'undefined') return
@@ -24,13 +22,12 @@ export default function SectionNav({ showTargets = false }: { showTargets?: bool
         .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
       if (visible.length) setActive(visible[0].target.id)
     }, { rootMargin: '-30% 0px -55% 0px', threshold: 0 })
-    navSections.forEach(s => {
-      const el = document.getElementById(s.id)
+    sectionIds.split(',').forEach(id => {
+      const el = document.getElementById(id)
       if (el) observer.observe(el)
     })
     return () => observer.disconnect()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showTargets])
+  }, [sectionIds])
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault()
@@ -88,7 +85,7 @@ export default function SectionNav({ showTargets = false }: { showTargets?: bool
           In this issue
         </div>
 
-        {navSections.map(s => {
+        {sections.map(s => {
           const isActive = active === s.id
           return (
             <a

@@ -9,6 +9,8 @@ import {
   PLAYGROUND_BOXES_STORAGE_KEY,
   WATCHBOX_CONFIG_STORAGE_KEY,
   WATCHBOX_PHOTO_SESSION_KEY,
+  userSessionCacheKey,
+  userProfileCacheKey,
 } from '@/lib/storageKeys'
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { remapLegacyCatalogId } from '@/lib/catalog/legacyIdRemap'
@@ -128,6 +130,39 @@ type SessionSnapshot = {
   playgroundBoxes?: PlaygroundBox[]
 }
 
+// Bump when the cached payload shape changes so stale caches are ignored
+// rather than mis-parsed.
+const SESSION_CACHE_VERSION = 1
+
+type CachedSessionPayload = {
+  v: number
+  collectionWatches: OwnedWatch[]
+  followedWatchIds: string[]
+  nextTargets: WatchTarget[]
+  grailWatchId: string | null
+  collectionJewelWatchId: string | null
+  watchboxConfig: WatchboxConfig
+  // Referenced catalog rows, seeded synchronously on hydrate so the box/grail
+  // resolve without waiting on a catalog round-trip.
+  catalogRows: CatalogWatch[]
+  photos: [string, UserWatchPhoto[]][]
+  playgroundBoxes: PlaygroundBox[]
+}
+
+function readUserSessionCache(userId: string): CachedSessionPayload | null {
+  if (typeof localStorage === 'undefined') return null
+  try {
+    const raw = localStorage.getItem(userSessionCacheKey(userId))
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as CachedSessionPayload
+    if (!parsed || parsed.v !== SESSION_CACHE_VERSION) return null
+    if (!Array.isArray(parsed.collectionWatches) || !isValidWatchboxConfig(parsed.watchboxConfig)) return null
+    return parsed
+  } catch {
+    return null
+  }
+}
+
 type LegacyWatchSnapshot = {
   id?: unknown
   watchId?: unknown
@@ -168,6 +203,7 @@ interface CollectionSessionContextValue {
   selectedWatchId: string | null
   watchboxConfig: WatchboxConfig
   dataLoading: boolean
+  cacheHydrated: boolean
   migrationPending: boolean
   setSelectedWatchId: (watchId: string | null) => void
   addToCollection: (watch: CatalogWatch, condition: WatchCondition, purchaseDetails?: PurchaseDetails, slot?: number) => string
@@ -944,6 +980,10 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   const [toastVisible, setToastVisible] = useState(false)
   const [hydrated, setHydrated] = useState(false)
   const [dataLoading, setDataLoading] = useState(false)
+  // True once the authed user's local instant-paint cache has been applied, so
+  // consumers (the profile page) can skip the loading skeleton on warm loads
+  // even while the authoritative network load is still in flight.
+  const [cacheHydrated, setCacheHydrated] = useState(false)
   const [migrationPending, setMigrationPending] = useState(false)
   const [playgroundBoxes, setPlaygroundBoxesState] = useState<PlaygroundBox[]>(createSeededPlaygroundBoxes)
   const [playgroundHydrated, setPlaygroundHydrated] = useState(false)
@@ -1063,6 +1103,30 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     ]
     void replaceOwnedCatalog(referencedIds)
   }, [replaceOwnedCatalog])
+
+  // Instant-paint hydrate from the per-user local cache. Unlike
+  // applyServerSnapshot this seeds the resolver rows synchronously from the
+  // cached catalog rows (no replaceOwnedCatalog round-trip) so the box/grail
+  // render on the first frame. The authoritative loadFromSupabase →
+  // applyServerSnapshot that follows always overwrites this.
+  const hydrateFromCache = useCallback((cached: CachedSessionPayload) => {
+    if (cached.catalogRows.length > 0) {
+      setOwnedCatalogWatches(new Map(cached.catalogRows.map(w => [w.id, w])))
+    }
+    setCollectionEntries(cached.collectionWatches)
+    setFollowedWatchIds(cached.followedWatchIds)
+    setNextTargets(cached.nextTargets)
+    setGrailWatchId(cached.grailWatchId)
+    setCollectionJewelWatchId(cached.collectionJewelWatchId)
+    setWatchboxConfig(cached.watchboxConfig)
+    if (Array.isArray(cached.photos) && cached.photos.length > 0) {
+      setPhotosByWatchId(new Map(cached.photos))
+    }
+    if (Array.isArray(cached.playgroundBoxes) && cached.playgroundBoxes.length > 0) {
+      setPlaygroundBoxesState(cached.playgroundBoxes)
+    }
+    setPlaygroundHydrated(true)
+  }, [])
 
   const primaryPhotoByOwnedId = useMemo(() => {
     const map = new Map<string, string>()
@@ -1209,9 +1273,30 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     const currentId = user?.id ?? null
     prevUserIdRef.current = currentId
 
+    // Identity changed (sign-out or account switch): drop the previous user's
+    // local caches so a different account on this device never reads them, and
+    // reset the cache-hydrated flag for the new identity.
+    if (prevId && prevId !== currentId) {
+      try {
+        localStorage.removeItem(userSessionCacheKey(prevId))
+        localStorage.removeItem(userProfileCacheKey(prevId))
+      } catch {}
+    }
+    if (prevId !== currentId) setCacheHydrated(false)
+
     if (!currentId) return  // signed out → guest hydration effect handles state
 
     if (prevId === currentId) return  // same user, already loaded
+
+    // Instant paint from the per-user cache while the authoritative network
+    // load is in flight. A cache hit lets the profile skip its skeleton; the
+    // server result below always overwrites whatever the cache painted.
+    const cached = readUserSessionCache(currentId)
+    if (cached) {
+      hydrateFromCache(cached)
+      setCacheHydrated(true)
+      setHydrated(true)
+    }
 
     const migrationAlreadyDone = (() => {
       try { return localStorage.getItem(MIGRATION_DONE_KEY) === 'true' } catch { return false }
@@ -1345,6 +1430,46 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       // sessionStorage may reject when full; the photo just won't survive a reload.
     }
   }, [hydrated, user, watchboxPhotoUrl, watchboxPhotoCrop])
+
+  // ── Authed instant-paint cache write ────────────────────────────────────
+  // Mirror the signed-in user's lightweight session snapshot (plus the catalog
+  // rows needed to resolve it) to a per-user localStorage key, so the next cold
+  // load / hard refresh / mobile tab restart paints real data immediately. Gated
+  // so we never cache the empty bootstrap state, a mid-load state, or a snapshot
+  // taken while optimistic mutations are still in flight.
+  useEffect(() => {
+    if (!user || !hydrated || dataLoading || migrationPending) return
+    if (pendingWritesRef.current > 0) return
+    try {
+      const referencedIds = new Set<string>([
+        ...collectionEntries.map(w => w.watchId),
+        ...followedWatchIds,
+        ...nextTargets.map(t => t.watchId),
+        ...(grailWatchId ? [grailWatchId] : []),
+        ...(collectionJewelWatchId ? [collectionJewelWatchId] : []),
+      ])
+      const catalogRows: CatalogWatch[] = []
+      referencedIds.forEach(id => {
+        const row = catalogWatchMap.get(id)
+        if (row) catalogRows.push(row)
+      })
+      const payload: CachedSessionPayload = {
+        v: SESSION_CACHE_VERSION,
+        collectionWatches: collectionEntries,
+        followedWatchIds,
+        nextTargets,
+        grailWatchId,
+        collectionJewelWatchId,
+        watchboxConfig,
+        catalogRows,
+        photos: [...photosByWatchId.entries()],
+        playgroundBoxes,
+      }
+      localStorage.setItem(userSessionCacheKey(user.id), JSON.stringify(payload))
+    } catch {
+      // Best-effort cache; quota/serialization failures just skip this write.
+    }
+  }, [user, hydrated, dataLoading, migrationPending, collectionEntries, followedWatchIds, nextTargets, grailWatchId, collectionJewelWatchId, watchboxConfig, photosByWatchId, playgroundBoxes, catalogWatchMap])
 
   // Cloud read of the watchbox photo. Runs once per signed-in user; the hydration
   // gate prevents the debounced save below from overwriting a remote value with
@@ -2454,6 +2579,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     selectedWatchId,
     watchboxConfig,
     dataLoading,
+    cacheHydrated,
     migrationPending,
     setSelectedWatchId,
     addToCollection,

@@ -9,11 +9,12 @@ import EditorialHeader from './EditorialHeader'
 
 type Props = {
   brandFilter: string[]
+  kicker: string
 }
 
 const NEW_THRESHOLD_HOURS = 48
 
-export default function NewsEditorial({ brandFilter }: Props) {
+export default function NewsEditorial({ brandFilter, kicker }: Props) {
   const [items, setItems] = useState<NewsItem[] | null>(null)
   const [failed, setFailed] = useState(false)
 
@@ -64,7 +65,7 @@ export default function NewsEditorial({ brandFilter }: Props) {
       }}
     >
       <EditorialHeader
-        kicker="§ 05"
+        kicker={kicker}
         title="From the watch world."
         sub="The latest from the publications collectors trust. Tagged for your brands of interest."
       />

@@ -19,9 +19,10 @@ function fmt(n: number) {
 type UpgradeSpreadProps = {
   suggestions: UpgradeSuggestion[]
   rationaleByPair?: Map<string, string>
+  kicker: string
 }
 
-export default function UpgradeSpread({ suggestions, rationaleByPair }: UpgradeSpreadProps) {
+export default function UpgradeSpread({ suggestions, rationaleByPair, kicker }: UpgradeSpreadProps) {
   return (
     <section
       id="upgrade"
@@ -32,7 +33,7 @@ export default function UpgradeSpread({ suggestions, rationaleByPair }: UpgradeS
       }}
     >
       <EditorialHeader
-        kicker="§ 02"
+        kicker={kicker}
         title="Upgrade this watch."
         sub="Step-up paths that preserve your box balance. Brand-family logic; grounded and aspirational picks."
       />

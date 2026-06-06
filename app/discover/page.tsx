@@ -253,6 +253,25 @@ export default function DiscoverPage() {
   // logged-in collector who has actually crowned a grail or pinned a target.
   const showTargets = !isGuest && (session.nextTargetWatches.length > 0 || Boolean(session.grailWatchId && session.grailWatch))
 
+  const showLead = Boolean(leadWatch)
+  const showUpgrade = personalized && upgradeSuggestions.length > 0
+
+  // Single source of truth for section order + numbering. Order MUST mirror the
+  // JSX render order below; numbers are sequential over only the sections that
+  // actually render, so the nav and each kicker stay consistent (and every nav
+  // anchor resolves) regardless of auth/collection state.
+  const sections = useMemo(() => {
+    const out: { id: string; label: string }[] = []
+    if (showLead) out.push({ id: 'lead', label: 'Lead' })
+    if (showUpgrade) out.push({ id: 'upgrade', label: 'Upgrade' })
+    if (showTargets) out.push({ id: 'targets', label: 'Targets' })
+    out.push({ id: 'next-slot', label: 'Next Slot' })
+    out.push({ id: 'news', label: 'News' })
+    return out.map((s, i) => ({ ...s, num: String(i + 1).padStart(2, '0') }))
+  }, [showLead, showUpgrade, showTargets])
+
+  const numById = useMemo(() => new Map(sections.map(s => [s.id, s.num])), [sections])
+
   // Map pair-id → rationale sentence for UpgradeSpread to render in place of
   // the static balanceNote when the LLM/cached copy is available.
   const upgradeRationaleByPair = useMemo(() => {
@@ -277,7 +296,7 @@ export default function DiscoverPage() {
         insightRead={insightRead}
       />
 
-      <SectionNav showTargets={showTargets} />
+      <SectionNav sections={sections} />
 
       {leadWatch && (
         <CompleteTheBoxLead
@@ -290,15 +309,15 @@ export default function DiscoverPage() {
         />
       )}
 
-      {personalized && upgradeSuggestions.length > 0 && (
-        <UpgradeSpread suggestions={upgradeSuggestions} rationaleByPair={upgradeRationaleByPair} />
+      {showUpgrade && (
+        <UpgradeSpread suggestions={upgradeSuggestions} rationaleByPair={upgradeRationaleByPair} kicker={`§ ${numById.get('upgrade')}`} />
       )}
 
-      {showTargets && <TargetsGrailSection />}
+      {showTargets && <TargetsGrailSection kicker={`§ ${numById.get('targets')}`} />}
 
-      <NextSlotEditorial watches={nextSlotRecs} ownedTypes={ownedTypes} seedKeyByWatchId={nextSlotSeedKeys} />
+      <NextSlotEditorial watches={nextSlotRecs} ownedTypes={ownedTypes} seedKeyByWatchId={nextSlotSeedKeys} kicker={`§ ${numById.get('next-slot')}`} />
 
-      <NewsEditorial brandFilter={newsBrandFilter} />
+      <NewsEditorial brandFilter={newsBrandFilter} kicker={`§ ${numById.get('news')}`} />
     </div>
   )
 }
