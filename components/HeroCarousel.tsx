@@ -249,7 +249,7 @@ export default function HeroCarousel() {
             Discover <em style={{ fontStyle: 'italic', fontWeight: 300 }}>What&apos;s Next.</em>
           </h1>
           <p style={{ fontFamily: brand.font.sans, fontSize: brand.text.lead, lineHeight: 1.55, color: brand.colors.inkSoft, maxWidth: 440, marginBottom: 38 }}>
-            Organize what you own, explore what you want, discover what&apos;s next.
+            Curate what you own, plan your next moves, and visualize the future of your collection.
           </p>
           <div className="hero-actions" data-nosnippet="" style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap' }}>
             <Link
