@@ -54,7 +54,7 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
   if (isMobile) {
     return (
       <div>
-        <SectionHead eyebrow="The file cabinet" title="Every piece, on the record" hint="Tap a card to open the dossier" />
+        <SectionHead eyebrow="The file cabinet" title="Every piece, on the record" />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
           <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>Sort</span>
@@ -126,7 +126,7 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
 
   return (
     <div>
-      <SectionHead eyebrow="The file cabinet" title="Every piece, on the record" hint="Sort any column · click a row to open the dossier" />
+      <SectionHead eyebrow="The file cabinet" title="Every piece, on the record" />
       <div style={{ overflowX: 'auto' }}>
         <div style={{ minWidth: 760, background: brand.colors.white, border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.xl, overflow: 'hidden' }}>
           {/* header */}

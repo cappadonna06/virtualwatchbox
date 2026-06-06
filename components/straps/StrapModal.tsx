@@ -262,7 +262,6 @@ export function StrapModal({
                     )
                   })}
                 </div>
-                <div style={{ fontFamily: brand.font.serif, fontStyle: 'italic', fontSize: 15, color: brand.colors.muted, marginTop: 11 }}>Or add your own below ↓</div>
               </div>
             )}
 

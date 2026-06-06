@@ -80,7 +80,7 @@ export default function AddSearchEmptyState({ catalogWatches, getImageUrl, onPic
     <div style={{ marginBottom: 28 }}>
       {modelCards.length > 0 ? (
         <>
-          <SectionHeader title="Most popular models" hint="The references collectors search for most — tap to explore." />
+          <SectionHeader title="Most popular models" />
           <div
             style={{
               display: 'grid',
@@ -133,7 +133,7 @@ export default function AddSearchEmptyState({ catalogWatches, getImageUrl, onPic
       {brandCards.length > 0 ? (
         <>
           <div style={{ height: isMobile ? 26 : 34 }} />
-          <SectionHeader title="Browse by brand" hint="Jump straight to a maison." />
+          <SectionHeader title="Browse by brand" />
           <div
             style={{
               display: 'grid',
@@ -189,15 +189,17 @@ export default function AddSearchEmptyState({ catalogWatches, getImageUrl, onPic
   )
 }
 
-function SectionHeader({ title, hint }: { title: string; hint: string }) {
+function SectionHeader({ title, hint }: { title: string; hint?: string }) {
   return (
     <div style={{ marginBottom: 16 }}>
       <h3 style={{ fontFamily: brand.font.serif, fontSize: brand.text.cardTitle, fontWeight: 400, color: brand.colors.ink, margin: 0, lineHeight: 1.1 }}>
         {title}
       </h3>
-      <p style={{ margin: '5px 0 0', fontFamily: brand.font.sans, fontSize: brand.text.bodySm, color: brand.colors.muted }}>
-        {hint}
-      </p>
+      {hint && (
+        <p style={{ margin: '5px 0 0', fontFamily: brand.font.sans, fontSize: brand.text.bodySm, color: brand.colors.muted }}>
+          {hint}
+        </p>
+      )}
     </div>
   )
 }

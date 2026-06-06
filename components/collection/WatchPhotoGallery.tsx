@@ -305,17 +305,6 @@ export default function WatchPhotoGallery({ ownedWatchId, variant = 'sidebar' }:
         </div>
       )}
 
-      {!isSidebar && photos.length > 0 && (
-        <div style={{
-          marginTop: 14,
-          fontFamily: brand.font.sans,
-          fontSize: 12,
-          color: brand.colors.muted,
-        }}>
-          Drag to reorder. Click any photo to view, edit, or set as primary.
-        </div>
-      )}
-
       {lightboxId && photos.length > 0 && (
         <WatchPhotoLightbox
           photos={photos}

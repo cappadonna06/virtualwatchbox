@@ -43,19 +43,6 @@ export default function CollectionEmptyState() {
           mode="collection"
           ghostWatches={SAMPLE_BOX_GHOSTS}
         />
-
-        <p
-          style={{
-            margin: '14px 0 0',
-            fontFamily: brand.font.sans,
-            fontSize: brand.text.bodySm,
-            color: brand.colors.muted,
-            lineHeight: 1.5,
-            textAlign: isMobile ? 'center' : 'left',
-          }}
-        >
-          The faded watches are a sample box — yours fills these slots as you add.
-        </p>
       </div>
 
       {/* Right — welcome panel */}
