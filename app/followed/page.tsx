@@ -8,7 +8,7 @@ import WatchCard from '@/components/collection/WatchCard'
 import WatchSidebar from '@/components/collection/WatchSidebar'
 import { useIsMobile } from '@/components/collection/useResponsiveState'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
-import { brand } from '@/lib/brand'
+import { brand, masthead } from '@/lib/brand'
 import { createCatalogDisplayWatch } from '@/lib/watchData'
 
 type SortMode = 'brand' | 'value' | 'type'
@@ -117,24 +117,14 @@ export default function FollowedPage() {
       <div style={{ marginBottom: 28 }}>
         <Link
           href="/collection"
-          style={{
-            display: 'inline-block',
-            fontFamily: brand.font.sans,
-            fontSize: 12,
-            fontWeight: 600,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            color: brand.colors.muted,
-            textDecoration: 'none',
-            marginBottom: 10,
-          }}
+          style={{ ...masthead.eyebrow, display: 'inline-block', textDecoration: 'none', marginBottom: 10 }}
         >
           Collection →
         </Link>
-        <h1 style={{ fontFamily: brand.font.serif, fontSize: 42, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05, margin: '0 0 6px' }}>
+        <h1 style={{ ...masthead.title, margin: '0 0 6px' }}>
           Followed Watches
         </h1>
-        <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.muted }}>
+        <p style={masthead.subtitle}>
           Your canonical aspirational pool. Promote up to three Next Targets and keep one Grail in focus.
         </p>
       </div>

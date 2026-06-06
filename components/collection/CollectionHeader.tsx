@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { brand } from '@/lib/brand'
+import { brand, masthead } from '@/lib/brand'
 
 // Decorative "strap spine" bar colors — art constants (like the swatch recipes),
 // not brand tokens.
@@ -108,27 +108,10 @@ export default function CollectionHeader({
           flexWrap: 'wrap',
         }}
       >
-        <h1
-          style={{
-            fontFamily: brand.font.serif,
-            fontSize: 48,
-            fontWeight: 400,
-            lineHeight: 1.1,
-            color: brand.colors.ink,
-            margin: 0,
-          }}
-        >
+        <h1 style={masthead.title}>
           My Collection
         </h1>
-        <p
-          style={{
-            fontFamily: brand.font.sans,
-            fontSize: 14,
-            color: brand.colors.muted,
-            margin: 0,
-            letterSpacing: '0.02em',
-          }}
-        >
+        <p style={masthead.subtitle}>
           Your source of truth.
         </p>
       </div>

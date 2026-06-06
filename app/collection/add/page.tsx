@@ -7,7 +7,7 @@ import { useCatalog, type CatalogSearchParams } from '@/lib/catalog/CatalogProvi
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import { normalizePlaygroundBoxes } from '@/lib/playground'
 import { createSeededPlaygroundBoxes } from '@/lib/playgroundData'
-import { brand } from '@/lib/brand'
+import { brand, masthead } from '@/lib/brand'
 import { dialColorToHex } from '@/lib/dialColors'
 import AddSearchWatchCard from '@/components/collection/AddSearchWatchCard'
 import PhotoSearch, { type PhotoSearchHandle } from '@/components/PhotoSearch'
@@ -957,23 +957,22 @@ function AddWatchSearchInner() {
     : 'Search by brand, model, or reference number'
 
   return (
-    <div style={{ padding: isMobile ? '28px 20px 80px' : '56px 56px 120px', borderTop: '1px solid #EAE5DC' }}>
+    <div style={{ padding: isMobile ? '28px 20px 80px' : '56px 56px 120px', borderTop: `1px solid ${brand.colors.border}` }}>
       <button
         onClick={() => router.push(backHref)}
         style={{
+          ...masthead.eyebrow,
           background: 'none', border: 'none', padding: 0, marginBottom: 14,
-          cursor: 'pointer', color: '#A89880',
-          fontFamily: 'var(--font-dm-sans)', fontSize: 11,
-          letterSpacing: '0.08em', textTransform: 'uppercase',
+          cursor: 'pointer',
         }}
       >
         {backLabel}
       </button>
 
-      <h1 style={{ fontFamily: 'var(--font-cormorant)', fontSize: 28, fontWeight: 400, color: '#1A1410', margin: '0 0 6px' }}>
+      <h1 style={{ ...masthead.title, margin: '0 0 6px' }}>
         {pageTitle}
       </h1>
-      <p style={{ margin: '0 0 20px', fontFamily: 'var(--font-dm-sans)', fontSize: 12, color: '#A89880' }}>
+      <p style={{ ...masthead.subtitle, margin: '0 0 20px' }}>
         {pageSubtitle}
       </p>
 

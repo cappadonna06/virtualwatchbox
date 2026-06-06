@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { brand } from '@/lib/brand'
+import { brand, masthead } from '@/lib/brand'
 
 type View = 'watchbox' | 'cards' | 'photo'
 
@@ -72,27 +72,10 @@ export default function WatchboxHeader({
       ) : null}
 
       <div style={{ marginBottom: 14 }}>
-        <h1
-          style={{
-            fontFamily: brand.font.serif,
-            fontSize: 48,
-            fontWeight: 400,
-            lineHeight: 1.08,
-            color: brand.colors.ink,
-            margin: 0,
-          }}
-        >
+        <h1 style={masthead.title}>
           {title}
         </h1>
-        <p
-          style={{
-            fontFamily: brand.font.sans,
-            fontSize: 14,
-            color: brand.colors.muted,
-            margin: '6px 0 0',
-            letterSpacing: '0.02em',
-          }}
-        >
+        <p style={{ ...masthead.subtitle, marginTop: 6 }}>
           {subtitle}
         </p>
         {meta ? (

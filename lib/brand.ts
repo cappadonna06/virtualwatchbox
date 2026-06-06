@@ -5,6 +5,8 @@
  * See docs/DESIGN_SYSTEM.md for usage guidance.
  */
 
+import type { CSSProperties } from 'react'
+
 export const brand = {
   colors: {
     /** Page background — warm cream */
@@ -151,6 +153,8 @@ export const brand = {
     hero:       'clamp(54px, 6vw, 90px)',
     /** Section H2 */
     h2:         'clamp(33px, 3.6vw, 46px)',
+    /** Page masthead title — one per page; sits below the homepage hero */
+    pageTitle:  'clamp(34px, 4.5vw, 48px)',
     /** H3 / sidebar title */
     h3:          26,
     /** Card title */
@@ -231,3 +235,44 @@ export const brand = {
     },
   },
 } as const
+
+/**
+ * Page masthead type system — eyebrow -> serif title -> subtitle.
+ * One canonical treatment for every page title. Spread into inline styles,
+ * or use <PageMasthead/>. The *OnDark variants are for dark-surface mastheads.
+ */
+const mastheadEyebrow: CSSProperties = {
+  fontFamily: brand.font.sans,
+  fontSize: brand.text.label,
+  fontWeight: 600,
+  letterSpacing: '0.14em',
+  textTransform: 'uppercase',
+  color: brand.colors.muted,
+}
+const mastheadTitle: CSSProperties = {
+  fontFamily: brand.font.serif,
+  fontSize: brand.text.pageTitle,
+  fontWeight: 400,
+  lineHeight: 1.1,
+  letterSpacing: '-0.01em',
+  color: brand.colors.ink,
+  margin: 0,
+}
+const mastheadSubtitle: CSSProperties = {
+  fontFamily: brand.font.sans,
+  fontSize: brand.text.body,
+  fontWeight: 400,
+  lineHeight: 1.6,
+  color: brand.colors.muted,
+  margin: 0,
+}
+export const masthead: Record<
+  'eyebrow' | 'title' | 'subtitle' | 'titleOnDark' | 'subtitleOnDark',
+  CSSProperties
+> = {
+  eyebrow: mastheadEyebrow,
+  title: mastheadTitle,
+  subtitle: mastheadSubtitle,
+  titleOnDark: { ...mastheadTitle, color: brand.colors.onDark },
+  subtitleOnDark: { ...mastheadSubtitle, color: brand.colors.onDarkMuted },
+}

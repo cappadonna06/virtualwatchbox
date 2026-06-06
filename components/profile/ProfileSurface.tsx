@@ -21,7 +21,7 @@ import {
 import { useIsMobile } from '@/components/collection/useResponsiveState'
 import DialSVG from '@/components/watchbox/DialSVG'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
-import { brand } from '@/lib/brand'
+import { brand, masthead } from '@/lib/brand'
 import { createClient } from '@/lib/supabase/client'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import {
@@ -252,7 +252,7 @@ function SectionHeader({
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 20, marginBottom: 20, flexWrap: 'wrap' }}>
       <div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
-          <span style={{ fontFamily: brand.font.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>
+          <span style={masthead.eyebrow}>
             {eyebrow}
           </span>
           {hiddenFromPreview && (
@@ -276,11 +276,11 @@ function SectionHeader({
             </span>
           )}
         </div>
-        <h2 style={{ fontFamily: brand.font.serif, fontSize: 34, fontWeight: 400, color: brand.colors.ink, margin: '0 0 6px', lineHeight: 1.05 }}>
+        <h2 style={{ fontFamily: brand.font.serif, fontSize: brand.text.h2, fontWeight: 400, color: brand.colors.ink, margin: '0 0 6px', lineHeight: 1.05 }}>
           {title}
         </h2>
         {description ? (
-          <p style={{ margin: 0, fontFamily: brand.font.sans, fontSize: 15, color: brand.colors.muted, lineHeight: 1.6 }}>
+          <p style={masthead.subtitle}>
             {description}
           </p>
         ) : null}

@@ -37,7 +37,7 @@ import CollectionStats from '@/components/collection/CollectionStats'
 import ShareBoxModal, { type ShareFlags } from '@/components/collection/ShareBoxModal'
 import SyncRibbon from '@/components/collection/SyncRibbon'
 import WatchboxHeader from '@/components/collection/WatchboxHeader'
-import { brand } from '@/lib/brand'
+import { brand, masthead } from '@/lib/brand'
 
 const PV_W_PAD = 38
 const PV_H_PAD = 45
@@ -440,10 +440,10 @@ function PlaygroundPageInner() {
         <>
           <div style={{ padding: '40px 56px 0' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 18, flexWrap: 'wrap', marginBottom: 28 }}>
-              <h1 style={{ fontFamily: brand.font.serif, fontSize: 48, fontWeight: 400, color: brand.colors.ink, margin: 0, lineHeight: 1.1 }}>
+              <h1 style={masthead.title}>
                 Playground
               </h1>
-              <p style={{ fontFamily: brand.font.sans, fontSize: 14, color: brand.colors.muted, margin: 0, letterSpacing: '0.02em' }}>
+              <p style={masthead.subtitle}>
                 Build your dream collection. No limits.
               </p>
             </div>

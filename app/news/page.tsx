@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { brand } from '@/lib/brand'
+import { brand, masthead } from '@/lib/brand'
 import NewsCard from '@/components/NewsCard'
 import NewsCardSkeleton from '@/components/NewsCardSkeleton'
 import NewsHeroCard from '@/components/NewsHeroCard'
@@ -354,12 +354,7 @@ function Header({ articleCount }: { articleCount: number | null }) {
     <header style={{ marginBottom: 24 }}>
       <div
         style={{
-          fontFamily: brand.font.sans,
-          fontSize: 12,
-          fontWeight: 500,
-          letterSpacing: '0.18em',
-          textTransform: 'uppercase',
-          color: brand.colors.muted,
+          ...masthead.eyebrow,
           marginBottom: 12,
           display: 'flex',
           alignItems: 'center',
@@ -373,17 +368,7 @@ function Header({ articleCount }: { articleCount: number | null }) {
         </span>
       </div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, flexWrap: 'wrap' }}>
-        <h1
-          style={{
-            margin: 0,
-            fontFamily: brand.font.serif,
-            fontSize: 42,
-            fontWeight: 400,
-            lineHeight: 1.1,
-            color: brand.colors.ink,
-            letterSpacing: '-0.01em',
-          }}
-        >
+        <h1 style={masthead.title}>
           Horological <em>Intelligence.</em>
         </h1>
         {articleCount !== null && (
@@ -406,14 +391,7 @@ function Header({ articleCount }: { articleCount: number | null }) {
         )}
       </div>
       <p
-        style={{
-          margin: '10px 0 0',
-          fontFamily: brand.font.sans,
-          fontSize: 15,
-          lineHeight: 1.6,
-          color: brand.colors.muted,
-          maxWidth: 520,
-        }}
+        style={{ ...masthead.subtitle, margin: '10px 0 0', maxWidth: 520 }}
       >
         The watch world&apos;s best writing, in one place.
       </p>
