@@ -4,14 +4,14 @@
 // quick-peek: ownership strip + service summary (with 3/5/7/10yr interval
 // toggle) + a link into the full dossier tab on the watch detail page.
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import Link from 'next/link'
 import { brand } from '@/lib/brand'
 import {
   ACQ_LABEL, formatCost, formatDate, lastFullService, lifetimeCostCents,
-  relTime, serviceStatus, serviceTypeMeta, warrantyStatus, type ServiceWatch,
+  humanizeMonths, relTime, serviceStatus, serviceTypeMeta, warrantyStatus, type ServiceWatch,
 } from '@/lib/serviceRoom/derive'
-import type { ServiceIntervalYears } from '@/types/watch'
+import type { ServiceIntervalYears, WatchServiceRecord } from '@/types/watch'
 import {
   Icon, Meta, StatusChip, WarrantyChip, WatchTile,
   bookingUrl, btnPrimary, btnSecondary, iconBtn,
@@ -28,18 +28,33 @@ type Props = {
   onLog: (sw: ServiceWatch) => void
   onInterval: (sw: ServiceWatch, years: ServiceIntervalYears) => void
   onExport: (sw: ServiceWatch) => void
+  /** Open the edit modal for an individual service record (in-hub editing). */
+  onEditRecord: (record: WatchServiceRecord) => void
+  /** Persist editable ownership facts (box / papers / warranty) from the drawer. */
+  onSetOwnership: (sw: ServiceWatch, updates: OwnershipUpdates) => void
+  /** When a modal (log/edit) is layered over the drawer, suppress the drawer's
+   *  own Esc handler so Esc only closes the topmost layer. */
+  escDisabled?: boolean
 }
 
-export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport }: Props) {
+type OwnershipUpdates = { hasBox?: boolean; hasPapers?: boolean; warrantyExpiresAt?: string }
+
+export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport, onEditRecord, onSetOwnership, escDisabled = false }: Props) {
   const [displayed, setDisplayed] = useState<ServiceWatch | null>(sw)
   const panelRef = useRef<HTMLDivElement>(null)
   const open = !!sw
+
+  // Live-read inside the keydown handler so toggling escDisabled doesn't
+  // re-run the effect (which would re-fire the focus timeout and steal focus
+  // from the open modal).
+  const escDisabledRef = useRef(escDisabled)
+  escDisabledRef.current = escDisabled
 
   useEffect(() => { if (sw) setDisplayed(sw) }, [sw])
 
   useEffect(() => {
     if (!open) return
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && !escDisabledRef.current) onClose() }
     window.addEventListener('keydown', onKey)
     const id = window.setTimeout(() => panelRef.current?.focus(), 60)
     return () => { window.removeEventListener('keydown', onKey); window.clearTimeout(id) }
@@ -93,9 +108,9 @@ export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport }: P
                 </div>
               </div>
 
-              <OwnershipStrip sw={w} now={now} />
+              <OwnershipStrip sw={w} now={now} onSet={u => onSetOwnership(w, u)} />
               <ServiceSummary sw={w} now={now} onLog={onLog} onInterval={onInterval} />
-              <RecentServices sw={w} />
+              <ServiceHistory sw={w} onEdit={onEditRecord} />
               <DocumentsPeek sw={w} onClose={onClose} />
 
               {/* Full record (timeline, notes, attachments) lives on the
@@ -125,33 +140,47 @@ export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport }: P
   )
 }
 
-// ── Ownership strip ───────────────────────────────────────────────────────
-function OwnershipStrip({ sw, now }: { sw: ServiceWatch; now: Date }) {
+// ── Ownership strip (editable — box / papers / warranty, in-hub) ───────────
+const ownDateInput: CSSProperties = {
+  fontFamily: sans, fontSize: 13, color: brand.colors.ink, background: brand.colors.white,
+  border: `1px solid ${brand.colors.borderLight}`, borderRadius: brand.radius.sm, padding: '6px 9px', outline: 'none',
+}
+
+function OwnershipStrip({ sw, now, onSet }: { sw: ServiceWatch; now: Date; onSet: (u: OwnershipUpdates) => void }) {
   const w = sw.watch
-  const chips: { ok: boolean; label: string; icon: 'box' | 'doc' }[] = [
-    { ok: w.hasBox === true, label: w.hasBox ? 'Box' : 'No box', icon: 'box' },
-    { ok: w.hasPapers === true, label: w.hasPapers ? 'Papers' : 'No papers', icon: 'doc' },
-  ]
   const ws = warrantyStatus(sw, now)
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
-      {chips.map((c, i) => (
-        <span key={i} style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 11, fontWeight: 500,
-          padding: '5px 11px', borderRadius: brand.radius.pill,
-          background: c.ok ? brand.ownershipChip.presentBg : brand.ownershipChip.absentBg, color: c.ok ? brand.serviceStatus.ok.fg : brand.colors.muted,
-          border: `1px solid ${c.ok ? brand.ownershipChip.presentBorder : brand.colors.border}`,
-        }}>
-          <Icon name={c.ok ? 'check' : c.icon} size={12} color={c.ok ? brand.serviceStatus.ok.fg : brand.colors.muted} />{c.label}
-        </span>
-      ))}
-      {w.acquisitionMethod && (
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 11, fontWeight: 500, padding: '5px 11px', borderRadius: brand.radius.pill, background: brand.ownershipChip.absentBg, color: brand.colors.ink, border: `1px solid ${brand.colors.border}` }}>
-          <Icon name="receipt" size={12} color={brand.colors.muted} />{ACQ_LABEL[w.acquisitionMethod]}
-        </span>
-      )}
-      <WarrantyChip warranty={ws} size="sm" />
+    <div>
+      <Meta style={{ display: 'block', marginBottom: 9 }}>Ownership &amp; warranty</Meta>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+        <OwnToggle icon="box" label="Box" active={w.hasBox === true} onClick={() => onSet({ hasBox: !(w.hasBox === true) })} />
+        <OwnToggle icon="doc" label="Papers" active={w.hasPapers === true} onClick={() => onSet({ hasPapers: !(w.hasPapers === true) })} />
+        {w.acquisitionMethod && (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 11, fontWeight: 500, padding: '6px 12px', borderRadius: brand.radius.pill, background: brand.ownershipChip.absentBg, color: brand.colors.ink, border: `1px solid ${brand.colors.border}` }}>
+            <Icon name="receipt" size={12} color={brand.colors.muted} />{ACQ_LABEL[w.acquisitionMethod]}
+          </span>
+        )}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <Meta style={{ fontSize: 11 }}>Warranty until</Meta>
+        <input type="date" value={w.warrantyExpiresAt ?? ''} onChange={e => onSet({ warrantyExpiresAt: e.target.value })} style={ownDateInput} aria-label="Warranty expiry date" />
+        {ws && <WarrantyChip warranty={ws} size="sm" />}
+      </div>
     </div>
+  )
+}
+
+function OwnToggle({ icon, label, active, onClick }: { icon: 'box' | 'doc'; label: string; active: boolean; onClick: () => void }) {
+  return (
+    <button type="button" onClick={onClick} aria-pressed={active} style={{
+      display: 'inline-flex', alignItems: 'center', gap: 7, fontFamily: sans, fontSize: 12, fontWeight: 500,
+      padding: '6px 12px', borderRadius: brand.radius.pill, cursor: 'pointer', transition: `all ${brand.transition.fast}`,
+      background: active ? brand.ownershipChip.presentBg : brand.ownershipChip.absentBg,
+      color: active ? brand.serviceStatus.ok.fg : brand.colors.muted,
+      border: `1px solid ${active ? brand.ownershipChip.presentBorder : brand.colors.border}`,
+    }}>
+      <Icon name={active ? 'check' : icon} size={12} color={active ? brand.serviceStatus.ok.fg : brand.colors.muted} />{label}
+    </button>
   )
 }
 
@@ -164,7 +193,7 @@ function ServiceSummary({ sw, now, onLog, onInterval }: { sw: ServiceWatch; now:
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
         <StatusChip status={st} showDate />
         <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>
-          {st.key === 'overdue' ? `${Math.round(Math.abs(st.months))} mo overdue` : `due ${relTime(st.due, now)}`}
+          {st.key === 'overdue' ? `${humanizeMonths(st.months)} overdue` : `due ${relTime(st.due, now)}`}
         </span>
       </div>
 
@@ -195,19 +224,33 @@ function ServiceSummary({ sw, now, onLog, onInterval }: { sw: ServiceWatch; now:
   )
 }
 
-// ── Recent service records (inline, so you don't have to open the dossier) ──
-function RecentServices({ sw }: { sw: ServiceWatch }) {
+// ── Service history (editable inline — tap a record to edit/remove) ─────────
+function ServiceHistory({ sw, onEdit }: { sw: ServiceWatch; onEdit: (r: WatchServiceRecord) => void }) {
   if (sw.records.length === 0) return null
-  const shown = sw.records.slice(0, 4)
-  const extra = sw.records.length - shown.length
+  const sorted = [...sw.records].sort((a, b) => (a.serviceDate < b.serviceDate ? 1 : a.serviceDate > b.serviceDate ? -1 : 0))
   return (
     <div>
-      <Meta style={{ display: 'block', marginBottom: 8 }}>Recent service</Meta>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
+        <Meta>Service history</Meta>
+        <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>tap to edit</span>
+      </div>
       <div>
-        {shown.map(r => {
+        {sorted.map((r, i) => {
           const t = serviceTypeMeta(r.serviceType)
+          const last = i === sorted.length - 1
           return (
-            <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: `1px solid ${brand.colors.border}` }}>
+            <button
+              key={r.id}
+              type="button"
+              onClick={() => onEdit(r)}
+              style={{
+                width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '10px 2px',
+                background: 'none', border: 'none', borderBottom: last ? 'none' : `1px solid ${brand.colors.border}`,
+                cursor: 'pointer', transition: `background ${brand.transition.fast}`,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = brand.colors.bg }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+            >
               <span style={{ width: 16, textAlign: 'center', flexShrink: 0, fontSize: 13, color: t.resets ? brand.colors.gold : brand.colors.muted }}>{t.glyph}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontFamily: sans, fontSize: 14, fontWeight: 600, color: brand.colors.ink, lineHeight: 1.2 }}>{t.label}</div>
@@ -218,13 +261,11 @@ function RecentServices({ sw }: { sw: ServiceWatch }) {
               {r.cost != null && (
                 <span style={{ fontFamily: sans, fontSize: 14, fontWeight: 600, color: brand.colors.ink, flexShrink: 0 }}>{formatCost(r.cost)}</span>
               )}
-            </div>
+              <Icon name="chevron" size={13} color={brand.colors.muted} style={{ flexShrink: 0 }} />
+            </button>
           )
         })}
       </div>
-      {extra > 0 && (
-        <div style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted, marginTop: 9 }}>+{extra} more in the full dossier</div>
-      )}
     </div>
   )
 }

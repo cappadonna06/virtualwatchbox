@@ -23,6 +23,7 @@ export type IconName =
   | 'wrench' | 'doc' | 'box' | 'shield' | 'calendar' | 'clock' | 'plus'
   | 'close' | 'chevron' | 'chevronDown' | 'download' | 'check' | 'drop'
   | 'spark' | 'receipt' | 'list' | 'grid' | 'rows' | 'arrowUpRight' | 'search'
+  | 'coins' | 'lock' | 'upload' | 'help'
 
 export function Icon({
   name, size = 16, color = 'currentColor', strokeWidth = 1.5, style,
@@ -52,6 +53,10 @@ export function Icon({
     rows: <><rect {...p} x="3" y="3.5" width="10" height="3" rx="0.6" /><rect {...p} x="3" y="9.5" width="10" height="3" rx="0.6" /></>,
     arrowUpRight: <path {...p} d="M5 11 11 5M6 5h5v5" />,
     search: <><circle {...p} cx="7.3" cy="7.3" r="4" /><path {...p} d="M10.5 10.5 13.5 13.5" /></>,
+    coins: <><ellipse {...p} cx="6" cy="5" rx="3.5" ry="2" /><path {...p} d="M2.5 5v3c0 1.1 1.6 2 3.5 2s3.5-.9 3.5-2V5" /><path {...p} d="M9.5 8.2c1.6.2 2.8 1 2.8 2 0 1.1-1.6 2-3.5 2-.9 0-1.7-.2-2.3-.5" /></>,
+    lock: <><rect {...p} x="3.5" y="7" width="9" height="6.5" rx="1.2" /><path {...p} d="M5.5 7V5.2a2.5 2.5 0 0 1 5 0V7" /></>,
+    upload: <><path {...p} d="M8 10.5V3.5M5 6.5 8 3.5l3 3" /><path {...p} d="M3.5 12.5h9" /></>,
+    help: <><circle {...p} cx="8" cy="8" r="5.5" /><path {...p} d="M6.3 6.3a1.8 1.8 0 0 1 3.4.6c0 1.2-1.7 1.4-1.7 2.5" /><path {...p} d="M8 11.4h.01" /></>,
   }
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" style={style} aria-hidden="true">

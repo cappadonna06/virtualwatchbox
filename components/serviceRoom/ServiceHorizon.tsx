@@ -7,7 +7,7 @@
 // band vertically so every watch keeps its own pill without overlap.
 
 import { brand } from '@/lib/brand'
-import { addMonths, formatDate, formatMonthYear, monthsBetween, serviceStatus, type ServiceWatch } from '@/lib/serviceRoom/derive'
+import { addMonths, formatDate, formatMonthYear, humanizeMonths, monthsBetween, serviceStatus, type ServiceWatch } from '@/lib/serviceRoom/derive'
 import { Meta, WatchShot } from '@/components/serviceRoom/primitives'
 
 const sans = brand.font.sans
@@ -128,7 +128,7 @@ export function ServiceHorizon({ watches, now, onPick, activeId, isMobile }: Pro
           const nearRight = p.xPct > 68
           const isActive = activeId === p.sw.watch.id
           const dated = p.bucket === null
-          const sub = p.bucket === 'overdue' ? `${Math.round(Math.abs(p.m))} mo overdue` : formatMonthYear(p.st.due)
+          const sub = p.bucket === 'overdue' ? `${humanizeMonths(p.m)} overdue` : formatMonthYear(p.st.due)
           return (
             <div key={p.sw.watch.id} style={{ position: 'absolute', left: `${p.xPct}%`, top: cy }}>
               {dated && (

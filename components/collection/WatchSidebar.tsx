@@ -8,8 +8,6 @@ import { brand } from '@/lib/brand'
 import { dialColorToHex } from '@/lib/dialColors'
 import { buildChrono24URL } from '@/lib/discover'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
-import { buildServiceWatch, formatDate, nextDueDate } from '@/lib/serviceRoom/derive'
-import { compatibleStraps } from '@/lib/strapCompatibility'
 import { toStrapDrawerWatch } from '@/components/straps/useStrapDrawerWatches'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 import WatchPhotoGallery from './WatchPhotoGallery'
@@ -110,6 +108,19 @@ const btnSecondary: React.CSSProperties = {
   width: '100%',
 }
 
+// Compact single-line variant for the side-by-side secondary action grid —
+// keeps the buttons short rather than wrapping to several lines.
+const btnAction: React.CSSProperties = {
+  ...btnSecondary,
+  padding: '8px 10px',
+  fontSize: 11.5,
+  letterSpacing: '0.04em',
+  textAlign: 'center',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+}
+
 interface Props {
   watch: ResolvedOwnedWatch | ResolvedWatch | null
   mode?: 'collection' | 'playground' | 'followed' | 'public'
@@ -135,10 +146,7 @@ export default function WatchSidebar({
     promoteToNextTarget,
     removeFromNextTargets,
     showToast,
-    getWatchServiceRecords,
     getCatalogWatch,
-    straps,
-    strapOverrides,
   } = useCollectionSession()
   const panelStyle: React.CSSProperties = sticky
     ? sidebarPanel
@@ -173,24 +181,12 @@ export default function WatchSidebar({
   const savedState = getWatchSavedState(resolvedCatalogWatchId)
   const showJewelBadge = mode === 'collection' && isWatchJewel(resolvedCatalogWatchId)
 
-  // Owner-only "Last serviced" hint: most recent service record, else the
-  // watch's lightweight lastServicedAt fallback. Overdue badge when the watch
-  // is marked Needs Service and the computed next-service date has passed.
-  const ownedForService = isOwnedWatch ? (watch as ResolvedOwnedWatch) : null
-  const serviceRecords = ownedForService ? getWatchServiceRecords(ownedForService.id) : []
-  const lastServicedDate = serviceRecords.length
-    ? [...serviceRecords].sort((a, b) => (a.serviceDate < b.serviceDate ? 1 : -1))[0].serviceDate
-    : ownedForService?.lastServicedAt ?? null
-  const serviceOverdue = !!ownedForService
-    && ownedForService.ownershipStatus === 'Needs Service'
-    && nextDueDate(buildServiceWatch(ownedForService, serviceRecords, [])).getTime() < Date.now()
   const isTarget = isWatchTarget(resolvedCatalogWatchId)
   const marketLabel = !isOwnedWatch && savedState === 'grail' && !isPublicMode ? 'Find on Market ↗' : 'Find For Sale ↗'
 
-  // Strap Drawer wiring (owner-only).
+  // Strap Drawer wiring (owner-only). Integrated bracelets can't take straps.
   const strapWatch = isOwnedWatch ? toStrapDrawerWatch(watch, getCatalogWatch(watch.watchId)) : null
   const isIntegrated = strapWatch?.braceletType === 'integrated'
-  const fittingStrapCount = strapWatch ? compatibleStraps(strapWatch, straps, strapOverrides).length : 0
 
   // Owned mode shows a trimmed, glanceable spec set; the full sheet lives on
   // /collection/watch/[id]. Non-owned modes keep the fuller set — they have no
@@ -359,17 +355,6 @@ export default function WatchSidebar({
         ))}
       </div>
 
-      {isOwnedWatch && lastServicedDate && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: -4, marginBottom: 16, fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.muted }}>
-          <span>Last serviced: {formatDate(lastServicedDate, { year: 'numeric', month: 'short', day: 'numeric' })}</span>
-          {serviceOverdue && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: brand.radius.pill, background: brand.serviceStatus.due.bg, color: brand.serviceStatus.due.fg, fontSize: 11, fontWeight: 600, letterSpacing: '0.04em' }}>
-              Service overdue
-            </span>
-          )}
-        </div>
-      )}
-
       {mode === 'playground' || mode === 'followed' ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <a
@@ -420,20 +405,16 @@ export default function WatchSidebar({
               href={buildChrono24URL(watch.brand, watch.model, 'sell')}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ ...btnSecondary, textAlign: 'center', textDecoration: 'none' }}
+              style={{ ...btnAction, textDecoration: 'none' }}
             >
-              Sell This Watch ↗
+              Sell ↗
             </a>
             {isIntegrated ? (
-              <span style={{ ...btnSecondary, cursor: 'default', textAlign: 'center', color: brand.colors.muted, fontWeight: 400 }}>
-                Integrated bracelet
+              <span style={{ ...btnAction, cursor: 'default', color: brand.colors.muted, fontWeight: 400 }}>
+                Integrated
               </span>
-            ) : straps.length === 0 ? (
-              <button style={btnSecondary} onClick={() => router.push('/collection/straps')}>+ Start Strap Drawer →</button>
-            ) : fittingStrapCount === 0 ? (
-              <button style={btnSecondary} onClick={() => router.push(`/collection/straps?addStrap=1&suggestLug=${strapWatch?.lugWidthMm ?? ''}`)}>No matching · Add →</button>
             ) : (
-              <button style={btnSecondary} onClick={() => router.push(`/collection/straps?watchId=${watch.id}`)}>Swap Strap →</button>
+              <button style={btnAction} onClick={() => router.push(`/collection/straps?watchId=${watch.id}`)}>Straps →</button>
             )}
           </div>
         </div>
@@ -452,20 +433,16 @@ export default function WatchSidebar({
               href={buildChrono24URL(watch.brand, watch.model, 'sell')}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ ...btnSecondary, textAlign: 'center', textDecoration: 'none' }}
+              style={{ ...btnAction, textDecoration: 'none' }}
             >
-              Sell This Watch ↗
+              Sell ↗
             </a>
             {isIntegrated ? (
-              <span style={{ ...btnSecondary, cursor: 'default', textAlign: 'center', color: brand.colors.muted, fontWeight: 400 }}>
-                Integrated bracelet
+              <span style={{ ...btnAction, cursor: 'default', color: brand.colors.muted, fontWeight: 400 }}>
+                Integrated
               </span>
-            ) : straps.length === 0 ? (
-              <button style={btnSecondary} onClick={() => router.push('/collection/straps')}>+ Start Strap Drawer →</button>
-            ) : fittingStrapCount === 0 ? (
-              <button style={btnSecondary} onClick={() => router.push(`/collection/straps?addStrap=1&suggestLug=${strapWatch?.lugWidthMm ?? ''}`)}>No matching · Add →</button>
             ) : (
-              <button style={btnSecondary} onClick={() => router.push(`/collection/straps?watchId=${watch.id}`)}>Swap Strap →</button>
+              <button style={btnAction} onClick={() => router.push(`/collection/straps?watchId=${watch.id}`)}>Straps →</button>
             )}
           </div>
         </div>

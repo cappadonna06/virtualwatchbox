@@ -5,7 +5,7 @@
 
 import { brand } from '@/lib/brand'
 import {
-  byAttention, formatCost, formatDate, formatMonthYear, lastFullService,
+  byAttention, formatCost, formatDate, formatMonthYear, humanizeMonths, lastFullService,
   lifetimeCostCents, relTime, serviceStatus, type ServiceWatch,
 } from '@/lib/serviceRoom/derive'
 import {
@@ -33,7 +33,7 @@ function AttentionCard({ sw, now, onPick, onLog, isMobile }: { sw: ServiceWatch;
   const lf = lastFullService(sw)
   const overdue = st.key === 'overdue'
   const need = overdue
-    ? `Full service overdue by ${Math.round(Math.abs(st.months))} months`
+    ? `Full service overdue by ${humanizeMonths(st.months)}`
     : `Full service due ${relTime(st.due, now)} — ${formatDate(st.due)}`
   const imgCol = isMobile ? 84 : 128
 

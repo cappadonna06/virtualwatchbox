@@ -4,13 +4,15 @@
 // provenance hub. Recreated from docs/design-system/design_handoff_service_room
 // on our real stack (CollectionSessionProvider + brand tokens).
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { brand, masthead } from '@/lib/brand'
 import { useCollectionSession, type ServiceRecordInput } from '@/app/collection/CollectionSessionProvider'
 import {
   buildServiceWatch,
   formatCost,
   formatMonthYear,
+  hasServiceData,
+  humanizeMonths,
   lifetimeCostCents,
   serviceStatus,
   type ServiceWatch,
@@ -24,9 +26,14 @@ import { HubGallery } from '@/components/serviceRoom/HubGallery'
 import { PartnerBand } from '@/components/serviceRoom/PartnerBand'
 import { WatchDrawer } from '@/components/serviceRoom/WatchDrawer'
 import { LogServiceModal } from '@/components/serviceRoom/LogServiceModal'
+import { Screen1Empty } from '@/components/serviceRoom/onboarding/Screen1Empty'
+import { Screen2Conversion } from '@/components/serviceRoom/onboarding/Screen2Conversion'
+import { OnboardingWizard } from '@/components/serviceRoom/onboarding/OnboardingWizard'
 import { downloadDossier } from '@/lib/serviceRoom/dossier'
 
 type LayoutId = 'agenda' | 'ledger' | 'gallery'
+
+const HUB_DISMISS_KEY = 'vwb:serviceRoomHubDismissed'
 
 const sans = brand.font.sans
 const serif = brand.font.serif
@@ -41,7 +48,8 @@ export default function ServiceRoomPage() {
   const session = useCollectionSession()
   const {
     collectionWatches, getWatchServiceRecords, getWatchPhotos,
-    logServiceRecord, setWatchInterval, showToast,
+    logServiceRecord, updateServiceRecord, deleteServiceRecord, setWatchInterval, showToast,
+    uploadWatchPhotos, updateCollectionWatch,
   } = session
 
   const isMobile = useIsMobile()
@@ -49,13 +57,42 @@ export default function ServiceRoomPage() {
   const [layout, setLayout] = useState<LayoutId>('agenda')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [logForId, setLogForId] = useState<string | null>(null)
+  const [editTarget, setEditTarget] = useState<{ sw: ServiceWatch; record: WatchServiceRecord } | null>(null)
   const [now] = useState(() => new Date())
+  const [wizardOpen, setWizardOpen] = useState(false)
+  const [hubDismissed, setHubDismissed] = useState(false)
+
+  // First-run dismissal ("I'll do this later") persists for the session.
+  useEffect(() => {
+    try { setHubDismissed(sessionStorage.getItem(HUB_DISMISS_KEY) === '1') } catch { /* no-op */ }
+  }, [])
+
+  const dismissHub = () => {
+    try { sessionStorage.setItem(HUB_DISMISS_KEY, '1') } catch { /* no-op */ }
+    setHubDismissed(true)
+  }
+  const clearHubDismiss = () => {
+    try { sessionStorage.removeItem(HUB_DISMISS_KEY) } catch { /* no-op */ }
+    setHubDismissed(false)
+  }
 
   const watches: ServiceWatch[] = useMemo(
     () => collectionWatches.map(w =>
       buildServiceWatch(w, getWatchServiceRecords(w.id), getWatchPhotos(w.id))),
     [collectionWatches, getWatchServiceRecords, getWatchPhotos],
   )
+
+  // empty → no watches · convert → watches with no service data (first-run) ·
+  // hub → the populated maintenance hub.
+  const anyData = watches.some(hasServiceData)
+  const screen: 'empty' | 'convert' | 'hub' =
+    watches.length === 0 ? 'empty'
+    : (!anyData && !hubDismissed) ? 'convert'
+    : 'hub'
+
+  // Pieces whose service interval was never explicitly set — i.e. still on the
+  // estimate default. Keeps the setup wizard reachable from the populated hub.
+  const needsSchedule = watches.filter(w => w.watch.intervalYears == null).length
 
   const selected = watches.find(sw => sw.watch.id === selectedId) ?? null
   const logFor = watches.find(sw => sw.watch.id === logForId) ?? null
@@ -76,6 +113,16 @@ export default function ServiceRoomPage() {
     }
   }
 
+  const onUpdateService = async (sw: ServiceWatch, recordId: string, data: ServiceRecordInput): Promise<boolean> => {
+    try { await updateServiceRecord(sw.watch.id, recordId, data); showToast('Service updated'); return true }
+    catch { showToast('Could not update the service record'); return false }
+  }
+
+  const onDeleteService = async (sw: ServiceWatch, recordId: string): Promise<void> => {
+    try { await deleteServiceRecord(sw.watch.id, recordId); showToast('Service record removed') }
+    catch { showToast('Could not remove the record'); throw new Error('delete failed') }
+  }
+
   const onInterval = (sw: ServiceWatch, years: ServiceIntervalYears) => {
     void setWatchInterval(sw.watch.id, years)
   }
@@ -92,6 +139,12 @@ export default function ServiceRoomPage() {
 
   const Layout = { agenda: HubAgenda, ledger: HubLedger, gallery: HubGallery }[layout]
 
+  const subtitle = screen === 'empty'
+    ? 'Service dates, papers, and lifetime upkeep, kept in one place.'
+    : screen === 'convert'
+      ? `${watches.length} ${watches.length === 1 ? 'piece' : 'pieces'} in the box. None have a schedule yet.`
+      : 'Every service, document, and cost for your collection.'
+
   return (
     <div style={{ background: brand.colors.bg, minHeight: '70vh' }}>
       <div style={{ padding: `36px ${gx}px 16px` }}>
@@ -103,41 +156,69 @@ export default function ServiceRoomPage() {
               The Service Room
             </h1>
             <p style={{ ...masthead.subtitle, margin: '12px 0 0', maxWidth: 460 }}>
-              Every service, document, and cost for your collection.
+              {subtitle}
             </p>
           </div>
-          {!isMobile && (
-            <button type="button" onClick={onExportAll} style={{ ...btnSecondary, padding: '10px 16px' }}>
-              <Icon name="download" size={14} color={brand.colors.ink} />Export dossier
-            </button>
+          {screen === 'hub' && (
+            <div style={{ display: 'flex', gap: isMobile ? 8 : 10 }}>
+              <button type="button" onClick={() => setWizardOpen(true)} style={{ ...btnSecondary, padding: isMobile ? '9px 12px' : '10px 16px' }}>
+                <Icon name="spark" size={isMobile ? 13 : 14} color={brand.colors.goldDeep} />{isMobile ? 'Set up' : 'Set up schedules'}
+              </button>
+              <button type="button" onClick={onExportAll} style={{ ...btnSecondary, padding: isMobile ? '9px 14px' : '10px 16px' }}>
+                <Icon name="download" size={isMobile ? 13 : 14} color={brand.colors.ink} />{isMobile ? 'Export' : 'Export dossier'}
+              </button>
+            </div>
           )}
         </div>
 
-        <SummaryStrip watches={watches} now={now} isMobile={isMobile} />
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, margin: '28px 0 4px', flexWrap: 'wrap' }}>
-          <LayoutSwitch value={layout} onChange={setLayout} />
-          {isMobile && (
-            <button type="button" onClick={onExportAll} style={{ ...btnSecondary, padding: '9px 14px' }}>
-              <Icon name="download" size={13} color={brand.colors.ink} />Export
-            </button>
-          )}
-        </div>
+        {screen === 'hub' && (
+          <>
+            {needsSchedule > 0 && (
+              <button
+                type="button"
+                onClick={() => setWizardOpen(true)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left',
+                  background: brand.colors.goldWash, border: `1px solid ${brand.colors.goldLine}`, borderRadius: brand.radius.lg,
+                  padding: '12px 16px', marginBottom: 18, cursor: 'pointer',
+                }}
+              >
+                <Icon name="spark" size={16} color={brand.colors.goldDeep} />
+                <span style={{ flex: 1, fontFamily: sans, fontSize: 13.5, color: brand.colors.ink }}>
+                  <b style={{ fontWeight: 600 }}>{needsSchedule} {needsSchedule === 1 ? 'piece' : 'pieces'}</b> {needsSchedule === 1 ? "doesn't" : "don't"} have a service schedule yet — running on an estimate.
+                </span>
+                <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: brand.colors.goldDeep, display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+                  Set up <span aria-hidden>→</span>
+                </span>
+              </button>
+            )}
+            <SummaryStrip watches={watches} now={now} isMobile={isMobile} />
+            <div style={{ margin: '28px 0 4px' }}>
+              <LayoutSwitch value={layout} onChange={setLayout} />
+            </div>
+          </>
+        )}
       </div>
 
       <div style={{ padding: `8px ${gx}px 40px`, display: 'flex', flexDirection: 'column', gap: 40 }}>
-        {watches.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <Layout watches={watches} now={now} onPick={onPick} onLog={onLog} activeId={selectedId} isMobile={isMobile} />
+        {screen === 'empty' && <Screen1Empty now={now} isMobile={isMobile} />}
+        {screen === 'convert' && (
+          <Screen2Conversion watches={watches} onStart={() => setWizardOpen(true)} onDismiss={dismissHub} isMobile={isMobile} />
         )}
-        <div style={{ height: 1, background: brand.colors.border }} />
-        <PartnerBand />
+        {screen === 'hub' && (
+          <>
+            <Layout watches={watches} now={now} onPick={onPick} onLog={onLog} activeId={selectedId} isMobile={isMobile} />
+            <div style={{ height: 1, background: brand.colors.border }} />
+            <PartnerBand />
+          </>
+        )}
       </div>
 
-      <footer style={{ padding: `24px ${gx}px 48px`, borderTop: `1px solid ${brand.colors.border}`, display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 12 }}>
-        <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted, letterSpacing: '0.04em' }}>VIRTUAL WATCHBOX · THE SERVICE ROOM</span>
-      </footer>
+      {screen === 'hub' && (
+        <footer style={{ padding: `24px ${gx}px 48px`, borderTop: `1px solid ${brand.colors.border}`, display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 12 }}>
+          <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted, letterSpacing: '0.04em' }}>VIRTUAL WATCHBOX · THE SERVICE ROOM</span>
+        </footer>
+      )}
 
       <WatchDrawer
         sw={selected}
@@ -146,8 +227,36 @@ export default function ServiceRoomPage() {
         onLog={onLog}
         onInterval={onInterval}
         onExport={onExport}
+        onEditRecord={record => { if (selected) setEditTarget({ sw: selected, record }) }}
+        onSetOwnership={(s, updates) => updateCollectionWatch(s.watch.id, updates)}
+        escDisabled={!!(editTarget || logFor)}
       />
       <LogServiceModal sw={logFor} onClose={() => setLogForId(null)} onSave={onSaveService} />
+      {editTarget && (
+        <LogServiceModal
+          sw={editTarget.sw}
+          record={editTarget.record}
+          onClose={() => setEditTarget(null)}
+          onSave={onSaveService}
+          onUpdate={onUpdateService}
+          onDelete={onDeleteService}
+        />
+      )}
+
+      {wizardOpen && (
+        <OnboardingWizard
+          watches={watches}
+          now={now}
+          isMobile={isMobile}
+          setWatchInterval={setWatchInterval}
+          logServiceRecord={logServiceRecord}
+          uploadWatchPhotos={uploadWatchPhotos}
+          updateCollectionWatch={updateCollectionWatch}
+          showToast={showToast}
+          onClose={() => setWizardOpen(false)}
+          onDone={dest => { setWizardOpen(false); clearHubDismiss(); if (dest === 'agenda') setLayout('agenda') }}
+        />
+      )}
     </div>
   )
 }
@@ -159,15 +268,23 @@ function SummaryStrip({ watches, now, isMobile }: { watches: ServiceWatch[]; now
   const soonest = [...watches].sort((a, b) => serviceStatus(a, now).due.getTime() - serviceStatus(b, now).due.getTime())[0]
   const ss = soonest ? serviceStatus(soonest, now) : null
 
+  const piece = soonest ? `${soonest.watch.brand} ${soonest.watch.model}` : ''
+  const nextStat: { label: string; value: string | number; meta: string; accent?: string } =
+    !ss
+      ? { label: 'Next on the bench', value: '—', meta: 'nothing scheduled' }
+      : ss.key === 'overdue'
+        ? { label: 'Next on the bench', value: 'Now', accent: brand.serviceStatus.overdue.fg, meta: `${humanizeMonths(ss.months)} overdue · ${piece}` }
+        : { label: 'Next on the bench', value: formatMonthYear(ss.due), meta: piece }
+
   const stats: { label: string; value: string | number; meta: string; accent?: string }[] = [
     { label: 'Pieces under care', value: watches.length, meta: 'in your box' },
+    nextStat,
     {
       label: 'Need attention', value: attention.length,
       meta: attention.length ? 'overdue or due soon' : 'all on track',
       accent: attention.length ? brand.serviceStatus.due.fg : brand.serviceStatus.ok.fg,
     },
     { label: 'Lifetime upkeep', value: formatCost(totalCents), meta: 'across all records', accent: brand.colors.gold },
-    { label: 'Next on the bench', value: ss ? formatMonthYear(ss.due) : '—', meta: soonest ? `${soonest.watch.brand} ${soonest.watch.model}` : 'nothing scheduled' },
   ]
 
   return (
@@ -212,25 +329,6 @@ function LayoutSwitch({ value, onChange }: { value: LayoutId; onChange: (id: Lay
           </button>
         )
       })}
-    </div>
-  )
-}
-
-function EmptyState() {
-  return (
-    <div style={{
-      background: brand.colors.white, border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.xl,
-      padding: '56px 24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
-    }}>
-      <Icon name="wrench" size={26} color={brand.colors.muted} />
-      <div style={{ fontFamily: serif, fontSize: 24, fontWeight: 400, color: brand.colors.ink }}>No watches under care yet</div>
-      <p style={{ fontFamily: sans, fontSize: 13, color: brand.colors.muted, maxWidth: 360, lineHeight: 1.6, margin: 0 }}>
-        Add watches to your collection and they&apos;ll appear here with service history, documents, and a clear read on what&apos;s due next.
-      </p>
-      <a href="/collection/add" style={{
-        fontFamily: sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase',
-        padding: '10px 18px', background: brand.colors.ink, color: brand.colors.slot, borderRadius: brand.radius.btn, textDecoration: 'none', marginTop: 6,
-      }}>Add a watch</a>
     </div>
   )
 }

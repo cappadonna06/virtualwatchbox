@@ -10,12 +10,22 @@ import {
   serviceStatus, serviceTypeMeta, warrantyStatus, type ServiceWatch,
 } from '@/lib/serviceRoom/derive'
 import { Icon, SectionHead, StatusChip, WatchShot, iconBtn } from '@/components/serviceRoom/primitives'
+import SortDropdown from '@/components/collection/SortDropdown'
 import type { LayoutProps } from '@/components/serviceRoom/layoutTypes'
 
 const sans = brand.font.sans
 const serif = brand.font.serif
 
 type ColId = 'watch' | 'last' | 'next' | 'interval' | 'cost' | 'docs' | 'warranty'
+
+// Sortable fields for the mobile control — the few a collector actually uses.
+// (Interval / Papers stay as sortable columns on the desktop table.)
+const SORT_OPTIONS = [
+  { value: 'next', label: 'Next due' },
+  { value: 'last', label: 'Last serviced' },
+  { value: 'cost', label: 'Lifetime upkeep' },
+  { value: 'watch', label: 'Brand & model' },
+]
 const COLS: { id: ColId; label: string; w: string; align: 'left' | 'right' }[] = [
   { id: 'watch', label: 'Piece', w: '2.9fr', align: 'left' },
   { id: 'last', label: 'Last serviced', w: '0.95fr', align: 'left' },
@@ -56,22 +66,34 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
       <div>
         <SectionHead eyebrow="The file cabinet" title="Every piece, on the record" />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
           <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>Sort</span>
-          <select
+          <SortDropdown
+            compact
             value={sort.key}
-            onChange={e => setSort({ key: e.target.value as ColId, dir: 1 })}
-            style={{ fontFamily: sans, fontSize: 15, color: brand.colors.ink, background: brand.colors.white, border: `1px solid ${brand.colors.borderLight}`, borderRadius: brand.radius.md, padding: '8px 11px', flex: 1, outline: 'none' }}
+            options={SORT_OPTIONS}
+            onChange={key => setSort({ key: key as ColId, dir: 1 })}
+          />
+          <button
+            type="button"
+            onClick={() => setSort(s => ({ ...s, dir: (-s.dir) as 1 | -1 }))}
+            aria-label={sort.dir < 0 ? 'Sorted descending — tap to sort ascending' : 'Sorted ascending — tap to sort descending'}
+            title={sort.dir < 0 ? 'Sorted descending' : 'Sorted ascending'}
+            style={{
+              width: brand.controls.dropdown.triggerHeight, height: brand.controls.dropdown.triggerHeight,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: 0,
+              borderRadius: brand.radius.md, border: `1px solid ${brand.colors.borderLight}`,
+              background: brand.colors.white, boxShadow: brand.shadow.sm, cursor: 'pointer',
+            }}
           >
-            <option value="next">Next due</option>
-            <option value="last">Last serviced</option>
-            <option value="cost">Lifetime upkeep</option>
-            <option value="interval">Interval</option>
-            <option value="docs">Papers on file</option>
-            <option value="watch">Brand &amp; model</option>
-          </select>
-          <button type="button" onClick={() => setSort(s => ({ ...s, dir: (-s.dir) as 1 | -1 }))} title="Reverse order" aria-label="Reverse sort order" style={{ ...iconBtn, width: 40, height: 40 }}>
-            <span style={{ fontSize: 11, color: brand.colors.muted, transform: sort.dir < 0 ? 'rotate(180deg)' : 'none', display: 'inline-block' }}>▾</span>
+            <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, lineHeight: 0 }}>
+              <svg width="11" height="6" viewBox="0 0 11 6" fill="none" aria-hidden="true">
+                <path d="M1.5 4.5L5.5 1.5L9.5 4.5" stroke={sort.dir > 0 ? brand.colors.ink : brand.colors.faint} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <svg width="11" height="6" viewBox="0 0 11 6" fill="none" aria-hidden="true">
+                <path d="M1.5 1.5L5.5 4.5L9.5 1.5" stroke={sort.dir < 0 ? brand.colors.ink : brand.colors.faint} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
           </button>
         </div>
 
@@ -105,7 +127,6 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: brand.colors.muted }}>
                     <Icon name="doc" size={14} color={brand.colors.muted} />
                     <span style={{ fontFamily: sans, fontSize: 14, color: brand.colors.ink }}>{sw.documents.length} on file</span>
-                    {sw.watch.hasPapers === false && <span style={{ fontFamily: sans, fontSize: 11, color: brand.serviceStatus.due.fg, background: brand.serviceStatus.due.bg, padding: '1px 7px', borderRadius: 10 }}>no papers</span>}
                   </span>
                   <button type="button" onClick={e => { e.stopPropagation(); onLog(sw) }} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.04em', padding: '8px 14px', background: 'transparent', color: brand.colors.ink, border: `1px solid ${brand.colors.borderLight}`, borderRadius: brand.radius.btn, cursor: 'pointer' }}>
                     <Icon name="plus" size={13} color={brand.colors.ink} />Log
@@ -131,17 +152,34 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
         <div style={{ minWidth: 760, background: brand.colors.white, border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.xl, overflow: 'hidden' }}>
           {/* header */}
           <div style={{ display: 'grid', gridTemplateColumns: gridTemplate, gap: 14, alignItems: 'center', padding: '13px 20px', borderBottom: `1px solid ${brand.colors.border}`, background: brand.colors.bg }}>
-            {COLS.map(c => (
-              <button key={c.id} type="button" onClick={() => toggleSort(c.id)} style={{
-                display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-                justifyContent: c.align === 'right' ? 'flex-end' : 'flex-start',
-                fontFamily: sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase',
-                color: sort.key === c.id ? brand.colors.ink : brand.colors.muted,
-              }}>
-                {c.label}
-                <span style={{ opacity: sort.key === c.id ? 1 : 0.25, fontSize: 8, transform: sort.key === c.id && sort.dir < 0 ? 'rotate(180deg)' : 'none' }}>▾</span>
-              </button>
-            ))}
+            {COLS.map(c => {
+              const active = sort.key === c.id
+              const right = c.align === 'right'
+              const chevrons = (
+                <span style={{ display: 'flex', flexDirection: 'column', gap: 1.5, lineHeight: 0, flexShrink: 0 }} aria-hidden="true">
+                  <svg width="9" height="5" viewBox="0 0 9 5" fill="none">
+                    <path d="M1 4L4.5 1L8 4" stroke={active && sort.dir > 0 ? brand.colors.ink : brand.colors.faint} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <svg width="9" height="5" viewBox="0 0 9 5" fill="none">
+                    <path d="M1 1L4.5 4L8 1" stroke={active && sort.dir < 0 ? brand.colors.ink : brand.colors.faint} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+              )
+              return (
+                // textAlign matches the column so wrapped 2-line headers (Last
+                // serviced / Lifetime upkeep) line up with their data instead of
+                // centering; on the right-aligned column the chevron leads so the
+                // label's right edge hugs the right-aligned figures.
+                <button key={c.id} type="button" onClick={() => toggleSort(c.id)} style={{
+                  display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                  justifyContent: right ? 'flex-end' : 'flex-start', textAlign: right ? 'right' : 'left',
+                  fontFamily: sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase',
+                  color: active ? brand.colors.ink : brand.colors.muted,
+                }}>
+                  {right ? <>{chevrons}{c.label}</> : <>{c.label}{chevrons}</>}
+                </button>
+              )
+            })}
             <span />
           </div>
 
@@ -175,7 +213,6 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: brand.colors.muted }}>
                   <Icon name="doc" size={14} color={brand.colors.muted} />
                   <span style={{ fontFamily: sans, fontSize: 14, color: brand.colors.ink }}>{sw.documents.length}</span>
-                  {sw.watch.hasPapers === false && <span title="Missing original papers" style={{ fontFamily: sans, fontSize: 11, color: brand.serviceStatus.due.fg, background: brand.serviceStatus.due.bg, padding: '1px 6px', borderRadius: 10 }}>no papers</span>}
                 </div>
                 <div>
                   {ws ? <span style={{ fontFamily: sans, fontSize: 12, color: ws.fg, display: 'inline-flex', alignItems: 'center', gap: 5 }}>

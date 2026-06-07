@@ -67,6 +67,7 @@ export function resolveOwnedWatch(
     warrantyExpiresAt: ownedWatch.warrantyExpiresAt,
     lastServicedAt: ownedWatch.lastServicedAt,
     serviceNotes: ownedWatch.serviceNotes,
+    intervalYears: ownedWatch.intervalYears,
   }
 }
 
