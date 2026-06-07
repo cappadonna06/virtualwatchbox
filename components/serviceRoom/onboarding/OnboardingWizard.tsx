@@ -205,7 +205,7 @@ export function OnboardingWizard({
             <>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                 <button type="button" onClick={commitStep2} disabled={committing} style={{ fontFamily: sans, fontSize: 13, fontWeight: 500, color: brand.colors.muted, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>Skip for now</button>
-                <span style={{ fontFamily: sans, fontSize: 12.5, color: brand.colors.faint }}>Piece {step2Index + 1} of {total}</span>
+                <span style={{ fontFamily: sans, fontSize: 12.5, color: brand.colors.muted }}>Piece {step2Index + 1} of {total}</span>
               </div>
               <button type="button" onClick={() => { if (isLastPiece) void commitStep2(); else setStep2Index(i => i + 1) }} disabled={committing} style={{ ...btnPrimary, padding: '11px 24px', opacity: committing ? 0.6 : 1 }}>
                 {committing ? 'Saving…' : isLastPiece ? 'Finish' : 'Next piece'}

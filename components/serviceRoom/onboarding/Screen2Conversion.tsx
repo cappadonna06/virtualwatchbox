@@ -126,10 +126,10 @@ function Screen2Mobile({ watches, onStart, onDismiss }: { watches: ServiceWatch[
           }}>
             <WatchShot watch={sw.watch} size={68} shadow="0 4px 10px rgba(26,20,16,0.16)" />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontFamily: sans, fontSize: 10.5, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.goldDeep }}>{sw.watch.brand}</div>
+              <div style={{ fontFamily: sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.goldDeep }}>{sw.watch.brand}</div>
               <div style={{ fontFamily: serif, fontSize: 20, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.15, margin: '1px 0 5px' }}>{sw.watch.model}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Meta style={{ fontSize: 10 }}>Next service</Meta><EstimateBadge />
+                <Meta style={{ fontSize: 11 }}>Next service</Meta><EstimateBadge />
               </div>
             </div>
           </button>

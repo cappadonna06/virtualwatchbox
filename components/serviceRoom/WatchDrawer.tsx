@@ -261,7 +261,7 @@ function ServiceHistory({ sw, onEdit }: { sw: ServiceWatch; onEdit: (r: WatchSer
               {r.cost != null && (
                 <span style={{ fontFamily: sans, fontSize: 14, fontWeight: 600, color: brand.colors.ink, flexShrink: 0 }}>{formatCost(r.cost)}</span>
               )}
-              <Icon name="chevron" size={13} color={brand.colors.faint} style={{ flexShrink: 0 }} />
+              <Icon name="chevron" size={13} color={brand.colors.muted} style={{ flexShrink: 0 }} />
             </button>
           )
         })}

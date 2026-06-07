@@ -63,7 +63,7 @@ export function WizardStep2({ sw, index, total, d, onPatch, onAddFiles, onSetDoc
 
           <div>
             <Meta style={{ display: 'block', marginBottom: 8, fontSize: 11 }}>
-              Warranty expiry <span style={{ textTransform: 'none', letterSpacing: 0, color: brand.colors.faint, fontWeight: 400 }}>· optional</span>
+              Warranty expiry <span style={{ textTransform: 'none', letterSpacing: 0, color: brand.colors.muted, fontWeight: 400 }}>· optional</span>
             </Meta>
             <input
               type="date"
