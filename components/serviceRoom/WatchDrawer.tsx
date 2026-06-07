@@ -4,7 +4,7 @@
 // quick-peek: ownership strip + service summary (with 3/5/7/10yr interval
 // toggle) + a link into the full dossier tab on the watch detail page.
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import Link from 'next/link'
 import { brand } from '@/lib/brand'
 import {
@@ -30,12 +30,16 @@ type Props = {
   onExport: (sw: ServiceWatch) => void
   /** Open the edit modal for an individual service record (in-hub editing). */
   onEditRecord: (record: WatchServiceRecord) => void
+  /** Persist editable ownership facts (box / papers / warranty) from the drawer. */
+  onSetOwnership: (sw: ServiceWatch, updates: OwnershipUpdates) => void
   /** When a modal (log/edit) is layered over the drawer, suppress the drawer's
    *  own Esc handler so Esc only closes the topmost layer. */
   escDisabled?: boolean
 }
 
-export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport, onEditRecord, escDisabled = false }: Props) {
+type OwnershipUpdates = { hasBox?: boolean; hasPapers?: boolean; warrantyExpiresAt?: string }
+
+export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport, onEditRecord, onSetOwnership, escDisabled = false }: Props) {
   const [displayed, setDisplayed] = useState<ServiceWatch | null>(sw)
   const panelRef = useRef<HTMLDivElement>(null)
   const open = !!sw
@@ -104,7 +108,7 @@ export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport, onE
                 </div>
               </div>
 
-              <OwnershipStrip sw={w} now={now} />
+              <OwnershipStrip sw={w} now={now} onSet={u => onSetOwnership(w, u)} />
               <ServiceSummary sw={w} now={now} onLog={onLog} onInterval={onInterval} />
               <ServiceHistory sw={w} onEdit={onEditRecord} />
               <DocumentsPeek sw={w} onClose={onClose} />
@@ -136,33 +140,47 @@ export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport, onE
   )
 }
 
-// ── Ownership strip ───────────────────────────────────────────────────────
-function OwnershipStrip({ sw, now }: { sw: ServiceWatch; now: Date }) {
+// ── Ownership strip (editable — box / papers / warranty, in-hub) ───────────
+const ownDateInput: CSSProperties = {
+  fontFamily: sans, fontSize: 13, color: brand.colors.ink, background: brand.colors.white,
+  border: `1px solid ${brand.colors.borderLight}`, borderRadius: brand.radius.sm, padding: '6px 9px', outline: 'none',
+}
+
+function OwnershipStrip({ sw, now, onSet }: { sw: ServiceWatch; now: Date; onSet: (u: OwnershipUpdates) => void }) {
   const w = sw.watch
-  const chips: { ok: boolean; label: string; icon: 'box' | 'doc' }[] = [
-    { ok: w.hasBox === true, label: w.hasBox ? 'Box' : 'No box', icon: 'box' },
-    { ok: w.hasPapers === true, label: w.hasPapers ? 'Papers' : 'No papers', icon: 'doc' },
-  ]
   const ws = warrantyStatus(sw, now)
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
-      {chips.map((c, i) => (
-        <span key={i} style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 11, fontWeight: 500,
-          padding: '5px 11px', borderRadius: brand.radius.pill,
-          background: c.ok ? brand.ownershipChip.presentBg : brand.ownershipChip.absentBg, color: c.ok ? brand.serviceStatus.ok.fg : brand.colors.muted,
-          border: `1px solid ${c.ok ? brand.ownershipChip.presentBorder : brand.colors.border}`,
-        }}>
-          <Icon name={c.ok ? 'check' : c.icon} size={12} color={c.ok ? brand.serviceStatus.ok.fg : brand.colors.muted} />{c.label}
-        </span>
-      ))}
-      {w.acquisitionMethod && (
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 11, fontWeight: 500, padding: '5px 11px', borderRadius: brand.radius.pill, background: brand.ownershipChip.absentBg, color: brand.colors.ink, border: `1px solid ${brand.colors.border}` }}>
-          <Icon name="receipt" size={12} color={brand.colors.muted} />{ACQ_LABEL[w.acquisitionMethod]}
-        </span>
-      )}
-      <WarrantyChip warranty={ws} size="sm" />
+    <div>
+      <Meta style={{ display: 'block', marginBottom: 9 }}>Ownership &amp; warranty</Meta>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+        <OwnToggle icon="box" label="Box" active={w.hasBox === true} onClick={() => onSet({ hasBox: !(w.hasBox === true) })} />
+        <OwnToggle icon="doc" label="Papers" active={w.hasPapers === true} onClick={() => onSet({ hasPapers: !(w.hasPapers === true) })} />
+        {w.acquisitionMethod && (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 11, fontWeight: 500, padding: '6px 12px', borderRadius: brand.radius.pill, background: brand.ownershipChip.absentBg, color: brand.colors.ink, border: `1px solid ${brand.colors.border}` }}>
+            <Icon name="receipt" size={12} color={brand.colors.muted} />{ACQ_LABEL[w.acquisitionMethod]}
+          </span>
+        )}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <Meta style={{ fontSize: 11 }}>Warranty until</Meta>
+        <input type="date" value={w.warrantyExpiresAt ?? ''} onChange={e => onSet({ warrantyExpiresAt: e.target.value })} style={ownDateInput} aria-label="Warranty expiry date" />
+        {ws && <WarrantyChip warranty={ws} size="sm" />}
+      </div>
     </div>
+  )
+}
+
+function OwnToggle({ icon, label, active, onClick }: { icon: 'box' | 'doc'; label: string; active: boolean; onClick: () => void }) {
+  return (
+    <button type="button" onClick={onClick} aria-pressed={active} style={{
+      display: 'inline-flex', alignItems: 'center', gap: 7, fontFamily: sans, fontSize: 12, fontWeight: 500,
+      padding: '6px 12px', borderRadius: brand.radius.pill, cursor: 'pointer', transition: `all ${brand.transition.fast}`,
+      background: active ? brand.ownershipChip.presentBg : brand.ownershipChip.absentBg,
+      color: active ? brand.serviceStatus.ok.fg : brand.colors.muted,
+      border: `1px solid ${active ? brand.ownershipChip.presentBorder : brand.colors.border}`,
+    }}>
+      <Icon name={active ? 'check' : icon} size={12} color={active ? brand.serviceStatus.ok.fg : brand.colors.muted} />{label}
+    </button>
   )
 }
 
