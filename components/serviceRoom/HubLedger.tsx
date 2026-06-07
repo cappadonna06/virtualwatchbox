@@ -154,22 +154,29 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
           <div style={{ display: 'grid', gridTemplateColumns: gridTemplate, gap: 14, alignItems: 'center', padding: '13px 20px', borderBottom: `1px solid ${brand.colors.border}`, background: brand.colors.bg }}>
             {COLS.map(c => {
               const active = sort.key === c.id
+              const right = c.align === 'right'
+              const chevrons = (
+                <span style={{ display: 'flex', flexDirection: 'column', gap: 1.5, lineHeight: 0, flexShrink: 0 }} aria-hidden="true">
+                  <svg width="9" height="5" viewBox="0 0 9 5" fill="none">
+                    <path d="M1 4L4.5 1L8 4" stroke={active && sort.dir > 0 ? brand.colors.ink : brand.colors.faint} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <svg width="9" height="5" viewBox="0 0 9 5" fill="none">
+                    <path d="M1 1L4.5 4L8 1" stroke={active && sort.dir < 0 ? brand.colors.ink : brand.colors.faint} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+              )
               return (
+                // textAlign matches the column so wrapped 2-line headers (Last
+                // serviced / Lifetime upkeep) line up with their data instead of
+                // centering; on the right-aligned column the chevron leads so the
+                // label's right edge hugs the right-aligned figures.
                 <button key={c.id} type="button" onClick={() => toggleSort(c.id)} style={{
                   display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-                  justifyContent: c.align === 'right' ? 'flex-end' : 'flex-start',
+                  justifyContent: right ? 'flex-end' : 'flex-start', textAlign: right ? 'right' : 'left',
                   fontFamily: sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase',
                   color: active ? brand.colors.ink : brand.colors.muted,
                 }}>
-                  {c.label}
-                  <span style={{ display: 'flex', flexDirection: 'column', gap: 1.5, lineHeight: 0, flexShrink: 0 }} aria-hidden="true">
-                    <svg width="9" height="5" viewBox="0 0 9 5" fill="none">
-                      <path d="M1 4L4.5 1L8 4" stroke={active && sort.dir > 0 ? brand.colors.ink : brand.colors.faint} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    <svg width="9" height="5" viewBox="0 0 9 5" fill="none">
-                      <path d="M1 1L4.5 4L8 1" stroke={active && sort.dir < 0 ? brand.colors.ink : brand.colors.faint} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </span>
+                  {right ? <>{chevrons}{c.label}</> : <>{c.label}{chevrons}</>}
                 </button>
               )
             })}
