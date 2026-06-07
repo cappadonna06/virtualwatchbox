@@ -91,18 +91,9 @@ export function WizardStep1({ watches, draft, allInterval, onAllInterval, patchW
                   <Checkbox
                     checked={d.usePurchaseDate}
                     onChange={v => patchWatch(sw.watch.id, { usePurchaseDate: v, ...(v ? { lastServiceDate: null } : {}) })}
-                    label="Never serviced? Use purchase date"
+                    label="Never serviced or not sure? Use purchase date"
                   />
-                  {d.usePurchaseDate
-                    ? <EstimateBadge />
-                    : (
-                      <button type="button" onClick={() => patchWatch(sw.watch.id, { usePurchaseDate: true })} style={{
-                        display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: sans, fontSize: 12.5, color: brand.colors.muted,
-                        background: 'transparent', border: 'none', cursor: 'pointer', padding: 0,
-                      }}>
-                        <Icon name="help" size={13} color={brand.colors.muted} />Not sure?
-                      </button>
-                    )}
+                  {d.usePurchaseDate && <EstimateBadge />}
                 </div>
               </>
             )}
