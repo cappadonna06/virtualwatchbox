@@ -1,0 +1,86 @@
+{
+  "generatedAt": "2026-06-07",
+  "note": "Reference-first lug widths (between-lugs, mm) for catalog_watches.lug_width_mm. APPLY GATE (scripts/enrich-lug-widths.ts): a catalog row receives a value only when (a) its reference is explicitly listed in an entry's `references`, or (b) its (brand, model) matches and its case_size_mm confirms the entry's caseSizeMm (±0.75mm). Lug width is NEVER inferred from case size — case size is only a confirmation that the researched value belongs to that reference. confidence: 'verified' = 2+ reputable sources agree; 'curated' = one reputable source. Variant-ambiguous or sparsely-documented models are intentionally omitted here and handled per-reference / by admin curation (see data/catalog-lug-cant-confirm.json).",
+  "entries": [
+    { "brand": "Omega", "model": "Seamaster Aqua Terra", "caseSizeMm": 38, "lugWidthMm": 19, "source": "delugs,mgb", "confidence": "verified" },
+    { "brand": "Omega", "model": "Seamaster Aqua Terra", "caseSizeMm": 38.5, "lugWidthMm": 19, "source": "delugs,mgb", "confidence": "verified" },
+    { "brand": "Omega", "model": "Seamaster Aqua Terra", "caseSizeMm": 41, "lugWidthMm": 20, "source": "delugs,mgb", "confidence": "verified" },
+    { "brand": "Omega", "model": "Seamaster Aqua Terra", "caseSizeMm": 41.5, "lugWidthMm": 20, "source": "delugs,mgb", "confidence": "verified", "references": ["231.10.42.21.03.003"] },
+    { "brand": "Omega", "model": "Speedmaster Moonwatch Professional", "caseSizeMm": 42, "lugWidthMm": 20, "source": "omega-official,delugs", "confidence": "verified", "references": ["310.30.42.50.01.001"] },
+    { "brand": "Omega", "model": "Speedmaster Reduced", "caseSizeMm": 39, "lugWidthMm": 18, "source": "chrono24,bobswatches", "confidence": "curated" },
+    { "brand": "Omega", "model": "Seamaster Diver 300M", "caseSizeMm": 42, "lugWidthMm": 20, "source": "delugs,helvetus", "confidence": "verified" },
+    { "brand": "Omega", "model": "Seamaster Planet Ocean", "caseSizeMm": 42, "lugWidthMm": 20, "source": "keepthetime", "confidence": "curated" },
+    { "brand": "Omega", "model": "Seamaster Planet Ocean", "caseSizeMm": 43.5, "lugWidthMm": 21, "source": "keepthetime,monochrome", "confidence": "curated" },
+    { "brand": "Omega", "model": "Seamaster Planet Ocean", "caseSizeMm": 45.5, "lugWidthMm": 22, "source": "watchuseek,keepthetime", "confidence": "curated" },
+    { "brand": "Omega", "model": "De Ville Prestige", "caseSizeMm": 39.5, "lugWidthMm": 20, "source": "omega-official", "confidence": "curated" },
+
+    { "brand": "Rolex", "model": "Submariner", "caseSizeMm": 40, "lugWidthMm": 20, "source": "everest,chroonoo", "confidence": "verified" },
+    { "brand": "Rolex", "model": "Submariner", "caseSizeMm": 41, "lugWidthMm": 21, "source": "everest,chroonoo", "confidence": "verified" },
+    { "brand": "Rolex", "model": "Datejust", "caseSizeMm": 36, "lugWidthMm": 20, "source": "everest,bobswatches", "confidence": "verified" },
+    { "brand": "Rolex", "model": "Datejust", "caseSizeMm": 41, "lugWidthMm": 21, "source": "everest,bobswatches", "confidence": "verified" },
+    { "brand": "Rolex", "model": "Day-Date", "caseSizeMm": 40, "lugWidthMm": 20, "source": "everest,bobswatches", "confidence": "verified" },
+    { "brand": "Rolex", "model": "Daytona", "caseSizeMm": 40, "lugWidthMm": 20, "source": "everest,millenarywatches", "confidence": "verified" },
+    { "brand": "Rolex", "model": "GMT-Master II", "caseSizeMm": 40, "lugWidthMm": 20, "source": "everest", "confidence": "verified" },
+    { "brand": "Rolex", "model": "Explorer", "caseSizeMm": 36, "lugWidthMm": 20, "source": "everest", "confidence": "curated" },
+    { "brand": "Rolex", "model": "Explorer", "caseSizeMm": 40, "lugWidthMm": 20, "source": "everest", "confidence": "curated" },
+    { "brand": "Rolex", "model": "Explorer II", "caseSizeMm": 42, "lugWidthMm": 21, "source": "everest", "confidence": "curated" },
+    { "brand": "Rolex", "model": "Yacht-Master", "caseSizeMm": 40, "lugWidthMm": 20, "source": "everest", "confidence": "curated" },
+
+    { "brand": "Tudor", "model": "Black Bay 58", "caseSizeMm": 39, "lugWidthMm": 20, "source": "everest,wisstraps", "confidence": "verified" },
+    { "brand": "Tudor", "model": "Black Bay 54", "caseSizeMm": 37, "lugWidthMm": 20, "source": "everest", "confidence": "verified" },
+    { "brand": "Tudor", "model": "Black Bay 41", "caseSizeMm": 41, "lugWidthMm": 22, "source": "everest,strapmillcanada", "confidence": "verified" },
+    { "brand": "Tudor", "model": "Black Bay GMT", "caseSizeMm": 41, "lugWidthMm": 22, "source": "everest", "confidence": "curated" },
+    { "brand": "Tudor", "model": "Black Bay Pro", "caseSizeMm": 39, "lugWidthMm": 22, "source": "everest", "confidence": "curated" },
+
+    { "brand": "Longines", "model": "HydroConquest", "caseSizeMm": 39, "lugWidthMm": 20, "source": "justraps", "confidence": "verified" },
+    { "brand": "Longines", "model": "HydroConquest", "caseSizeMm": 41, "lugWidthMm": 21, "source": "justraps,watchcharts", "confidence": "verified" },
+    { "brand": "Longines", "model": "HydroConquest", "caseSizeMm": 43, "lugWidthMm": 21, "source": "justraps,watchcharts", "confidence": "verified" },
+    { "brand": "Longines", "model": "HydroConquest", "caseSizeMm": 44, "lugWidthMm": 22, "source": "justraps", "confidence": "curated" },
+    { "brand": "Longines", "model": "Spirit", "caseSizeMm": 40, "lugWidthMm": 21, "source": "watchgecko,worn&wound", "confidence": "verified" },
+    { "brand": "Longines", "model": "Spirit", "caseSizeMm": 42, "lugWidthMm": 22, "source": "ablogtowatch", "confidence": "verified" },
+    { "brand": "Longines", "model": "Legend Diver", "caseSizeMm": 42, "lugWidthMm": 22, "source": "watchcrunch,monochrome", "confidence": "curated" },
+    { "brand": "Longines", "model": "Master Collection", "caseSizeMm": 40, "lugWidthMm": 21, "source": "delugs", "confidence": "curated" },
+    { "brand": "Longines", "model": "Master Collection", "caseSizeMm": 34, "lugWidthMm": 18, "source": "timeandtide", "confidence": "curated" },
+    { "brand": "Longines", "model": "Presence", "caseSizeMm": 38.5, "lugWidthMm": 20, "source": "watchdetails", "confidence": "curated" },
+
+    { "brand": "Oris", "model": "Divers Sixty-Five", "caseSizeMm": 40, "lugWidthMm": 20, "source": "delugs,cnswatchbands", "confidence": "curated" },
+    { "brand": "Oris", "model": "Aquis", "caseSizeMm": 41.5, "lugWidthMm": 22, "source": "aqnaut", "confidence": "curated" },
+    { "brand": "Oris", "model": "Aquis", "caseSizeMm": 43.5, "lugWidthMm": 24, "source": "aqnaut,7strap", "confidence": "curated" },
+    { "brand": "Oris", "model": "Aquis", "caseSizeMm": 45.5, "lugWidthMm": 24, "source": "7strap", "confidence": "curated" },
+    { "brand": "Oris", "model": "Big Crown Pointer Date", "caseSizeMm": 40, "lugWidthMm": 20, "source": "watchclicker,bernardwatch", "confidence": "curated" },
+
+    { "brand": "Hamilton", "model": "Khaki Field", "caseSizeMm": 38, "lugWidthMm": 20, "source": "delugs,cnswatchbands", "confidence": "verified" },
+    { "brand": "Hamilton", "model": "Khaki Field", "caseSizeMm": 40, "lugWidthMm": 20, "source": "delugs", "confidence": "verified" },
+    { "brand": "Hamilton", "model": "Khaki Field", "caseSizeMm": 42, "lugWidthMm": 22, "source": "delugs,cnswatchbands", "confidence": "verified" },
+
+    { "brand": "Nomos Glashütte", "model": "Tangente", "caseSizeMm": 35, "lugWidthMm": 18, "source": "strapmillcanada,watchband.direct", "confidence": "curated" },
+    { "brand": "Nomos Glashütte", "model": "Tangente", "caseSizeMm": 38, "lugWidthMm": 19, "source": "strapmillcanada", "confidence": "curated" },
+    { "brand": "Nomos Glashütte", "model": "Club", "caseSizeMm": 36, "lugWidthMm": 18, "source": "strapmillcanada", "confidence": "curated" },
+    { "brand": "Nomos Glashütte", "model": "Club", "caseSizeMm": 38, "lugWidthMm": 20, "source": "strapmillcanada", "confidence": "curated" },
+    { "brand": "Nomos Glashütte", "model": "Club", "caseSizeMm": 39, "lugWidthMm": 20, "source": "strapmillcanada", "confidence": "curated" },
+
+    { "brand": "Breitling", "model": "Navitimer", "caseSizeMm": 41, "lugWidthMm": 22, "source": "strapmillcanada", "confidence": "curated" },
+    { "brand": "Breitling", "model": "Navitimer", "caseSizeMm": 43, "lugWidthMm": 22, "source": "strapmillcanada,bernardwatch", "confidence": "curated" },
+
+    { "brand": "Mido", "model": "Ocean Star", "caseSizeMm": 42.5, "lugWidthMm": 22, "source": "mido-official,mastersintime", "confidence": "curated" },
+
+    { "brand": "Doxa", "model": "SUB 300", "caseSizeMm": 42.5, "lugWidthMm": 20, "source": "watchuseek,wornandwound", "confidence": "curated" },
+
+    { "brand": "Unimatic", "model": "Modello Uno", "caseSizeMm": 41.5, "lugWidthMm": 22, "source": "unimatic-official,teddybaldassarre", "confidence": "verified" },
+    { "brand": "Unimatic", "model": "Modello Uno", "caseSizeMm": 40, "lugWidthMm": 22, "source": "unimatic-official", "confidence": "curated" },
+
+    { "brand": "Swatch", "model": "MoonSwatch", "caseSizeMm": 42, "lugWidthMm": 20, "source": "delugs,strapsco", "confidence": "verified" },
+
+    { "brand": "Audemars Piguet", "model": "Code 11.59", "caseSizeMm": 41, "lugWidthMm": 22, "source": "monochrome,the1916company", "confidence": "curated" },
+
+    { "brand": "A. Lange & Söhne", "model": "Lange 1", "caseSizeMm": 38.5, "lugWidthMm": 20, "source": "delugs,bulangandsons", "confidence": "curated" }
+  ],
+  "integrated": [
+    { "brand": "Audemars Piguet", "model": "Royal Oak", "note": "integrated bracelet — tapered case lugs, no standard lug width" },
+    { "brand": "Audemars Piguet", "model": "Royal Oak Offshore", "note": "integrated bracelet, no standard lug width" },
+    { "brand": "Patek Philippe", "model": "Nautilus", "note": "integrated bracelet, proprietary, no standard lug width" },
+    { "brand": "Patek Philippe", "model": "Aquanaut", "note": "integrated composite strap, proprietary fitting" },
+    { "brand": "Vacheron Constantin", "model": "Overseas", "note": "proprietary integrated quick-release (~25mm), not a standard lug" },
+    { "brand": "Casio", "model": "G-Shock", "note": "proprietary resin band, bolt/pin, non-standard" }
+  ]
+}
