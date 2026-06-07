@@ -10,12 +10,23 @@ import {
   serviceStatus, serviceTypeMeta, warrantyStatus, type ServiceWatch,
 } from '@/lib/serviceRoom/derive'
 import { Icon, SectionHead, StatusChip, WatchShot, iconBtn } from '@/components/serviceRoom/primitives'
+import SortDropdown from '@/components/collection/SortDropdown'
 import type { LayoutProps } from '@/components/serviceRoom/layoutTypes'
 
 const sans = brand.font.sans
 const serif = brand.font.serif
 
 type ColId = 'watch' | 'last' | 'next' | 'interval' | 'cost' | 'docs' | 'warranty'
+
+// Sortable fields for the mobile control (subset of COLS, friendlier labels).
+const SORT_OPTIONS = [
+  { value: 'next', label: 'Next due' },
+  { value: 'last', label: 'Last serviced' },
+  { value: 'cost', label: 'Lifetime upkeep' },
+  { value: 'interval', label: 'Interval' },
+  { value: 'docs', label: 'Papers on file' },
+  { value: 'watch', label: 'Brand & model' },
+]
 const COLS: { id: ColId; label: string; w: string; align: 'left' | 'right' }[] = [
   { id: 'watch', label: 'Piece', w: '2.9fr', align: 'left' },
   { id: 'last', label: 'Last serviced', w: '0.95fr', align: 'left' },
@@ -56,22 +67,30 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
       <div>
         <SectionHead eyebrow="The file cabinet" title="Every piece, on the record" />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
           <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: brand.colors.muted }}>Sort</span>
-          <select
+          <SortDropdown
+            compact
             value={sort.key}
-            onChange={e => setSort({ key: e.target.value as ColId, dir: 1 })}
-            style={{ fontFamily: sans, fontSize: 15, color: brand.colors.ink, background: brand.colors.white, border: `1px solid ${brand.colors.borderLight}`, borderRadius: brand.radius.md, padding: '8px 11px', flex: 1, outline: 'none' }}
+            options={SORT_OPTIONS}
+            onChange={key => setSort({ key: key as ColId, dir: 1 })}
+          />
+          <button
+            type="button"
+            onClick={() => setSort(s => ({ ...s, dir: (-s.dir) as 1 | -1 }))}
+            aria-label={sort.dir < 0 ? 'Sorted descending — tap to sort ascending' : 'Sorted ascending — tap to sort descending'}
+            title={sort.dir < 0 ? 'Descending' : 'Ascending'}
+            style={{
+              height: brand.controls.dropdown.triggerHeight, display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '0 13px', borderRadius: brand.radius.md, border: `1px solid ${brand.colors.borderLight}`,
+              background: brand.colors.white, boxShadow: brand.shadow.sm, cursor: 'pointer', flexShrink: 0,
+              fontFamily: sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', color: brand.colors.ink,
+            }}
           >
-            <option value="next">Next due</option>
-            <option value="last">Last serviced</option>
-            <option value="cost">Lifetime upkeep</option>
-            <option value="interval">Interval</option>
-            <option value="docs">Papers on file</option>
-            <option value="watch">Brand &amp; model</option>
-          </select>
-          <button type="button" onClick={() => setSort(s => ({ ...s, dir: (-s.dir) as 1 | -1 }))} title="Reverse order" aria-label="Reverse sort order" style={{ ...iconBtn, width: 40, height: 40 }}>
-            <span style={{ fontSize: 11, color: brand.colors.muted, transform: sort.dir < 0 ? 'rotate(180deg)' : 'none', display: 'inline-block' }}>▾</span>
+            <svg width="11" height="13" viewBox="0 0 11 13" fill="none" aria-hidden="true" style={{ transform: sort.dir < 0 ? 'rotate(180deg)' : 'none', transition: `transform ${brand.transition.base}`, color: brand.colors.muted }}>
+              <path d="M5.5 11.5V2M2 5.5L5.5 2 9 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {sort.dir < 0 ? 'Desc' : 'Asc'}
           </button>
         </div>
 
