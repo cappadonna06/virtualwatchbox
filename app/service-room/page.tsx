@@ -88,6 +88,10 @@ export default function ServiceRoomPage() {
     : (!anyData && !hubDismissed) ? 'convert'
     : 'hub'
 
+  // Pieces whose service interval was never explicitly set — i.e. still on the
+  // estimate default. Keeps the setup wizard reachable from the populated hub.
+  const needsSchedule = watches.filter(w => w.watch.intervalYears == null).length
+
   const selected = watches.find(sw => sw.watch.id === selectedId) ?? null
   const logFor = watches.find(sw => sw.watch.id === logForId) ?? null
 
@@ -152,6 +156,25 @@ export default function ServiceRoomPage() {
 
         {screen === 'hub' && (
           <>
+            {needsSchedule > 0 && (
+              <button
+                type="button"
+                onClick={() => setWizardOpen(true)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left',
+                  background: brand.colors.goldWash, border: `1px solid ${brand.colors.goldLine}`, borderRadius: brand.radius.lg,
+                  padding: '12px 16px', marginBottom: 18, cursor: 'pointer',
+                }}
+              >
+                <Icon name="spark" size={16} color={brand.colors.goldDeep} />
+                <span style={{ flex: 1, fontFamily: sans, fontSize: 13.5, color: brand.colors.ink }}>
+                  <b style={{ fontWeight: 600 }}>{needsSchedule} {needsSchedule === 1 ? 'piece' : 'pieces'}</b> {needsSchedule === 1 ? "doesn't" : "don't"} have a service schedule yet — running on an estimate.
+                </span>
+                <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: brand.colors.goldDeep, display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+                  Set up <span aria-hidden>→</span>
+                </span>
+              </button>
+            )}
             <SummaryStrip watches={watches} now={now} isMobile={isMobile} />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, margin: '28px 0 4px', flexWrap: 'wrap' }}>
               <LayoutSwitch value={layout} onChange={setLayout} />
