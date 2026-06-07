@@ -47,7 +47,7 @@ export default function ServiceRoomPage() {
   const session = useCollectionSession()
   const {
     collectionWatches, getWatchServiceRecords, getWatchPhotos,
-    logServiceRecord, setWatchInterval, showToast,
+    logServiceRecord, updateServiceRecord, deleteServiceRecord, setWatchInterval, showToast,
     uploadWatchPhotos, updateCollectionWatch,
   } = session
 
@@ -56,6 +56,7 @@ export default function ServiceRoomPage() {
   const [layout, setLayout] = useState<LayoutId>('agenda')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [logForId, setLogForId] = useState<string | null>(null)
+  const [editTarget, setEditTarget] = useState<{ sw: ServiceWatch; record: WatchServiceRecord } | null>(null)
   const [now] = useState(() => new Date())
   const [wizardOpen, setWizardOpen] = useState(false)
   const [hubDismissed, setHubDismissed] = useState(false)
@@ -111,6 +112,16 @@ export default function ServiceRoomPage() {
     }
   }
 
+  const onUpdateService = async (sw: ServiceWatch, recordId: string, data: ServiceRecordInput): Promise<boolean> => {
+    try { await updateServiceRecord(sw.watch.id, recordId, data); showToast('Service updated'); return true }
+    catch { showToast('Could not update the service record'); return false }
+  }
+
+  const onDeleteService = async (sw: ServiceWatch, recordId: string): Promise<void> => {
+    try { await deleteServiceRecord(sw.watch.id, recordId); showToast('Service record removed') }
+    catch { showToast('Could not remove the record'); throw new Error('delete failed') }
+  }
+
   const onInterval = (sw: ServiceWatch, years: ServiceIntervalYears) => {
     void setWatchInterval(sw.watch.id, years)
   }
@@ -148,9 +159,14 @@ export default function ServiceRoomPage() {
             </p>
           </div>
           {!isMobile && screen === 'hub' && (
-            <button type="button" onClick={onExportAll} style={{ ...btnSecondary, padding: '10px 16px' }}>
-              <Icon name="download" size={14} color={brand.colors.ink} />Export dossier
-            </button>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button type="button" onClick={() => setWizardOpen(true)} style={{ ...btnSecondary, padding: '10px 16px' }}>
+                <Icon name="spark" size={14} color={brand.colors.goldDeep} />Set up schedules
+              </button>
+              <button type="button" onClick={onExportAll} style={{ ...btnSecondary, padding: '10px 16px' }}>
+                <Icon name="download" size={14} color={brand.colors.ink} />Export dossier
+              </button>
+            </div>
           )}
         </div>
 
@@ -179,9 +195,14 @@ export default function ServiceRoomPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, margin: '28px 0 4px', flexWrap: 'wrap' }}>
               <LayoutSwitch value={layout} onChange={setLayout} />
               {isMobile && (
-                <button type="button" onClick={onExportAll} style={{ ...btnSecondary, padding: '9px 14px' }}>
-                  <Icon name="download" size={13} color={brand.colors.ink} />Export
-                </button>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button type="button" onClick={() => setWizardOpen(true)} style={{ ...btnSecondary, padding: '9px 12px' }}>
+                    <Icon name="spark" size={13} color={brand.colors.goldDeep} />Set up
+                  </button>
+                  <button type="button" onClick={onExportAll} style={{ ...btnSecondary, padding: '9px 14px' }}>
+                    <Icon name="download" size={13} color={brand.colors.ink} />Export
+                  </button>
+                </div>
               )}
             </div>
           </>
@@ -215,8 +236,19 @@ export default function ServiceRoomPage() {
         onLog={onLog}
         onInterval={onInterval}
         onExport={onExport}
+        onEditRecord={record => { if (selected) setEditTarget({ sw: selected, record }) }}
       />
       <LogServiceModal sw={logFor} onClose={() => setLogForId(null)} onSave={onSaveService} />
+      {editTarget && (
+        <LogServiceModal
+          sw={editTarget.sw}
+          record={editTarget.record}
+          onClose={() => setEditTarget(null)}
+          onSave={onSaveService}
+          onUpdate={onUpdateService}
+          onDelete={onDeleteService}
+        />
+      )}
 
       {wizardOpen && (
         <OnboardingWizard

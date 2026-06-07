@@ -45,9 +45,11 @@ type Props = {
   onSave: (sw: ServiceWatch, data: ServiceRecordInput) => Promise<WatchServiceRecord | null>
   /** Edit: persists changes to `record`. Returns false on failure. */
   onUpdate?: (sw: ServiceWatch, recordId: string, data: ServiceRecordInput) => Promise<boolean>
+  /** Edit: remove `record` entirely. Parent surfaces any error toast. */
+  onDelete?: (sw: ServiceWatch, recordId: string) => Promise<void>
 }
 
-export function LogServiceModal({ sw, record, onClose, onSave, onUpdate }: Props) {
+export function LogServiceModal({ sw, record, onClose, onSave, onUpdate, onDelete }: Props) {
   const { uploadWatchPhotos, getWatchPhotos, deleteWatchPhoto } = useCollectionSession()
   const today = new Date().toISOString().slice(0, 10)
   const editing = !!record
@@ -157,6 +159,13 @@ export function LogServiceModal({ sw, record, onClose, onSave, onUpdate }: Props
     }
     setSaving(false)
     onClose()
+  }
+
+  const remove = async () => {
+    if (saving || !record || !onDelete) return
+    setSaving(true)
+    try { await onDelete(sw, record.id); onClose() }
+    catch { setSaving(false) }  // parent surfaced the error
   }
 
   return (
@@ -285,6 +294,13 @@ export function LogServiceModal({ sw, record, onClose, onSave, onUpdate }: Props
               <div style={{ marginTop: 8, fontFamily: sans, fontSize: 12, color: brand.serviceStatus.due.fg }}>{attachError}</div>
             )}
           </Field>
+
+          {editing && onDelete && (
+            <button type="button" onClick={remove} disabled={saving} style={{
+              alignSelf: 'flex-start', fontFamily: sans, fontSize: 13, fontWeight: 500, letterSpacing: '0.02em',
+              color: brand.serviceStatus.overdue.fg, background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+            }}>Remove this service</button>
+          )}
         </div>
 
         {/* footer */}

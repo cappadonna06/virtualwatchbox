@@ -11,7 +11,7 @@ import {
   ACQ_LABEL, formatCost, formatDate, lastFullService, lifetimeCostCents,
   relTime, serviceStatus, serviceTypeMeta, warrantyStatus, type ServiceWatch,
 } from '@/lib/serviceRoom/derive'
-import type { ServiceIntervalYears } from '@/types/watch'
+import type { ServiceIntervalYears, WatchServiceRecord } from '@/types/watch'
 import {
   Icon, Meta, StatusChip, WarrantyChip, WatchTile,
   bookingUrl, btnPrimary, btnSecondary, iconBtn,
@@ -28,9 +28,11 @@ type Props = {
   onLog: (sw: ServiceWatch) => void
   onInterval: (sw: ServiceWatch, years: ServiceIntervalYears) => void
   onExport: (sw: ServiceWatch) => void
+  /** Open the edit modal for an individual service record (in-hub editing). */
+  onEditRecord: (record: WatchServiceRecord) => void
 }
 
-export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport }: Props) {
+export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport, onEditRecord }: Props) {
   const [displayed, setDisplayed] = useState<ServiceWatch | null>(sw)
   const panelRef = useRef<HTMLDivElement>(null)
   const open = !!sw
@@ -95,7 +97,7 @@ export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport }: P
 
               <OwnershipStrip sw={w} now={now} />
               <ServiceSummary sw={w} now={now} onLog={onLog} onInterval={onInterval} />
-              <RecentServices sw={w} />
+              <ServiceHistory sw={w} onEdit={onEditRecord} />
               <DocumentsPeek sw={w} onClose={onClose} />
 
               {/* Full record (timeline, notes, attachments) lives on the
@@ -195,19 +197,33 @@ function ServiceSummary({ sw, now, onLog, onInterval }: { sw: ServiceWatch; now:
   )
 }
 
-// ── Recent service records (inline, so you don't have to open the dossier) ──
-function RecentServices({ sw }: { sw: ServiceWatch }) {
+// ── Service history (editable inline — tap a record to edit/remove) ─────────
+function ServiceHistory({ sw, onEdit }: { sw: ServiceWatch; onEdit: (r: WatchServiceRecord) => void }) {
   if (sw.records.length === 0) return null
-  const shown = sw.records.slice(0, 4)
-  const extra = sw.records.length - shown.length
+  const sorted = [...sw.records].sort((a, b) => (a.serviceDate < b.serviceDate ? 1 : a.serviceDate > b.serviceDate ? -1 : 0))
   return (
     <div>
-      <Meta style={{ display: 'block', marginBottom: 8 }}>Recent service</Meta>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
+        <Meta>Service history</Meta>
+        <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>tap to edit</span>
+      </div>
       <div>
-        {shown.map(r => {
+        {sorted.map((r, i) => {
           const t = serviceTypeMeta(r.serviceType)
+          const last = i === sorted.length - 1
           return (
-            <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: `1px solid ${brand.colors.border}` }}>
+            <button
+              key={r.id}
+              type="button"
+              onClick={() => onEdit(r)}
+              style={{
+                width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '10px 2px',
+                background: 'none', border: 'none', borderBottom: last ? 'none' : `1px solid ${brand.colors.border}`,
+                cursor: 'pointer', transition: `background ${brand.transition.fast}`,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = brand.colors.bg }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+            >
               <span style={{ width: 16, textAlign: 'center', flexShrink: 0, fontSize: 13, color: t.resets ? brand.colors.gold : brand.colors.muted }}>{t.glyph}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontFamily: sans, fontSize: 14, fontWeight: 600, color: brand.colors.ink, lineHeight: 1.2 }}>{t.label}</div>
@@ -218,13 +234,11 @@ function RecentServices({ sw }: { sw: ServiceWatch }) {
               {r.cost != null && (
                 <span style={{ fontFamily: sans, fontSize: 14, fontWeight: 600, color: brand.colors.ink, flexShrink: 0 }}>{formatCost(r.cost)}</span>
               )}
-            </div>
+              <Icon name="chevron" size={13} color={brand.colors.faint} style={{ flexShrink: 0 }} />
+            </button>
           )
         })}
       </div>
-      {extra > 0 && (
-        <div style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted, marginTop: 9 }}>+{extra} more in the full dossier</div>
-      )}
     </div>
   )
 }
