@@ -12,6 +12,7 @@ import {
   formatCost,
   formatMonthYear,
   hasServiceData,
+  humanizeMonths,
   lifetimeCostCents,
   serviceStatus,
   type ServiceWatch,
@@ -158,13 +159,13 @@ export default function ServiceRoomPage() {
               {subtitle}
             </p>
           </div>
-          {!isMobile && screen === 'hub' && (
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button type="button" onClick={() => setWizardOpen(true)} style={{ ...btnSecondary, padding: '10px 16px' }}>
-                <Icon name="spark" size={14} color={brand.colors.goldDeep} />Set up schedules
+          {screen === 'hub' && (
+            <div style={{ display: 'flex', gap: isMobile ? 8 : 10 }}>
+              <button type="button" onClick={() => setWizardOpen(true)} style={{ ...btnSecondary, padding: isMobile ? '9px 12px' : '10px 16px' }}>
+                <Icon name="spark" size={isMobile ? 13 : 14} color={brand.colors.goldDeep} />{isMobile ? 'Set up' : 'Set up schedules'}
               </button>
-              <button type="button" onClick={onExportAll} style={{ ...btnSecondary, padding: '10px 16px' }}>
-                <Icon name="download" size={14} color={brand.colors.ink} />Export dossier
+              <button type="button" onClick={onExportAll} style={{ ...btnSecondary, padding: isMobile ? '9px 14px' : '10px 16px' }}>
+                <Icon name="download" size={isMobile ? 13 : 14} color={brand.colors.ink} />{isMobile ? 'Export' : 'Export dossier'}
               </button>
             </div>
           )}
@@ -192,18 +193,8 @@ export default function ServiceRoomPage() {
               </button>
             )}
             <SummaryStrip watches={watches} now={now} isMobile={isMobile} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, margin: '28px 0 4px', flexWrap: 'wrap' }}>
+            <div style={{ margin: '28px 0 4px' }}>
               <LayoutSwitch value={layout} onChange={setLayout} />
-              {isMobile && (
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button type="button" onClick={() => setWizardOpen(true)} style={{ ...btnSecondary, padding: '9px 12px' }}>
-                    <Icon name="spark" size={13} color={brand.colors.goldDeep} />Set up
-                  </button>
-                  <button type="button" onClick={onExportAll} style={{ ...btnSecondary, padding: '9px 14px' }}>
-                    <Icon name="download" size={13} color={brand.colors.ink} />Export
-                  </button>
-                </div>
-              )}
             </div>
           </>
         )}
@@ -277,15 +268,23 @@ function SummaryStrip({ watches, now, isMobile }: { watches: ServiceWatch[]; now
   const soonest = [...watches].sort((a, b) => serviceStatus(a, now).due.getTime() - serviceStatus(b, now).due.getTime())[0]
   const ss = soonest ? serviceStatus(soonest, now) : null
 
+  const piece = soonest ? `${soonest.watch.brand} ${soonest.watch.model}` : ''
+  const nextStat: { label: string; value: string | number; meta: string; accent?: string } =
+    !ss
+      ? { label: 'Next on the bench', value: '—', meta: 'nothing scheduled' }
+      : ss.key === 'overdue'
+        ? { label: 'Next on the bench', value: 'Now', accent: brand.serviceStatus.overdue.fg, meta: `${humanizeMonths(ss.months)} overdue · ${piece}` }
+        : { label: 'Next on the bench', value: formatMonthYear(ss.due), meta: piece }
+
   const stats: { label: string; value: string | number; meta: string; accent?: string }[] = [
     { label: 'Pieces under care', value: watches.length, meta: 'in your box' },
+    nextStat,
     {
       label: 'Need attention', value: attention.length,
       meta: attention.length ? 'overdue or due soon' : 'all on track',
       accent: attention.length ? brand.serviceStatus.due.fg : brand.serviceStatus.ok.fg,
     },
     { label: 'Lifetime upkeep', value: formatCost(totalCents), meta: 'across all records', accent: brand.colors.gold },
-    { label: 'Next on the bench', value: ss ? formatMonthYear(ss.due) : '—', meta: soonest ? `${soonest.watch.brand} ${soonest.watch.model}` : 'nothing scheduled' },
   ]
 
   return (
