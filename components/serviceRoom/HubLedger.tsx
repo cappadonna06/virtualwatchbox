@@ -105,7 +105,6 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: brand.colors.muted }}>
                     <Icon name="doc" size={14} color={brand.colors.muted} />
                     <span style={{ fontFamily: sans, fontSize: 14, color: brand.colors.ink }}>{sw.documents.length} on file</span>
-                    {sw.watch.hasPapers === false && <span style={{ fontFamily: sans, fontSize: 11, color: brand.serviceStatus.due.fg, background: brand.serviceStatus.due.bg, padding: '1px 7px', borderRadius: 10 }}>no papers</span>}
                   </span>
                   <button type="button" onClick={e => { e.stopPropagation(); onLog(sw) }} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: sans, fontSize: 12, fontWeight: 500, letterSpacing: '0.04em', padding: '8px 14px', background: 'transparent', color: brand.colors.ink, border: `1px solid ${brand.colors.borderLight}`, borderRadius: brand.radius.btn, cursor: 'pointer' }}>
                     <Icon name="plus" size={13} color={brand.colors.ink} />Log
@@ -175,7 +174,6 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: brand.colors.muted }}>
                   <Icon name="doc" size={14} color={brand.colors.muted} />
                   <span style={{ fontFamily: sans, fontSize: 14, color: brand.colors.ink }}>{sw.documents.length}</span>
-                  {sw.watch.hasPapers === false && <span title="Missing original papers" style={{ fontFamily: sans, fontSize: 11, color: brand.serviceStatus.due.fg, background: brand.serviceStatus.due.bg, padding: '1px 6px', borderRadius: 10 }}>no papers</span>}
                 </div>
                 <div>
                   {ws ? <span style={{ fontFamily: sans, fontSize: 12, color: ws.fg, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
