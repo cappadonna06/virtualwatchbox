@@ -18,13 +18,12 @@ const serif = brand.font.serif
 
 type ColId = 'watch' | 'last' | 'next' | 'interval' | 'cost' | 'docs' | 'warranty'
 
-// Sortable fields for the mobile control (subset of COLS, friendlier labels).
+// Sortable fields for the mobile control — the few a collector actually uses.
+// (Interval / Papers stay as sortable columns on the desktop table.)
 const SORT_OPTIONS = [
   { value: 'next', label: 'Next due' },
   { value: 'last', label: 'Last serviced' },
   { value: 'cost', label: 'Lifetime upkeep' },
-  { value: 'interval', label: 'Interval' },
-  { value: 'docs', label: 'Papers on file' },
   { value: 'watch', label: 'Brand & model' },
 ]
 const COLS: { id: ColId; label: string; w: string; align: 'left' | 'right' }[] = [
@@ -79,18 +78,22 @@ export function HubLedger({ watches, now, onPick, onLog, activeId, isMobile }: L
             type="button"
             onClick={() => setSort(s => ({ ...s, dir: (-s.dir) as 1 | -1 }))}
             aria-label={sort.dir < 0 ? 'Sorted descending — tap to sort ascending' : 'Sorted ascending — tap to sort descending'}
-            title={sort.dir < 0 ? 'Descending' : 'Ascending'}
+            title={sort.dir < 0 ? 'Sorted descending' : 'Sorted ascending'}
             style={{
-              height: brand.controls.dropdown.triggerHeight, display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '0 13px', borderRadius: brand.radius.md, border: `1px solid ${brand.colors.borderLight}`,
-              background: brand.colors.white, boxShadow: brand.shadow.sm, cursor: 'pointer', flexShrink: 0,
-              fontFamily: sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', color: brand.colors.ink,
+              width: brand.controls.dropdown.triggerHeight, height: brand.controls.dropdown.triggerHeight,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: 0,
+              borderRadius: brand.radius.md, border: `1px solid ${brand.colors.borderLight}`,
+              background: brand.colors.white, boxShadow: brand.shadow.sm, cursor: 'pointer',
             }}
           >
-            <svg width="11" height="13" viewBox="0 0 11 13" fill="none" aria-hidden="true" style={{ transform: sort.dir < 0 ? 'rotate(180deg)' : 'none', transition: `transform ${brand.transition.base}`, color: brand.colors.muted }}>
-              <path d="M5.5 11.5V2M2 5.5L5.5 2 9 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            {sort.dir < 0 ? 'Desc' : 'Asc'}
+            <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, lineHeight: 0 }}>
+              <svg width="11" height="6" viewBox="0 0 11 6" fill="none" aria-hidden="true">
+                <path d="M1.5 4.5L5.5 1.5L9.5 4.5" stroke={sort.dir > 0 ? brand.colors.ink : brand.colors.faint} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <svg width="11" height="6" viewBox="0 0 11 6" fill="none" aria-hidden="true">
+                <path d="M1.5 1.5L5.5 4.5L9.5 1.5" stroke={sort.dir < 0 ? brand.colors.ink : brand.colors.faint} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
           </button>
         </div>
 
