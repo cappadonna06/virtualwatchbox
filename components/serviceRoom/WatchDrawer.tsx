@@ -30,18 +30,27 @@ type Props = {
   onExport: (sw: ServiceWatch) => void
   /** Open the edit modal for an individual service record (in-hub editing). */
   onEditRecord: (record: WatchServiceRecord) => void
+  /** When a modal (log/edit) is layered over the drawer, suppress the drawer's
+   *  own Esc handler so Esc only closes the topmost layer. */
+  escDisabled?: boolean
 }
 
-export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport, onEditRecord }: Props) {
+export function WatchDrawer({ sw, now, onClose, onLog, onInterval, onExport, onEditRecord, escDisabled = false }: Props) {
   const [displayed, setDisplayed] = useState<ServiceWatch | null>(sw)
   const panelRef = useRef<HTMLDivElement>(null)
   const open = !!sw
+
+  // Live-read inside the keydown handler so toggling escDisabled doesn't
+  // re-run the effect (which would re-fire the focus timeout and steal focus
+  // from the open modal).
+  const escDisabledRef = useRef(escDisabled)
+  escDisabledRef.current = escDisabled
 
   useEffect(() => { if (sw) setDisplayed(sw) }, [sw])
 
   useEffect(() => {
     if (!open) return
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && !escDisabledRef.current) onClose() }
     window.addEventListener('keydown', onKey)
     const id = window.setTimeout(() => panelRef.current?.focus(), 60)
     return () => { window.removeEventListener('keydown', onKey); window.clearTimeout(id) }

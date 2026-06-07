@@ -237,6 +237,7 @@ export default function ServiceRoomPage() {
         onInterval={onInterval}
         onExport={onExport}
         onEditRecord={record => { if (selected) setEditTarget({ sw: selected, record }) }}
+        escDisabled={!!(editTarget || logFor)}
       />
       <LogServiceModal sw={logFor} onClose={() => setLogForId(null)} onSave={onSaveService} />
       {editTarget && (
