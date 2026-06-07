@@ -41,7 +41,7 @@ export default function NextSlotEditorial({ watches, ownedTypes, seedKeyByWatchI
       <EditorialHeader
         kicker={kicker}
         title="For your next slot."
-        sub="Add to your collection. Three pieces to round out your box, each a different category at today's market price."
+        sub="A few additions to elevate and round out your collection."
       />
       <div
         className="discover-nextslot-grid"
