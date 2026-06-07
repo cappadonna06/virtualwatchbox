@@ -10,36 +10,40 @@ import { useEffect, useState } from 'react'
 import { brand } from '@/lib/brand'
 import { addMonths, formatMonthYear, serviceStatus, type ServiceWatch } from '@/lib/serviceRoom/derive'
 import type { ResolvedOwnedWatch, ServiceIntervalYears } from '@/types/watch'
+import { renderableWatches } from '@/lib/renderableWatches'
 import { Meta, WatchShot } from '@/components/serviceRoom/primitives'
 import { ServiceHorizon } from '@/components/serviceRoom/ServiceHorizon'
 
 const sans = brand.font.sans
 
-function sampleWatch(
-  id: string, brandName: string, model: string, reference: string, dialColor: string,
-  monthsSincePurchase: number, intervalYears: ServiceIntervalYears, now: Date,
-): ServiceWatch {
-  const purchase = addMonths(now, -monthsSincePurchase)
-  const watch: ResolvedOwnedWatch = {
-    id, watchId: id, brand: brandName, model, reference,
-    caseSizeMm: 40, caseMaterial: 'Steel', dialColor, movement: 'Automatic',
-    complications: [], estimatedValue: 0,
-    dialConfig: { dialColor, markerColor: '#C9A84C', handColor: '#C9A84C' },
-    watchType: 'Dress', condition: 'Excellent', notes: '',
-    purchaseDate: purchase.toISOString().slice(0, 10), purchasePrice: 0,
-    ownershipStatus: 'Owned', slot: 0,
-  }
-  return { watch, records: [], documents: [], intervalYears }
-}
+// Decorative preview built from real, recognizable catalog pieces (with their
+// product photos) placed across the horizon's zones. Display-only — never
+// persisted. Falls back gracefully if an id leaves the catalog.
+const GHOST_SPECS: { id: string; monthsSincePurchase: number; intervalYears: ServiceIntervalYears }[] = [
+  { id: 'rolex-126610ln', monthsSincePurchase: 67, intervalYears: 5 },             // Submariner — overdue
+  { id: 'omega-310-30-42-50-01-001', monthsSincePurchase: 56, intervalYears: 5 },  // Speedmaster — due soon
+  { id: 'patek-philippe-5711-1a-010', monthsSincePurchase: 45, intervalYears: 5 }, // Nautilus — on track
+  { id: 'rolex-116500ln', monthsSincePurchase: 38, intervalYears: 5 },             // Daytona — on track (far)
+]
 
-// Spread across the zones: overdue · due-soon · on-track · on-track (far).
+const GHOST_CATALOG = new Map(renderableWatches.map(w => [w.id, w]))
+
 export function sampleGhostWatches(now: Date): ServiceWatch[] {
-  return [
-    sampleWatch('ghost-ap', 'Audemars Piguet', 'Royal Oak Offshore', '26170ST', '#23314A', 67, 5, now),
-    sampleWatch('ghost-omega', 'Omega', 'Speedmaster', '3551.20.00', '#111111', 56, 5, now),
-    sampleWatch('ghost-rolex', 'Rolex', 'Datejust 41', '126331', '#4A6FA5', 45, 5, now),
-    sampleWatch('ghost-patek', 'Patek Philippe', 'Calatrava', '6000G-012', '#E9E4D8', 38, 5, now),
-  ]
+  return GHOST_SPECS.map((spec, i): ServiceWatch | null => {
+    const cat = GHOST_CATALOG.get(spec.id)
+    if (!cat) return null
+    const watch: ResolvedOwnedWatch = {
+      ...cat,
+      watchId: cat.id,
+      condition: 'Excellent',
+      notes: '',
+      purchaseDate: addMonths(now, -spec.monthsSincePurchase).toISOString().slice(0, 10),
+      purchasePrice: cat.estimatedValue ?? 0,
+      ownershipStatus: 'Owned',
+      slot: i,
+    }
+    return { watch, records: [], documents: [], intervalYears: spec.intervalYears }
+  }).filter((sw): sw is ServiceWatch => sw !== null)
 }
 
 export function GhostHorizon({ now, isMobile }: { now: Date; isMobile: boolean }) {
