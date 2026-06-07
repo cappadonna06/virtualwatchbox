@@ -1,12 +1,13 @@
 'use client'
 
-// components/serviceRoom/LogServiceModal.tsx — the working "log a service"
-// form. 8 type pills, date, cost (USD), provider + quick-fill + affiliate
-// link, notes. Saving inserts a record and live-updates the hub.
+// components/serviceRoom/LogServiceModal.tsx — the working "log / edit a
+// service" form. 8 type pills, date, cost (USD), provider + quick-fill +
+// affiliate link, notes, and document attachments tied to the record. Without
+// a `record` prop it creates; with one it edits in place.
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { brand } from '@/lib/brand'
-import { DOC_TYPES, formatCost, formatDate, serviceTypeMeta, SERVICE_TYPES, type ServiceWatch } from '@/lib/serviceRoom/derive'
+import { docTypeMeta, DOC_TYPES, formatCost, formatDate, serviceTypeMeta, SERVICE_TYPES, type ServiceWatch } from '@/lib/serviceRoom/derive'
 import { useCollectionSession, type ServiceRecordInput } from '@/app/collection/CollectionSessionProvider'
 import type { PhotoType, ServiceType, WatchServiceRecord } from '@/types/watch'
 import { DocTile, Icon, Meta, TypeTag, WatchTile, bookingUrl, btnPrimary, btnSecondary, iconBtn } from '@/components/serviceRoom/primitives'
@@ -37,31 +38,53 @@ const inputStyle: CSSProperties = {
 
 type Props = {
   sw: ServiceWatch | null
+  /** When set, the modal edits this existing record instead of creating one. */
+  record?: WatchServiceRecord | null
   onClose: () => void
-  /** Returns the created record (or null on failure) so attachments can be tied to it. */
+  /** Create: returns the new record (or null on failure) so attachments tie to it. */
   onSave: (sw: ServiceWatch, data: ServiceRecordInput) => Promise<WatchServiceRecord | null>
+  /** Edit: persists changes to `record`. Returns false on failure. */
+  onUpdate?: (sw: ServiceWatch, recordId: string, data: ServiceRecordInput) => Promise<boolean>
 }
 
-export function LogServiceModal({ sw, onClose, onSave }: Props) {
-  const { uploadWatchPhotos } = useCollectionSession()
+export function LogServiceModal({ sw, record, onClose, onSave, onUpdate }: Props) {
+  const { uploadWatchPhotos, getWatchPhotos, deleteWatchPhoto } = useCollectionSession()
   const today = new Date().toISOString().slice(0, 10)
+  const editing = !!record
   const [date, setDate] = useState(today)
   const [type, setType] = useState<ServiceType>('full')
   const [provider, setProvider] = useState('')
   const [cost, setCost] = useState('')
   const [notes, setNotes] = useState('')
   const [docs, setDocs] = useState<AttachDoc[]>([])
+  const [removedIds, setRemovedIds] = useState<Set<string>>(new Set())
   const [attachError, setAttachError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const attachInputRef = useRef<HTMLInputElement | null>(null)
 
   const watchId = sw?.watch.id
+  const recordId = record?.id
 
+  // Attachments already tied to the record being edited (minus any cleared).
+  const existing = editing && watchId
+    ? getWatchPhotos(watchId).filter(p => p.serviceRecordId === recordId && !removedIds.has(p.id))
+    : []
+
+  // Re-seed when the target watch OR record changes: prefill from the record in
+  // edit mode, otherwise reset to a blank "log" form.
   useEffect(() => {
-    setDate(today); setType('full'); setProvider(''); setCost(''); setNotes('')
-    setDocs([]); setAttachError(null); setSaving(false)
+    if (record) {
+      setDate(record.serviceDate)
+      setType(record.serviceType)
+      setProvider(record.provider ?? '')
+      setCost(record.cost != null ? String(record.cost / 100) : '')
+      setNotes(record.notes ?? '')
+    } else {
+      setDate(today); setType('full'); setProvider(''); setCost(''); setNotes('')
+    }
+    setDocs([]); setRemovedIds(new Set()); setAttachError(null); setSaving(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchId])
+  }, [watchId, recordId])
 
   const addFiles = (list: FileList | File[]) => {
     const next: AttachDoc[] = Array.from(list).map((file, i) => ({
@@ -88,14 +111,31 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
     if (saving) return
     setSaving(true)
     setAttachError(null)
-    const rec = await onSave(sw, {
+    const data: ServiceRecordInput = {
       serviceDate: date,
       serviceType: type,
       provider: provider.trim() || undefined,
       cost: costCents ?? null,
       notes: notes.trim() || undefined,
-    })
-    if (!rec) { setSaving(false); return }  // parent surfaced the error
+    }
+
+    // Resolve the record id new attachments hang off: the edited record, or a
+    // freshly created one.
+    let targetId: string
+    if (editing && record && onUpdate) {
+      const ok = await onUpdate(sw, record.id, data)
+      if (!ok) { setSaving(false); return }  // parent surfaced the error
+      targetId = record.id
+      if (removedIds.size > 0) {
+        try { for (const id of removedIds) await deleteWatchPhoto(sw.watch.id, id) }
+        catch { setAttachError('Saved, but an attachment could not be removed.'); setSaving(false); return }
+      }
+    } else {
+      const rec = await onSave(sw, data)
+      if (!rec) { setSaving(false); return }  // parent surfaced the error
+      targetId = rec.id
+    }
+
     if (docs.length > 0) {
       try {
         // Group by chosen doc type → one upload per type, all tied to the record.
@@ -106,11 +146,11 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
           byType.set(d.type, list)
         }
         for (const [docType, groupFiles] of byType) {
-          await uploadWatchPhotos(sw.watch.id, groupFiles, docType, rec.id)
+          await uploadWatchPhotos(sw.watch.id, groupFiles, docType, targetId)
         }
       } catch {
         // Record is saved; keep the modal open so the user can retry the files.
-        setAttachError('Service saved, but the attachments failed to upload.')
+        setAttachError(`${editing ? 'Saved' : 'Service saved'}, but the attachments failed to upload.`)
         setSaving(false)
         return
       }
@@ -124,7 +164,7 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
       position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.4)', backdropFilter: 'blur(3px)',
       zIndex: 310, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
     }}>
-      <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={`Log a service for ${sw.watch.brand} ${sw.watch.model}`} style={{
+      <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={`${editing ? 'Edit service' : 'Log a service'} for ${sw.watch.brand} ${sw.watch.model}`} style={{
         width: 'min(540px, 100%)', maxHeight: '92vh', overflowY: 'auto', background: brand.colors.slot,
         border: `1px solid ${brand.colors.borderMid}`, borderRadius: 16, boxShadow: '0 24px 64px rgba(26,20,16,0.28)',
       }}>
@@ -132,7 +172,7 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '20px 24px', borderBottom: `1px solid ${brand.colors.border}` }}>
           <WatchTile watch={sw.watch} size={48} radius={brand.radius.lg} pad={0.14} />
           <div style={{ flex: 1 }}>
-            <Meta style={{ color: brand.colors.goldDeep }}>Log a service</Meta>
+            <Meta style={{ color: brand.colors.goldDeep }}>{editing ? 'Edit service' : 'Log a service'}</Meta>
             <div style={{ fontFamily: serif, fontSize: 22, fontWeight: 400, color: brand.colors.ink, lineHeight: 1.05 }}>{sw.watch.brand} {sw.watch.model}</div>
           </div>
           <button type="button" onClick={onClose} aria-label="Close" style={{ ...iconBtn, width: 30, height: 30 }}>
@@ -203,6 +243,23 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
               Keep proof of work with the record: receipts, certificates, before/after photos.
             </div>
 
+            {existing.length > 0 && (
+              <div style={{ display: 'grid', gap: 8, marginTop: 12 }}>
+                {existing.map(p => (
+                  <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '9px 11px', background: brand.colors.white, border: `1px solid ${brand.colors.border}`, borderRadius: brand.radius.lg }}>
+                    {(!p.mimeType || p.mimeType.startsWith('image/'))
+                      ? (/* eslint-disable-next-line @next/next/no-img-element */ <img src={p.photoUrl} alt="" style={{ width: 30, height: 30, borderRadius: 5, objectFit: 'cover', flexShrink: 0 }} />)
+                      : <DocTile type={p.photoType ?? 'service_record'} size={30} />}
+                    <span style={{ flex: 1, minWidth: 0, fontFamily: sans, fontSize: 14, fontWeight: 500, color: brand.colors.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.caption?.trim() || docTypeMeta(p.photoType ?? '').label}</span>
+                    <span style={{ fontFamily: sans, fontSize: 11, color: brand.colors.muted, flexShrink: 0 }}>On file</span>
+                    <button type="button" onClick={() => setRemovedIds(s => new Set(s).add(p.id))} aria-label="Remove attachment" title="Remove" style={{ ...iconBtn, width: 26, height: 26, flexShrink: 0 }}>
+                      <Icon name="close" size={12} color={brand.colors.muted} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {docs.length > 0 && (
               <div style={{ display: 'grid', gap: 8, marginTop: 12 }}>
                 {docs.map(d => (
@@ -233,12 +290,12 @@ export function LogServiceModal({ sw, onClose, onSave }: Props) {
         {/* footer */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, padding: '16px 24px', borderTop: `1px solid ${brand.colors.border}`, position: 'sticky', bottom: 0, background: brand.colors.slot }}>
           <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>
-            {t.label} · {formatDate(date)}{costCents ? ` · ${formatCost(costCents)}` : ''}{docs.length ? ` · ${docs.length} doc${docs.length > 1 ? 's' : ''}` : ''}
+            {t.label} · {formatDate(date)}{costCents ? ` · ${formatCost(costCents)}` : ''}{(existing.length + docs.length) ? ` · ${existing.length + docs.length} doc${existing.length + docs.length > 1 ? 's' : ''}` : ''}
           </span>
           <div style={{ display: 'flex', gap: 10 }}>
             <button type="button" onClick={onClose} style={{ ...btnSecondary, padding: '10px 18px' }}>Cancel</button>
             <button type="button" onClick={submit} disabled={saving} style={{ ...btnPrimary, padding: '10px 22px', opacity: saving ? 0.6 : 1 }}>
-              <Icon name="check" size={13} color={brand.colors.slot} />{saving ? 'Saving…' : 'Save record'}
+              <Icon name="check" size={13} color={brand.colors.slot} />{saving ? 'Saving…' : editing ? 'Save changes' : 'Save record'}
             </button>
           </div>
         </div>

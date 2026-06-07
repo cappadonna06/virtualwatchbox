@@ -38,11 +38,12 @@ function SectionTitle({ children, count, action }: { children: React.ReactNode; 
 export default function WatchDossier({ watch }: { watch: ResolvedOwnedWatch }) {
   const {
     getWatchServiceRecords, getWatchPhotos, getWatchDocuments,
-    logServiceRecord, deleteServiceRecord, setWatchInterval, showToast,
+    logServiceRecord, updateServiceRecord, deleteServiceRecord, setWatchInterval, showToast,
   } = useCollectionSession()
 
   const [now] = useState(() => new Date())
   const [logging, setLogging] = useState(false)
+  const [editing, setEditing] = useState<WatchServiceRecord | null>(null)
   const [lightbox, setLightbox] = useState<{ list: UserWatchPhoto[]; startId: string } | null>(null)
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
@@ -61,6 +62,11 @@ export default function WatchDossier({ watch }: { watch: ResolvedOwnedWatch }) {
       showToast('Could not save the service record')
       return null
     }
+  }
+
+  const onUpdate = async (target: ServiceWatch, recordId: string, data: ServiceRecordInput): Promise<boolean> => {
+    try { await updateServiceRecord(target.watch.id, recordId, data); showToast('Service updated'); return true }
+    catch { showToast('Could not update the record'); return false }
   }
 
   const onDelete = async (recordId: string) => {
@@ -216,7 +222,8 @@ export default function WatchDossier({ watch }: { watch: ResolvedOwnedWatch }) {
                       )}
 
                       {expanded && (
-                        <div style={{ marginTop: 8 }}>
+                        <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 18 }}>
+                          <button type="button" onClick={() => setEditing(r)} style={{ fontFamily: sans, fontSize: 12, fontWeight: 600, color: brand.colors.goldDeep, cursor: 'pointer', letterSpacing: '0.04em', background: 'none', border: 'none', padding: 0 }}>Edit service</button>
                           <button type="button" onClick={() => void onDelete(r.id)} style={{ fontFamily: sans, fontSize: 12, color: brand.serviceStatus.overdue.fg, cursor: 'pointer', letterSpacing: '0.04em', background: 'none', border: 'none', padding: 0 }}>Remove record</button>
                         </div>
                       )}
@@ -236,7 +243,15 @@ export default function WatchDossier({ watch }: { watch: ResolvedOwnedWatch }) {
         )}
       </section>
 
-      {logging && <LogServiceModal sw={sw} onClose={() => setLogging(false)} onSave={onSave} />}
+      {(logging || editing) && (
+        <LogServiceModal
+          sw={sw}
+          record={editing}
+          onClose={() => { setLogging(false); setEditing(null) }}
+          onSave={onSave}
+          onUpdate={onUpdate}
+        />
+      )}
       {lightbox && lightbox.list.length > 0 && (
         <WatchPhotoLightbox photos={lightbox.list} startId={lightbox.startId} ownedWatchId={watch.id} onClose={() => setLightbox(null)} />
       )}
