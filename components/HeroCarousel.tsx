@@ -213,7 +213,7 @@ export default function HeroCarousel() {
         style={{
           display: 'grid',
           gridTemplateColumns: 'minmax(0, 1.05fr) minmax(0, 0.95fr)',
-          minHeight: 'clamp(380px, 44vh, 460px)',
+          minHeight: 'clamp(280px, 30vh, 340px)',
           alignItems: 'stretch',
         }}
       >
@@ -225,7 +225,7 @@ export default function HeroCarousel() {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            padding: '44px 56px',
+            padding: '22px 56px',
           }}
         >
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, fontFamily: brand.font.sans, fontSize: brand.text.label, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.muted }}>
@@ -236,19 +236,19 @@ export default function HeroCarousel() {
             className="hero-h1"
             style={{
               fontFamily: brand.font.serif,
-              fontSize: brand.text.hero,
+              fontSize: 'clamp(34px, 3.6vw, 48px)',
               fontWeight: 300,
-              lineHeight: 0.98,
+              lineHeight: 1.0,
               letterSpacing: '-0.015em',
               color: brand.colors.ink,
-              margin: '26px 0 28px',
+              margin: '14px 0 16px',
             }}
           >
             Showcase Your<br />
             <em style={{ fontStyle: 'italic', fontWeight: 300 }}>Timepieces.</em><br />
             Discover <em style={{ fontStyle: 'italic', fontWeight: 300 }}>What&apos;s Next.</em>
           </h1>
-          <p style={{ fontFamily: brand.font.sans, fontSize: brand.text.lead, lineHeight: 1.55, color: brand.colors.inkSoft, maxWidth: 440, marginBottom: 38 }}>
+          <p style={{ fontFamily: brand.font.sans, fontSize: brand.text.lead, lineHeight: 1.5, color: brand.colors.inkSoft, maxWidth: 440, marginBottom: 20 }}>
             Curate what you own, plan your next moves, and visualize the future of your collection.
           </p>
           <div className="hero-actions" data-nosnippet="" style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -298,7 +298,7 @@ export default function HeroCarousel() {
               Explore Watches
             </Link>
           </div>
-          <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 9, fontFamily: brand.font.sans, fontSize: brand.text.bodySm, color: brand.colors.muted, letterSpacing: '0.03em' }}>
+          <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 9, fontFamily: brand.font.sans, fontSize: brand.text.bodySm, color: brand.colors.muted, letterSpacing: '0.03em' }}>
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: brand.colors.goldDeep, flexShrink: 0 }} />
             Free to build. No account required.
           </div>
@@ -325,7 +325,7 @@ export default function HeroCarousel() {
           }} />
 
           {/* Top: brand + model (left), estimated value (right) */}
-          <div style={{ position: 'relative', zIndex: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, padding: '36px 38px 0' }}>
+          <div style={{ position: 'relative', zIndex: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, padding: '26px 38px 0' }}>
             <div style={{ minWidth: 0 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: brand.font.sans, fontSize: brand.text.labelSm, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: brand.colors.gold }}>
                 <span style={{ width: 24, height: 1, background: brand.colors.gold, display: 'inline-block', flexShrink: 0 }} />
@@ -412,7 +412,7 @@ export default function HeroCarousel() {
 
           {/* Bottom: dots (left) + nav buttons (right) */}
           {total > 0 && (
-            <div style={{ position: 'relative', zIndex: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 38px 30px' }}>
+            <div style={{ position: 'relative', zIndex: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 38px 24px' }}>
               <div style={{ display: 'flex', gap: 7, marginLeft: 52 }}>
                 {carouselWatches.map((_, i) => (
                   <button
