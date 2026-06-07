@@ -741,7 +741,13 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
     return new Map(results)
   }, [])
 
-  const allWatches = usingStaticFallback ? staticSeedWatches : dynamicWatches
+  // Until the dynamic top-2000 load resolves (SSR + first client paint) or
+  // when the DB is empty/unreachable, serve the curated static seed so
+  // consumers (discover lead, hero pool, demo collection) render real content
+  // on the first frame instead of computing over an empty list and flashing
+  // sections in once the async load lands. `dynamicWatches` is empty only
+  // before the first successful load; after that it's the source of truth.
+  const allWatches = usingStaticFallback || dynamicWatches.length === 0 ? staticSeedWatches : dynamicWatches
 
   return (
     <CatalogContext.Provider
