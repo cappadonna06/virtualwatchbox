@@ -76,13 +76,21 @@ const norm = (s: string | null | undefined) =>
 const normRef = (s: string | null | undefined) =>
   (s ?? '').replace(/[^a-z0-9]/gi, '').toUpperCase()
 
-// Bidirectional containment so catalog "Aqua Terra" matches entry
-// "Seamaster Aqua Terra" and vice-versa, without over-matching unrelated models.
+// Word-boundary bidirectional containment so catalog "Aqua Terra" matches entry
+// "Seamaster Aqua Terra" (and "Datejust 41" matches "Datejust") WITHOUT
+// mid-word false positives like "Conquest" ⊂ "HydroConquest".
+function boundaryContains(hay: string, needle: string): boolean {
+  const i = hay.indexOf(needle)
+  if (i < 0) return false
+  const before = i === 0 || hay[i - 1] === ' '
+  const after = i + needle.length === hay.length || hay[i + needle.length] === ' '
+  return before && after
+}
 function modelMatches(catalogModel: string, entryModel: string): boolean {
   const c = norm(catalogModel)
   const e = norm(entryModel)
   if (!c || !e) return false
-  return c === e || c.includes(e) || e.includes(c)
+  return c === e || boundaryContains(c, e) || boundaryContains(e, c)
 }
 
 async function fetchCatalog(supabase: SupabaseClient): Promise<CatalogRow[]> {

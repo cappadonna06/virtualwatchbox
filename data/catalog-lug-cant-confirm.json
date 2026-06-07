@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-06-07",
+  "note": "Models/families where lug width cannot be set with confidence at the model+size level — they require per-reference web research (reference-first) or admin curation. The catalog-cleanup-audit (once it can reach Supabase) emits the authoritative per-reference can't-confirm set; this file captures the known-hard buckets found during research so they are not silently guessed. Strap fit is exact-match, so an unknown is left null rather than approximated.",
+  "buckets": [
+    {
+      "key": "omega-constellation",
+      "brand": "Omega",
+      "model": "Constellation",
+      "reason": "Integrated-style case across 25/28/35/38/39mm men's and women's quartz; lug width varies ~17-20mm and many vintage refs are effectively integrated/non-standard. Reference-level sources sparse.",
+      "imagedApprox": 787,
+      "resolution": "per-reference research + admin curation"
+    },
+    {
+      "key": "dress-rectangular-womens",
+      "brands": ["Longines", "Cartier"],
+      "models": ["DolceVita", "La Grande Classique", "PrimaLuna", "Tank", "Tank Solo", "Tank Must", "Santos"],
+      "reason": "Rectangular/tonneau/ultra-thin/women's cases with short integrated lugs and non-standard widths (e.g. Cartier Tank Must 16/19/23mm; Tank Solo 17.5-20mm) that vary by exact reference.",
+      "resolution": "per-reference research"
+    },
+    {
+      "key": "variant-ambiguous-by-size",
+      "entries": [
+        { "brand": "Breitling", "model": "Superocean Heritage", "caseSizeMm": 42, "reason": "B20 42 = 22mm but '57 42 = 20mm — size alone is ambiguous" },
+        { "brand": "TAG Heuer", "model": "Carrera", "reason": "20 / 20.5 / 22mm across refs; TAG's own docs inconsistent" },
+        { "brand": "TAG Heuer", "model": "Aquaracer", "reason": "17/20/21/22mm across refs" },
+        { "brand": "Patek Philippe", "model": "Calatrava", "reason": "lug width varies by reference (19-20mm)" },
+        { "brand": "A. Lange & Söhne", "model": "Saxonia", "reason": "Thin vs standard differ (18-20mm)" },
+        { "brand": "Oris", "model": "Divers Sixty-Five", "caseSizeMm": 42, "reason": "sources conflict 20 vs 21mm" },
+        { "brand": "Oris", "model": "Aquis", "caseSizeMm": 39.5, "reason": "sources conflict 20 vs 21mm" },
+        { "brand": "Tudor", "model": "Black Bay 36", "reason": "sources conflict 19 vs 20mm" }
+      ],
+      "resolution": "per-reference research, prefer official spec"
+    },
+    {
+      "key": "catalog-model-too-generic",
+      "entries": [
+        { "brand": "Sinn", "catalogModel": "Diving Watches", "reason": "catalog model string is a generic family, not a model (556/104/U1); needs reference-level mapping" }
+      ],
+      "resolution": "per-reference research keyed on reference, not model"
+    }
+  ]
+}

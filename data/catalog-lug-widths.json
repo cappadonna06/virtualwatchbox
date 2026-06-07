@@ -73,7 +73,16 @@
 
     { "brand": "Audemars Piguet", "model": "Code 11.59", "caseSizeMm": 41, "lugWidthMm": 22, "source": "monochrome,the1916company", "confidence": "curated" },
 
-    { "brand": "A. Lange & Söhne", "model": "Lange 1", "caseSizeMm": 38.5, "lugWidthMm": 20, "source": "delugs,bulangandsons", "confidence": "curated" }
+    { "brand": "A. Lange & Söhne", "model": "Lange 1", "caseSizeMm": 38.5, "lugWidthMm": 20, "source": "delugs,bulangandsons", "confidence": "curated" },
+
+    { "brand": "Omega", "model": "Speedmaster '57", "caseSizeMm": 40.5, "lugWidthMm": 20, "source": "delugs,strapmillcanada", "confidence": "curated" },
+    { "brand": "Omega", "model": "Speedmaster Racing", "caseSizeMm": 40, "lugWidthMm": 20, "source": "omega-official,bobswatches", "confidence": "curated" },
+    { "brand": "Omega", "model": "Speedmaster Racing", "caseSizeMm": 44, "lugWidthMm": 21, "source": "bobswatches", "confidence": "curated" },
+    { "brand": "Longines", "model": "Flagship", "caseSizeMm": 38.5, "lugWidthMm": 19, "source": "strapmillcanada,watchgecko", "confidence": "curated" },
+    { "brand": "Oris", "model": "ProPilot", "caseSizeMm": 41, "lugWidthMm": 20, "source": "wornandwound,watchclicker", "confidence": "curated" },
+    { "brand": "Tudor", "model": "Ranger", "caseSizeMm": 39, "lugWidthMm": 20, "source": "delugs,everest,chrono24", "confidence": "verified" },
+    { "brand": "Hamilton", "model": "Jazzmaster", "caseSizeMm": 40, "lugWidthMm": 20, "source": "watchband.direct", "confidence": "curated" },
+    { "brand": "Hamilton", "model": "Jazzmaster", "caseSizeMm": 42, "lugWidthMm": 22, "source": "delugs", "confidence": "curated" }
   ],
   "integrated": [
     { "brand": "Audemars Piguet", "model": "Royal Oak", "note": "integrated bracelet — tapered case lugs, no standard lug width" },
