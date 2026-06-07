@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { brand } from '@/lib/brand'
 import {
   ACQ_LABEL, formatCost, formatDate, lastFullService, lifetimeCostCents,
-  relTime, serviceStatus, serviceTypeMeta, warrantyStatus, type ServiceWatch,
+  humanizeMonths, relTime, serviceStatus, serviceTypeMeta, warrantyStatus, type ServiceWatch,
 } from '@/lib/serviceRoom/derive'
 import type { ServiceIntervalYears, WatchServiceRecord } from '@/types/watch'
 import {
@@ -175,7 +175,7 @@ function ServiceSummary({ sw, now, onLog, onInterval }: { sw: ServiceWatch; now:
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
         <StatusChip status={st} showDate />
         <span style={{ fontFamily: sans, fontSize: 12, color: brand.colors.muted }}>
-          {st.key === 'overdue' ? `${Math.round(Math.abs(st.months))} mo overdue` : `due ${relTime(st.due, now)}`}
+          {st.key === 'overdue' ? `${humanizeMonths(st.months)} overdue` : `due ${relTime(st.due, now)}`}
         </span>
       </div>
 

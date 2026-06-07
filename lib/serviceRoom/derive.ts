@@ -164,14 +164,23 @@ export function addMonths(d: string | Date, m: number): Date {
   const nd = parseDate(d); nd.setMonth(nd.getMonth() + m); return nd
 }
 
+/**
+ * Humanized magnitude of a month span (no sign): "8 mo", "1.5 yr", "8 yr".
+ * Rolls months up to years past 12 so we never render "101 months".
+ */
+export function humanizeMonths(months: number): string {
+  const am = Math.abs(months)
+  if (am < 1) return '<1 mo'
+  if (am < 12) return `${Math.round(am)} mo`
+  const y = am / 12
+  return `${y < 2 ? y.toFixed(1) : Math.round(y)} yr`
+}
+
 /** Compact "in 4 mo" / "2.1 yr ago" / "this month". */
 export function relTime(d: string | Date, now: Date = new Date()): string {
   const m = monthsBetween(now, d)
-  const am = Math.abs(m)
-  let txt: string
-  if (am < 1) return 'this month'
-  if (am < 12) txt = `${Math.round(am)} mo`
-  else { const y = am / 12; txt = `${y < 2 ? y.toFixed(1) : Math.round(y)} yr` }
+  if (Math.abs(m) < 1) return 'this month'
+  const txt = humanizeMonths(m)
   return m >= 0 ? `in ${txt}` : `${txt} ago`
 }
 
