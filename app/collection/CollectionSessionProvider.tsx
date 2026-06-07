@@ -223,7 +223,7 @@ interface CollectionSessionContextValue {
   ) => { ok: boolean; reason?: 'target_limit' | 'invalid_watch' | 'owned_watch' | 'not_in_collection' }
   removeSavedWatchState: (watchId: string, options?: { source?: WatchStateSource }) => void
   removeFromCollection: (watchId: string) => void
-  updateCollectionWatch: (watchId: string, updates: Partial<Pick<OwnedWatch, 'condition' | 'ownershipStatus' | 'purchasePrice' | 'purchaseDate' | 'notes'>>) => void
+  updateCollectionWatch: (watchId: string, updates: Partial<Pick<OwnedWatch, 'condition' | 'ownershipStatus' | 'purchasePrice' | 'purchaseDate' | 'notes' | 'hasBox' | 'hasPapers' | 'warrantyExpiresAt' | 'lastServicedAt'>>) => void
   reorderCollectionWatches: (newWatches: ResolvedOwnedWatch[]) => void
   /** Swap the watches at two slots (preserves sparse gaps). No-op if both slots are empty. */
   swapCollectionSlots: (fromSlot: number, toSlot: number) => void

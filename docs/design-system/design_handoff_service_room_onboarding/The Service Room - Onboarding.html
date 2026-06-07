@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Service Room · Empty States & Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+/* ─── Tokens (Virtual Watchbox — readability pass) ─────────────────────── */
+:root{
+  --bg:#FAF8F4; --slot:#FFFCF7; --card:#FFFFFF; --tile:#FAF8F4;
+  --ink:#1A1410; --ink-soft:#43392E; --muted:#6A5B48; --faint:#9A8B73;
+  --gold:#C9A84C; --gold-deep:#876A12; --dark:#2A2520;
+  --border:#EAE5DC; --border-mid:#E8E2D8; --border-light:#D4CBBF; --border-slot:#D0C9BE;
+  --tint:#F4EFE6; --bg-2:#F2EEE5;
+  /* status */
+  --od-fg:#8A2020; --od-bg:#FAE8E8; --od-dot:#B23A3A;
+  --ds-fg:#8A5010; --ds-bg:#FFF3E0; --ds-dot:#C98A2A;
+  --ok-fg:#2D6A2D; --ok-bg:#E8F4E8; --ok-dot:#5A9A5A;
+  --wa-soon-fg:#8A6A10; --wa-soon-bg:#FFF8E6;
+  --wa-active-fg:#1A4A8A; --wa-active-bg:#E8F0FA;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --shadow-xs:0 1px 4px rgba(26,20,16,.04);
+  --shadow-lg:0 4px 24px rgba(26,20,16,.06);
+  --shadow-float:0 8px 24px rgba(26,20,16,.13);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:#E7E0D4;
+  font-family:var(--sans);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+img{display:block;}
+
+/* ─── Board scaffold ───────────────────────────────────────────────────── */
+.board{max-width:1280px;margin:0 auto;padding:0 40px 120px;}
+.board-head{padding:64px 0 40px;}
+.board-kicker{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);}
+.board-title{font-family:var(--serif);font-weight:300;font-size:48px;line-height:1.05;letter-spacing:-.01em;color:var(--ink);margin:14px 0 0;}
+.board-title em{font-style:italic;}
+.board-sub{font-size:15px;line-height:1.6;color:var(--ink-soft);max-width:64ch;margin:16px 0 0;}
+.board-meta{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;padding-top:22px;border-top:1px solid rgba(26,20,16,.1);}
+.board-meta .mi{display:flex;flex-direction:column;gap:4px;}
+.board-meta .mi b{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.board-meta .mi span{font-family:var(--serif);font-size:20px;color:var(--ink);}
+
+.screen{margin-top:56px;}
+.screen-label{display:flex;align-items:baseline;gap:16px;margin-bottom:18px;flex-wrap:wrap;}
+.screen-num{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#fff;background:var(--ink);border-radius:20px;padding:5px 13px;white-space:nowrap;}
+.screen-name{font-family:var(--serif);font-size:27px;font-weight:400;color:var(--ink);}
+.screen-desc{font-size:14px;color:#5b5043;max-width:54ch;line-height:1.5;}
+.artboard{background:var(--bg);border:1px solid #d9d1c4;border-radius:14px;box-shadow:0 12px 40px rgba(26,20,16,.1);overflow:hidden;}
+
+/* ─── App chrome ───────────────────────────────────────────────────────── */
+.app-nav{height:62px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;border-bottom:1px solid var(--border);background:rgba(250,248,244,.82);backdrop-filter:blur(8px);}
+.nav-left{display:flex;align-items:center;gap:16px;}
+.nav-mono{font-family:var(--serif);font-size:24px;font-weight:500;letter-spacing:.06em;color:var(--gold-deep);}
+.nav-div{width:1px;height:22px;background:var(--border-light);}
+.nav-room{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);}
+.nav-right{display:flex;align-items:center;gap:26px;}
+.nav-link{font-family:var(--sans);font-size:13px;font-weight:500;letter-spacing:.02em;color:var(--muted);text-decoration:none;}
+.nav-link.active{color:var(--ink);font-weight:600;}
+
+.app-body{padding:40px 40px 48px;}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:36px;}
+.eyebrow{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);}
+.page-h1{font-family:var(--serif);font-weight:300;font-size:52px;line-height:1;letter-spacing:-.01em;color:var(--ink);margin:12px 0 0;white-space:nowrap;}
+.page-h1 em{font-style:italic;}
+.page-subtitle{font-size:15px;color:var(--muted);line-height:1.55;margin:14px 0 0;max-width:52ch;}
+
+/* ─── Buttons ──────────────────────────────────────────────────────────── */
+.btn{font-family:var(--sans);cursor:pointer;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:11.5px;transition:all .18s ease;border:1px solid transparent;text-decoration:none;white-space:nowrap;}
+.btn-primary{background:var(--ink);color:var(--slot);padding:13px 26px;}
+.btn-primary:hover{background:#2a2018;transform:translateY(-1px);}
+.btn-secondary{background:transparent;color:var(--ink);border-color:var(--border-light);padding:12px 22px;}
+.btn-secondary:hover{border-color:var(--ink);}
+.btn-ghost{background:transparent;color:var(--gold-deep);padding:6px 0;letter-spacing:.1em;}
+.btn-link{font-family:var(--sans);font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep);text-decoration:none;display:inline-flex;align-items:center;gap:8px;cursor:pointer;background:none;border:none;white-space:nowrap;}
+.btn-link:hover{color:var(--ink);}
+
+/* ─── Icons ────────────────────────────────────────────────────────────── */
+.ic{width:16px;height:16px;display:inline-block;flex-shrink:0;}
+.ic-22{width:22px;height:22px;}
+.ic-18{width:18px;height:18px;}
+
+/* ─── Status / chips ───────────────────────────────────────────────────── */
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.04em;
+  padding:4px 11px;border-radius:20px;white-space:nowrap;}
+.chip .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.chip.od{background:var(--od-bg);color:var(--od-fg);}
+.chip.od .dot{background:var(--od-dot);}
+.chip.ds{background:var(--ds-bg);color:var(--ds-fg);}
+.chip.ds .dot{background:var(--ds-dot);}
+.chip.ok{background:var(--ok-bg);color:var(--ok-fg);}
+.chip.ok .dot{background:var(--ok-dot);}
+.chip.estimate{background:var(--bg-2);color:var(--muted);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:10px;border:1px dashed var(--border-light);}
+.chip.warr-soon{background:var(--wa-soon-bg);color:var(--wa-soon-fg);font-weight:500;}
+.chip.warr-active{background:var(--wa-active-bg);color:var(--wa-active-fg);font-weight:500;}
+.chip.neutral{background:var(--bg-2);color:var(--muted);font-weight:500;}
+.chip .ic{width:11px;height:11px;}
+
+/* ─── Watch thumb on cream tile ────────────────────────────────────────── */
+.thumb{background:var(--tile);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;}
+.thumb img{width:100%;height:100%;object-fit:contain;padding:11%;filter:drop-shadow(0 3px 6px rgba(26,20,16,.14));}
+
+/* ─── Empty-state card ─────────────────────────────────────────────────── */
+.es-card{background:var(--slot);border:1px solid var(--border-mid);border-radius:12px;box-shadow:var(--shadow-lg);overflow:hidden;}
+.es-inner{padding:44px;}
+.es-top{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:64px;align-items:start;}
+.es-headline{font-family:var(--serif);font-weight:300;font-size:42px;line-height:1.16;letter-spacing:-.01em;color:var(--ink);margin:16px 0 0;}
+.es-headline em{font-style:italic;}
+.es-sub{font-size:15px;line-height:1.62;color:var(--ink-soft);margin:20px 0 0;max-width:46ch;}
+
+.benefits{display:flex;flex-direction:column;gap:22px;margin:4px 0 0;}
+.benefit{display:flex;gap:15px;align-items:flex-start;}
+.benefit-ic{width:38px;height:38px;border-radius:9px;background:var(--tint);color:var(--gold-deep);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.benefit-tx h4{font-family:var(--sans);font-size:15px;font-weight:600;color:var(--ink);margin:0 0 3px;letter-spacing:.005em;}
+.benefit-tx p{font-size:13.5px;line-height:1.5;color:var(--muted);margin:0;max-width:40ch;}
+
+.es-foot{display:flex;align-items:center;gap:26px;margin-top:36px;padding-top:28px;border-top:1px solid var(--border);}
+
+.es-horizon-wrap{margin-top:40px;padding-top:36px;border-top:1px solid var(--border);}
+
+/* ─── Service Horizon (ghost + resolved) ───────────────────────────────── */
+.horizon{position:relative;}
+.hz-axis{position:relative;height:15px;margin-bottom:6px;}
+.hz-axis .tk{position:absolute;transform:translateX(-50%);font-family:var(--sans);font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+.hz-track{position:relative;height:178px;border-radius:12px;background:var(--card);border:1px solid var(--border);overflow:hidden;}
+.hz-zoneL{position:absolute;top:0;bottom:0;left:0;width:13%;background:rgba(178,58,58,.05);border-right:1px solid rgba(178,58,58,.16);}
+.hz-zoneR{position:absolute;top:0;bottom:0;left:87%;right:0;background:var(--bg);border-left:1px dashed var(--border-light);}
+.hz-grid{position:absolute;top:0;bottom:0;border-left:1px dashed var(--border);}
+.hz-grid.now{border-left:1.5px solid var(--ink);opacity:.5;}
+.hz-pill{position:absolute;}
+.hz-dot{position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;border:2.5px solid var(--card);z-index:3;}
+.hz-guide{position:absolute;left:0;top:0;width:1.5px;transform:translateX(-50%);opacity:.28;}
+.pill{position:absolute;top:0;left:0;transform:translateY(-50%) translateX(13px);display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--border);
+  box-shadow:0 1px 4px rgba(26,20,16,.06);border-radius:26px;padding:5px 14px 5px 5px;white-space:nowrap;z-index:2;}
+.pill.right{transform:translateY(-50%) translateX(calc(-100% - 13px));}
+.pill .pt{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--tile);}
+.pill .pt img{width:100%;height:100%;object-fit:contain;padding:8%;filter:drop-shadow(0 2px 5px rgba(26,20,16,.22));}
+.pill .pl{display:flex;flex-direction:column;line-height:1.18;}
+.pill .pl b{font-family:var(--sans);font-size:11.5px;font-weight:600;color:var(--ink);}
+.pill .pl span{font-family:var(--sans);font-size:10px;font-weight:500;letter-spacing:.02em;}
+.hz-legend{display:flex;gap:18px;margin-top:13px;align-items:center;}
+.hz-legend .lg{display:inline-flex;align-items:center;gap:6px;font-family:var(--sans);font-size:11px;color:var(--muted);}
+.hz-legend .lg i{width:7px;height:7px;border-radius:50%;display:inline-block;}
+
+.horizon.ghost{filter:grayscale(.35);opacity:.62;}
+.horizon.ghost .pill{box-shadow:none;}
+.ghost-cap{font-family:var(--sans);font-size:12px;color:var(--muted);line-height:1.5;text-align:center;margin-top:18px;max-width:38ch;margin-left:auto;margin-right:auto;}
+
+.es-visual-eyebrow{font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:20px;text-align:center;}
+.benefits-eyebrow{font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 22px;}
+
+/* ─── Screen 2 — has watches, no service data ──────────────────────────── */
+.cols2{display:grid;grid-template-columns:minmax(0,1.34fr) minmax(0,1fr);gap:30px;align-items:start;}
+.panel{background:var(--card);border:1px solid var(--border-mid);border-radius:12px;box-shadow:var(--shadow-xs);overflow:hidden;}
+.panel-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:16px;}
+.panel-title{font-family:var(--serif);font-size:23px;font-weight:400;color:var(--ink);line-height:1;white-space:nowrap;}
+.panel-title small{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--muted);margin-left:10px;letter-spacing:.01em;white-space:nowrap;}
+.unset-pill{display:inline-flex;align-items:center;gap:7px;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.06em;padding:5px 12px;border-radius:20px;background:var(--ds-bg);color:var(--ds-fg);white-space:nowrap;}
+.unset-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--ds-dot);}
+
+.wrow{display:flex;align-items:center;gap:20px;padding:20px 26px;border-bottom:1px solid var(--border);}
+.wrow:last-child{border-bottom:none;}
+.wphoto{width:88px;height:88px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.wphoto img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 5px 12px rgba(26,20,16,.17));}
+.wmeta{flex:1;min-width:0;}
+.wbrand{font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep);}
+.wmodel{font-family:var(--serif);font-size:23px;font-weight:400;color:var(--ink);margin:3px 0 0;line-height:1.05;}
+.wref{font-family:var(--sans);font-size:12px;color:var(--muted);margin-top:5px;}
+.wstats{display:flex;gap:30px;}
+.wstat{display:flex;flex-direction:column;gap:6px;min-width:104px;}
+.wstat .lab{font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);}
+.wstat .val{font-family:var(--sans);font-size:14px;color:var(--ink);font-weight:500;}
+.wstat .val.dash{color:var(--border-light);font-weight:400;}
+.panel-foot{padding:15px 24px;background:#FCFAF6;border-top:1px solid var(--border);font-family:var(--sans);font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:9px;}
+
+.mkt{background:var(--slot);border:1px solid var(--border-mid);border-radius:12px;box-shadow:var(--shadow-lg);padding:34px 32px;display:flex;flex-direction:column;}
+.mkt-h{font-family:var(--serif);font-weight:300;font-size:33px;line-height:1.14;letter-spacing:-.01em;color:var(--ink);margin:14px 0 0;}
+.mkt-h em{font-style:italic;}
+.mkt-sub{font-size:14.5px;line-height:1.6;color:var(--ink-soft);margin:16px 0 0;}
+.checklist{display:flex;flex-direction:column;gap:15px;margin:28px 0 0;}
+.cl-item{display:flex;align-items:center;gap:13px;}
+.cl-check{width:24px;height:24px;border-radius:50%;background:var(--ok-bg);color:var(--ok-fg);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cl-check .ic{width:13px;height:13px;}
+.cl-item span{font-family:var(--sans);font-size:14.5px;font-weight:500;color:var(--ink);}
+.mkt-foot{margin-top:32px;padding-top:26px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:16px;}
+.btn-block{width:100%;padding:15px 24px;}
+.link-center{align-self:center;white-space:nowrap;}
+.privacy{display:flex;align-items:center;gap:8px;justify-content:center;font-family:var(--sans);font-size:12px;color:var(--muted);line-height:1.4;}
+.privacy .ic{width:13px;height:13px;color:var(--faint);flex-shrink:0;}
+
+/* ─── Screen 3 — Onboarding wizard ─────────────────────────────────────── */
+.wiz-stage{background:radial-gradient(120% 80% at 50% 0%, #2c2823 0%, #1d1b16 100%);padding:46px 40px 54px;display:flex;flex-direction:column;align-items:center;gap:38px;}
+.wiz-state{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;}
+.wiz-tag{display:inline-flex;align-items:center;gap:11px;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,243,235,.62);white-space:nowrap;}
+.wiz-tag .n{width:24px;height:24px;border-radius:50%;border:1px solid rgba(247,243,235,.28);display:flex;align-items:center;justify-content:center;color:rgba(247,243,235,.9);font-size:11px;font-weight:600;letter-spacing:0;}
+.wiz-tag .n.ok{background:var(--gold-deep);border-color:var(--gold-deep);color:#fff;}
+
+.wiz{width:560px;max-width:100%;background:var(--slot);border-radius:12px;box-shadow:0 16px 50px rgba(0,0,0,.42);overflow:hidden;}
+.wiz-head{padding:24px 28px 0;}
+.wiz-head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;}
+.wiz-eyebrow{font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);}
+.wiz-title{font-family:var(--serif);font-size:29px;font-weight:400;color:var(--ink);line-height:1.04;margin:9px 0 0;}
+.wiz-sub{font-family:var(--sans);font-size:13.5px;color:var(--muted);line-height:1.5;margin:9px 0 0;max-width:60ch;}
+.wiz-close{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.wiz-progress{display:flex;gap:7px;margin-top:20px;}
+.wiz-progress .seg{height:4px;border-radius:2px;flex:1;background:var(--border);}
+.wiz-progress .seg.on{background:var(--ink);}
+.wiz-progress .seg.done{background:var(--gold-deep);}
+.wiz-body{padding:20px 28px 24px;}
+.wiz-foot{padding:15px 28px;border-top:1px solid var(--border);background:#FCFAF6;display:flex;justify-content:space-between;align-items:center;gap:16px;}
+.wiz-foot .prog{font-family:var(--sans);font-size:12.5px;color:var(--muted);white-space:nowrap;}
+.wiz-foot-l{display:flex;align-items:center;gap:16px;}
+
+.seg-int{display:inline-flex;border:1px solid var(--border-light);border-radius:7px;overflow:hidden;background:var(--card);flex-shrink:0;}
+.seg-int button{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.01em;padding:7px 13px;border:none;background:transparent;color:var(--muted);cursor:pointer;border-right:1px solid var(--border);}
+.seg-int button:last-child{border-right:none;}
+.seg-int button.on{background:var(--ink);color:var(--slot);}
+
+.all-interval{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 15px;background:var(--tint);border:1px solid var(--border-mid);border-radius:8px;}
+.all-interval .lab{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--ink);}
+.all-interval .lab small{display:block;font-weight:400;font-size:11.5px;color:var(--muted);margin-top:2px;letter-spacing:0;}
+
+.wiz-row{padding:18px 0;border-top:1px solid var(--border);}
+.wiz-row-top{display:flex;align-items:center;gap:12px;}
+.wiz-row-top .thumb{width:40px;height:40px;}
+.wiz-row-name{flex:1;min-width:0;}
+.wiz-row-name b{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--ink);display:block;line-height:1.2;white-space:nowrap;}
+.wiz-row-name span{font-family:var(--sans);font-size:11.5px;color:var(--muted);}
+.skip{margin-left:auto;font-family:var(--sans);font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);background:none;border:none;cursor:pointer;padding:4px 0;}
+.skip:hover{color:var(--muted);}
+.wiz-row-fields{display:flex;gap:20px;margin-top:14px;flex-wrap:wrap;align-items:flex-end;}
+.field{display:flex;flex-direction:column;gap:7px;}
+.field .flab{font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);white-space:nowrap;}
+.date-ctl{display:inline-flex;align-items:center;gap:9px;padding:9px 13px;border:1px solid var(--border-light);border-radius:7px;background:var(--card);font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);min-width:158px;justify-content:space-between;cursor:pointer;white-space:nowrap;}
+.date-ctl.empty{color:var(--muted);font-weight:400;}
+.date-ctl .ic{color:var(--muted);width:14px;height:14px;}
+.row-hint{display:flex;align-items:center;gap:16px;margin-top:12px;flex-wrap:wrap;}
+.opt{display:inline-flex;align-items:center;gap:8px;font-family:var(--sans);font-size:12px;color:var(--muted);cursor:pointer;white-space:nowrap;}
+.opt .box{width:15px;height:15px;border-radius:4px;border:1.5px solid var(--border-light);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+.opt .box .ic{width:10px;height:10px;color:#fff;opacity:0;}
+.opt.checked .box{background:var(--gold-deep);border-color:var(--gold-deep);}
+.opt.checked .box .ic{opacity:1;}
+.opt.checked{color:var(--ink);font-weight:500;}
+.helper{font-family:var(--sans);font-size:12px;color:var(--gold-deep);cursor:pointer;display:inline-flex;align-items:center;gap:5px;background:none;border:none;white-space:nowrap;}
+.est-tag{display:inline-flex;align-items:center;gap:5px;font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ds-fg);background:var(--ds-bg);padding:3px 9px;border-radius:20px;}
+
+/* Step 2 dossier */
+.toggle-chips{display:flex;gap:9px;flex-wrap:wrap;}
+.tchip{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:20px;font-family:var(--sans);font-size:12.5px;font-weight:500;cursor:pointer;border:1px solid var(--border-light);background:var(--card);color:var(--muted);}
+.tchip .ic{width:13px;height:13px;}
+.tchip.on{background:var(--ok-bg);border-color:transparent;color:var(--ok-fg);font-weight:600;}
+.field-row{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end;margin-top:18px;}
+.dropzone{margin-top:18px;border:1.5px dashed var(--border-light);border-radius:10px;background:#FCFAF6;padding:22px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;}
+.dropzone .dz-ic{width:34px;height:34px;border-radius:9px;background:var(--tint);color:var(--gold-deep);display:flex;align-items:center;justify-content:center;margin-bottom:3px;}
+.dropzone .dz-main{font-family:var(--sans);font-size:13.5px;font-weight:600;color:var(--ink);}
+.dropzone .dz-sub{font-family:var(--sans);font-size:12px;color:var(--muted);max-width:42ch;line-height:1.45;}
+.doc-tiles{display:flex;gap:13px;margin-top:16px;flex-wrap:wrap;}
+.doc-tile{display:flex;flex-direction:column;gap:8px;width:148px;}
+.doc-thumb{height:78px;border-radius:8px;background:#F4EFE6;border:1px solid var(--border-mid);display:flex;align-items:center;justify-content:center;color:var(--gold-deep);position:relative;}
+.doc-thumb .pg{width:34px;height:42px;background:#fff;border:1px solid var(--border-light);border-radius:3px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(26,20,16,.08);}
+.doc-sel{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:7px 11px;border:1px solid var(--border-light);border-radius:6px;background:var(--card);font-family:var(--sans);font-size:12px;font-weight:500;color:var(--ink);cursor:pointer;white-space:nowrap;}
+.doc-sel .ic{width:13px;height:13px;color:var(--muted);}
+
+/* Completion */
+.done-head{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:6px 0 6px;}
+.done-head .wiz-eyebrow,.done-head .wiz-title,.done-head .wiz-sub{width:100%;text-align:center;}
+.done-badge{width:50px;height:50px;border-radius:50%;background:var(--ok-bg);color:var(--ok-fg);display:flex;align-items:center;justify-content:center;}
+.done-badge .ic{width:24px;height:24px;}
+.res-list{margin-top:22px;}
+.res-row{display:flex;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--border);}
+.res-row .thumb{width:44px;height:44px;}
+.res-meta{flex:1;min-width:0;}
+.res-meta b{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--ink);display:block;line-height:1.2;}
+.res-meta span{font-family:var(--sans);font-size:12px;color:var(--muted);}
+.res-due{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.res-due .nd{font-family:var(--sans);font-size:12px;color:var(--muted);white-space:nowrap;}
+.res-due .nd b{color:var(--ink);font-weight:600;}
+
+
+</style>
+</head>
+<body>
+<!-- ════════ Icon sprite ════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="i-clock" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.5"/><path d="M8 5v3l2 1.4"/></g>
+    <g id="i-calendar" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="10" height="9.5" rx="1"/><path d="M3 6.8h10M5.5 2.6v2.4M10.5 2.6v2.4"/></g>
+    <g id="i-doc" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2.5h5l3 3v10a.5.5 0 0 1-.5.5h-7.5a.5.5 0 0 1-.5-.5v-12a.5.5 0 0 1 .5-.5Z"/><path d="M10 2.5v3h3"/></g>
+    <g id="i-box" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6 8 3.5 13 6v5L8 13.5 3 11V6Z"/><path d="M3 6l5 2.5L13 6M8 8.5v5"/></g>
+    <g id="i-shield" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5l4.5 1.7v3.6c0 3-1.9 5.2-4.5 6.2-2.6-1-4.5-3.2-4.5-6.2V4.2L8 2.5Z"/></g>
+    <g id="i-check" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 6.5 11.5 12.5 4.5"/></g>
+    <g id="i-plus" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.5v9M3.5 8h9"/></g>
+    <g id="i-close" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l8 8M12 4l-8 8"/></g>
+    <g id="i-arrow" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11 11 5M6 5h5v5"/></g>
+    <g id="i-download" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v7M5 7.5 8 10.5l3-3"/><path d="M3.5 12.5h9"/></g>
+    <g id="i-coins" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="8" cy="5" rx="4.5" ry="2.1"/><path d="M3.5 5v3.2c0 1.16 2 2.1 4.5 2.1s4.5-.94 4.5-2.1V5M3.5 8.2v3c0 1.16 2 2.1 4.5 2.1s4.5-.94 4.5-2.1v-3"/></g>
+    <g id="i-upload" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10.5V3.2M5 6.2 8 3.2l3 3"/><path d="M3.5 11.5v1.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-1.5"/></g>
+    <g id="i-help" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.5"/><path d="M6.4 6.3a1.7 1.7 0 0 1 3.2.6c0 1.1-1.6 1.5-1.6 2.5"/><path d="M8 11.4h.01"/></g>
+    <g id="i-lock" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7" width="9" height="6.5" rx="1.3"/><path d="M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7"/></g>
+    <g id="i-spark" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.4v2.2M8 11.4v2.2M2.4 8h2.2M11.4 8h2.2M4.5 4.5l1.5 1.5M10 10l1.5 1.5M11.5 4.5 10 6M6 10l-1.5 1.5"/></g>
+    <g id="i-receipt" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2.5h8v11l-1.3-.9-1.3.9-1.4-.9-1.3.9-1.4-.9L4 13.5v-11Z"/><path d="M6 5.5h4M6 8h4"/></g>
+    <g id="i-chevron-d" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></g>
+  </defs>
+</svg>
+
+<div class="board">
+
+  <!-- ════════ Board header ════════ -->
+  <header class="board-head">
+    <div class="board-kicker">Virtual Watchbox · The Service Room</div>
+    <h1 class="board-title">Empty states &amp; <em>onboarding</em></h1>
+    <p class="board-sub">First-run flows for the maintenance hub. Two empty states that sell the room, and a two-step setup that turns an unresolved box into a live schedule.</p>
+    <div class="board-meta">
+      <div class="mi"><b>Surface</b><span>Service Room</span></div>
+      <div class="mi"><b>Screens</b><span>Three</span></div>
+      <div class="mi"><b>Type</b><span>Cormorant · DM Sans</span></div>
+      <div class="mi"><b>Fidelity</b><span>High</span></div>
+    </div>
+  </header>
+
+  <!-- ════════ SCREEN 1 — Empty: no watches yet ════════ -->
+  <section class="screen">
+    <div class="screen-label">
+      <span class="screen-num">Screen 01</span>
+      <span class="screen-name">Empty state · no watches yet</span>
+      <span class="screen-desc">Sell the room and preview the payoff before asking for a watch.</span>
+    </div>
+    <div class="artboard">
+      <!-- nav -->
+      <nav class="app-nav">
+        <div class="nav-left">
+          <span class="nav-mono">VW</span>
+          <span class="nav-div"></span>
+          <span class="nav-room">The Service Room</span>
+        </div>
+        <div class="nav-right">
+          <a class="nav-link" href="#">Collection</a>
+          <a class="nav-link" href="#">Discover</a>
+          <a class="nav-link" href="#">Playground</a>
+          <a class="nav-link active" href="#">Service Room</a>
+        </div>
+      </nav>
+      <div class="app-body">
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Maintenance &amp; Provenance</div>
+            <h1 class="page-h1">The Service Room</h1>
+            <p class="page-subtitle">Service dates, papers, and lifetime upkeep, kept in one place.</p>
+          </div>
+        </div>
+
+        <!-- empty-state card -->
+        <div class="es-card">
+          <div class="es-inner">
+            <div class="es-top">
+              <div>
+                <div class="eyebrow">The Service Room</div>
+                <h2 class="es-headline">Care is part of the<br><em>collection</em>.</h2>
+                <p class="es-sub">A watch is only as good as its records. We keep every service date, paper, and dollar of upkeep, so you don't have to.</p>
+              </div>
+              <div>
+                <p class="benefits-eyebrow">What the room keeps</p>
+                <div class="benefits">
+                  <div class="benefit">
+                    <span class="benefit-ic"><svg class="ic ic-18"><use href="#i-clock"/></svg></span>
+                    <div class="benefit-tx">
+                      <h4>Never miss a service</h4>
+                      <p>We estimate every watch's next service date.</p>
+                    </div>
+                  </div>
+                  <div class="benefit">
+                    <span class="benefit-ic"><svg class="ic ic-18"><use href="#i-doc"/></svg></span>
+                    <div class="benefit-tx">
+                      <h4>A dossier that travels</h4>
+                      <p>Receipts, warranty cards, and records in one place.</p>
+                    </div>
+                  </div>
+                  <div class="benefit">
+                    <span class="benefit-ic"><svg class="ic ic-18"><use href="#i-coins"/></svg></span>
+                    <div class="benefit-tx">
+                      <h4>Know what it's worth to keep</h4>
+                      <p>Lifetime upkeep at a glance, piece by piece.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="es-horizon-wrap">
+              <p class="es-visual-eyebrow">A preview of your service horizon</p>
+              <div class="horizon ghost" aria-hidden="true">
+                <div class="hz-axis">
+                  <span class="tk" style="left:6.5%">Overdue</span>
+                  <span class="tk" style="left:13%">Now</span>
+                  <span class="tk" style="left:31.5%">Dec '26</span>
+                  <span class="tk" style="left:50%">Jun '27</span>
+                  <span class="tk" style="left:68.5%">Dec '27</span>
+                  <span class="tk" style="left:93.5%">Beyond</span>
+                </div>
+                <div class="hz-track">
+                  <div class="hz-zoneL"></div>
+                  <div class="hz-zoneR"></div>
+                  <div class="hz-grid now" style="left:13%"></div>
+                  <div class="hz-grid" style="left:31.5%"></div>
+                  <div class="hz-grid" style="left:50%"></div>
+                  <div class="hz-grid" style="left:68.5%"></div>
+                  <div class="hz-grid" style="left:87%"></div>
+                  <!-- sample pills -->
+                  <div class="hz-pill" style="left:5%;top:30px">
+                    <span class="hz-dot" style="background:var(--od-dot)"></span>
+                    <span class="pill">
+                      <span class="pt"><img src="img/ap-royaloak.png" alt=""/></span>
+                      <span class="pl"><b>Audemars Piguet</b><span style="color:var(--od-fg)">7 mo overdue</span></span>
+                    </span>
+                  </div>
+                  <div class="hz-pill" style="left:26%;top:98px">
+                    <span class="hz-guide" style="height:62px;background:var(--ds-dot)"></span>
+                    <span class="hz-dot" style="background:var(--ds-dot)"></span>
+                    <span class="pill">
+                      <span class="pt"><img src="img/omega-speedmaster.png" alt=""/></span>
+                      <span class="pl"><b>Omega</b><span style="color:var(--ds-fg)">Nov '26</span></span>
+                    </span>
+                  </div>
+                  <div class="hz-pill" style="left:56%;top:32px">
+                    <span class="hz-guide" style="height:128px;background:var(--ok-dot)"></span>
+                    <span class="hz-dot" style="background:var(--ok-dot)"></span>
+                    <span class="pill right">
+                      <span class="pt"><img src="img/rolex-datejust.png" alt=""/></span>
+                      <span class="pl"><b>Rolex</b><span style="color:var(--ok-fg)">Aug '27</span></span>
+                    </span>
+                  </div>
+                  <div class="hz-pill" style="left:81%;top:116px">
+                    <span class="hz-dot" style="background:var(--ok-dot)"></span>
+                    <span class="pill right">
+                      <span class="pt"><img src="img/patek-calatrava.png" alt=""/></span>
+                      <span class="pl"><b>Patek Philippe</b><span style="color:var(--ok-fg)">May '28</span></span>
+                    </span>
+                  </div>
+                </div>
+                <div class="hz-legend">
+                  <span class="lg"><i style="background:var(--od-dot)"></i>Overdue</span>
+                  <span class="lg"><i style="background:var(--ds-dot)"></i>Due soon</span>
+                  <span class="lg"><i style="background:var(--ok-dot)"></i>On track</span>
+                </div>
+              </div>
+              <p class="ghost-cap">Each watch lands on the horizon, marked by when it's next due.</p>
+            </div>
+
+            <div class="es-foot">
+              <a class="btn btn-primary" href="#"><svg class="ic"><use href="#i-plus"/></svg>Add your first watch</a>
+              <a class="btn-link" href="#">Browse the catalog <svg class="ic" style="width:13px;height:13px"><use href="#i-arrow"/></svg></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ SCREEN 2 — Has watches, no service data ════════ -->
+  <section class="screen">
+    <div class="screen-label">
+      <span class="screen-num">Screen 02</span>
+      <span class="screen-name">Has watches · no service data</span>
+      <span class="screen-desc">Their pieces are here but unresolved. The setup fixes that.</span>
+    </div>
+    <div class="artboard">
+      <nav class="app-nav">
+        <div class="nav-left">
+          <span class="nav-mono">VW</span>
+          <span class="nav-div"></span>
+          <span class="nav-room">The Service Room</span>
+        </div>
+        <div class="nav-right">
+          <a class="nav-link" href="#">Collection</a>
+          <a class="nav-link" href="#">Discover</a>
+          <a class="nav-link" href="#">Playground</a>
+          <a class="nav-link active" href="#">Service Room</a>
+        </div>
+      </nav>
+      <div class="app-body">
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Maintenance &amp; Provenance</div>
+            <h1 class="page-h1">The Service Room</h1>
+            <p class="page-subtitle">Five pieces in the box. None have a schedule yet.</p>
+          </div>
+        </div>
+
+        <div class="cols2">
+          <!-- left: their watches, unresolved -->
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Your collection<small>5 pieces</small></div>
+              <span class="unset-pill"><span class="dot"></span>Schedule not set</span>
+            </div>
+
+            <div class="wrow">
+              <div class="wphoto"><img src="img/rolex-datejust.png" alt="Rolex Datejust 41"/></div>
+              <div class="wmeta">
+                <div class="wbrand">Rolex</div>
+                <div class="wmodel">Datejust 41</div>
+                <div class="wref">Ref. 126331 · Oystersteel &amp; Everose</div>
+              </div>
+              <div class="wstats">
+                <div class="wstat"><span class="lab">Last serviced</span><span class="val dash">—</span></div>
+                <div class="wstat"><span class="lab">Next service</span><span class="chip estimate">Estimate</span></div>
+              </div>
+            </div>
+
+            <div class="wrow">
+              <div class="wphoto"><img src="img/omega-speedmaster.png" alt="Omega Speedmaster"/></div>
+              <div class="wmeta">
+                <div class="wbrand">Omega</div>
+                <div class="wmodel">Speedmaster Broad Arrow</div>
+                <div class="wref">Ref. 3551.20.00 · Stainless Steel</div>
+              </div>
+              <div class="wstats">
+                <div class="wstat"><span class="lab">Last serviced</span><span class="val dash">—</span></div>
+                <div class="wstat"><span class="lab">Next service</span><span class="chip estimate">Estimate</span></div>
+              </div>
+            </div>
+
+            <div class="wrow">
+              <div class="wphoto"><img src="img/patek-calatrava.png" alt="Patek Philippe Calatrava"/></div>
+              <div class="wmeta">
+                <div class="wbrand">Patek Philippe</div>
+                <div class="wmodel">Calatrava</div>
+                <div class="wref">Ref. 6000G-012 · White Gold</div>
+              </div>
+              <div class="wstats">
+                <div class="wstat"><span class="lab">Last serviced</span><span class="val dash">—</span></div>
+                <div class="wstat"><span class="lab">Next service</span><span class="val dash">—</span></div>
+              </div>
+            </div>
+
+            <div class="wrow">
+              <div class="wphoto"><img src="img/ap-royaloak.png" alt="Audemars Piguet Royal Oak Offshore"/></div>
+              <div class="wmeta">
+                <div class="wbrand">Audemars Piguet</div>
+                <div class="wmodel">Royal Oak Offshore</div>
+                <div class="wref">Ref. 26170ST · Stainless Steel</div>
+              </div>
+              <div class="wstats">
+                <div class="wstat"><span class="lab">Last serviced</span><span class="val dash">—</span></div>
+                <div class="wstat"><span class="lab">Next service</span><span class="chip estimate">Estimate</span></div>
+              </div>
+            </div>
+
+            <div class="wrow">
+              <div class="wphoto"><img src="img/lange-1.png" alt="A. Lange & Söhne Lange 1"/></div>
+              <div class="wmeta">
+                <div class="wbrand">A. Lange &amp; Söhne</div>
+                <div class="wmodel">Lange 1</div>
+                <div class="wref">Ref. 101.031 · Rose Gold</div>
+              </div>
+              <div class="wstats">
+                <div class="wstat"><span class="lab">Last serviced</span><span class="val dash">—</span></div>
+                <div class="wstat"><span class="lab">Next service</span><span class="val dash">—</span></div>
+              </div>
+            </div>
+
+            <div class="panel-foot">
+              <svg class="ic" style="width:14px;height:14px;color:var(--faint)"><use href="#i-clock"/></svg>
+              No service history on file yet.
+            </div>
+          </div>
+
+          <!-- right: marketing panel -->
+          <div class="mkt">
+            <div class="eyebrow">Set up the room</div>
+            <h2 class="mkt-h">Turn the box into a<br><em>documented</em> collection.</h2>
+            <p class="mkt-sub">You've shown what you own. Now make it maintained.</p>
+            <div class="checklist">
+              <div class="cl-item"><span class="cl-check"><svg class="ic"><use href="#i-check"/></svg></span><span>An accurate service schedule</span></div>
+              <div class="cl-item"><span class="cl-check"><svg class="ic"><use href="#i-check"/></svg></span><span>A provenance dossier</span></div>
+              <div class="cl-item"><span class="cl-check"><svg class="ic"><use href="#i-check"/></svg></span><span>Resale-ready records</span></div>
+              <div class="cl-item"><span class="cl-check"><svg class="ic"><use href="#i-check"/></svg></span><span>Warranty tracking</span></div>
+            </div>
+            <div class="mkt-foot">
+              <a class="btn btn-primary btn-block" href="#">Set up my schedule</a>
+              <a class="btn-link link-center" href="#">I'll do this later</a>
+              <p class="privacy"><svg class="ic"><use href="#i-lock"/></svg>Your records stay private to you.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ SCREEN 3 — Onboarding wizard ════════ -->
+  <section class="screen">
+    <div class="screen-label">
+      <span class="screen-num">Screen 03</span>
+      <span class="screen-name">Onboarding wizard</span>
+      <span class="screen-desc">A two-step modal over the dimmed room. All three states shown.</span>
+    </div>
+    <div class="artboard">
+      <div class="wiz-stage">
+
+        <!-- ── STEP 1 ── -->
+        <div class="wiz-state">
+          <div class="wiz-tag"><span class="n">1</span>Step one · Set the clock</div>
+          <div class="wiz">
+            <div class="wiz-head">
+              <div class="wiz-head-row">
+                <div>
+                  <div class="wiz-eyebrow">Step 1 of 2</div>
+                  <h3 class="wiz-title">Set the clock</h3>
+                  <p class="wiz-sub">Enough to estimate each watch's next service.</p>
+                </div>
+                <button class="wiz-close" type="button" aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button>
+              </div>
+              <div class="wiz-progress"><span class="seg on"></span><span class="seg"></span></div>
+            </div>
+            <div class="wiz-body">
+              <div class="all-interval">
+                <div class="lab">Set one interval for all<small>Most automatics run a 5-year cadence.</small></div>
+                <div class="seg-int">
+                  <button type="button">3y</button>
+                  <button type="button" class="on">5y</button>
+                  <button type="button">7y</button>
+                  <button type="button">10y</button>
+                </div>
+              </div>
+
+              <!-- row 1 -->
+              <div class="wiz-row">
+                <div class="wiz-row-top">
+                  <div class="thumb"><img src="img/rolex-datejust.png" alt=""/></div>
+                  <div class="wiz-row-name"><b>Rolex Datejust 41</b><span>Ref. 126331</span></div>
+                  <button class="skip" type="button">Skip</button>
+                </div>
+                <div class="wiz-row-fields">
+                  <div class="field">
+                    <span class="flab">Last full service</span>
+                    <div class="date-ctl"><span>March 2024</span><svg class="ic"><use href="#i-calendar"/></svg></div>
+                  </div>
+                  <div class="field">
+                    <span class="flab">Service every</span>
+                    <div class="seg-int">
+                      <button type="button">3y</button>
+                      <button type="button" class="on">5y</button>
+                      <button type="button">7y</button>
+                      <button type="button">10y</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="row-hint">
+                  <span class="opt"><span class="box"><svg class="ic"><use href="#i-check"/></svg></span>Never serviced? Use purchase date</span>
+                  <button class="helper" type="button"><svg class="ic" style="width:13px;height:13px"><use href="#i-help"/></svg>Not sure?</button>
+                </div>
+              </div>
+
+              <!-- row 2 -->
+              <div class="wiz-row">
+                <div class="wiz-row-top">
+                  <div class="thumb"><img src="img/omega-speedmaster.png" alt=""/></div>
+                  <div class="wiz-row-name"><b>Omega Speedmaster Broad Arrow</b><span>Ref. 3551.20.00</span></div>
+                  <button class="skip" type="button">Skip</button>
+                </div>
+                <div class="wiz-row-fields">
+                  <div class="field">
+                    <span class="flab">Last full service</span>
+                    <div class="date-ctl empty"><span>Purchase date · Jun 2019</span><svg class="ic"><use href="#i-calendar"/></svg></div>
+                  </div>
+                  <div class="field">
+                    <span class="flab">Service every</span>
+                    <div class="seg-int">
+                      <button type="button">3y</button>
+                      <button type="button" class="on">5y</button>
+                      <button type="button">7y</button>
+                      <button type="button">10y</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="row-hint">
+                  <span class="opt checked"><span class="box"><svg class="ic"><use href="#i-check"/></svg></span>Never serviced? Use purchase date</span>
+                  <span class="est-tag"><svg class="ic" style="width:10px;height:10px"><use href="#i-spark"/></svg>Estimate</span>
+                </div>
+              </div>
+
+              <!-- row 3 -->
+              <div class="wiz-row">
+                <div class="wiz-row-top">
+                  <div class="thumb"><img src="img/patek-calatrava.png" alt=""/></div>
+                  <div class="wiz-row-name"><b>Patek Philippe Calatrava</b><span>Ref. 6000G-012</span></div>
+                  <button class="skip" type="button">Skip</button>
+                </div>
+                <div class="wiz-row-fields">
+                  <div class="field">
+                    <span class="flab">Last full service</span>
+                    <div class="date-ctl empty"><span>Select a date</span><svg class="ic"><use href="#i-calendar"/></svg></div>
+                  </div>
+                  <div class="field">
+                    <span class="flab">Service every</span>
+                    <div class="seg-int">
+                      <button type="button">3y</button>
+                      <button type="button" class="on">5y</button>
+                      <button type="button">7y</button>
+                      <button type="button">10y</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="row-hint">
+                  <span class="opt"><span class="box"><svg class="ic"><use href="#i-check"/></svg></span>Never serviced? Use purchase date</span>
+                  <button class="helper" type="button"><svg class="ic" style="width:13px;height:13px"><use href="#i-help"/></svg>Not sure?</button>
+                </div>
+              </div>
+            </div>
+            <div class="wiz-foot">
+              <span class="prog">3 pieces ready</span>
+              <a class="btn btn-primary" href="#">Continue</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── STEP 2 ── -->
+        <div class="wiz-state">
+          <div class="wiz-tag"><span class="n">2</span>Step two · Build the dossier</div>
+          <div class="wiz">
+            <div class="wiz-head">
+              <div class="wiz-head-row">
+                <div>
+                  <div class="wiz-eyebrow">Step 2 of 2 · optional</div>
+                  <h3 class="wiz-title">Build the dossier</h3>
+                  <p class="wiz-sub">Add papers and warranties. Skip anything you like.</p>
+                </div>
+                <button class="wiz-close" type="button" aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button>
+              </div>
+              <div class="wiz-progress"><span class="seg done"></span><span class="seg on"></span></div>
+            </div>
+            <div class="wiz-body">
+              <div class="wiz-row-top" style="margin-bottom:16px">
+                <div class="thumb" style="width:44px;height:44px"><img src="img/rolex-datejust.png" alt=""/></div>
+                <div class="wiz-row-name"><b>Rolex Datejust 41</b><span>Ref. 126331 · piece 1 of 3</span></div>
+                <button class="skip" type="button">Skip piece</button>
+              </div>
+
+              <div class="toggle-chips">
+                <span class="tchip on"><svg class="ic"><use href="#i-box"/></svg>Box</span>
+                <span class="tchip on"><svg class="ic"><use href="#i-check"/></svg>Papers</span>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <span class="flab">Warranty expiry <span style="text-transform:none;letter-spacing:0;color:var(--faint);font-weight:400">· optional</span></span>
+                  <div class="date-ctl"><span>September 2026</span><svg class="ic"><use href="#i-calendar"/></svg></div>
+                </div>
+              </div>
+
+              <div class="dropzone">
+                <span class="dz-ic"><svg class="ic ic-18"><use href="#i-upload"/></svg></span>
+                <span class="dz-main">Drop receipts, warranty cards, service records</span>
+                <span class="dz-sub">PDF or image, or click to choose.</span>
+              </div>
+
+              <div class="doc-tiles">
+                <div class="doc-tile">
+                  <div class="doc-thumb"><span class="pg"><svg class="ic"><use href="#i-receipt"/></svg></span></div>
+                  <div class="doc-sel"><span>Receipt</span><svg class="ic"><use href="#i-chevron-d"/></svg></div>
+                </div>
+                <div class="doc-tile">
+                  <div class="doc-thumb"><span class="pg"><svg class="ic"><use href="#i-doc"/></svg></span></div>
+                  <div class="doc-sel"><span>Warranty Card</span><svg class="ic"><use href="#i-chevron-d"/></svg></div>
+                </div>
+                <div class="doc-tile">
+                  <div class="doc-thumb"><span class="pg"><svg class="ic"><use href="#i-box"/></svg></span></div>
+                  <div class="doc-sel"><span>Box &amp; Papers</span><svg class="ic"><use href="#i-chevron-d"/></svg></div>
+                </div>
+              </div>
+            </div>
+            <div class="wiz-foot">
+              <div class="wiz-foot-l">
+                <a class="btn-link" href="#" style="color:var(--muted)">Skip for now</a>
+                <span class="prog">Piece 1 of 3</span>
+              </div>
+              <a class="btn btn-primary" href="#">Finish</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── COMPLETION ── -->
+        <div class="wiz-state">
+          <div class="wiz-tag"><span class="n ok"><svg class="ic" style="width:13px;height:13px"><use href="#i-check"/></svg></span>Done · Schedule is live</div>
+          <div class="wiz">
+            <div class="wiz-body" style="padding-top:28px">
+              <div class="done-head">
+                <span class="done-badge"><svg class="ic"><use href="#i-check"/></svg></span>
+                <div class="wiz-eyebrow" style="color:var(--ok-fg)">All set</div>
+                <h3 class="wiz-title" style="font-size:30px">Your schedule is live</h3>
+                <p class="wiz-sub" style="text-align:center;margin-left:auto;margin-right:auto">Every piece has a next-service date. We'll keep it current.</p>
+              </div>
+
+              <div class="res-list">
+                <div class="res-row">
+                  <div class="thumb"><img src="img/ap-royaloak.png" alt=""/></div>
+                  <div class="res-meta"><b>Audemars Piguet Royal Oak Offshore</b><span>Ref. 26170ST</span></div>
+                  <div class="res-due">
+                    <span class="chip od"><span class="dot"></span>Overdue</span>
+                    <span class="nd">Was due <b>Nov 2024</b></span>
+                  </div>
+                </div>
+                <div class="res-row">
+                  <div class="thumb"><img src="img/omega-speedmaster.png" alt=""/></div>
+                  <div class="res-meta"><b>Omega Speedmaster Broad Arrow</b><span>Ref. 3551.20.00</span></div>
+                  <div class="res-due">
+                    <span class="chip ds"><span class="dot"></span>Due soon</span>
+                    <span class="nd">Next <b>Sep 2026</b></span>
+                  </div>
+                </div>
+                <div class="res-row">
+                  <div class="thumb"><img src="img/rolex-datejust.png" alt=""/></div>
+                  <div class="res-meta"><b>Rolex Datejust 41</b><span>Ref. 126331</span></div>
+                  <div class="res-due">
+                    <span class="chip ok"><span class="dot"></span>On track</span>
+                    <span class="nd">Next <b>Mar 2029</b></span>
+                  </div>
+                </div>
+                <div class="res-row">
+                  <div class="thumb"><img src="img/patek-calatrava.png" alt=""/></div>
+                  <div class="res-meta"><b>Patek Philippe Calatrava</b><span>Ref. 6000G-012</span></div>
+                  <div class="res-due">
+                    <span class="chip ok"><span class="dot"></span>On track</span>
+                    <span class="nd">Next <b>Nov 2027</b></span>
+                  </div>
+                </div>
+              </div>
+
+              <p class="privacy" style="justify-content:flex-start;margin-top:20px">
+                <svg class="ic"><use href="#i-lock"/></svg>Your records stay private to you.
+              </p>
+            </div>
+            <div class="wiz-foot" style="justify-content:flex-end">
+              <a class="btn btn-secondary" href="#">Add more detail</a>
+              <a class="btn btn-primary" href="#">View my agenda</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

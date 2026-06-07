@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Service Room · Mobile · Empty States & Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#FAF8F4; --slot:#FFFCF7; --card:#FFFFFF; --tile:#FAF8F4;
+  --ink:#1A1410; --ink-soft:#43392E; --muted:#6A5B48; --faint:#9A8B73;
+  --gold:#C9A84C; --gold-deep:#876A12; --dark:#2A2520;
+  --border:#EAE5DC; --border-mid:#E8E2D8; --border-light:#D4CBBF;
+  --tint:#F4EFE6; --bg-2:#F2EEE5;
+  --od-fg:#8A2020; --od-bg:#FAE8E8; --od-dot:#B23A3A;
+  --ds-fg:#8A5010; --ds-bg:#FFF3E0; --ds-dot:#C98A2A;
+  --ok-fg:#2D6A2D; --ok-bg:#E8F4E8; --ok-dot:#5A9A5A;
+  --wa-soon-fg:#8A6A10; --wa-soon-bg:#FFF8E6;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:#E7E0D4;font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+img{display:block;}
+
+/* ─── Board scaffold ───────────────────────────────────────────────────── */
+.board{max-width:1320px;margin:0 auto;padding:0 40px 120px;}
+.board-head{padding:64px 0 28px;}
+.board-kicker{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);}
+.board-title{font-family:var(--serif);font-weight:300;font-size:48px;line-height:1.05;letter-spacing:-.01em;color:var(--ink);margin:14px 0 0;}
+.board-title em{font-style:italic;}
+.board-sub{font-size:15px;line-height:1.6;color:var(--ink-soft);max-width:64ch;margin:16px 0 0;}
+
+.section{margin-top:52px;}
+.section-label{display:flex;align-items:baseline;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+.section-num{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#fff;background:var(--ink);border-radius:20px;padding:5px 13px;white-space:nowrap;}
+.section-name{font-family:var(--serif);font-size:27px;font-weight:400;color:var(--ink);}
+.section-desc{font-size:14px;color:#5b5043;max-width:52ch;line-height:1.5;}
+.phone-row{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start;}
+.phone-wrap{display:flex;flex-direction:column;gap:14px;align-items:center;}
+.phone-cap{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+
+/* ─── Phone frame ──────────────────────────────────────────────────────── */
+.phone{width:392px;flex-shrink:0;border-radius:54px;background:#100f0c;padding:12px;box-shadow:0 24px 60px rgba(26,20,16,.26);}
+.screen{position:relative;background:var(--bg);border-radius:42px;overflow:hidden;display:flex;flex-direction:column;}
+.island{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:112px;height:31px;background:#100f0c;border-radius:18px;z-index:30;}
+.statusbar{height:52px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 9px;flex-shrink:0;}
+.statusbar .time{font-family:var(--sans);font-size:15px;font-weight:600;color:var(--ink);letter-spacing:.02em;}
+.statusbar .sb-r{display:flex;align-items:center;gap:7px;}
+.statusbar .sb-r .bars{display:flex;align-items:flex-end;gap:2px;height:11px;}
+.statusbar .sb-r .bars i{width:3px;background:var(--ink);border-radius:1px;}
+.statusbar .sb-r .bars i:nth-child(1){height:4px;}
+.statusbar .sb-r .bars i:nth-child(2){height:6px;}
+.statusbar .sb-r .bars i:nth-child(3){height:8px;}
+.statusbar .sb-r .bars i:nth-child(4){height:11px;}
+.statusbar .sb-r .batt{width:23px;height:12px;border:1.4px solid var(--ink);border-radius:3px;position:relative;padding:1.5px;}
+.statusbar .sb-r .batt::after{content:"";position:absolute;right:-3px;top:3.5px;width:2px;height:4px;background:var(--ink);border-radius:0 1px 1px 0;}
+.statusbar .sb-r .batt i{display:block;height:100%;width:72%;background:var(--ink);border-radius:1px;}
+.home-ind{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);width:128px;height:5px;border-radius:3px;background:rgba(26,20,16,.32);z-index:30;}
+
+/* ─── Mobile app header ────────────────────────────────────────────────── */
+.m-nav{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg);}
+.m-burger{display:flex;flex-direction:column;gap:4px;width:22px;cursor:pointer;}
+.m-burger i{height:1.5px;background:var(--ink);border-radius:1px;}
+.m-burger i:nth-child(2){width:70%;}
+.m-nav-mid{display:flex;align-items:center;gap:9px;}
+.m-mono{font-family:var(--serif);font-size:20px;font-weight:500;letter-spacing:.05em;color:var(--gold-deep);}
+.m-nav-room{font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);}
+.m-avatar{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--slot);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:15px;}
+
+.m-body{padding:22px 20px 26px;display:flex;flex-direction:column;}
+.eyebrow{font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);}
+
+/* ─── Atoms ────────────────────────────────────────────────────────────── */
+.ic{width:16px;height:16px;display:inline-block;flex-shrink:0;}
+.ic-18{width:18px;height:18px;}
+.btn{font-family:var(--sans);cursor:pointer;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;gap:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:12px;border:1px solid transparent;text-decoration:none;white-space:nowrap;}
+.btn-primary{background:var(--ink);color:var(--slot);padding:15px 24px;}
+.btn-secondary{background:transparent;color:var(--ink);border-color:var(--border-light);padding:14px 22px;}
+.btn-block{width:100%;}
+.btn-link{font-family:var(--sans);font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep);text-decoration:none;display:inline-flex;align-items:center;gap:7px;cursor:pointer;background:none;border:none;white-space:nowrap;}
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.04em;padding:4px 11px;border-radius:20px;white-space:nowrap;}
+.chip .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.chip.od{background:var(--od-bg);color:var(--od-fg);}.chip.od .dot{background:var(--od-dot);}
+.chip.ds{background:var(--ds-bg);color:var(--ds-fg);}.chip.ds .dot{background:var(--ds-dot);}
+.chip.ok{background:var(--ok-bg);color:var(--ok-fg);}.chip.ok .dot{background:var(--ok-dot);}
+.chip.estimate{background:var(--bg-2);color:var(--muted);font-weight:600;letter-spacing:.07em;text-transform:uppercase;font-size:10px;border:1px dashed var(--border-light);}
+.chip .ic{width:11px;height:11px;}
+
+/* ─── Screen 1 (mobile empty) ──────────────────────────────────────────── */
+.m-headline{font-family:var(--serif);font-weight:300;font-size:34px;line-height:1.12;letter-spacing:-.01em;color:var(--ink);margin:12px 0 0;}
+.m-headline em{font-style:italic;}
+.m-sub{font-size:14.5px;line-height:1.6;color:var(--ink-soft);margin:14px 0 0;}
+.m-benefits{display:flex;flex-direction:column;gap:18px;margin:26px 0 0;}
+.m-benefit{display:flex;gap:14px;align-items:flex-start;}
+.m-benefit-ic{width:38px;height:38px;border-radius:9px;background:var(--tint);color:var(--gold-deep);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.m-benefit h4{font-family:var(--sans);font-size:14.5px;font-weight:600;color:var(--ink);margin:0 0 3px;}
+.m-benefit p{font-family:var(--sans);font-size:13px;line-height:1.45;color:var(--muted);margin:0;}
+
+.m-preview{margin:28px 0 0;border:1px solid var(--border-mid);border-radius:12px;background:var(--card);padding:16px 16px 6px;}
+.m-preview-eyebrow{font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);text-align:center;margin-bottom:6px;}
+.ghost-list{filter:grayscale(.4);opacity:.66;}
+.gl-row{display:flex;align-items:center;gap:13px;padding:11px 0;border-top:1px solid var(--border);}
+.gl-row:first-child{border-top:none;}
+.gl-ph{width:42px;height:42px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.gl-ph img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 2px 5px rgba(26,20,16,.18));}
+.gl-meta{flex:1;min-width:0;}
+.gl-meta b{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--ink);display:block;line-height:1.2;}
+.gl-meta span{font-family:var(--sans);font-size:11.5px;color:var(--muted);}
+.gl-due{display:flex;align-items:center;gap:8px;white-space:nowrap;}
+.gl-due .d{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.gl-due .t{font-family:var(--sans);font-size:12px;font-weight:600;}
+.m-preview-cap{font-family:var(--sans);font-size:11.5px;color:var(--muted);text-align:center;line-height:1.45;padding:12px 8px 10px;}
+
+/* ─── Sticky CTA bar ───────────────────────────────────────────────────── */
+.m-ctabar{margin-top:auto;background:var(--slot);border-top:1px solid var(--border);box-shadow:0 -10px 26px rgba(26,20,16,.06);padding:15px 20px 18px;display:flex;flex-direction:column;gap:13px;flex-shrink:0;}
+.m-ctabar .btn-link{align-self:center;}
+
+/* ─── Screen 2 (mobile collection) ─────────────────────────────────────── */
+.m-coll-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:2px;}
+.m-coll-head .eyebrow small{font-family:var(--sans);font-size:11px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--muted);margin-left:8px;}
+.m-list{margin-top:8px;}
+.m-wrow{display:flex;align-items:center;gap:14px;padding:15px 0;border-top:1px solid var(--border);}
+.m-wrow:first-child{border-top:none;}
+.m-wphoto{width:68px;height:68px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.m-wphoto img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(26,20,16,.16));}
+.m-wmeta{flex:1;min-width:0;}
+.m-wbrand{font-family:var(--sans);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep);}
+.m-wmodel{font-family:var(--serif);font-size:20px;font-weight:400;color:var(--ink);line-height:1.04;margin:3px 0 6px;}
+.m-wnext{display:inline-flex;align-items:center;gap:8px;}
+.m-wnext .lab{font-family:var(--sans);text-transform:uppercase;letter-spacing:.08em;font-weight:600;font-size:9.5px;color:var(--faint);white-space:nowrap;}
+.m-wnext .dash{font-family:var(--sans);font-size:13px;color:var(--border-light);}
+
+.m-offer{margin-top:26px;background:var(--tint);border:1px solid var(--border-mid);border-radius:14px;padding:24px 20px;}
+.m-offer .m-headline{font-size:27px;margin-top:10px;}
+.m-offer-sub{font-family:var(--sans);font-size:13.5px;line-height:1.55;color:var(--ink-soft);margin:12px 0 0;}
+.m-check{display:flex;flex-direction:column;gap:12px;margin-top:20px;}
+.m-check-i{display:flex;align-items:center;gap:11px;}
+.m-check-i .ck{width:22px;height:22px;border-radius:50%;background:var(--ok-bg);color:var(--ok-fg);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.m-check-i .ck .ic{width:12px;height:12px;}
+.m-check-i span{font-family:var(--sans);font-size:14px;font-weight:500;color:var(--ink);}
+.m-privacy{display:flex;align-items:center;gap:8px;justify-content:center;font-family:var(--sans);font-size:11.5px;color:var(--muted);margin-top:2px;}
+.m-privacy .ic{width:12px;height:12px;color:var(--faint);flex-shrink:0;}
+
+/* ─── Screen 3 (mobile wizard, full-screen) ────────────────────────────── */
+.m-wiz-top{display:flex;align-items:center;justify-content:space-between;padding:8px 18px 0;flex-shrink:0;}
+.m-wiz-close{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.m-wiz-step{font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);white-space:nowrap;}
+.m-wiz-head{padding:14px 20px 0;flex-shrink:0;}
+.m-wiz-title{font-family:var(--serif);font-size:28px;font-weight:400;color:var(--ink);line-height:1.04;margin:0;}
+.m-wiz-sub{font-family:var(--sans);font-size:13px;color:var(--muted);line-height:1.45;margin:7px 0 0;}
+.m-progress{display:flex;gap:7px;margin:16px 20px 0;flex-shrink:0;}
+.m-progress .seg{height:4px;border-radius:2px;flex:1;background:var(--border);}
+.m-progress .seg.on{background:var(--ink);}
+.m-progress .seg.done{background:var(--gold-deep);}
+.m-wiz-body{padding:18px 20px 22px;display:flex;flex-direction:column;}
+
+.m-seg{display:flex;border:1px solid var(--border-light);border-radius:8px;overflow:hidden;background:var(--card);}
+.m-seg button{flex:1;font-family:var(--sans);font-size:13px;font-weight:600;padding:10px 0;border:none;background:transparent;color:var(--muted);cursor:pointer;border-right:1px solid var(--border);}
+.m-seg button:last-child{border-right:none;}
+.m-seg button.on{background:var(--ink);color:var(--slot);}
+
+.m-all-int{background:var(--tint);border:1px solid var(--border-mid);border-radius:10px;padding:14px;}
+.m-all-int .lab{font-family:var(--sans);font-size:13.5px;font-weight:600;color:var(--ink);}
+.m-all-int .lab small{display:block;font-weight:400;font-size:12px;color:var(--muted);margin-top:2px;}
+.m-all-int .m-seg{margin-top:12px;}
+
+.m-wiz-row{padding:18px 0;border-top:1px solid var(--border);}
+.m-wiz-row.first{border-top:none;padding-top:20px;}
+.m-wiz-row-top{display:flex;align-items:center;gap:12px;}
+.m-wiz-row-top .ph{width:46px;height:46px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.m-wiz-row-top .ph img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 7px rgba(26,20,16,.15));}
+.m-wiz-name{flex:1;min-width:0;}
+.m-wiz-name b{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--ink);display:block;line-height:1.2;}
+.m-wiz-name span{font-family:var(--sans);font-size:11.5px;color:var(--muted);}
+.m-skip{font-family:var(--sans);font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);background:none;border:none;cursor:pointer;flex-shrink:0;}
+.m-field{margin-top:15px;}
+.m-flab{font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:8px;}
+.m-date{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:11px 13px;border:1px solid var(--border-light);border-radius:8px;background:var(--card);font-family:var(--sans);font-size:13.5px;font-weight:500;color:var(--ink);width:100%;cursor:pointer;white-space:nowrap;}
+.m-date.empty{color:var(--muted);font-weight:400;}
+.m-date .ic{color:var(--muted);width:15px;height:15px;}
+.m-rowhint{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin-top:13px;}
+.m-opt{display:inline-flex;align-items:center;gap:9px;font-family:var(--sans);font-size:12.5px;color:var(--muted);cursor:pointer;white-space:nowrap;}
+.m-opt .box{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border-light);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+.m-opt .box .ic{width:11px;height:11px;color:#fff;opacity:0;}
+.m-opt.checked .box{background:var(--gold-deep);border-color:var(--gold-deep);}
+.m-opt.checked .box .ic{opacity:1;}
+.m-opt.checked{color:var(--ink);font-weight:500;}
+.m-helper{font-family:var(--sans);font-size:12px;color:var(--gold-deep);cursor:pointer;display:inline-flex;align-items:center;gap:5px;background:none;border:none;white-space:nowrap;}
+.m-est{display:inline-flex;align-items:center;gap:5px;font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ds-fg);background:var(--ds-bg);padding:4px 9px;border-radius:20px;}
+
+.m-tchips{display:flex;gap:9px;flex-wrap:wrap;margin-top:4px;}
+.m-tchip{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:20px;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border-light);background:var(--card);color:var(--muted);}
+.m-tchip .ic{width:13px;height:13px;}
+.m-tchip.on{background:var(--ok-bg);border-color:transparent;color:var(--ok-fg);font-weight:600;}
+.m-drop{margin-top:16px;border:1.5px dashed var(--border-light);border-radius:11px;background:#FCFAF6;padding:22px 16px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;}
+.m-drop .dz-ic{width:36px;height:36px;border-radius:10px;background:var(--tint);color:var(--gold-deep);display:flex;align-items:center;justify-content:center;margin-bottom:2px;}
+.m-drop .dz-main{font-family:var(--sans);font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.35;}
+.m-drop .dz-sub{font-family:var(--sans);font-size:12px;color:var(--muted);}
+.m-doctiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}
+.m-doctile{display:flex;flex-direction:column;gap:8px;}
+.m-docthumb{height:80px;border-radius:9px;background:#F4EFE6;border:1px solid var(--border-mid);display:flex;align-items:center;justify-content:center;}
+.m-docthumb .pg{width:36px;height:46px;background:#fff;border:1px solid var(--border-light);border-radius:3px;display:flex;align-items:center;justify-content:center;color:var(--gold-deep);box-shadow:0 2px 6px rgba(26,20,16,.08);}
+.m-docsel{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:8px 11px;border:1px solid var(--border-light);border-radius:7px;background:var(--card);font-family:var(--sans);font-size:12px;font-weight:500;color:var(--ink);cursor:pointer;white-space:nowrap;}
+.m-docsel .ic{width:13px;height:13px;color:var(--muted);}
+
+.m-done{display:flex;flex-direction:column;align-items:center;text-align:center;gap:11px;padding:12px 0 6px;}
+.m-done .badge{width:54px;height:54px;border-radius:50%;background:var(--ok-bg);color:var(--ok-fg);display:flex;align-items:center;justify-content:center;}
+.m-done .badge .ic{width:25px;height:25px;}
+.m-done .eyebrow{color:var(--ok-fg);width:100%;text-align:center;}
+.m-done h3{font-family:var(--serif);font-size:29px;font-weight:400;color:var(--ink);margin:0;width:100%;}
+.m-done p{font-family:var(--sans);font-size:13px;color:var(--muted);line-height:1.45;margin:0;width:100%;}
+.m-reslist{margin-top:20px;}
+.m-res-row{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--border);}
+.m-res-row:first-child{border-top:none;}
+.m-res-ph{width:46px;height:46px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.m-res-ph img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 7px rgba(26,20,16,.15));}
+.m-res-meta{flex:1;min-width:0;}
+.m-res-meta b{font-family:var(--sans);font-size:13.5px;font-weight:600;color:var(--ink);display:block;line-height:1.2;}
+.m-res-meta span{font-family:var(--sans);font-size:11.5px;color:var(--muted);}
+.m-res-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.m-res-right .nd{font-family:var(--sans);font-size:11.5px;color:var(--muted);white-space:nowrap;}
+.m-res-right .nd b{color:var(--ink);font-weight:600;}
+.m-wiz-foot{margin-top:auto;border-top:1px solid var(--border);background:#FCFAF6;padding:14px 20px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-shrink:0;}
+.m-wiz-foot.stack{flex-direction:column;align-items:stretch;gap:11px;}
+.m-wiz-foot.stack .btn-link{align-self:center;}
+.m-wiz-foot .prog{font-family:var(--sans);font-size:12px;color:var(--muted);white-space:nowrap;}
+.m-wiz-foot-l{display:flex;align-items:center;gap:14px;}
+
+</style>
+</head>
+<body>
+<!-- ════════ Icon sprite ════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <g id="i-clock" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.5"/><path d="M8 5v3l2 1.4"/></g>
+  <g id="i-calendar" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="10" height="9.5" rx="1"/><path d="M3 6.8h10M5.5 2.6v2.4M10.5 2.6v2.4"/></g>
+  <g id="i-doc" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2.5h5l3 3v10a.5.5 0 0 1-.5.5h-7.5a.5.5 0 0 1-.5-.5v-12a.5.5 0 0 1 .5-.5Z"/><path d="M10 2.5v3h3"/></g>
+  <g id="i-box" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6 8 3.5 13 6v5L8 13.5 3 11V6Z"/><path d="M3 6l5 2.5L13 6M8 8.5v5"/></g>
+  <g id="i-coins" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="8" cy="5" rx="4.5" ry="2.1"/><path d="M3.5 5v3.2c0 1.16 2 2.1 4.5 2.1s4.5-.94 4.5-2.1V5M3.5 8.2v3c0 1.16 2 2.1 4.5 2.1s4.5-.94 4.5-2.1v-3"/></g>
+  <g id="i-check" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5 6.5 11.5 12.5 4.5"/></g>
+  <g id="i-plus" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.5v9M3.5 8h9"/></g>
+  <g id="i-close" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l8 8M12 4l-8 8"/></g>
+  <g id="i-arrow" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11 11 5M6 5h5v5"/></g>
+  <g id="i-upload" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10.5V3.2M5 6.2 8 3.2l3 3"/><path d="M3.5 11.5v1.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-1.5"/></g>
+  <g id="i-help" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.5"/><path d="M6.4 6.3a1.7 1.7 0 0 1 3.2.6c0 1.1-1.6 1.5-1.6 2.5"/><path d="M8 11.4h.01"/></g>
+  <g id="i-lock" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7" width="9" height="6.5" rx="1.3"/><path d="M5.5 7V5.3a2.5 2.5 0 0 1 5 0V7"/></g>
+  <g id="i-spark" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.4v2.2M8 11.4v2.2M2.4 8h2.2M11.4 8h2.2M4.5 4.5l1.5 1.5M10 10l1.5 1.5M11.5 4.5 10 6M6 10l-1.5 1.5"/></g>
+  <g id="i-receipt" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2.5h8v11l-1.3-.9-1.3.9-1.4-.9-1.3.9-1.4-.9L4 13.5v-11Z"/><path d="M6 5.5h4M6 8h4"/></g>
+  <g id="i-chevron-d" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></g>
+</defs></svg>
+
+<div class="board">
+  <header class="board-head">
+    <div class="board-kicker">Virtual Watchbox · The Service Room · Mobile</div>
+    <h1 class="board-title">Mobile empty states &amp; <em>onboarding</em></h1>
+    <p class="board-sub">The same three first-run flows, designed mobile-first. The horizon becomes a vertical agenda preview, CTAs pin to a bottom bar, and the wizard runs full-screen.</p>
+  </header>
+
+  <!-- ════════ SCREEN 1 ════════ -->
+  <section class="section">
+    <div class="section-label">
+      <span class="section-num">Screen 01</span>
+      <span class="section-name">Empty state · no watches yet</span>
+      <span class="section-desc">Sell the room and preview the payoff before asking for a watch.</span>
+    </div>
+    <div class="phone-row">
+      <div class="phone">
+        <div class="screen">
+          <div class="island"></div>
+          <div class="statusbar">
+            <span class="time">9:41</span>
+            <span class="sb-r"><span class="bars"><i></i><i></i><i></i><i></i></span><span class="batt"><i></i></span></span>
+          </div>
+          <div class="m-nav">
+            <span class="m-burger"><i></i><i></i><i></i></span>
+            <span class="m-nav-mid"><span class="m-mono">VW</span><span class="m-nav-room">Service Room</span></span>
+            <span class="m-avatar">M</span>
+          </div>
+          <div class="m-body">
+            <div class="eyebrow">The Service Room</div>
+            <h2 class="m-headline">Care is part of the <em>collection</em>.</h2>
+            <p class="m-sub">A watch is only as good as its records. We keep every service date, paper, and dollar of upkeep, so you don't have to.</p>
+            <div class="m-benefits">
+              <div class="m-benefit">
+                <span class="m-benefit-ic"><svg class="ic ic-18"><use href="#i-clock"/></svg></span>
+                <div><h4>Never miss a service</h4><p>We estimate every watch's next service date.</p></div>
+              </div>
+              <div class="m-benefit">
+                <span class="m-benefit-ic"><svg class="ic ic-18"><use href="#i-doc"/></svg></span>
+                <div><h4>A dossier that travels</h4><p>Receipts, warranty cards, and records in one place.</p></div>
+              </div>
+              <div class="m-benefit">
+                <span class="m-benefit-ic"><svg class="ic ic-18"><use href="#i-coins"/></svg></span>
+                <div><h4>Know what it's worth to keep</h4><p>Lifetime upkeep at a glance, piece by piece.</p></div>
+              </div>
+            </div>
+
+            <div class="m-preview">
+              <p class="m-preview-eyebrow">A preview of your service horizon</p>
+              <div class="ghost-list" aria-hidden="true">
+                <div class="gl-row">
+                  <span class="gl-ph"><img src="img/ap-royaloak.png" alt=""/></span>
+                  <span class="gl-meta"><b>Audemars Piguet</b><span>Royal Oak Offshore</span></span>
+                  <span class="gl-due"><span class="d" style="background:var(--od-dot)"></span><span class="t" style="color:var(--od-fg)">Overdue</span></span>
+                </div>
+                <div class="gl-row">
+                  <span class="gl-ph"><img src="img/omega-speedmaster.png" alt=""/></span>
+                  <span class="gl-meta"><b>Omega</b><span>Speedmaster</span></span>
+                  <span class="gl-due"><span class="d" style="background:var(--ds-dot)"></span><span class="t" style="color:var(--ds-fg)">Nov '26</span></span>
+                </div>
+                <div class="gl-row">
+                  <span class="gl-ph"><img src="img/rolex-datejust.png" alt=""/></span>
+                  <span class="gl-meta"><b>Rolex</b><span>Datejust 41</span></span>
+                  <span class="gl-due"><span class="d" style="background:var(--ok-dot)"></span><span class="t" style="color:var(--ok-fg)">Aug '27</span></span>
+                </div>
+              </div>
+              <p class="m-preview-cap">Each watch lands here, marked by when it's next due.</p>
+            </div>
+          </div>
+
+          <div class="m-ctabar">
+            <a class="btn btn-primary btn-block" href="#"><svg class="ic"><use href="#i-plus"/></svg>Add your first watch</a>
+            <a class="btn-link" href="#">Browse the catalog <svg class="ic" style="width:13px;height:13px"><use href="#i-arrow"/></svg></a>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ SCREEN 2 ════════ -->
+  <section class="section">
+    <div class="section-label">
+      <span class="section-num">Screen 02</span>
+      <span class="section-name">Has watches · no service data</span>
+      <span class="section-desc">Their pieces are here but unresolved. The offer sits below, the action pins to the bottom.</span>
+    </div>
+    <div class="phone-row">
+      <div class="phone">
+        <div class="screen">
+          <div class="island"></div>
+          <div class="statusbar">
+            <span class="time">9:41</span>
+            <span class="sb-r"><span class="bars"><i></i><i></i><i></i><i></i></span><span class="batt"><i></i></span></span>
+          </div>
+          <div class="m-nav">
+            <span class="m-burger"><i></i><i></i><i></i></span>
+            <span class="m-nav-mid"><span class="m-mono">VW</span><span class="m-nav-room">Service Room</span></span>
+            <span class="m-avatar">M</span>
+          </div>
+          <div class="m-body">
+            <div class="m-coll-head">
+              <div class="eyebrow">Your collection<small>5 pieces</small></div>
+              <span class="chip ds"><span class="dot"></span>Schedule not set</span>
+            </div>
+
+            <div class="m-list">
+              <div class="m-wrow">
+                <span class="m-wphoto"><img src="img/rolex-datejust.png" alt="Rolex Datejust 41"/></span>
+                <span class="m-wmeta">
+                  <span class="m-wbrand">Rolex</span>
+                  <div class="m-wmodel">Datejust 41</div>
+                  <span class="m-wnext"><span class="lab">Next service</span><span class="chip estimate">Estimate</span></span>
+                </span>
+              </div>
+              <div class="m-wrow">
+                <span class="m-wphoto"><img src="img/omega-speedmaster.png" alt="Omega Speedmaster"/></span>
+                <span class="m-wmeta">
+                  <span class="m-wbrand">Omega</span>
+                  <div class="m-wmodel">Speedmaster</div>
+                  <span class="m-wnext"><span class="lab">Next service</span><span class="chip estimate">Estimate</span></span>
+                </span>
+              </div>
+              <div class="m-wrow">
+                <span class="m-wphoto"><img src="img/patek-calatrava.png" alt="Patek Philippe Calatrava"/></span>
+                <span class="m-wmeta">
+                  <span class="m-wbrand">Patek Philippe</span>
+                  <div class="m-wmodel">Calatrava</div>
+                  <span class="m-wnext"><span class="lab">Next service</span><span class="dash">—</span></span>
+                </span>
+              </div>
+              <div class="m-wrow">
+                <span class="m-wphoto"><img src="img/ap-royaloak.png" alt="Audemars Piguet Royal Oak Offshore"/></span>
+                <span class="m-wmeta">
+                  <span class="m-wbrand">Audemars Piguet</span>
+                  <div class="m-wmodel">Royal Oak Offshore</div>
+                  <span class="m-wnext"><span class="lab">Next service</span><span class="chip estimate">Estimate</span></span>
+                </span>
+              </div>
+              <div class="m-wrow">
+                <span class="m-wphoto"><img src="img/lange-1.png" alt="A. Lange & Söhne Lange 1"/></span>
+                <span class="m-wmeta">
+                  <span class="m-wbrand">A. Lange &amp; Söhne</span>
+                  <div class="m-wmodel">Lange 1</div>
+                  <span class="m-wnext"><span class="lab">Next service</span><span class="dash">—</span></span>
+                </span>
+              </div>
+            </div>
+
+            <div class="m-offer">
+              <div class="eyebrow">Set up the room</div>
+              <h2 class="m-headline">Turn the box into a <em>documented</em> collection.</h2>
+              <p class="m-offer-sub">You've shown what you own. Now make it maintained.</p>
+              <div class="m-check">
+                <div class="m-check-i"><span class="ck"><svg class="ic"><use href="#i-check"/></svg></span><span>An accurate service schedule</span></div>
+                <div class="m-check-i"><span class="ck"><svg class="ic"><use href="#i-check"/></svg></span><span>A provenance dossier</span></div>
+                <div class="m-check-i"><span class="ck"><svg class="ic"><use href="#i-check"/></svg></span><span>Resale-ready records</span></div>
+                <div class="m-check-i"><span class="ck"><svg class="ic"><use href="#i-check"/></svg></span><span>Warranty tracking</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="m-ctabar">
+            <a class="btn btn-primary btn-block" href="#">Set up my schedule</a>
+            <a class="btn-link" href="#">I'll do this later</a>
+            <p class="m-privacy"><svg class="ic"><use href="#i-lock"/></svg>Your records stay private to you.</p>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ SCREEN 3 — Wizard ════════ -->
+  <section class="section">
+    <div class="section-label">
+      <span class="section-num">Screen 03</span>
+      <span class="section-name">Onboarding wizard · full-screen</span>
+      <span class="section-desc">A two-step flow that fills the screen. All three states shown.</span>
+    </div>
+    <div class="phone-row">
+
+      <!-- STEP 1 -->
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen">
+            <div class="island"></div>
+            <div class="statusbar"><span class="time">9:41</span><span class="sb-r"><span class="bars"><i></i><i></i><i></i><i></i></span><span class="batt"><i></i></span></span></div>
+            <div class="m-wiz-top">
+              <button class="m-wiz-close" type="button" aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button>
+              <span class="m-wiz-step">Step 1 of 2</span>
+              <span style="width:32px"></span>
+            </div>
+            <div class="m-wiz-head">
+              <h2 class="m-wiz-title">Set the clock</h2>
+              <p class="m-wiz-sub">Enough to estimate each watch's next service.</p>
+            </div>
+            <div class="m-progress"><span class="seg on"></span><span class="seg"></span></div>
+            <div class="m-wiz-body">
+              <div class="m-all-int">
+                <div class="lab">Set one interval for all<small>Most automatics run a 5-year cadence.</small></div>
+                <div class="m-seg"><button type="button">3y</button><button type="button" class="on">5y</button><button type="button">7y</button><button type="button">10y</button></div>
+              </div>
+
+              <div class="m-wiz-row first">
+                <div class="m-wiz-row-top">
+                  <span class="ph"><img src="img/rolex-datejust.png" alt=""/></span>
+                  <span class="m-wiz-name"><b>Rolex Datejust 41</b><span>Ref. 126331</span></span>
+                  <button class="m-skip" type="button">Skip</button>
+                </div>
+                <div class="m-field">
+                  <span class="m-flab">Last full service</span>
+                  <div class="m-date"><span>March 2024</span><svg class="ic"><use href="#i-calendar"/></svg></div>
+                </div>
+                <div class="m-field">
+                  <span class="m-flab">Service every</span>
+                  <div class="m-seg"><button type="button">3y</button><button type="button" class="on">5y</button><button type="button">7y</button><button type="button">10y</button></div>
+                </div>
+                <div class="m-rowhint">
+                  <span class="m-opt"><span class="box"><svg class="ic"><use href="#i-check"/></svg></span>Never serviced? Use purchase date</span>
+                </div>
+              </div>
+
+              <div class="m-wiz-row">
+                <div class="m-wiz-row-top">
+                  <span class="ph"><img src="img/omega-speedmaster.png" alt=""/></span>
+                  <span class="m-wiz-name"><b>Omega Speedmaster</b><span>Ref. 3551.20.00</span></span>
+                  <button class="m-skip" type="button">Skip</button>
+                </div>
+                <div class="m-field">
+                  <span class="m-flab">Last full service</span>
+                  <div class="m-date empty"><span>Purchase date · Jun 2019</span><svg class="ic"><use href="#i-calendar"/></svg></div>
+                </div>
+                <div class="m-field">
+                  <span class="m-flab">Service every</span>
+                  <div class="m-seg"><button type="button">3y</button><button type="button" class="on">5y</button><button type="button">7y</button><button type="button">10y</button></div>
+                </div>
+                <div class="m-rowhint">
+                  <span class="m-opt checked"><span class="box"><svg class="ic"><use href="#i-check"/></svg></span>Never serviced? Use purchase date</span>
+                  <span class="m-est"><svg class="ic" style="width:10px;height:10px"><use href="#i-spark"/></svg>Estimate</span>
+                </div>
+              </div>
+            </div>
+            <div class="m-wiz-foot">
+              <span class="prog">3 pieces ready</span>
+              <a class="btn btn-primary" href="#">Continue</a>
+            </div>
+            <div class="home-ind"></div>
+          </div>
+        </div>
+        <span class="phone-cap">Step 1 · Set the clock</span>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen">
+            <div class="island"></div>
+            <div class="statusbar"><span class="time">9:41</span><span class="sb-r"><span class="bars"><i></i><i></i><i></i><i></i></span><span class="batt"><i></i></span></span></div>
+            <div class="m-wiz-top">
+              <button class="m-wiz-close" type="button" aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button>
+              <span class="m-wiz-step">Step 2 of 2 · optional</span>
+              <span style="width:32px"></span>
+            </div>
+            <div class="m-wiz-head">
+              <h2 class="m-wiz-title">Build the dossier</h2>
+              <p class="m-wiz-sub">Add papers and warranties. Skip anything you like.</p>
+            </div>
+            <div class="m-progress"><span class="seg done"></span><span class="seg on"></span></div>
+            <div class="m-wiz-body">
+              <div class="m-wiz-row-top" style="margin-bottom:16px">
+                <span class="ph" style="width:48px;height:48px"><img src="img/rolex-datejust.png" alt=""/></span>
+                <span class="m-wiz-name"><b>Rolex Datejust 41</b><span>Piece 1 of 3</span></span>
+                <button class="m-skip" type="button">Skip piece</button>
+              </div>
+              <div class="m-tchips">
+                <span class="m-tchip on"><svg class="ic"><use href="#i-box"/></svg>Box</span>
+                <span class="m-tchip on"><svg class="ic"><use href="#i-check"/></svg>Papers</span>
+              </div>
+              <div class="m-field">
+                <span class="m-flab">Warranty expiry · optional</span>
+                <div class="m-date"><span>September 2026</span><svg class="ic"><use href="#i-calendar"/></svg></div>
+              </div>
+              <div class="m-drop">
+                <span class="dz-ic"><svg class="ic ic-18"><use href="#i-upload"/></svg></span>
+                <span class="dz-main">Drop receipts &amp; records</span>
+                <span class="dz-sub">PDF or image, or tap to choose.</span>
+              </div>
+              <div class="m-doctiles">
+                <div class="m-doctile">
+                  <div class="m-docthumb"><span class="pg"><svg class="ic"><use href="#i-receipt"/></svg></span></div>
+                  <div class="m-docsel"><span>Receipt</span><svg class="ic"><use href="#i-chevron-d"/></svg></div>
+                </div>
+                <div class="m-doctile">
+                  <div class="m-docthumb"><span class="pg"><svg class="ic"><use href="#i-doc"/></svg></span></div>
+                  <div class="m-docsel"><span>Warranty Card</span><svg class="ic"><use href="#i-chevron-d"/></svg></div>
+                </div>
+              </div>
+            </div>
+            <div class="m-wiz-foot">
+              <a class="btn-link" href="#" style="color:var(--muted)">Skip for now</a>
+              <a class="btn btn-primary" href="#">Finish</a>
+            </div>
+            <div class="home-ind"></div>
+          </div>
+        </div>
+        <span class="phone-cap">Step 2 · Build the dossier</span>
+      </div>
+
+      <!-- COMPLETION -->
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen">
+            <div class="island"></div>
+            <div class="statusbar"><span class="time">9:41</span><span class="sb-r"><span class="bars"><i></i><i></i><i></i><i></i></span><span class="batt"><i></i></span></span></div>
+            <div class="m-wiz-body" style="padding-top:20px">
+              <div class="m-done">
+                <span class="badge"><svg class="ic"><use href="#i-check"/></svg></span>
+                <span class="eyebrow">All set</span>
+                <h3>Your schedule is live</h3>
+                <p>Every piece has a next-service date. We'll keep it current.</p>
+              </div>
+              <div class="m-reslist">
+                <div class="m-res-row">
+                  <span class="m-res-ph"><img src="img/ap-royaloak.png" alt=""/></span>
+                  <span class="m-res-meta"><b>Royal Oak Offshore</b><span>Audemars Piguet</span></span>
+                  <span class="m-res-right"><span class="chip od"><span class="dot"></span>Overdue</span><span class="nd">Was due <b>Nov 2024</b></span></span>
+                </div>
+                <div class="m-res-row">
+                  <span class="m-res-ph"><img src="img/omega-speedmaster.png" alt=""/></span>
+                  <span class="m-res-meta"><b>Speedmaster</b><span>Omega</span></span>
+                  <span class="m-res-right"><span class="chip ds"><span class="dot"></span>Due soon</span><span class="nd">Next <b>Sep 2026</b></span></span>
+                </div>
+                <div class="m-res-row">
+                  <span class="m-res-ph"><img src="img/rolex-datejust.png" alt=""/></span>
+                  <span class="m-res-meta"><b>Datejust 41</b><span>Rolex</span></span>
+                  <span class="m-res-right"><span class="chip ok"><span class="dot"></span>On track</span><span class="nd">Next <b>Mar 2029</b></span></span>
+                </div>
+                <div class="m-res-row">
+                  <span class="m-res-ph"><img src="img/patek-calatrava.png" alt=""/></span>
+                  <span class="m-res-meta"><b>Calatrava</b><span>Patek Philippe</span></span>
+                  <span class="m-res-right"><span class="chip ok"><span class="dot"></span>On track</span><span class="nd">Next <b>Nov 2027</b></span></span>
+                </div>
+              </div>
+              <p class="m-privacy" style="justify-content:flex-start;margin-top:20px"><svg class="ic"><use href="#i-lock"/></svg>Your records stay private to you.</p>
+            </div>
+            <div class="m-wiz-foot stack">
+              <a class="btn btn-primary btn-block" href="#">View my agenda</a>
+              <a class="btn-link" href="#">Add more detail</a>
+            </div>
+            <div class="home-ind"></div>
+          </div>
+        </div>
+        <span class="phone-cap">Done · Schedule is live</span>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

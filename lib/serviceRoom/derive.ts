@@ -211,6 +211,27 @@ export function lastAnyService(sw: ServiceWatch): WatchServiceRecord | null {
 }
 
 /**
+ * True when next-due is computed from the purchase date rather than a real
+ * clock-resetting service record — i.e. the schedule is an estimate. Drives
+ * the soft "Estimate" badge in onboarding and the unresolved collection view.
+ */
+export function isEstimate(sw: ServiceWatch): boolean {
+  return lastFullService(sw) === null
+}
+
+/**
+ * Whether the owner has *touched* this watch's service data at all — an
+ * explicitly-set interval, any service record, or any provenance document.
+ * Gates the first-run onboarding (Screen 2) vs. the populated hub. Uses the
+ * RAW `watch.intervalYears` (undefined when never set) — `buildServiceWatch`
+ * normalizes the bundled `sw.intervalYears` to a default, which can't tell
+ * "set" from "default".
+ */
+export function hasServiceData(sw: ServiceWatch): boolean {
+  return sw.watch.intervalYears != null || sw.records.length > 0 || sw.documents.length > 0
+}
+
+/**
  * Next full-service due date = last clock-resetting service (or the purchase
  * date if never serviced) + the configured interval.
  */
