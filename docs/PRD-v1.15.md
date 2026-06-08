@@ -21,7 +21,7 @@
 | v1.12 | Shipped Feature 9 — AI Photo Identification ("Watchbox Concierge") end-to-end with verify vs intake split, market-value capture, and dial-bbox cropping. Added Feature 2D — Per-Watch Photo Gallery (sidebar + owned-watch detail page + lightbox + drag-reorder). Added Feature 2E — Owned Watch Detail Page (`/collection/watch/[id]`). Updated Feature 3 with duplicate-aware add page and add-from-photo for not-in-catalog watches. Added Feature 13 — Admin Catalog & Submissions Tooling. Documented `/news` (Feature 11) and `/discover` (new Feature 14) which were already shipped but listed as pending in v1.11. **Intent fix:** Grail no longer has a planned `/collection` surface — by definition Grail is unowned, so its home is the FeaturedProfileWatch picker on `/profile`. The earlier "Grail surface on /collection" planning was dropped. The `/collection` UI pass now scopes to Next Targets treatment + header / stats / cards / mobile polish. |
 | v1.13 | **Catalog scale-up:** 35,659 catalog watches in Supabase with 4,000+ imaged; server-side search via pg_trgm full-text index + curated nicknames; heat-score algorithm rework. **Discover editorial redesign:** magazine-style layout with LLM-personalized hero, daily-rotated recommendations, per-section refresh, model-family filtering, mobile compact dark hero. **Playground upgrades:** import collection on empty box, drag-from-tray with long-press reorder + sparse slots + drag-to-trash, Supabase persistence for logged-in users. **Admin image-review tool** at `/admin/image-review` with failure-mode tagging. **Collection improvements:** empty-state CTA with auth-nudge layer, stability fix decoupling owned-set from heat-score cache. Updated Feature 3 search infrastructure, Feature 4 shipped scope, Feature 13 with image-review, Feature 14 with editorial redesign. Cleaned Phase 3 of already-shipped duplicates. |
 | v1.14 | **Next Targets moved from `/collection` to `/discover`** — aspirational watches belong on the discovery surface, not the owned-watches surface (same principle that moved Grail to `/profile`). Added Targets/Grail section to Feature 14 (Discover) as § 03 between Upgrade and Next Slot. **Feature 2D photo categories promoted from P2 to P0** — photo type picker (wrist shot, receipt, warranty card, case back, etc.) surfaced in upload and lightbox. Added document-oriented types: `receipt`, `warranty_card`, `service_record`. **Feature 2F — Service History** — new per-watch service tracking with timeline, next-due estimates, and cost tracking. Added "Papers & Provenance" and "Service History" sections to Feature 2E detail page. **Feature 7 rewritten as "The Strap Drawer"** — first-class strap inventory at `/collection/straps` with `UserStrap` + `StrapWatchOverride` data models, auto-match by lug width, manual overrides, combo stats, compatibility matrix. Replaces old one-liner stub + VW-17/VW-18. Updated data model with `UserStrap`, `StrapWatchOverride`, `StrapMaterial`, `StrapStyle`, `WatchServiceRecord` types. Updated `/collection` UI pass scope to remove Targets (now on Discover) and add ownership detail fields. |
-| v1.15 | **Shipped-state sync** (records what landed across PRs #70–#84; specs were already accurate, this closes changelog/status gaps). **Feature 2F shipped as The Service Room** (`/service-room`) — full hub (Service Horizon/Agenda · Ledger · Gallery), Log-a-Service modal with PDF attachments, configurable per-watch `interval_years`, derived next-due + running cost, dossier export, and first-run onboarding (empty / convert / setup-wizard). Migrations 026–029. **The Strap Drawer shipped** (Feature 7, P0) including a photorealistic strap-image pipeline (Gemini 2.5 Flash Image + local post-process, `strap-images` bucket / migration 031, 40 templates). **Status flips:** "Drag & drop reorder" (Feature 1) and "Download my data" (Feature 6.3) move **P1 → Shipped** — Collection drag-to-reorder is live at parity with Playground (persists `sort_order`); data export ships via `/api/user/export` + Settings, for auth and guest. **Newly documented (were undocumented):** (a) standardized **marketing empty-state system** across `/collection`, `/playground`, `/service-room` (eyebrow → italic serif headline → benefit rows → dark CTA + gold link → ghost preview); (b) **instant-paint localStorage cache** for warm loads (per-user, versioned, cleared on sign-out) + retry/flush-on-hide sync hardening; (c) **design "readability v2"** — `lib/brand.ts` token expansion (AA `muted #6A5B48`, antique `goldDeep #876A12` for text-on-light, `brand.text.*` scale with 11px floor, `onDark*`); the consumer-surface sweep is effectively complete (admin intentionally excluded; lone residual: `PartnerBand` gold labels). Updated §1.3 Platform to reference [docs/IOS-CONVERSION.md](IOS-CONVERSION.md) (Capacitor hybrid plan). Refreshed §5 color palette to the readability-v2 tokens. |
+| v1.15 | **Shipped-state sync** (records what landed across PRs #70–#84; specs were already accurate, this closes changelog/status gaps). **Feature 2F shipped as The Service Room** (`/service-room`) — full hub (Service Horizon/Agenda · Ledger · Gallery), Log-a-Service modal with PDF attachments, configurable per-watch `interval_years`, derived next-due + running cost, dossier export, and first-run onboarding (empty / convert / setup-wizard). Migrations 026–029. **The Strap Drawer shipped** (Feature 7, P0) including a photorealistic strap-image pipeline (Gemini 2.5 Flash Image + local post-process, `strap-images` bucket / migration 031, 40 templates). **Status flips:** "Drag & drop reorder" (Feature 1) and "Download my data" (Feature 6.3) move **P1 → Shipped** — Collection drag-to-reorder is live at parity with Playground (persists `sort_order`); data export ships via `/api/user/export` + Settings, for auth and guest. **Newly documented (were undocumented):** (a) standardized **marketing empty-state system** across `/collection`, `/playground`, `/service-room` (eyebrow → italic serif headline → benefit rows → dark CTA + gold link → ghost preview); (b) **instant-paint localStorage cache** for warm loads (per-user, versioned, cleared on sign-out) + retry/flush-on-hide sync hardening; (c) **design "readability v2"** — `lib/brand.ts` token expansion (AA `muted #6A5B48`, antique `goldDeep #876A12` for text-on-light, `brand.text.*` scale with 11px floor, `onDark*`); the consumer-surface sweep is effectively complete (admin intentionally excluded; lone residual: `PartnerBand` gold labels). Updated §1.3 Platform to reference [docs/IOS-CONVERSION.md](IOS-CONVERSION.md) (Capacitor hybrid plan). Refreshed §5 color palette to the readability-v2 tokens. **Recommendation clarity:** fleshed out **Feature 8 (Smart Suggestions)** as an exploratory direction — fixes intent + boundaries (it upgrades *selection/ranking*, not the LLM *copy* layer), inventories candidate behavioral signals, and lists open questions, deferring the detailed engine design to a dedicated recommendation-engine spec (TBD). Added a "How personalization works today" note to **Feature 14** drawing the heuristic-selection vs LLM-copy distinction. |
 
 ---
 
@@ -1314,9 +1314,48 @@ When a case-only image doesn't exist (the long tail beyond the top ~100):
 
 ### Feature 8 — Smart Suggestions Engine
 
-The **personalized engine upgrade path** for the surfaces in Feature 14 (`/discover`). Today those surfaces use rule-based heuristics (gap analysis, brand-family upgrade paths, lug-width strap matches). The Smart Suggestions Engine replaces them with personalized recommendations driven by collection + followed + search history + future behavior signals.
+The **personalized engine upgrade path** for the surfaces in Feature 14 (`/discover`). This is a direction, not yet a locked spec — the detailed engine design will be captured in a dedicated recommendation-engine spec (TBD). What follows fixes the *intent* and the *boundaries* so that spec has a clear starting point; it intentionally leaves the ranking approach open.
 
-Also feeds the AI weekly digest and any sidebar upsell surfaces that ship later.
+#### What ships today (the baseline this replaces)
+
+Discover already feels personalized, but it's important to separate the two layers (see Feature 14 → "How personalization works today"):
+
+1. **Selection — *which* watches appear — is rule-based heuristics** in `lib/discover.ts`: type-gap analysis (`getBoxInsight`), price-band anchoring (`collectionPriceAnchor`/`priceScore`), from→to upgrade pools with family-dedup and a 4× price ceiling (`getUpgradeSuggestionPools`, `ownedSimilarityKeys`), next-slot-by-type (`getNextSlotPools`), and catalog heat as a tiebreaker. "Refresh" is **deterministic seeded rotation**, not learning.
+2. **Copy — *how* it's described — is an LLM** (`/api/discover/personalize`): it writes the editorial read, the lead insight, and per-upgrade-pair rationale. It does **not** choose watches.
+
+**Feature 8 is specifically about replacing/augmenting layer 1 (selection + ranking).** The LLM copy layer stays; it just narrates whatever the engine surfaces.
+
+#### What Feature 8 adds
+
+Replace the hand-tuned heuristics with a recommendation engine that **ranks** catalog candidates against a learned model of the collector, incorporating signals the heuristics ignore today. Also feeds the AI weekly digest (Feature 8 → digest) and any sidebar/upsell surfaces that ship later, so selection logic lives in one place rather than being re-derived per surface.
+
+#### Signal inventory
+
+*Already used by the heuristics:* owned collection (type, price, family, dial, brand), followed watches, targets/grail/jewel, catalog heat score.
+
+*Not yet captured/used — candidate inputs to explore:*
+- **Search history** — queries + which results were opened vs skipped (`/collection/add`, navbar search)
+- **Engagement signals** — dwell/scroll on Discover sections, card opens, `Find on Market →` clicks, follow/unfollow events
+- **Refresh-rejects** — a "Refresh" on a section is a soft negative signal on what was shown
+- **Add/remove events** — what actually entered or left the collection after being suggested
+- **Cohort/collaborative signals** — collectors with overlapping boxes (cold-start mitigation)
+
+> Capturing these requires an events table + RLS (an analytics scaffold partially exists in `lib/discoverAnalytics.ts` — audit before extending). Privacy: keep it first-party, respect the Settings privacy controls (Feature 6.2), and make the behavioral layer opt-out-able.
+
+#### Directions to explore (deliberately not decided here)
+
+Spec should evaluate, not assume, among: heuristic re-scoring (extend today's pools with weighted signal terms — lowest lift), content/embedding similarity (vectorize specs + collection centroid), learning-to-rank over logged interactions, LLM-as-reranker over a heuristic candidate set, and collaborative filtering. Likely a staged path (better heuristics → embeddings → learned ranking) rather than a single jump.
+
+#### Open questions for the dedicated spec
+
+- Online vs nightly-batch scoring; where it runs (API route, Supabase Edge Function, offline job)
+- Cold-start for new/empty collections and guests (today's heat-driven demo box is the floor)
+- Candidate generation at 40k catalog scale (pre-filter before ranking)
+- How "diversity"/anti-repetition and the daily-rotation feel survive a learned ranker
+- Offline eval + guardrails (no 8× upgrades, no already-owned models, image-gated) carried over from the heuristics
+- Success metric: CTR on `Find on Market →`, follows-from-Discover, add-from-suggestion rate (tie to §7)
+
+**Status:** P1 (`/discover` integration), Phase 5. Detailed design: dedicated recommendation-engine spec, to be written.
 
 ---
 
@@ -1580,7 +1619,16 @@ Magazine-style editorial layout replacing the earlier utility-stack design. Seve
 - **Strap suggestions** — lug-width-aware strap recommendations across the owned collection, with affiliate CTAs
 - **Box upgrade card** — surface physical watchbox affiliate matches sized to the user's slot count (Wolf1834, Rapport, Holme & Hadfield)
 
-#### Personalization
+#### How personalization works today
+
+Discover's "personalization" is **two separate layers** — important not to conflate them (this is the boundary Feature 8 upgrades):
+
+- **Selection (which watches) = rule-based heuristics**, all in `lib/discover.ts`: type-gap analysis, collection price-band anchoring, from→to upgrade pools with model-family dedup + a 4× price ceiling, next-slot-by-type, catalog-heat tiebreaks. Deterministic — no learning, no behavioral signals.
+- **Copy (how it reads) = LLM** via `/api/discover/personalize` (OpenAI, localStorage-cached, logged-in collectors only): generates the hero editorial read, the lead insight, and per-upgrade-pair rationale. **It does not pick any watches** — it narrates the heuristic output.
+
+The fully learned **selection** engine is Feature 8 (the LLM copy layer stays as-is on top of it).
+
+#### Personalization inputs
 
 - Real users: pulls from `useCollectionSession()` — their owned + followed + targets feed every section
 - Guests / demo: a stable seed anchored on Supabase catalog produces consistent suggestions so the page is never empty (no longer depends on static seed)
