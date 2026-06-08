@@ -9,7 +9,7 @@ Read this file before writing any code for this project.
 Virtual Watchbox is a luxury-tech web app for watch collectors to showcase, manage, and explore their collections through a realistic virtual watch box experience.
 
 **Tagline:** *Showcase Your Timepieces. Discover What's Next.*
-**Current PRD:** `docs/PRD-v1.14.md`
+**Current PRD:** `docs/PRD-v1.15.md`
 
 Read the PRD before implementing any feature. It defines the product vision, watch data model, feature scope, roadmap, and what is/isn't built yet. Do not implement roadmap features that aren't explicitly assigned.
 
@@ -188,6 +188,10 @@ components/
     CollectionStats.tsx         — Portfolio stats (overview + graphical views)
     UnsavedChangesBar.tsx       — Draft changes save/discard bar
     ViewSwitcher.tsx            — Watchbox / Cards / Stats toggle
+    CollectionEmptyState.tsx    — Marketing empty state for /collection (eyebrow + serif headline + benefit rows + ghost watchbox)
+    PlaygroundEmptyState.tsx    — Marketing empty state for /playground (same pattern, import-collection CTA)
+  serviceRoom/onboarding/
+    Screen1Empty.tsx            — Marketing empty state for /service-room (same pattern, ghost Service Horizon preview)
   watchbox/
     HoverCard.tsx               — Floating hover card on watch slot
     DialSVG.tsx                 — SVG dial renderer for playground mode
@@ -203,7 +207,7 @@ types/
   watch.ts                      — Watch, WatchType, WatchCondition, OwnershipStatus types
 
 docs/
-  PRD-v1.12.md                  — Current product requirements (read before building features)
+  PRD-v1.15.md                  — Current product requirements (read before building features)
   DESIGN_SYSTEM.md              — Design token rules
   design-system/claude-v1/      — Visual reference files
 ```

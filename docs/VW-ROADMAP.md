@@ -1,6 +1,6 @@
 # Virtual Watchbox — Take It Home Roadmap
 **IF** = infrastructure · **RM** = product feature · **BUG** = existing issue
-Mark `[x]` when done.
+Mark `[x]` when done, `[~]` when partially done (sub-items called out inline).
 
 ---
 
@@ -29,6 +29,12 @@ Mark `[x]` when done.
 | May 2026 | **Playground major upgrades** (PRs #62, #63, #65): (1) Import collection on empty box via one-click CTA. (2) Drag watches from tray into slots with long-press reorder, sparse slot support, drag-to-trash. (3) Mobile UI cleanup. (4) **Playground Supabase persistence** — playground boxes now sync to Supabase for logged-in users via debounced auto-sync (`public.playground_boxes`). |
 | May 2026 | **Seed script safety** (PR #56): seed script aborts instead of writing local-path URLs when `SUPABASE_URL` is unset. |
 | May 2026 | **PRD v1.14:** Next Targets moved from `/collection` to `/discover` § 03. Photo type picker promoted to P0. Feature 2F (Service History) added. Feature 7 rewritten as "The Strap Drawer" — first-class strap inventory with auto-match compatibility and combo stats. Replaces old VW-17/VW-18 stubs. Added Phase 1.5 "Ownership Depth." |
+| Jun 2026 | **iOS conversion plan:** added Phase 5 (Native iOS) and a full architecture plan at [docs/IOS-CONVERSION.md](IOS-CONVERSION.md). Codebase review found the app well-suited to a **Capacitor hybrid wrapper** (~90% client components, disciplined `lib/brand.ts` design system, existing PWA manifest). Chosen path: B2 hybrid — static-export consumer surfaces into the native shell, keep API routes + server-only image pipeline (`sharp`/`@imgly`) hosted. Top blockers identified: cookie/SSR/middleware auth → token-based, redirect OAuth → native auth-session, missing safe-area handling, web-shaped nav → bottom tab bar. |
+| Jun 2026 | **Phase 1.5 (Ownership Depth) shipped end-to-end** (PRs #72, #73, #83) — Targets/Grail on `/discover` § 03, photo-type picker (upload + lightbox), Papers & Provenance, ownership detail strip + expanded `EditWatchModal` (acquisition method / box / papers / warranty), and **Service History** built out into a full **Service Room hub** at `/service-room` (Agenda/Horizon + Ledger + Gallery, dossier drawer, Log-a-Service with PDF attachments, configurable `interval_years`, derived next-due/cost) with first-run onboarding (empty / convert / hub gating + setup wizard). Migrations 026–029. **Data export** shipped (`/api/user/export`, Settings "Download my data" now functional for auth + guest). |
+| Jun 2026 | **The Strap Drawer shipped** (PR #75) — VW-17 complete: `/collection/straps` inventory with bidirectional watch↔strap lug-width compatibility + overrides, Supabase-backed (`user_straps` + `strap_watch_overrides`, migration 030), plus a photorealistic strap-image pipeline (Gemini 2.5 Flash Image + local post-process, `strap-images` bucket migration 031, 40 templates in `data/strap-templates.json`). Real strap photos replace the procedural swatch everywhere. |
+| Jun 2026 | **Design language v2 + UX polish** (PRs #76–#82) — readability pass via expanded `lib/brand.ts` tokens (AA-contrast `muted`, antique `goldDeep` for text-on-light, new `brand.text.*` scale with 11px floor, `onDark*`), homepage redesign, hybrid empty-state watchbox (showcase mode), Add-Watch empty state, microcopy trim, Framer-Motion entrance/reorder animations, and the **instant-paint localStorage cache** (PR #81) for collection + profile warm loads (per-user scoped, versioned, cleared on sign-out). Note: the readability token ripple was ~half complete at #77 — remaining sub-12px surfaces still need the sweep. |
+| Jun 2026 | **State-capture pass (code-verified):** confirmed against current `main` that two items the PR descriptions had understated are actually shipped. (1) **Drag-to-reorder in Collection is live at full parity with Playground** — same `WatchBox` handlers (desktop HTML5 + touch long-press), Collection persisting `sort_order` to Supabase via `swapCollectionSlots`/`syncWatchReorder`. (2) **Standardized marketing empty-state system** across three surfaces: `components/collection/CollectionEmptyState.tsx`, `components/collection/PlaygroundEmptyState.tsx`, and `components/serviceRoom/onboarding/Screen1Empty.tsx` — shared pattern (gold eyebrow → italic serif headline → 3 benefit rows → dark CTA + gold link, with a ghost watchbox / ghost Service Horizon preview). Added these to the CLAUDE.md component map. |
+| Jun 2026 | **Cloud-sync hardening + catalog cleanup** (PRs #70, #71, #84) — retry-with-backoff + flush-on-hide across all Supabase writes; automated image-quality flagging on approval + admin Flagged tab; catalog dedupe/ref/lug cleanup applied live to Supabase with a git-visible source-of-truth snapshot (`data/catalog-live-imaged.json`, `npm run catalog:export-live`) and a "Catalog Data — What Lives Where" table in `CLAUDE.md`. |
 
 ---
 
@@ -70,30 +76,31 @@ Mark `[x]` when done.
 ## Phase 1 — Complete the Product Contract
 *Things the nav promises but doesn't deliver.*
 
-- [x] **RM** ~~`VW-12` Build `/settings` page (Feature 6 MVP)~~ — **Done at P0 scope.** PRD v1.12 Feature 6. Account summary (email + auth method), privacy/sharing visibility toggles backed by `user_profiles.visibility`, legal links, support email, mailto-backed data deletion request, sign-out. **Open follow-ups:** `Download my data` (currently "Coming soon"), self-serve account deletion + data purge, sign-out-all-sessions, notification preferences.
+- [x] **RM** ~~`VW-12` Build `/settings` page (Feature 6 MVP)~~ — **Done at P0 scope.** PRD v1.12 Feature 6. Account summary (email + auth method), privacy/sharing visibility toggles backed by `user_profiles.visibility`, legal links, support email, mailto-backed data deletion request, sign-out. `Download my data` now **shipped** (PR #72 — `/api/user/export` for auth, client-side assembly for guests). **Open follow-ups:** self-serve account deletion + data purge, sign-out-all-sessions, notification preferences.
 - [x] **RM** ~~`VW-14` Build `/discover` route — commerce + editorial hub~~ — **Done.** PRD v1.12 Feature 14. Collection-aware insights (gap analysis, dial-color skew), next-slot recommendations with Chrono24 deep links, per-watch upgrade cards, lug-width-aware strap suggestions, box upgrade affiliate card, curated Discover Reads strip. Demo seed for guests so the page is never empty.
 - [x] **RM** ~~`VW-13` Wire up `/news` — RSS-aggregated watch publications~~ — **Done.** PRD v1.12 Feature 11. Cloudflare Worker backend (`NEWS_WORKER_URL`) handles RSS fetch + brand/reference tagging, Next.js API route proxies with 15-min revalidation. Hero featured article, source pills, mode tabs (Latest / For You / By Source), filter bar, sponsored slot framework. Personalization driven by collection + followed signals.
 - [x] **RM** ~~Edit owned watch metadata from sidebar~~ — **Done.** EditWatchModal exists for condition / ownership status / purchase price / purchase date / notes. Available from sidebar pencil icon and the new owned-watch detail page (`/collection/watch/[id]`).
 - [x] **RM** ~~Collection Jewel state~~ — **Done.** PRD v1.12 Feature 2B Category 6. Sidebar Jewel badge, WatchStateControl picker offers `[followed, jewel]` for owned watches, profile hero selector (FeaturedProfileWatch) toggles between Grail and Jewel. Watch cards show the jewel badge.
-- [ ] **RM** `/collection` UI pass — broader visual / structural polish on the working surface, including:
+- [~] **RM** `/collection` UI pass — **partially done.** Design-token readability pass (PR #77) + hybrid empty-state watchbox (PR #78) + entrance/reorder animations (PR #76) landed; ownership fields are now surfaced in `EditWatchModal` (PR #72). Remaining:
+  - [x] ~~**Surface existing ownership fields in EditWatchModal**~~ — **Done** (PR #72): acquisition method, has box, has papers, warranty expiry in a "Provenance & Papers" section.
   - **Header / value pill / action button** spacing and hierarchy review
   - **Stats section** typography and density pass (portfolio value, dial colors, watch types, complications, brands)
   - **Cards view** spacing + status badge consistency
   - **Mobile reflow** for sidebar → bottom sheet transitions and overflow behavior
-  - **Surface existing ownership fields in EditWatchModal** — has_box, has_papers, acquisition_method, warranty_expires_at, last_serviced_at, service_notes (columns exist in migration 017, not in UI)
+  - [x] ~~**Finish the readability ripple**~~ — **Effectively done (code-verified Jun 8).** The 11px floor holds across all consumer surfaces (sub-11px only remains in `app/admin/*` + `components/admin/*`, intentionally excluded); bright-gold-as-text on light is now confined to dark surfaces + decorative glyphs. Lone residual: `components/serviceRoom/PartnerBand.tsx` gold eyebrow/tag labels (~2-line fix to `goldDeep`).
   - *Note: Both Targets and Grail are intentionally NOT on `/collection`. `/collection` is the truth about what the user owns. Targets moved to `/discover` § 03 (PRD v1.14). Grail's home is `/profile`.*
 
 ---
 
-## Phase 1.5 — Ownership Depth
-*Make the collection page the definitive record of what you own — not just the watches, but the provenance, papers, and service history.*
+## Phase 1.5 — Ownership Depth ✅ COMPLETE
+*Make the collection page the definitive record of what you own — not just the watches, but the provenance, papers, and service history. **Shipped across PRs #72, #73, #83.***
 
-- [ ] **RM** Targets/Grail section on `/discover` (§ 03) — user-curated aspirational watches between Upgrade and Next Slot sections. Up to 3 targets with intent type, target price, `Track Listings →` affiliate CTA. Grail card with crown treatment above targets when set. Highest-ROI affiliate surface — explicit purchase intent. Data already wired (`nextTargets[]`, `grailWatchId`).
-- [ ] **RM** Photo type picker — surface `photoType` in upload flow (optional chips) and lightbox toolbar (type selector pill). DB column exists (migration 018, `user_watch_photos.photo_type`), not wired in UI.
-- [ ] **RM** Papers & Provenance section on detail page — filtered gallery view for document-type photos (`receipt`, `warranty_card`, `service_record`, `box_papers`). Compact horizontal strip between specs and main gallery.
-- [ ] **RM** Ownership detail strip on detail page — acquisition method, has box, has papers, warranty expiry. Compact chips below specs. Data exists (migration 017), needs `EditWatchModal` UI + detail page display.
-- [ ] **RM** Service History (Feature 2F) — new `watch_service_records` Supabase table. Service timeline on detail page with past services, next-due estimate (5yr from last full service), running cost total. `+ Log a service` form. Sidebar "Last serviced" hint.
-- [ ] **RM** Expand `EditWatchModal` — add has_box, has_papers, acquisition_method, warranty_expires_at, last_serviced_at tabs/sections to the existing modal.
+- [x] **RM** ~~Targets/Grail section on `/discover` (§ 03)~~ — **Done (PR #72).** `TargetsGrailSection`: crowned grail card + up to 3 target cards (intent, desired condition, target price, market links). Renders for logged-in users with grail/targets; section renumbering wired through `SectionNav`.
+- [x] **RM** ~~Photo type picker~~ — **Done (PR #73).** `photoType` surfaced in upload flow + lightbox toolbar; grouped-7 taxonomy (migration 029) including document types.
+- [x] **RM** ~~Papers & Provenance section on detail page~~ — **Done (PR #73).** Filtered document-photo view on `/collection/watch/[id]`, plus Overview / Service-Dossier tabs.
+- [x] **RM** ~~Ownership detail strip on detail page~~ — **Done (PR #72).** Ownership chips (box, papers, acquisition method, warranty expiry) below specs.
+- [x] **RM** ~~Service History (Feature 2F)~~ — **Done & expanded (PRs #73, #83).** Went beyond a per-watch timeline into a full **Service Room hub** (`/service-room`): Service Horizon/Agenda + Ledger + Gallery, dossier drawer, Log-a-Service modal with per-file PDF attachments, configurable `interval_years` (3/5/7/10), derived next-due + running cost, affiliate band, dossier export, mobile refactor, and first-run onboarding (empty / convert / setup-wizard gating). `watch_service_records` + RLS, migrations 026–029.
+- [x] **RM** ~~Expand `EditWatchModal`~~ — **Done (PR #72).** "Provenance & Papers" section: has_box, has_papers, acquisition_method, warranty_expires_at, last_serviced_at, service_notes.
 
 ---
 
@@ -108,9 +115,9 @@ Mark `[x]` when done.
 - [x] **IF** ~~OG image generation for profile + box share links~~ — **Done.** Dynamic OG cards via `/api/og/box/[slug]` (Next.js edge route, see Phase 0.5). Wired into the unified ShareBoxModal so profile and box share links render rich previews on iMessage / Slack / Twitter / etc.
 - [ ] **RM** Save as Playground from Collection draft state — unsaved changes bar "Save as Playground" is a placeholder, wire it up.
 - [x] **RM** ~~Drag-to-reorder in Playground~~ — **Done.** PR #62 shipped long-press drag-to-reorder within playground watchbox slots, drag-from-tray into slots, sparse slot support (drops land where you aim), and drag-to-trash. Desktop HTML5 drag also supported.
-- [ ] **RM** Drag-to-reorder in Collection — still pending. Playground has full drag support; Collection needs parity.
-- [ ] **RM** `VW-17` The Strap Drawer (Feature 7) — first-class strap inventory at `/collection/straps`. Add Strap modal (material + lug width + color required). Card grid with material badges + compatible watch count. Strap detail sidebar with "Fits these watches" list. Auto-match by lug width + manual `fits`/`excluded` overrides. Combo stats in header ("X watches and Y straps create Z combinations"). New Supabase tables: `user_straps` + `strap_watch_overrides`. **Replaces** the old VW-17 (strap swap affiliate links) and VW-18 (strap viewer) — the Strap Drawer is the foundation both depend on.
-- [ ] **RM** Strap Drawer phase 2 — CSS material swatches (design prototype in `docs/design-system/`), compatibility matrix view, sidebar "Swap Strap" quick-pick wired to drawer, lug width distribution in collection stats. Discover "missing strap" suggestions grounded in actual strap inventory.
+- [x] **RM** ~~Drag-to-reorder in Collection~~ — **Done (parity with Playground).** `WatchBox.tsx` drives both surfaces with the same handlers: desktop HTML5 drag + touch long-press (~350ms) → `onReorder`. Collection persists via `app/collection/page.tsx` `handleReorder` → `swapCollectionSlots` → `syncWatchReorder` (writes `sort_order` to Supabase, retry-hardened); Playground reorders via `moveEntryToSlot` and syncs through the debounced `playground_boxes` writer.
+- [x] **RM** ~~`VW-17` The Strap Drawer (Feature 7)~~ — **Done (PR #75).** First-class strap inventory at `/collection/straps`: Add/Edit modal (material + lug width + color), card grid with material badges + compatible-watch count, detail sidebar "Fits these watches", auto-match by lug width + manual `fits`/`excluded` overrides, combo stats. Supabase `user_straps` + `strap_watch_overrides` (migration 030), API under `/api/user-straps`, hydrated/saved via `CollectionSessionProvider`. **Plus** a photorealistic strap-image pipeline (Gemini 2.5 Flash Image + local post-process, `strap-images` bucket migration 031, 40 templates in `data/strap-templates.json`) and an Add-Strap "Quick pick from common straps". Replaces old VW-17/VW-18 stubs.
+- [~] **RM** Strap Drawer phase 2 — **partially done.** Real strap *photos* shipped (PR #75) in place of the planned CSS material swatches (better outcome). Still pending: compatibility matrix view, sidebar "Swap Strap" quick-pick wired to the drawer, lug-width distribution in collection stats, Discover "missing strap" suggestions grounded in actual inventory.
 - [ ] **RM** Shop This Box — physical box affiliate matching. When user configures virtual box, surface Wolf1834 / Rapport / Holme & Hadfield matches. Direct revenue.
 
 ---
@@ -135,4 +142,36 @@ Mark `[x]` when done.
 
 ---
 
-*Last updated: May 23, 2026 · PRD reference: v1.14*
+## Phase 5 — Native iOS (Capacitor Hybrid)
+*Take the product to the App Store. Full architecture, rationale, and blocker analysis in [docs/IOS-CONVERSION.md](IOS-CONVERSION.md) — read it before starting any native work. PRD §1.3 names this as the platform roadmap step.*
+
+> **Chosen path: Capacitor hybrid (Option B2).** Static-export the consumer surfaces (collection · discover · profile · playground · straps) into a native WKWebView shell; keep API routes + the server-only image pipeline (`sharp` + `@imgly`) hosted; talk to Supabase + our APIs over HTTPS. Reuses ~all React/TS/component code and the `lib/brand.ts` design system. React Native rewrite (Option C) deferred unless iOS becomes the primary platform.
+
+### Phase 5.0 — Prep (web-side, low risk; no native project yet)
+- [ ] **IF** Centralize `apiFetch()` with a configurable base URL — migrate the ~38 hardcoded `fetch('/api/...')` callsites. A native bundle needs absolute URLs to the hosted backend.
+- [ ] **IF** Add `env(safe-area-inset-*)` + `viewport-fit=cover` to `app/globals.css` and every sticky surface (`NavBar`, footer, sidebars, bottom sheets). Currently zero safe-area handling — content collides with the Dynamic Island / home indicator.
+- [ ] **IF** Stub `lib/platform/*` abstraction (storage · auth-callback · camera · share · haptics) with web implementations so providers stay untouched.
+- [ ] **IF** Add Playwright smoke tests (login, add watch, reorder, save) — no tests exist today; these protect the upcoming auth refactor.
+
+### Phase 5.1 — Auth refactor (behind platform flag; web unaffected)
+- [ ] **IF** Token-based Supabase session via native secure storage (Capacitor Preferences / Keychain). Decouples the mobile path from cookies + `middleware.ts` + `cookies()`. **Blocker #1.**
+- [ ] **IF** Native Google OAuth — Capacitor Browser + `ASWebAuthenticationSession` + custom URL scheme / universal link → `supabase.auth.exchangeCodeForSession`. Current `app/auth/callback/route.ts` redirect flow won't fire in a webview.
+
+### Phase 5.2 — Capacitor shell
+- [ ] **IF** Stand up the iOS Capacitor project; hybrid bundle of consumer surfaces. Exclude `/admin/*`, `/api/og/box/[slug]`, and image-processing API routes from the mobile bundle (keep hosted).
+- [ ] **IF** Point `apiFetch()` + Supabase at the hosted backend; get login → collection → save working end-to-end on a physical device.
+
+### Phase 5.3 — Native feel
+- [ ] **RM** Bottom tab bar (Collection / Discover / Playground / Profile), platform-gated, replacing the web top-nav drawer on iOS.
+- [ ] **RM** Safe-area polish pass across all surfaces.
+- [ ] **RM** Native camera capture wired into `AddFromPhotoSheet` / `PhotoSearch` (POST to existing server-side `upload-photo` / `create-from-photo` routes).
+- [ ] **RM** Haptics on drag/drop; native share sheet for box/profile share links.
+
+### Phase 5.4 — App Store readiness
+- [ ] **RM** Push notifications — service-due reminders, watch news, "complete the box" nudges (data already exists). Primary guideline-4.2 value-add.
+- [ ] **IF** Persistent offline write queue — the instant-paint read-through cache already shipped (PR #81) and writes are retry/flush-on-hide hardened (PR #70); remaining gap is a mutation queue that survives app-kill and replays on reconnect (the limit PR #70 called out).
+- [ ] **IF** App Store assets, privacy nutrition labels (we collect photos + profile data), TestFlight beta.
+
+---
+
+*Last updated: June 8, 2026 · PRD reference: v1.15*
