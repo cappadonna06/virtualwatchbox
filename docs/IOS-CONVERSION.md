@@ -1,6 +1,7 @@
 # Virtual Watchbox — iOS Conversion Architecture Plan
 
 **Status:** Planning · **Owner:** TBD · **PRD reference:** v1.14 (Platform §1.3 — *"Future: Native iOS and Android"*)
+**Codebase reviewed through:** PR #84 (catalog cleanup) · main @ `47e54a7`
 **Roadmap:** see `docs/VW-ROADMAP.md` → Phase 5 — Native iOS
 
 Read this before starting any iOS / native work. It captures the current-state
@@ -47,6 +48,11 @@ sequenced plan so a future session can pick up without re-deriving context.
 - **Persistence discipline.** The CLAUDE.md rule (every user field → migration
   + hydrate + sync + snapshot) means the data layer is coherent, which de-risks
   an eventual offline/sync layer.
+- **Warm-load + sync foundations already exist.** PR #81 added a per-user,
+  versioned instant-paint localStorage cache for collection + profile (cleared
+  on sign-out/account switch); PR #70 added retry-with-backoff + flush-on-hide
+  across all Supabase writes. This is most of the read-side offline UX and the
+  write-durability hardening a native app wants — we extend it, not build it.
 
 ### What will bite on iOS
 1. **Auth is cookie + middleware based.** `middleware.ts` → `updateSession`;
@@ -84,7 +90,7 @@ sequenced plan so a future session can pick up without re-deriving context.
 | Server-only routes | Manage | keep hosted; can't bundle on-device |
 | Safe areas / native chrome | Absent | no `env(safe-area-inset)`, no tab bar |
 | Native OAuth flow | Needs work | redirect callback won't work in webview |
-| Offline behavior | Partial | session/localStorage mirrors exist; no real offline layer |
+| Offline behavior | Partial+ | per-user instant-paint localStorage cache (PR #81) + retry/flush-on-hide sync (PR #70) already exist — strong warm-load foundation; still no true offline write queue |
 | Push / native APIs | Not started | none wired |
 
 ---
@@ -101,7 +107,7 @@ Wrap the Next.js app in a native iOS shell (WKWebView) via Capacitor.
   Fastest; keeps SSR + all API routes + middleware. **Risk:** guideline 4.2
   rejection unless we add native value.
 - **B2 — Hybrid (TARGET):** statically export the *consumer* surfaces
-  (collection, discover, profile, playground, straps) into the Capacitor
+  (collection, discover, profile, playground, straps, service-room) into the Capacitor
   bundle; keep API routes + image processing hosted; talk to Supabase + our
   APIs over HTTPS. Fast, offline-capable, App-Store-acceptable.
 
@@ -124,7 +130,8 @@ Store, add native polish incrementally.
 │                                                             │
 │  ┌───────────────────────────────────────────────────────┐  │
 │  │  Static-exported consumer bundle (Next.js client)     │  │
-│  │  collection · discover · profile · playground · straps│  │
+│  │  collection · discover · profile · playground ·       │  │
+│  │  straps · service-room                                 │  │
 │  │  + lib/brand.ts design system (drives native chrome)  │  │
 │  └───────────────────────────────────────────────────────┘  │
 │                                                             │
@@ -196,10 +203,11 @@ Store, add native polish incrementally.
 - **Centralize the API client base URL.** ~38 hardcoded `fetch('/api/...')`
   callsites today. A native bundle needs an absolute base URL → introduce a
   single `apiFetch()` helper now. Small change, large payoff.
-- **Formalize an offline/sync story.** We already mirror collection state to
-  `sessionStorage` and watchbox config to `localStorage`. Promote to a
-  deliberate read-through cache so the collection renders instantly offline and
-  syncs to Supabase on reconnect. Doubles as a guideline-4.2 value-add.
+- **Extend the existing offline/sync story.** The instant-paint cache (PR #81)
+  and retry/flush-on-hide sync (PR #70) already give warm-load rendering and
+  durable writes. What's left for true native-grade offline is a **persistent
+  write queue** (mutations survive app-kill and replay on reconnect) — the one
+  gap PR #70 explicitly called out. This doubles as a guideline-4.2 value-add.
 - **Carry the design system into native chrome.** `brand.ts` tokens drive status
   bar style, splash, tab tint, launch icon. Icon set already exists.
 - **Add e2e smoke coverage before the auth refactor.** No tests exist today. A
@@ -237,7 +245,8 @@ Store, add native polish incrementally.
 
 ### Phase 4 — App Store readiness
 - [ ] Push notifications (service-due, news, complete-the-box).
-- [ ] Offline read-through cache for the collection.
+- [ ] Persistent offline write queue (read-through cache already shipped in
+      PR #81; add app-kill-survivable mutation replay on reconnect).
 - [ ] App Store assets, privacy nutrition labels (we collect photos + profile
       data), TestFlight beta.
 
@@ -255,4 +264,4 @@ Store, add native polish incrementally.
 
 ---
 
-*Last updated: June 6, 2026 · Living document — update as phases complete.*
+*Last updated: June 8, 2026 (reviewed through PR #84) · Living document — update as phases complete.*
