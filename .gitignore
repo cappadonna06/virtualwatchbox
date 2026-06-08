@@ -65,3 +65,6 @@ public/watch-assets/rotate-preview/
 
 # CatBoost training scratch (model artifacts, scratch logs).
 catboost_info/
+
+# Claude Code working artifacts (audit reports, backups, research scratch).
+.agents/

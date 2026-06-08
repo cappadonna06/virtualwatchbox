@@ -15,6 +15,23 @@ Read the PRD before implementing any feature. It defines the product vision, wat
 
 ---
 
+## Catalog Data — What Lives Where (read before touching catalog data)
+
+There are several distinct "watch" datasets. Do not conflate them.
+
+| Source | What it is | SoT? |
+|---|---|---|
+| **Supabase `catalog_watches` (~40k) + `watch_images`** | The real, live catalog and which entries have a photo. All catalog browse, search (`/collection/add`), and `/admin/catalog` read this at runtime. | ✅ **the source of truth.** Mutable; not stored in git. |
+| `data/catalog-live-imaged.json` | Committed **snapshot of the on-site (imaged) subset** — the Supabase rows that have a `watch_images` photo and therefore render on the site (~4.1k). Regenerate with `npm run catalog:export-live` after catalog edits. Diffable mirror of the live state; do not hand-edit. | mirror of Supabase |
+| `data/catalog-seed-*.csv`, `data/catalog-batch-1.csv`, `data/catalog-enriched*.json` | One-time **seed inputs** that *populated* Supabase (`npm run catalog:seed*`). Stale once the catalog changes — never read at runtime. | ❌ inputs only |
+| `lib/watches.ts` `catalogWatches[]` + `public/watch-assets/processed/manifest.json` | The **homepage hero** pool — a separate, hardcoded local list joined to processed images. **Independent of Supabase**; editing `catalog_watches` does NOT change the hero. | ❌ hero only |
+| `data/catalog-heat-scores.json` / `data/catalog-nicknames.json` | Committed snapshots/dictionaries synced to Supabase (`catalog:sync-heat` / `catalog:enrich-nicknames`). | mirror/input |
+| `public/demo-watches/`, `public/watches/` | Loose demo `.avif` assets, currently referenced nowhere in code. Not the catalog. | ❌ unused |
+
+**Rule:** "what's live with images" = Supabase `catalog_watches ⨝ watch_images`, mirrored in `data/catalog-live-imaged.json`. When you mutate the catalog directly in Supabase (admin scripts), regenerate that snapshot and commit it so git reflects the live state.
+
+---
+
 
 ## Supabase Persistence Coverage (Required)
 
