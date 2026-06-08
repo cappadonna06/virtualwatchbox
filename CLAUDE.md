@@ -188,6 +188,10 @@ components/
     CollectionStats.tsx         — Portfolio stats (overview + graphical views)
     UnsavedChangesBar.tsx       — Draft changes save/discard bar
     ViewSwitcher.tsx            — Watchbox / Cards / Stats toggle
+    CollectionEmptyState.tsx    — Marketing empty state for /collection (eyebrow + serif headline + benefit rows + ghost watchbox)
+    PlaygroundEmptyState.tsx    — Marketing empty state for /playground (same pattern, import-collection CTA)
+  serviceRoom/onboarding/
+    Screen1Empty.tsx            — Marketing empty state for /service-room (same pattern, ghost Service Horizon preview)
   watchbox/
     HoverCard.tsx               — Floating hover card on watch slot
     DialSVG.tsx                 — SVG dial renderer for playground mode
