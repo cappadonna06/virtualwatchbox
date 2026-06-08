@@ -57,7 +57,7 @@ async function dependentCounts(table: string, col: string, ids: string[]): Promi
     const slice = ids.slice(i, i + 300)
     const { data, error } = await sb.from(table).select(col).in(col, slice)
     if (error) { console.warn(`  (skip ${table}.${col}: ${error.message})`); return counts }
-    for (const r of data as Record<string, string>[]) {
+    for (const r of data as unknown as Record<string, string>[]) {
       const v = r[col]; counts.set(v, (counts.get(v) ?? 0) + 1)
     }
   }
@@ -104,7 +104,7 @@ async function main() {
     const slice = groupIds.slice(i, i + 300)
     const { data } = await sb.from('catalog_watches')
       .select(['id', ...MERGE_FIELDS].join(',')).in('id', slice)
-    for (const r of (data ?? []) as Record<string, unknown>[]) fullRows.set(r.id as string, r)
+    for (const r of (data ?? []) as unknown as Record<string, unknown>[]) fullRows.set(r.id as string, r)
   }
 
   // Dependent re-point counts for every loser id.
