@@ -1,6 +1,6 @@
 # Virtual Watchbox — iOS Conversion Architecture Plan
 
-**Status:** Planning · **Owner:** TBD · **PRD reference:** v1.14 (Platform §1.3 — *"Future: Native iOS and Android"*)
+**Status:** Planning · **Owner:** TBD · **PRD reference:** v1.15 (Platform §1.3 — *"Future: Native iOS and Android"*)
 **Codebase reviewed through:** PR #84 (catalog cleanup) · main @ `47e54a7`
 **Roadmap:** see `docs/VW-ROADMAP.md` → Phase 5 — Native iOS
 

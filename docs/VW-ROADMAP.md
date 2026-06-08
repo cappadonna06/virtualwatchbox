@@ -87,7 +87,7 @@ Mark `[x]` when done, `[~]` when partially done (sub-items called out inline).
   - **Stats section** typography and density pass (portfolio value, dial colors, watch types, complications, brands)
   - **Cards view** spacing + status badge consistency
   - **Mobile reflow** for sidebar → bottom sheet transitions and overflow behavior
-  - **Finish the readability ripple** — PR #77's token sweep was ~half complete; remaining components still carry sub-12px font sizes (see PR #77 body for the list: `WatchBox`, `WatchCard`, `WatchSidebar`, `CollectionHeader`, `SortDropdown`, `ViewSwitcher`, serviceRoom/straps primitives, etc.).
+  - [x] ~~**Finish the readability ripple**~~ — **Effectively done (code-verified Jun 8).** The 11px floor holds across all consumer surfaces (sub-11px only remains in `app/admin/*` + `components/admin/*`, intentionally excluded); bright-gold-as-text on light is now confined to dark surfaces + decorative glyphs. Lone residual: `components/serviceRoom/PartnerBand.tsx` gold eyebrow/tag labels (~2-line fix to `goldDeep`).
   - *Note: Both Targets and Grail are intentionally NOT on `/collection`. `/collection` is the truth about what the user owns. Targets moved to `/discover` § 03 (PRD v1.14). Grail's home is `/profile`.*
 
 ---
@@ -174,4 +174,4 @@ Mark `[x]` when done, `[~]` when partially done (sub-items called out inline).
 
 ---
 
-*Last updated: June 8, 2026 · PRD reference: v1.14*
+*Last updated: June 8, 2026 · PRD reference: v1.15*
