@@ -73,6 +73,10 @@ const TOP = Number(arg('--top') ?? 0)
 const ONLY = arg('--only')
 const PROVIDER = (arg('--provider') ?? 'replicate').toLowerCase()
 const FORCE = ARGV.includes('--force')
+// Segmented results are normally written `pending` (await admin review). --approve
+// writes them `approved` so they surface in the Studio immediately — handy for an
+// eyeball pass over a fresh batch.
+const APPROVE = ARGV.includes('--approve')
 const DRY_RUN = process.env.DRY_RUN === '1'
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -102,7 +106,7 @@ export interface SegmentationResult {
 }
 export interface SegmentationProvider {
   segmentCase(
-    imageBuffer: Buffer,
+    image: Buffer | string,
     hint?: { lugWidthMm?: number; braceletType?: string },
   ): Promise<SegmentationResult>
 }
@@ -396,31 +400,93 @@ class ReplicateSamProvider implements SegmentationProvider {
     // Replicate account's preferred version pin.
     || 'schananas/grounded_sam:ee871c19efb1941f55f66a3d7d960428c8a5afcb77449547fe8e5a3ab9ebc21c'
 
-  async segmentCase(imageBuffer: Buffer, hint?: { braceletType?: string }): Promise<SegmentationResult> {
+  // grounded_sam (GroundingDINO + SAM): comma-separated noun phrases, like the
+  // model's own default ("clothes,shoes" / "pants"). Positive = keep, negative
+  // = subtract. The image is passed as a public URL (the input is already a
+  // background-removed full-watch render).
+  private maskPrompt = process.env.REPLICATE_MASK_PROMPT || 'watch case,bezel,dial,crown,hands'
+  private negPrompt = process.env.REPLICATE_NEG_PROMPT || 'strap,bracelet,band,buckle,clasp'
+
+  private async authedFetch(url: string, init?: RequestInit): Promise<Response> {
+    for (let attempt = 0; ; attempt += 1) {
+      const r = await fetch(url, {
+        ...init,
+        headers: { Authorization: `Bearer ${this.token}`, ...(init?.headers ?? {}) },
+      })
+      if (r.status === 429 && attempt < 6) {
+        const wait = Number(r.headers.get('retry-after') ?? 0) * 1000 || 12_000
+        console.warn(`  · rate-limited, waiting ${Math.round(wait / 1000)}s…`)
+        await new Promise(res => setTimeout(res, wait))
+        continue
+      }
+      return r
+    }
+  }
+
+  async segmentCase(imageUrlOrBuffer: Buffer | string): Promise<SegmentationResult> {
     if (!this.token) fail('REPLICATE_API_TOKEN required for the Replicate provider (or use --ingest / --provider=openai).')
-    const dataUri = `data:image/png;base64,${imageBuffer.toString('base64')}`
-    const prompt = 'watch case, bezel, crown and dial — the watch head only, excluding the strap and bracelet'
-    const create = await fetch('https://api.replicate.com/v1/predictions', {
+    const image = typeof imageUrlOrBuffer === 'string'
+      ? imageUrlOrBuffer
+      : `data:image/png;base64,${imageUrlOrBuffer.toString('base64')}`
+    const create = await this.authedFetch('https://api.replicate.com/v1/predictions', {
       method: 'POST',
-      headers: { Authorization: `Bearer ${this.token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ version: this.model.split(':')[1], input: { image: dataUri, mask_prompt: prompt, negative_mask_prompt: 'strap, bracelet, band, leather, rubber' } }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        version: this.model.split(':')[1],
+        input: { image, mask_prompt: this.maskPrompt, negative_mask_prompt: this.negPrompt, adjustment_factor: 0 },
+      }),
     })
     if (!create.ok) throw new Error(`Replicate create failed: ${create.status} ${await create.text()}`)
     let pred = await create.json() as { id: string; status: string; output?: unknown; error?: string; urls?: { get: string } }
     const getUrl = pred.urls?.get || `https://api.replicate.com/v1/predictions/${pred.id}`
     const started = Date.now()
     while (pred.status !== 'succeeded' && pred.status !== 'failed' && pred.status !== 'canceled') {
-      if (Date.now() - started > 120_000) throw new Error('Replicate prediction timed out')
-      await new Promise(r => setTimeout(r, 1500))
-      const poll = await fetch(getUrl, { headers: { Authorization: `Bearer ${this.token}` } })
-      pred = await poll.json()
+      if (Date.now() - started > 180_000) throw new Error('Replicate prediction timed out')
+      await new Promise(r => setTimeout(r, 2000))
+      pred = await (await this.authedFetch(getUrl)).json()
     }
     if (pred.status !== 'succeeded') throw new Error(`Replicate prediction ${pred.status}: ${pred.error ?? ''}`)
-    const maskUrl = Array.isArray(pred.output) ? String(pred.output[pred.output.length - 1]) : String(pred.output)
-    const maskRes = await fetch(maskUrl)
-    const caseMask = Buffer.from(await maskRes.arrayBuffer())
-    return { caseMask, lugGeometry: null, confidence: 0.75 }
+    // Output is an array of image URIs. grounded_sam returns the matched region
+    // as a cutout (alpha encodes the keep region) — but be robust to a plain
+    // B/W mask too. Build a normalized white-on-transparent keep-mask (alpha).
+    const outs = (Array.isArray(pred.output) ? pred.output : [pred.output]).filter(Boolean).map(String)
+    if (!outs.length) throw new Error('Replicate returned no output')
+    const outBuf = Buffer.from(await (await fetch(outs[0])).arrayBuffer())
+    const caseMask = await toKeepMask(outBuf)
+    return { caseMask, lugGeometry: null, confidence: 0.7 }
   }
+}
+
+// Normalize a grounded_sam output into an RGBA "keep mask" whose ALPHA is the
+// region to retain (so runSegment can `dest-in` it onto the original). Handles
+// both an RGBA cutout (alpha already encodes the region) and an opaque B/W mask
+// (threshold luminance).
+async function toKeepMask(buf: Buffer): Promise<Buffer> {
+  const meta = await sharp(buf).metadata()
+  let useAlpha = false
+  if (meta.hasAlpha) {
+    const a = await sharp(buf).ensureAlpha().extractChannel(3).raw().toBuffer()
+    let transparent = 0
+    for (let i = 0; i < a.length; i += 1) if (a[i] < 40) transparent += 1
+    useAlpha = transparent > a.length * 0.03 // meaningfully transparent → it's a cutout
+  }
+  if (useAlpha) {
+    // Flatten RGB to white, keep the alpha as-is.
+    const { data, info } = await sharp(buf).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+    const out = Buffer.alloc(info.width * info.height * 4)
+    for (let i = 0; i < info.width * info.height; i += 1) {
+      out[i * 4] = 255; out[i * 4 + 1] = 255; out[i * 4 + 2] = 255; out[i * 4 + 3] = data[i * 4 + 3]
+    }
+    return sharp(out, { raw: { width: info.width, height: info.height, channels: 4 } }).png().toBuffer()
+  }
+  // B/W mask → alpha = (luminance > 128)
+  const { data, info } = await sharp(buf).removeAlpha().toColourspace('b-w').raw().toBuffer({ resolveWithObject: true })
+  const out = Buffer.alloc(info.width * info.height * 4)
+  for (let i = 0; i < info.width * info.height; i += 1) {
+    const v = data[i] > 128 ? 255 : 0
+    out[i * 4] = 255; out[i * 4 + 1] = 255; out[i * 4 + 2] = 255; out[i * 4 + 3] = v
+  }
+  return sharp(out, { raw: { width: info.width, height: info.height, channels: 4 } }).png().toBuffer()
 }
 
 class OpenAiMaskProvider implements SegmentationProvider {
@@ -510,22 +576,26 @@ async function runSegment(supabase: SupabaseClient): Promise<void> {
       const srcUrl = rows?.[0]?.png_url || rows?.[0]?.webp_url
       if (!srcUrl) { console.warn(`  ✗ ${id}: no primary image`); fa += 1; continue }
       const srcBuf = Buffer.from(await (await fetch(srcUrl)).arrayBuffer())
-      const { caseMask, confidence } = await provider.segmentCase(srcBuf)
-      // Apply mask: keep only the case region (white in mask) → strap transparent.
+      // Pass the public URL to the model (avoids a multi-MB data-URI upload).
+      const { caseMask, confidence } = await provider.segmentCase(srcUrl)
+      // Keep only the case region: dest-in the keep-mask's alpha onto the
+      // original, so the strap/bracelet area goes transparent.
+      const meta = await sharp(srcBuf).metadata()
+      const maskResized = await sharp(caseMask).resize({ width: meta.width, height: meta.height, fit: 'fill' }).png().toBuffer()
       const masked = await sharp(srcBuf).ensureAlpha()
-        .composite([{ input: await sharp(caseMask).resize({ width: (await sharp(srcBuf).metadata()).width }).toColourspace('b-w').toBuffer(), blend: 'dest-in' }])
+        .composite([{ input: maskResized, blend: 'dest-in' }])
         .png().toBuffer()
       const norm = await normalizeCaseOnly(masked)
       const { geom, confidence: geomConf } = await deriveLugGeometry(norm.rgba, norm.width, norm.height)
       const { caseOnlyPngUrl, caseOnlyUrl } = await uploadCaseOnly(supabase, id, norm.png, norm.webp)
       const entry: BridgeEntry = {
         caseOnlyUrl, caseOnlyPngUrl, lugGeometry: geom,
-        confidence: Math.min(confidence, geomConf), status: 'pending',
+        confidence: Math.min(confidence, geomConf), status: APPROVE ? 'approved' : 'pending',
       }
       bridge[id] = entry
       await writeDbColumns(supabase, id, entry)
       ok += 1
-      console.log(`  ✓ ${id} (conf=${entry.confidence.toFixed(2)}) → pending review`)
+      console.log(`  ✓ ${id} (conf=${entry.confidence.toFixed(2)}) → ${entry.status}`)
     } catch (e) {
       fa += 1
       console.warn(`  ✗ ${id}: ${(e as Error).message}`)
