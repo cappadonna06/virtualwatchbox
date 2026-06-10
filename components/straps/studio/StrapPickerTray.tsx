@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { brand } from '@/lib/brand'
-import { categoryAbbrev, type StudioStrap } from '@/lib/strapStudio'
+import type { StudioStrap } from '@/lib/strapStudio'
 import { useIsMobile, usePrefersReducedMotion } from '@/components/collection/useResponsiveState'
 import type { StudioController } from './useStudioController'
 import type { StudioSourceMode } from './useStudioController'
@@ -248,8 +248,8 @@ function Swatch({
         animate={active ? { scale: 1.05 } : { scale: 1 }}
         transition={{ type: 'spring', stiffness: 400, damping: 22 }}
         style={{
-          width: fullWidth ? '100%' : 84,
-          height: fullWidth ? 112 : 106,
+          width: fullWidth ? '100%' : 94,
+          height: fullWidth ? 124 : 120,
           borderRadius: brand.radius.md,
           overflow: 'hidden',
           background: strap.imageUrl ? brand.colors.white : strap.colorHex ?? brand.colors.paperWarm,
@@ -265,12 +265,13 @@ function Swatch({
       </motion.div>
       <span
         style={{
-          font: `500 9px ${brand.font.sans}`,
-          letterSpacing: '0.08em',
+          font: `500 9.5px ${brand.font.sans}`,
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
           color: active ? brand.colors.goldDeep : brand.studio.textLow,
         }}
       >
-        {categoryAbbrev(strap.category)}
+        {strap.category}
       </span>
     </button>
   )

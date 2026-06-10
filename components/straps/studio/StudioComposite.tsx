@@ -19,7 +19,7 @@ export default function StudioComposite({ c, rowHeight }: { c: StudioController;
   // between composite and side-by-side watches.
   return renderMode === 'composite' && caseOnly
     ? <BandComposite c={c} rowHeight={rowHeight} />
-    : <SideBySide c={c} blockHeight={Math.round(rowHeight * 0.8)} />
+    : <SideBySide c={c} blockHeight={Math.round(rowHeight * 0.88)} />
 }
 
 // ── Composite: worn band halves behind the case ──────────────────────────────
@@ -186,16 +186,6 @@ function SideBySide({ c, blockHeight }: { c: StudioController; blockHeight: numb
             </motion.div>
           </AnimatePresence>
         </div>
-      </div>
-
-      <div
-        style={{
-          textAlign: 'center',
-          font: `italic 400 12px/1.4 ${brand.font.serif}`,
-          color: brand.studio.textLow,
-        }}
-      >
-        Side-by-side preview — true composite coming soon for this watch
       </div>
 
       <span style={srOnly}>

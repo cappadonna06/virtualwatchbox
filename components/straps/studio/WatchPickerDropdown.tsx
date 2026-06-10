@@ -1,9 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { brand } from '@/lib/brand'
-import { caseOnlyIds, getCaseOnly } from '@/lib/caseOnlyImages'
 import type { CatalogWatch } from '@/types/watch'
 import { useIsMobile } from '@/components/collection/useResponsiveState'
 import type { StudioController } from './useStudioController'
@@ -23,27 +22,27 @@ export default function WatchPickerDropdown({ c }: { c: StudioController }) {
     return () => document.removeEventListener('pointerdown', onDown)
   }, [open])
 
-  // The owned tab also hosts the composite-ready demo watches, so only skip
-  // straight to catalog search when there is truly nothing to list there.
   useEffect(() => {
-    if (open && !c.hasOwned && caseOnlyIds().length === 0) setTab('catalog')
+    if (open && !c.hasOwned) setTab('catalog')
   }, [c.hasOwned, open])
-
-  const label = c.studioWatch ? `${c.studioWatch.brand}` : 'My Watches'
 
   return (
     <div ref={wrapRef} style={{ position: 'relative' }}>
+      {/* Explicit action label — the watch's identity already sits front and
+          centre in the caption, and a brand-only pill is ambiguous when two
+          owned watches share a brand. */}
       <button
         onClick={() => setOpen(v => !v)}
         style={{
-          display: 'inline-flex', alignItems: 'center', gap: 8,
-          height: 38, padding: '0 14px', borderRadius: brand.radius.pill,
-          border: `1px solid ${brand.studio.hairline}`, background: brand.studio.panel,
-          color: brand.studio.textHi, font: `500 13px ${brand.font.sans}`, cursor: 'pointer',
-          maxWidth: 200, whiteSpace: 'nowrap', boxShadow: brand.shadow.xs,
+          display: 'inline-flex', alignItems: 'center', gap: 7,
+          fontFamily: brand.font.sans, fontSize: isMobile ? 11.5 : 12, fontWeight: 600,
+          letterSpacing: '0.08em', padding: isMobile ? '7px 12px' : '7px 14px',
+          borderRadius: brand.radius.btn, border: `1px solid ${brand.colors.borderLight}`,
+          background: 'transparent', color: brand.colors.ink, cursor: 'pointer',
+          whiteSpace: 'nowrap',
         }}
       >
-        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{label}</span>
+        {isMobile ? 'Watch' : 'Change Watch'}
         <span style={{ color: brand.colors.goldDeep, fontSize: 11 }}>▾</span>
       </button>
 
@@ -86,53 +85,23 @@ export default function WatchPickerDropdown({ c }: { c: StudioController }) {
 }
 
 function OwnedList({ c, onPick }: { c: StudioController; onPick: () => void }) {
-  // Watches with an approved case-only render — the composite-capable set.
-  // Listed first so the true-composite experience is one click away (it's
-  // otherwise reachable only by URL or catalog search).
-  const compositeReady = useMemo(
-    () => caseOnlyIds().map(id => ({ id, entry: getCaseOnly(id)! })),
-    [],
-  )
-
+  if (!c.collectionWatches.length) {
+    return <div style={emptyHint}>No owned watches yet — try the catalog to dream.</div>
+  }
   return (
     <div style={{ maxHeight: 360, overflowY: 'auto', padding: 6 }}>
-      {compositeReady.length > 0 && (
-        <>
-          <div style={sectionLabel}>Composite-ready</div>
-          {compositeReady.map(({ id, entry }) => (
-            <WatchRow
-              key={id}
-              active={id === c.watchId}
-              imageUrl={entry.caseOnlyUrl}
-              brand={entry.brand ?? ''}
-              model={entry.model ?? ''}
-              reference={entry.reference}
-              lugWidthMm={entry.lugWidthMm}
-              onClick={() => { c.setWatch(id); onPick() }}
-            />
-          ))}
-        </>
-      )}
-      {c.collectionWatches.length > 0 && (
-        <>
-          <div style={sectionLabel}>My watches</div>
-          {c.collectionWatches.map(w => (
-            <WatchRow
-              key={w.id}
-              active={w.watchId === c.watchId}
-              imageUrl={w.imageUrl}
-              brand={w.brand}
-              model={w.model}
-              reference={w.reference}
-              lugWidthMm={w.lugWidthMm}
-              onClick={() => { c.setWatch(w.watchId); onPick() }}
-            />
-          ))}
-        </>
-      )}
-      {compositeReady.length === 0 && c.collectionWatches.length === 0 && (
-        <div style={emptyHint}>No owned watches yet — try the catalog to dream.</div>
-      )}
+      {c.collectionWatches.map(w => (
+        <WatchRow
+          key={w.id}
+          active={w.watchId === c.watchId}
+          imageUrl={w.imageUrl}
+          brand={w.brand}
+          model={w.model}
+          reference={w.reference}
+          lugWidthMm={w.lugWidthMm}
+          onClick={() => { c.setWatch(w.watchId); onPick() }}
+        />
+      ))}
     </div>
   )
 }
@@ -253,8 +222,4 @@ const mobilePanel: React.CSSProperties = {
 }
 const emptyHint: React.CSSProperties = {
   padding: '14px 10px', font: `400 12px ${brand.font.sans}`, color: brand.studio.textLow, textAlign: 'center',
-}
-const sectionLabel: React.CSSProperties = {
-  padding: '8px 8px 4px', font: `600 10px ${brand.font.sans}`, letterSpacing: '0.16em',
-  textTransform: 'uppercase', color: brand.studio.textLow,
 }

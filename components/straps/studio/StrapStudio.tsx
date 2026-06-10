@@ -45,7 +45,7 @@ export default function StrapStudio() {
       </main>
 
       {!isMobile && (
-        <section style={{ maxWidth: 860, margin: '12px auto 0', padding: '0 24px' }}>
+        <section style={{ maxWidth: 860, margin: '10px auto 0', padding: '0 24px' }}>
           <div
             style={{
               background: brand.studio.panel,
@@ -110,7 +110,7 @@ function CycleDots({ c }: { c: StudioController }) {
   const n = c.categoryStraps.length
   if (n < 2 || c.strapIndex < 0) return <div style={{ height: 18 }} />
   return (
-    <div style={{ height: 18, marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+    <div style={{ height: 18, marginTop: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
       {n <= 8 ? (
         c.categoryStraps.map((s, i) => {
           const active = i === c.strapIndex
@@ -142,8 +142,8 @@ function CycleDots({ c }: { c: StudioController }) {
   )
 }
 
-// Editorial caption beneath the composite — three lines, nothing more: gold
-// brand kicker, serif watch identity with the lug-width chip, italic strap
+// Editorial caption beneath the composite — two lines, nothing more: serif
+// watch identity (brand + model + lug chip on ONE line) and the italic strap
 // caption. Counter lives in the CycleDots; share/buy live in the masthead.
 function CaptionBlock({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
   const w = c.studioWatch
@@ -156,19 +156,16 @@ function CaptionBlock({ c, isMobile }: { c: StudioController; isMobile: boolean 
         flexDirection: 'column',
         alignItems: 'center',
         textAlign: 'center',
-        marginTop: isMobile ? 4 : 8,
+        marginTop: isMobile ? 4 : 6,
         padding: '0 12px',
       }}
     >
-      {w?.brand && (
-        <Kicker color={brand.colors.goldDeep} size={10} style={{ letterSpacing: '0.28em', marginBottom: isMobile ? 3 : 6 }}>
-          {w.brand}
-        </Kicker>
-      )}
       <h1
         style={{
           display: 'inline-flex',
           alignItems: 'center',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
           gap: 10,
           fontFamily: brand.font.serif,
           fontSize: isMobile ? 21 : 26,
@@ -179,7 +176,7 @@ function CaptionBlock({ c, isMobile }: { c: StudioController; isMobile: boolean 
           margin: 0,
         }}
       >
-        {w ? (w.model || w.brand) : 'Select a watch'}
+        {w ? `${w.brand} ${w.model}`.trim() : 'Select a watch'}
         {w?.lugWidthMm != null && <SpecBadge tone="width">{w.lugWidthMm} mm</SpecBadge>}
       </h1>
       <div style={{ height: isMobile ? 22 : 26, marginTop: 2 }}>

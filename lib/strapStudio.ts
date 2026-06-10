@@ -70,16 +70,8 @@ const MATERIAL_CATEGORY: Record<StrapMaterial, StrapCategory> = {
 
 const CATEGORY_ORDER: StrapCategory[] = ['Leather', 'Rubber', 'NATO', 'Sailcloth', 'Metal', 'Exotic', 'Other']
 
-const CATEGORY_ABBREV: Record<StrapCategory, string> = {
-  Leather: 'L', Rubber: 'R', NATO: 'N', Sailcloth: 'S', Metal: 'M', Exotic: 'X', Other: '·',
-}
-
 export function categoryOf(material: StrapMaterial): StrapCategory {
   return MATERIAL_CATEGORY[material] ?? 'Other'
-}
-
-export function categoryAbbrev(category: StrapCategory): string {
-  return CATEGORY_ABBREV[category] ?? '·'
 }
 
 function titleCase(s: string): string {
