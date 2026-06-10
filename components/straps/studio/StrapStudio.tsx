@@ -12,15 +12,15 @@ import StudioComposite from './StudioComposite'
 import StrapPickerTray from './StrapPickerTray'
 import WatchPickerDropdown from './WatchPickerDropdown'
 
-function useViewportWidth() {
-  const [w, setW] = useState(1280)
+function useViewport() {
+  const [size, setSize] = useState({ w: 1280, h: 960 })
   useEffect(() => {
-    const sync = () => setW(window.innerWidth)
+    const sync = () => setSize({ w: window.innerWidth, h: window.innerHeight })
     sync()
     window.addEventListener('resize', sync)
     return () => window.removeEventListener('resize', sync)
   }, [])
-  return w
+  return size
 }
 
 export default function StrapStudio() {
@@ -33,7 +33,7 @@ export default function StrapStudio() {
         background: brand.studio.canvas,
         backgroundColor: brand.studio.void,
         minHeight: '82vh',
-        paddingBottom: isMobile ? '30vh' : 20,
+        paddingBottom: isMobile ? '26vh' : 20,
       }}
     >
       <Masthead c={c} isMobile={isMobile} />
@@ -71,9 +71,13 @@ function Masthead({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
       style={{
         height: 52,
         display: 'grid',
-        gridTemplateColumns: '1fr auto 1fr',
+        // Mobile: space-between beats strict centering — all three groups fit
+        // a 375pt width without overflow (kicker lands near enough to centre).
+        gridTemplateColumns: isMobile ? 'auto auto auto' : '1fr auto 1fr',
+        justifyContent: isMobile ? 'space-between' : undefined,
         alignItems: 'center',
-        padding: '0 16px',
+        gap: isMobile ? 8 : 0,
+        padding: isMobile ? '0 12px' : '0 16px',
         borderBottom: `1px solid ${brand.studio.hairlineSoft}`,
       }}
     >
@@ -81,10 +85,11 @@ function Masthead({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
         href="/collection"
         style={{
           justifySelf: 'start', display: 'inline-flex', alignItems: 'center', gap: 6,
-          color: brand.studio.textLow, textDecoration: 'none', font: `500 13px ${brand.font.sans}`,
+          color: brand.studio.textLow, textDecoration: 'none',
+          font: `500 ${isMobile ? 12 : 13}px ${brand.font.sans}`, whiteSpace: 'nowrap',
         }}
       >
-        <span style={{ fontSize: 15 }}>←</span> {isMobile ? '' : 'Collection'}
+        <span style={{ fontSize: isMobile ? 14 : 15 }}>←</span> Collection
       </Link>
       <div
         style={{
@@ -168,7 +173,7 @@ function CaptionBlock({ c, isMobile }: { c: StudioController; isMobile: boolean 
           justifyContent: 'center',
           gap: 10,
           fontFamily: brand.font.serif,
-          fontSize: isMobile ? 21 : 26,
+          fontSize: isMobile ? 19 : 26,
           fontWeight: 400,
           lineHeight: 1.12,
           letterSpacing: '-0.01em',
@@ -224,12 +229,14 @@ function CaptionCta({ label, href, onClick, primary, compact }: { label: string;
 }
 
 function Stage({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
-  const vw = useViewportWidth()
-  const ghostsPerSide = isMobile ? 0 : vw >= 1140 ? 2 : 1
-  const ghostW = vw >= 1280 ? 130 : 108
+  const { w: vw, h: vh } = useViewport()
+  const ghostsPerSide = isMobile ? 1 : vw >= 1140 ? 2 : 1
+  const ghostW = isMobile ? 60 : vw >= 1280 ? 130 : 108
   // Fixed row height so the watch centre, dots, caption, and tray sit at the
   // SAME y in composite and side-by-side modes — no shift between watches.
-  const rowH = isMobile ? 268 : 450
+  // Mobile scales with viewport height so tall phones get a big watch while
+  // an 812pt iPhone still clears the bottom sheet.
+  const rowH = isMobile ? Math.max(270, Math.min(420, Math.round(vh * 0.42))) : 450
 
   return (
     <div
@@ -237,17 +244,19 @@ function Stage({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: isMobile ? 10 : 26,
+        gap: isMobile ? 8 : 26,
         height: rowH,
-        marginTop: isMobile ? 8 : 6,
+        marginTop: isMobile ? 4 : 6,
       }}
     >
       {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(-2)} width={ghostW} opacity={0.35} onClick={c.prevStrap} />}
       {ghostsPerSide >= 1 && <GhostStrap strap={c.ghostAt(-1)} width={ghostW} opacity={0.62} onClick={c.prevStrap} />}
 
-      <Arrow dir="prev" onClick={c.prevStrap} />
+      {/* On mobile the tappable side ghosts ARE the prev/next controls —
+          arrows + ghosts + stage don't all fit a 375pt width. */}
+      {!isMobile && <Arrow dir="prev" onClick={c.prevStrap} />}
       <StudioComposite c={c} rowHeight={rowH} />
-      <Arrow dir="next" onClick={c.nextStrap} />
+      {!isMobile && <Arrow dir="next" onClick={c.nextStrap} />}
 
       {ghostsPerSide >= 1 && <GhostStrap strap={c.ghostAt(1)} width={ghostW} opacity={0.62} onClick={c.nextStrap} />}
       {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(2)} width={ghostW} opacity={0.35} onClick={c.nextStrap} />}

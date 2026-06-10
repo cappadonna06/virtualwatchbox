@@ -22,7 +22,7 @@ export default function StrapPickerTray({ c }: { c: StudioController }) {
           if (info.offset.y < -40) setExpanded(true)
           else if (info.offset.y > 40) setExpanded(false)
         }}
-        animate={{ height: expanded ? '78vh' : '27vh' }}
+        animate={{ height: expanded ? '78vh' : '24vh' }}
         transition={{ type: 'spring', stiffness: 320, damping: 34 }}
         style={{
           position: 'fixed',
