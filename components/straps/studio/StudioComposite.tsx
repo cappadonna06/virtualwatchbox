@@ -105,57 +105,17 @@ function BandComposite({ c, caseHeight }: { c: StudioController; caseHeight: num
   )
 }
 
-// ── Side-by-side: flat strap photo flanking the full watch ───────────────────
+// ── Side-by-side: the full watch photo beside the selected strap, both upright.
+// Watches without a case-only render often ship on their factory strap in the
+// catalog photo, so a literal pairing reads honestly — no fake compositing.
 function SideBySide({ c, maxWidth }: { c: StudioController; maxWidth: number }) {
   const { currentStrap, studioWatch, reducedMotion } = c
   const watchSrc = studioWatch?.transparentUrl || studioWatch?.imageUrl
-  const strapTransition = reducedMotion ? { duration: 0.15 } : { duration: 0.25, ease: [0.4, 0, 0.2, 1] as const }
-
-  const Flank = ({ side }: { side: 'left' | 'right' }) => (
-    <AnimatePresence mode="popLayout" initial={false}>
-      <motion.div
-        key={`${side}:${currentStrap?.key ?? 'none'}`}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.96 }}
-        exit={{ opacity: 0 }}
-        transition={strapTransition}
-        style={{
-          position: 'absolute',
-          top: '50%',
-          [side]: '-6%',
-          width: '42%',
-          height: '26%',
-          transform: `translateY(-50%) rotate(${side === 'left' ? 90 : -90}deg) scaleX(${side === 'left' ? 1 : -1})`,
-          transformOrigin: 'center',
-          borderRadius: brand.radius.sm,
-          background: currentStrap?.imageUrl ? 'transparent' : currentStrap?.colorHex ?? brand.colors.paperWarm,
-          zIndex: 1,
-        } as React.CSSProperties}
-      >
-        {currentStrap?.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={currentStrap.imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: 'url(#studioStrapKey)' }} />
-        ) : null}
-      </motion.div>
-    </AnimatePresence>
-  )
+  const h = Math.round(maxWidth * 0.96)
 
   return (
-    <div style={{ position: 'relative', width: '100%', maxWidth, margin: '0 auto', aspectRatio: '1 / 1', flex: '0 1 auto' }}>
-      {/* Luminance key: flat strap templates ship as white-bg photos (no alpha).
-          Near-white → transparent; feComposite clips back to source alpha so the
-          object-fit letterbox (genuinely transparent) doesn't turn black. */}
-      <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden>
-        <filter id="studioStrapKey" colorInterpolationFilters="sRGB">
-          <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -1 -1 -1 0 2.55" result="keyed" />
-          <feComponentTransfer in="keyed" result="hardened"><feFuncA type="linear" slope="3" intercept="-0.5" /></feComponentTransfer>
-          <feComposite in="hardened" in2="SourceGraphic" operator="in" />
-        </filter>
-      </svg>
-
-      <Flank side="left" />
-      <Flank side="right" />
-      <div style={{ position: 'absolute', inset: '8% 0 8% 0', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, flex: '0 1 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: Math.round(maxWidth * 0.09), height: h }}>
         {watchSrc ? (
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.img
@@ -166,7 +126,7 @@ function SideBySide({ c, maxWidth }: { c: StudioController; maxWidth: number }) 
               animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
               exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.98 }}
               transition={reducedMotion ? { duration: 0.15 } : { duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-              style={{ width: '70%', height: '100%', objectFit: 'contain', filter: 'drop-shadow(0 14px 22px rgba(26,20,16,0.16))' }}
+              style={{ height: '100%', maxWidth: maxWidth * 0.78, objectFit: 'contain', filter: 'drop-shadow(0 14px 22px rgba(26,20,16,0.16))' }}
             />
           </AnimatePresence>
         ) : (
@@ -174,18 +134,44 @@ function SideBySide({ c, maxWidth }: { c: StudioController; maxWidth: number }) 
             Image processing pending
           </div>
         )}
+
+        <div
+          style={{
+            height: '88%',
+            aspectRatio: '0.62',
+            borderRadius: brand.radius.lg,
+            overflow: 'hidden',
+            background: brand.colors.white,
+            border: `1px solid ${brand.studio.hairlineSoft}`,
+            boxShadow: brand.shadow.sm,
+            position: 'relative',
+          }}
+        >
+          <AnimatePresence mode="popLayout" initial={false}>
+            <motion.div
+              key={currentStrap?.key ?? 'none'}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={reducedMotion ? { duration: 0.15 } : { duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+              style={{ position: 'absolute', inset: 0 }}
+            >
+              {currentStrap?.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={currentStrap.imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              ) : (
+                <div style={{ width: '100%', height: '100%', background: currentStrap?.colorHex ?? brand.colors.paperWarm }} />
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
 
       <div
         style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 0,
           textAlign: 'center',
           font: `italic 400 12px/1.4 ${brand.font.serif}`,
           color: brand.studio.textLow,
-          pointerEvents: 'none',
         }}
       >
         Side-by-side preview — true composite coming soon for this watch

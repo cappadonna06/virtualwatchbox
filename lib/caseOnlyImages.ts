@@ -15,6 +15,9 @@ export interface LugPoint {
 }
 
 export interface LugGeometry {
+  /** y = OUTER TIP row of each lug channel — the strap's spring-bar anchor
+   *  line (plus a small tuck inset toward case centre). x = channel edges at
+   *  the widest-gap row. Produced by scripts/segment-watch-cases.ts. */
   topLugLeft: LugPoint
   topLugRight: LugPoint
   bottomLugLeft: LugPoint

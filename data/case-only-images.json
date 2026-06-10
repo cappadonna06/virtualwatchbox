@@ -5,19 +5,19 @@
     "lugGeometry": {
       "topLugLeft": {
         "x": 179,
-        "y": 16
+        "y": 10
       },
       "topLugRight": {
         "x": 580,
-        "y": 16
+        "y": 10
       },
       "bottomLugLeft": {
         "x": 179,
-        "y": 822
+        "y": 894
       },
       "bottomLugRight": {
         "x": 582,
-        "y": 822
+        "y": 894
       },
       "lugWidthPx": 402,
       "imageWidth": 830,
@@ -36,19 +36,19 @@
     "lugGeometry": {
       "topLugLeft": {
         "x": 181,
-        "y": 14
+        "y": 9
       },
       "topLugRight": {
         "x": 560,
-        "y": 14
+        "y": 9
       },
       "bottomLugLeft": {
         "x": 181,
-        "y": 815
+        "y": 896
       },
       "bottomLugRight": {
         "x": 561,
-        "y": 815
+        "y": 896
       },
       "lugWidthPx": 380,
       "imageWidth": 810,
@@ -67,19 +67,19 @@
     "lugGeometry": {
       "topLugLeft": {
         "x": 185,
-        "y": 7
+        "y": 2
       },
       "topLugRight": {
         "x": 571,
-        "y": 7
+        "y": 2
       },
       "bottomLugLeft": {
         "x": 185,
-        "y": 822
+        "y": 898
       },
       "bottomLugRight": {
         "x": 571,
-        "y": 822
+        "y": 898
       },
       "lugWidthPx": 386,
       "imageWidth": 805,

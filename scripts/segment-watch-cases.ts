@@ -84,6 +84,8 @@ const SUPABASE_KEY =
 // ── Types ─────────────────────────────────────────────────────────────────--
 export interface LugPoint { x: number; y: number }
 export interface LugGeometry {
+  /** y = OUTER TIP row of each lug channel (where straps anchor); x = channel
+   *  edges at the widest-gap row. See deriveLugGeometry. */
   topLugLeft: LugPoint
   topLugRight: LugPoint
   bottomLugLeft: LugPoint
@@ -201,6 +203,32 @@ function findChannel(
   return best
 }
 
+// Outermost row (scanning from the case's outer edge inward) where the
+// between-lugs gap exists — i.e. the lug TIP row. Strap pin rows anchor here;
+// the widest-gap row can land mid/inner-channel (it did for every bottom
+// channel), which anchored bottom straps too deep into the case.
+function findChannelTip(
+  rgba: Buffer, width: number, outerY: number, innerY: number,
+): number | null {
+  const dir = innerY > outerY ? 1 : -1
+  for (let y = outerY; dir > 0 ? y <= innerY : y >= innerY; y += dir) {
+    const runs = opaqueRuns(rgba, width, y)
+    if (runs.length < 2) continue
+    for (let i = 0; i < runs.length - 1; i += 1) {
+      const gap = runs[i + 1][0] - runs[i][1]
+      if (gap < width * 0.08) continue
+      const center = (runs[i][1] + runs[i + 1][0]) / 2
+      if (1 - Math.abs(center - width / 2) / (width / 2) < 0.35) continue
+      return y
+    }
+  }
+  return null
+}
+
+// LugGeometry semantics: the four lug-point y values are the OUTER TIP rows of
+// each channel (top: first gap row from the top; bottom: last from the bottom).
+// lugWidthPx + the x coordinates come from the widest-gap row, where the
+// channel edges are stable.
 async function deriveLugGeometry(rgba: Buffer, width: number, height: number): Promise<{ geom: LugGeometry; confidence: number }> {
   const { top, bottom } = alphaBoundsRows(rgba, width, height)
   const caseH = Math.max(1, bottom - top)
@@ -210,6 +238,8 @@ async function deriveLugGeometry(rgba: Buffer, width: number, height: number): P
   const topChannel = findChannel(rgba, width, top, top + Math.round(caseH * 0.28), step)
   // Bottom lugs: scan the bottom ~28% of the case upward.
   const bottomChannel = findChannel(rgba, width, bottom, bottom - Math.round(caseH * 0.28), step)
+  const topTipY = findChannelTip(rgba, width, top, top + Math.round(caseH * 0.28))
+  const botTipY = findChannelTip(rgba, width, bottom, bottom - Math.round(caseH * 0.28))
 
   let confidence = 0.4
   let geom: LugGeometry
@@ -217,11 +247,13 @@ async function deriveLugGeometry(rgba: Buffer, width: number, height: number): P
   if (topChannel && bottomChannel) {
     confidence = 0.9
     const lugWidthPx = Math.round((topChannel.gap + bottomChannel.gap) / 2)
+    const topY = topTipY ?? topChannel.y
+    const botY = botTipY ?? bottomChannel.y
     geom = {
-      topLugLeft: { x: topChannel.left, y: topChannel.y },
-      topLugRight: { x: topChannel.right, y: topChannel.y },
-      bottomLugLeft: { x: bottomChannel.left, y: bottomChannel.y },
-      bottomLugRight: { x: bottomChannel.right, y: bottomChannel.y },
+      topLugLeft: { x: topChannel.left, y: topY },
+      topLugRight: { x: topChannel.right, y: topY },
+      bottomLugLeft: { x: bottomChannel.left, y: botY },
+      bottomLugRight: { x: bottomChannel.right, y: botY },
       lugWidthPx,
       imageWidth: width,
       imageHeight: height,

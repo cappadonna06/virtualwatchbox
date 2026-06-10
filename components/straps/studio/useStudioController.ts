@@ -47,7 +47,7 @@ export function useStudioController() {
   const search = useSearchParams()
 
   const session = useCollectionSession()
-  const { collectionWatches, straps, strapOverrides, getCatalogWatch, showToast, followedWatchIds, toggleFollowedWatch } = session
+  const { collectionWatches, straps, strapOverrides, getCatalogWatch, showToast } = session
   const { fetchById, searchCatalog, allWatches } = useCatalog()
   const { getImageUrl, getTransparentUrl } = useWatchImages()
   const reducedMotion = usePrefersReducedMotion()
@@ -257,13 +257,6 @@ export function useStudioController() {
     ? (currentStrap.affiliateUrl ?? undefined)
     : (currentStrap?.purchaseUrl ?? undefined)
 
-  const followed = Boolean(watchId) && followedWatchIds.includes(watchId)
-  const toggleFollow = useCallback(() => {
-    if (!watchId) return
-    toggleFollowedWatch(watchId)
-    showToast(followed ? 'Removed from followed' : 'Added to followed')
-  }, [watchId, followed, toggleFollowedWatch, showToast])
-
   return {
     // data
     studioWatch,
@@ -293,8 +286,6 @@ export function useStudioController() {
     // footer
     buyUrl,
     shareLook,
-    followed,
-    toggleFollow,
     // misc
     watchId,
     compatTarget,

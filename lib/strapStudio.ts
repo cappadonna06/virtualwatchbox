@@ -5,7 +5,7 @@
 
 import bandDemoRaw from '@/data/strap-band-demo.json'
 import type { StrapTemplate } from '@/lib/strapTemplates'
-import { getStrapTemplates, findTemplatePhoto } from '@/lib/strapTemplates'
+import { findTemplate, getStrapTemplates, findTemplatePhoto } from '@/lib/strapTemplates'
 import { effectiveCompatibility, type FitState } from '@/lib/strapCompatibility'
 import type { BraceletType, StrapMaterial, StrapWatchOverride, UserStrap } from '@/types/watch'
 
@@ -135,12 +135,16 @@ type BandDemoEntry = {
   availableLugWidths: number[]
   bandTop: BandHalf
   bandBottom: BandHalf
+  /** Matching full-strap template master — browsing imagery (swatches/ghosts). */
+  fullImageId?: string
 }
 
 /**
  * Demo band straps (data/strap-band-demo.json) — the only straps with worn
  * top/bottom renders today, so the only ones the composite mode shows. The
- * top half doubles as the swatch image.
+ * worn halves render exclusively in the composite centerpiece; browsing
+ * imagery (tray swatches, carousel ghosts) uses the matching full-strap
+ * template master via fullImageId.
  */
 export function buildBandDemoStraps(): StudioStrap[] {
   const entries = (bandDemoRaw as { straps: BandDemoEntry[] }).straps
@@ -153,7 +157,7 @@ export function buildBandDemoStraps(): StudioStrap[] {
     material: e.material,
     category: categoryOf(e.material),
     colorHex: e.colorHex,
-    imageUrl: e.bandTop.url,
+    imageUrl: (e.fullImageId ? findTemplate(e.fullImageId)?.imageUrl : undefined) || e.bandTop.url,
     availableLugWidths: e.availableLugWidths,
     band: { top: e.bandTop, bottom: e.bandBottom },
   }))
