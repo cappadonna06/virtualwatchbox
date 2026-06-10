@@ -140,7 +140,7 @@ function CategoryTabs({ c }: { c: StudioController }) {
             onClick={() => c.setCategory(cat)}
             style={{
               position: 'relative',
-              padding: '8px 14px 10px',
+              padding: '6px 14px 8px',
               border: 'none',
               background: 'transparent',
               cursor: 'pointer',
@@ -196,7 +196,7 @@ function SwatchGrid({ c, columns }: { c: StudioController; columns: number }) {
       ref={containerRef}
       style={grid
         ? { display: 'grid', gridTemplateColumns: `repeat(${columns}, 1fr)`, gap: 12, paddingBottom: 8 }
-        : { display: 'flex', gap: 12, overflowX: 'auto', scrollSnapType: 'x mandatory', padding: '4px 2px 8px', justifyContent: 'safe center' }}
+        : { display: 'flex', gap: 12, overflowX: 'auto', scrollSnapType: 'x mandatory', padding: '2px 2px 6px', justifyContent: 'safe center' }}
     >
       {c.categoryStraps.map(s => (
         <Swatch

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { brand } from '@/lib/brand'
 import { useIsMobile } from '@/components/collection/useResponsiveState'
-import { Kicker } from '@/components/straps/atoms'
+import { Kicker, SpecBadge } from '@/components/straps/atoms'
 import type { StudioStrap } from '@/lib/strapStudio'
 import { useStudioController, type StudioController } from './useStudioController'
 import StudioComposite from './StudioComposite'
@@ -33,24 +33,25 @@ export default function StrapStudio() {
         background: brand.studio.canvas,
         backgroundColor: brand.studio.void,
         minHeight: '82vh',
-        paddingBottom: isMobile ? '30vh' : 48,
+        paddingBottom: isMobile ? '30vh' : 20,
       }}
     >
-      <Masthead c={c} />
+      <Masthead c={c} isMobile={isMobile} />
 
-      <main style={{ padding: isMobile ? '4px 12px 0' : '8px 24px 0' }}>
+      <main style={{ padding: isMobile ? '4px 12px 0' : '4px 24px 0' }}>
         <Stage c={c} isMobile={isMobile} />
+        <CycleDots c={c} />
         <CaptionBlock c={c} isMobile={isMobile} />
       </main>
 
       {!isMobile && (
-        <section style={{ maxWidth: 860, margin: '26px auto 0', padding: '0 24px' }}>
+        <section style={{ maxWidth: 860, margin: '12px auto 0', padding: '0 24px' }}>
           <div
             style={{
               background: brand.studio.panel,
               border: `1px solid ${brand.studio.hairlineSoft}`,
               borderRadius: brand.radius.xl,
-              padding: '18px 20px',
+              padding: '14px 16px',
               boxShadow: brand.shadow.sm,
             }}
           >
@@ -64,11 +65,11 @@ export default function StrapStudio() {
   )
 }
 
-function Masthead({ c }: { c: StudioController }) {
+function Masthead({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
   return (
     <header
       style={{
-        height: 58,
+        height: 52,
         display: 'grid',
         gridTemplateColumns: '1fr auto 1fr',
         alignItems: 'center',
@@ -83,40 +84,70 @@ function Masthead({ c }: { c: StudioController }) {
           color: brand.studio.textLow, textDecoration: 'none', font: `500 13px ${brand.font.sans}`,
         }}
       >
-        <span style={{ fontSize: 15 }}>←</span> Collection
+        <span style={{ fontSize: 15 }}>←</span> {isMobile ? '' : 'Collection'}
       </Link>
       <div
         style={{
-          justifySelf: 'center', font: `600 12px ${brand.font.sans}`,
-          letterSpacing: '0.32em', textTransform: 'uppercase', color: brand.colors.goldDeep,
+          justifySelf: 'center', font: `600 ${isMobile ? 10.5 : 12}px ${brand.font.sans}`,
+          letterSpacing: isMobile ? '0.18em' : '0.32em', textTransform: 'uppercase', color: brand.colors.goldDeep,
+          whiteSpace: 'nowrap',
         }}
       >
         Strap Studio
       </div>
-      <div style={{ justifySelf: 'end' }}>
+      <div style={{ justifySelf: 'end', display: 'flex', alignItems: 'center', gap: 8 }}>
+        {c.buyUrl && <CaptionCta label={isMobile ? 'Buy ↗' : 'Buy This Strap ↗'} href={c.buyUrl} primary compact />}
+        <CaptionCta label={isMobile ? 'Share ↗' : 'Share This Look ↗'} onClick={() => void c.shareLook()} compact />
         <WatchPickerDropdown c={c} />
       </div>
     </header>
   )
 }
 
-// Editorial caption beneath the composite — the Studio's voice. Gold brand
-// kicker, serif watch identity, italic strap caption, a short gold hairline,
-// then one quiet meta line absorbing the counter / fit / materials.
+// Cycle indicators tied to the carousel: clickable dots for small sets, a tiny
+// counter for the big side-by-side catalog.
+function CycleDots({ c }: { c: StudioController }) {
+  const n = c.categoryStraps.length
+  if (n < 2 || c.strapIndex < 0) return <div style={{ height: 18 }} />
+  return (
+    <div style={{ height: 18, marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+      {n <= 8 ? (
+        c.categoryStraps.map((s, i) => {
+          const active = i === c.strapIndex
+          return (
+            <button
+              key={s.key}
+              onClick={() => c.selectStrap(s.id)}
+              aria-label={`Show ${s.label}`}
+              title={s.label}
+              style={{
+                width: active ? 7 : 6,
+                height: active ? 7 : 6,
+                borderRadius: '50%',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+                background: active ? brand.colors.gold : brand.colors.borderLight,
+                transition: 'background 0.2s ease, width 0.2s ease, height 0.2s ease',
+              }}
+            />
+          )
+        })
+      ) : (
+        <Kicker color={brand.studio.textLow} size={10} style={{ letterSpacing: '0.18em' }}>
+          {c.strapIndex + 1} / {n}
+        </Kicker>
+      )}
+    </div>
+  )
+}
+
+// Editorial caption beneath the composite — three lines, nothing more: gold
+// brand kicker, serif watch identity with the lug-width chip, italic strap
+// caption. Counter lives in the CycleDots; share/buy live in the masthead.
 function CaptionBlock({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
   const w = c.studioWatch
   const s = c.currentStrap
-  const n = c.categoryStraps.length
-
-  const cats = Array.from(new Set(c.sourceStraps.map(x => x.category)))
-  const materials = cats.length > 1
-    ? `${cats.slice(0, -1).join(', ')} & ${cats[cats.length - 1]}`
-    : cats[0] ?? ''
-  const meta = [
-    n > 0 && c.strapIndex >= 0 ? `${c.strapIndex + 1} of ${n}` : null,
-    w?.lugWidthMm ? `Fits ${w.lugWidthMm}mm lugs` : null,
-    isMobile ? null : materials || null,
-  ].filter(Boolean).join(' · ')
 
   return (
     <div
@@ -125,19 +156,22 @@ function CaptionBlock({ c, isMobile }: { c: StudioController; isMobile: boolean 
         flexDirection: 'column',
         alignItems: 'center',
         textAlign: 'center',
-        marginTop: isMobile ? 8 : 24,
+        marginTop: isMobile ? 4 : 8,
         padding: '0 12px',
       }}
     >
       {w?.brand && (
-        <Kicker color={brand.colors.goldDeep} size={10} style={{ letterSpacing: '0.28em', marginBottom: isMobile ? 4 : 8 }}>
+        <Kicker color={brand.colors.goldDeep} size={10} style={{ letterSpacing: '0.28em', marginBottom: isMobile ? 3 : 6 }}>
           {w.brand}
         </Kicker>
       )}
       <h1
         style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 10,
           fontFamily: brand.font.serif,
-          fontSize: isMobile ? 21 : 27,
+          fontSize: isMobile ? 21 : 26,
           fontWeight: 400,
           lineHeight: 1.12,
           letterSpacing: '-0.01em',
@@ -146,6 +180,7 @@ function CaptionBlock({ c, isMobile }: { c: StudioController; isMobile: boolean 
         }}
       >
         {w ? (w.model || w.brand) : 'Select a watch'}
+        {w?.lugWidthMm != null && <SpecBadge tone="width">{w.lugWidthMm} mm</SpecBadge>}
       </h1>
       <div style={{ height: isMobile ? 22 : 26, marginTop: 2 }}>
         <AnimatePresence mode="wait">
@@ -161,40 +196,28 @@ function CaptionBlock({ c, isMobile }: { c: StudioController; isMobile: boolean 
           </motion.div>
         </AnimatePresence>
       </div>
-
-      <div aria-hidden style={{ width: 36, height: 1, background: brand.colors.goldLine, margin: isMobile ? '6px 0' : '12px 0' }} />
-
-      {meta && (
-        <Kicker color={brand.studio.textLow} size={10} style={{ letterSpacing: '0.22em' }}>
-          {meta}
-        </Kicker>
-      )}
-
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginTop: isMobile ? 10 : 16 }}>
-        <CaptionCta label="Share This Look ↗" onClick={() => void c.shareLook()} />
-        {c.buyUrl && <CaptionCta label="Buy This Strap ↗" href={c.buyUrl} primary />}
-      </div>
     </div>
   )
 }
 
 // Our button grammar: square corners, letterspaced DM Sans; the primary action
 // is ink with gold type (the Strap Drawer's studio-CTA treatment).
-function CaptionCta({ label, href, onClick, primary }: { label: string; href?: string; onClick?: () => void; primary?: boolean }) {
+function CaptionCta({ label, href, onClick, primary, compact }: { label: string; href?: string; onClick?: () => void; primary?: boolean; compact?: boolean }) {
   const style: React.CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
     fontFamily: brand.font.sans,
-    fontSize: 12,
+    fontSize: compact ? 11.5 : 12,
     fontWeight: 600,
     letterSpacing: '0.08em',
-    padding: '9px 18px',
+    padding: compact ? '7px 12px' : '9px 18px',
     background: primary ? brand.colors.ink : 'transparent',
     color: primary ? brand.colors.gold : brand.colors.ink,
     border: primary ? `1px solid ${brand.colors.ink}` : `1px solid ${brand.colors.borderLight}`,
     borderRadius: brand.radius.btn,
     cursor: 'pointer',
     textDecoration: 'none',
+    whiteSpace: 'nowrap',
   }
   const motionProps = { whileTap: { scale: 0.97 }, transition: { type: 'spring' as const, stiffness: 500, damping: 30 } }
   if (href) {
@@ -207,7 +230,7 @@ function Stage({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
   const vw = useViewportWidth()
   const ghostsPerSide = isMobile ? 0 : vw >= 1140 ? 2 : 1
   const ghostW = vw >= 1280 ? 130 : 108
-  const caseHeight = isMobile ? 130 : 280
+  const caseHeight = isMobile ? 130 : 230
 
   return (
     <div
@@ -216,7 +239,7 @@ function Stage({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
         alignItems: 'center',
         justifyContent: 'center',
         gap: isMobile ? 10 : 26,
-        paddingTop: isMobile ? 10 : 18,
+        paddingTop: isMobile ? 8 : 6,
       }}
     >
       {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(-2)} width={ghostW} opacity={0.22} onClick={c.prevStrap} />}

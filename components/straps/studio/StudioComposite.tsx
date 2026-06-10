@@ -29,18 +29,22 @@ function BandComposite({ c, caseHeight }: { c: StudioController; caseHeight: num
 
   const caseH = caseHeight
   const caseW = caseH * (g.imageWidth / g.imageHeight)
-  const stageH = Math.round(caseH * 2.15)
+  const stageH = Math.round(caseH * 2.05)
   const stageW = Math.round(caseW * 1.2)
   const caseTop = (stageH - caseH) / 2
   const caseLeft = (stageW - caseW) / 2
 
-  // Lug channel in stage px. The detected channel y sits at the lug tips; the
-  // spring bar lives a touch inside, hence the small inset toward case centre.
+  // Lug channel in stage px. lug_geometry y values are the channel OUTER TIP
+  // rows; the spring bar sits a touch inside, hence the tuck insets toward
+  // case centre. The insets are ASYMMETRIC because the band images are: the
+  // top half has ~40px of strap texture below its pins (fills the transparent
+  // top channel seamlessly), but the bottom half's tuck edge sits ~35px above
+  // its pins with lining above it — a deeper bottom inset pulls the whole
+  // tuck across the channel window so no lining/stitched edge peeks through.
   const chCenterX = caseLeft + centerXRatio * caseW
   const chW = widthRatio * caseW
-  const inset = caseH * 0.04
-  const topChY = caseTop + ((g.topLugLeft.y + g.topLugRight.y) / 2 / g.imageHeight) * caseH + inset
-  const botChY = caseTop + ((g.bottomLugLeft.y + g.bottomLugRight.y) / 2 / g.imageHeight) * caseH - inset
+  const topChY = caseTop + ((g.topLugLeft.y + g.topLugRight.y) / 2 / g.imageHeight) * caseH + caseH * 0.04
+  const botChY = caseTop + ((g.bottomLugLeft.y + g.bottomLugRight.y) / 2 / g.imageHeight) * caseH - caseH * 0.075
 
   const bandRect = (half: BandHalf, anchorY: number) => {
     const s = chW / (half.bodyRight - half.bodyLeft)
