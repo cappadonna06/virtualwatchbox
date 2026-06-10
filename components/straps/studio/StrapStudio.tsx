@@ -230,7 +230,9 @@ function Stage({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
   const vw = useViewportWidth()
   const ghostsPerSide = isMobile ? 0 : vw >= 1140 ? 2 : 1
   const ghostW = vw >= 1280 ? 130 : 108
-  const caseHeight = isMobile ? 130 : 230
+  // Fixed row height so the watch centre, dots, caption, and tray sit at the
+  // SAME y in composite and side-by-side modes — no shift between watches.
+  const rowH = isMobile ? 268 : 450
 
   return (
     <div
@@ -239,18 +241,19 @@ function Stage({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
         alignItems: 'center',
         justifyContent: 'center',
         gap: isMobile ? 10 : 26,
-        paddingTop: isMobile ? 8 : 6,
+        height: rowH,
+        marginTop: isMobile ? 8 : 6,
       }}
     >
-      {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(-2)} width={ghostW} opacity={0.22} onClick={c.prevStrap} />}
-      {ghostsPerSide >= 1 && <GhostStrap strap={c.ghostAt(-1)} width={ghostW} opacity={0.45} onClick={c.prevStrap} />}
+      {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(-2)} width={ghostW} opacity={0.35} onClick={c.prevStrap} />}
+      {ghostsPerSide >= 1 && <GhostStrap strap={c.ghostAt(-1)} width={ghostW} opacity={0.62} onClick={c.prevStrap} />}
 
       <Arrow dir="prev" onClick={c.prevStrap} />
-      <StudioComposite c={c} caseHeight={caseHeight} />
+      <StudioComposite c={c} rowHeight={rowH} />
       <Arrow dir="next" onClick={c.nextStrap} />
 
-      {ghostsPerSide >= 1 && <GhostStrap strap={c.ghostAt(1)} width={ghostW} opacity={0.45} onClick={c.nextStrap} />}
-      {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(2)} width={ghostW} opacity={0.22} onClick={c.nextStrap} />}
+      {ghostsPerSide >= 1 && <GhostStrap strap={c.ghostAt(1)} width={ghostW} opacity={0.62} onClick={c.nextStrap} />}
+      {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(2)} width={ghostW} opacity={0.35} onClick={c.nextStrap} />}
     </div>
   )
 }
@@ -298,7 +301,7 @@ function GhostStrap({ strap, width, opacity, onClick }: { strap?: StudioStrap; w
         flex: '0 0 auto', width, padding: 0, border: 'none', background: 'transparent',
         cursor: 'pointer', opacity, transition: 'opacity 0.2s ease',
       }}
-      onMouseEnter={e => { e.currentTarget.style.opacity = '0.8' }}
+      onMouseEnter={e => { e.currentTarget.style.opacity = '0.92' }}
       onMouseLeave={e => { e.currentTarget.style.opacity = String(opacity) }}
     >
       <div

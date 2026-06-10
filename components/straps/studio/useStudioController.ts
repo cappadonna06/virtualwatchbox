@@ -22,7 +22,7 @@ import {
 import type { BraceletType, CatalogWatch } from '@/types/watch'
 import { useStrapPreloader } from './useStrapPreloader'
 
-export type StudioSourceMode = 'all' | 'drawer' | 'compatible'
+export type StudioSourceMode = 'all' | 'drawer'
 
 export interface StudioWatch {
   catalogId: string
@@ -37,8 +37,12 @@ export interface StudioWatch {
   isOwned: boolean
 }
 
-function isSourceMode(v: string | null): v is StudioSourceMode {
-  return v === 'all' || v === 'drawer' || v === 'compatible'
+// Legacy shared links may carry source=compatible (removed mode — every source
+// is compatibility-filtered now); treat it as 'all'.
+function parseSourceMode(v: string | null): StudioSourceMode | null {
+  if (v === 'all' || v === 'compatible') return 'all'
+  if (v === 'drawer') return 'drawer'
+  return null
 }
 
 export function useStudioController() {
@@ -55,14 +59,13 @@ export function useStudioController() {
   const templateStraps = useMemo(() => buildTemplateStraps(), [])
   const drawerStraps = useMemo(() => buildDrawerStraps(straps), [straps])
   const bandStraps = useMemo(() => buildBandDemoStraps(), [])
-  const allStraps = useMemo(() => [...templateStraps, ...drawerStraps], [templateStraps, drawerStraps])
 
   // ── Core state (URL-seeded) ───────────────────────────────────────────────
   const [watchId, setWatchId] = useState<string>(
     () => search.get('watchId') || collectionWatches[0]?.watchId || caseOnlyIds()[0] || allWatches[0]?.id || '',
   )
   const [source, setSource] = useState<StudioSourceMode>(
-    () => (isSourceMode(search.get('source')) ? (search.get('source') as StudioSourceMode) : straps.length ? 'compatible' : 'all'),
+    () => parseSourceMode(search.get('source')) ?? 'all',
   )
   const [strapId, setStrapId] = useState<string>(() => search.get('strapId') || '')
   const [activeCategory, setActiveCategory] = useState<'All' | StrapCategory>('All')
@@ -114,12 +117,12 @@ export function useStudioController() {
   // Composite mode shows ONLY band-equipped straps: every one renders correctly
   // worn on the watch. Flat template photos would read as "behind the case",
   // so they stay exclusive to side-by-side watches (where they present well).
+  // Both side-by-side sources are ALWAYS compatibility-filtered — incompatible
+  // straps never show; compatibility is a rule, not a mode.
   const sourceStraps = useMemo(() => {
     if (caseOnly) return bandStraps
-    if (source === 'drawer') return drawerStraps
-    if (source === 'compatible') return filterCompatible(allStraps, compatTarget, strapOverrides)
-    return templateStraps
-  }, [caseOnly, bandStraps, source, drawerStraps, templateStraps, allStraps, compatTarget, strapOverrides])
+    return filterCompatible(source === 'drawer' ? drawerStraps : templateStraps, compatTarget, strapOverrides)
+  }, [caseOnly, bandStraps, source, drawerStraps, templateStraps, compatTarget, strapOverrides])
 
   const categories = useMemo(() => deriveCategories(sourceStraps), [sourceStraps])
   const effectiveCategory: 'All' | StrapCategory = categories.includes(activeCategory) ? activeCategory : 'All'
@@ -267,7 +270,7 @@ export function useStudioController() {
     // strap browsing
     source,
     setSource: changeSource,
-    showSourceToggle: !caseOnly,
+    showSourceToggle: !caseOnly && drawerStraps.length > 0,
     categories,
     activeCategory: effectiveCategory,
     setCategory: changeCategory,

@@ -12,24 +12,26 @@ import type { StudioController } from './useStudioController'
 //                      and scaled so the strap end fills it snugly.
 //   • side-by-side   — full watch centred, flat strap photo flanking both
 //                      sides (watches without a case-only render).
-export default function StudioComposite({ c, caseHeight }: { c: StudioController; caseHeight: number }) {
+export default function StudioComposite({ c, rowHeight }: { c: StudioController; rowHeight: number }) {
   const { caseOnly, renderMode } = c
 
+  // Both modes size off the fixed stage row so the watch centre never shifts
+  // between composite and side-by-side watches.
   return renderMode === 'composite' && caseOnly
-    ? <BandComposite c={c} caseHeight={caseHeight} />
-    : <SideBySide c={c} maxWidth={Math.round(caseHeight * 1.3)} />
+    ? <BandComposite c={c} rowHeight={rowHeight} />
+    : <SideBySide c={c} blockHeight={Math.round(rowHeight * 0.8)} />
 }
 
 // ── Composite: worn band halves behind the case ──────────────────────────────
-function BandComposite({ c, caseHeight }: { c: StudioController; caseHeight: number }) {
+function BandComposite({ c, rowHeight }: { c: StudioController; rowHeight: number }) {
   const { caseOnly, currentStrap, isSwapping, reducedMotion, studioWatch } = c
   if (!caseOnly) return null
   const g = caseOnly.lugGeometry
   const { centerXRatio, widthRatio } = channelMetrics(g)
 
-  const caseH = caseHeight
+  const caseH = Math.floor(rowHeight / 2.05)
   const caseW = caseH * (g.imageWidth / g.imageHeight)
-  const stageH = Math.round(caseH * 2.05)
+  const stageH = rowHeight
   const stageW = Math.round(caseW * 1.2)
   const caseTop = (stageH - caseH) / 2
   const caseLeft = (stageW - caseW) / 2
@@ -60,25 +62,39 @@ function BandComposite({ c, caseHeight }: { c: StudioController; caseHeight: num
   const topRect = band ? bandRect(band.top, topChY) : null
   const bottomRect = band ? bandRect(band.bottom, botChY) : null
 
-  const fade = reducedMotion
-    ? { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.15 } }
+  // "Fit-in" swap: the halves slide INTO the lugs (top half drops down, bottom
+  // half rises up) with a spring, like snapping onto the spring bars; the
+  // outgoing strap just fades fast so it never fights the incoming one.
+  const halfMotion = (dir: 1 | -1) => reducedMotion
+    ? { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.15 } }
     : {
-        initial: { opacity: 0, scale: 0.99 },
-        animate: { opacity: 1, scale: 1 },
-        exit: { opacity: 0, scale: 0.99 },
-        transition: { duration: 0.25, ease: [0.4, 0, 0.2, 1] as const },
+        initial: { opacity: 0, y: dir * -14 },
+        animate: { opacity: 1, y: 0 },
+        transition: { type: 'spring' as const, stiffness: 380, damping: 26 },
       }
 
   return (
     <div style={{ position: 'relative', width: stageW, height: stageH, flex: '0 0 auto' }}>
-      {/* z1 — both band halves crossfade as one unit */}
+      {/* z1 — band halves; each slides into its lug channel on swap */}
       <AnimatePresence mode="popLayout" initial={false}>
         {band && (
-          <motion.div key={currentStrap?.key ?? 'none'} {...fade} style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={band.top.url} alt="" style={{ position: 'absolute', ...topRect!, display: 'block' }} />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={band.bottom.url} alt="" style={{ position: 'absolute', ...bottomRect!, display: 'block' }} />
+          <motion.div
+            key={currentStrap?.key ?? 'none'}
+            exit={{ opacity: 0, transition: { duration: 0.14 } }}
+            style={{ position: 'absolute', inset: 0, zIndex: 1 }}
+          >
+            <motion.img
+              {...halfMotion(1)}
+              src={band.top.url}
+              alt=""
+              style={{ position: 'absolute', ...topRect!, display: 'block' }}
+            />
+            <motion.img
+              {...halfMotion(-1)}
+              src={band.bottom.url}
+              alt=""
+              style={{ position: 'absolute', ...bottomRect!, display: 'block' }}
+            />
           </motion.div>
         )}
       </AnimatePresence>
@@ -112,10 +128,11 @@ function BandComposite({ c, caseHeight }: { c: StudioController; caseHeight: num
 // ── Side-by-side: the full watch photo beside the selected strap, both upright.
 // Watches without a case-only render often ship on their factory strap in the
 // catalog photo, so a literal pairing reads honestly — no fake compositing.
-function SideBySide({ c, maxWidth }: { c: StudioController; maxWidth: number }) {
+function SideBySide({ c, blockHeight }: { c: StudioController; blockHeight: number }) {
   const { currentStrap, studioWatch, reducedMotion } = c
   const watchSrc = studioWatch?.transparentUrl || studioWatch?.imageUrl
-  const h = Math.round(maxWidth * 0.96)
+  const h = blockHeight
+  const maxWidth = Math.round(h * 1.04)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, flex: '0 1 auto' }}>

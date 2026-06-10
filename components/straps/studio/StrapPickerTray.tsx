@@ -75,12 +75,12 @@ export default function StrapPickerTray({ c }: { c: StudioController }) {
   )
 }
 
-// ── Source toggle (All / My Drawer / Compatible) — side-by-side mode only ─────
+// ── Source toggle (All Straps / My Drawer) — side-by-side mode, drawer owners
+// only. Every source is compatibility-filtered upstream.
 function SourceToggle({ c }: { c: StudioController }) {
   const options: Array<{ key: StudioSourceMode; label: string }> = [
     { key: 'all', label: 'All Straps' },
-    ...(c.hasDrawerStraps ? [{ key: 'drawer' as const, label: 'My Drawer' }] : []),
-    { key: 'compatible', label: 'Compatible' },
+    { key: 'drawer', label: 'My Drawer' },
   ]
   return (
     <div
@@ -248,8 +248,8 @@ function Swatch({
         animate={active ? { scale: 1.05 } : { scale: 1 }}
         transition={{ type: 'spring', stiffness: 400, damping: 22 }}
         style={{
-          width: fullWidth ? '100%' : 70,
-          height: fullWidth ? 96 : 90,
+          width: fullWidth ? '100%' : 84,
+          height: fullWidth ? 112 : 106,
           borderRadius: brand.radius.md,
           overflow: 'hidden',
           background: strap.imageUrl ? brand.colors.white : strap.colorHex ?? brand.colors.paperWarm,
