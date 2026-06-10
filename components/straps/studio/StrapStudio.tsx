@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { brand } from '@/lib/brand'
@@ -21,6 +21,30 @@ function useViewport() {
     return () => window.removeEventListener('resize', sync)
   }, [])
   return size
+}
+
+// Horizontal swipe → prev/next strap. Only fires when the gesture is decisively
+// horizontal so it never hijacks vertical page scroll, and never preventDefaults
+// (so native scrolling stays intact). Touch events only fire on touch devices.
+function useStageSwipe(onNext: () => void, onPrev: () => void) {
+  const start = useRef<{ x: number; y: number } | null>(null)
+  return {
+    onTouchStart: (e: React.TouchEvent) => {
+      const t = e.touches[0]
+      start.current = { x: t.clientX, y: t.clientY }
+    },
+    onTouchEnd: (e: React.TouchEvent) => {
+      if (!start.current) return
+      const t = e.changedTouches[0]
+      const dx = t.clientX - start.current.x
+      const dy = t.clientY - start.current.y
+      start.current = null
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+        if (dx < 0) onNext()
+        else onPrev()
+      }
+    },
+  }
 }
 
 export default function StrapStudio() {
@@ -237,9 +261,11 @@ function Stage({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
   // Mobile scales with viewport height so tall phones get a big watch while
   // an 812pt iPhone still clears the bottom sheet.
   const rowH = isMobile ? Math.max(270, Math.min(420, Math.round(vh * 0.42))) : 450
+  const swipe = useStageSwipe(c.nextStrap, c.prevStrap)
 
   return (
     <div
+      {...(isMobile ? swipe : {})}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -247,6 +273,7 @@ function Stage({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
         gap: isMobile ? 8 : 26,
         height: rowH,
         marginTop: isMobile ? 4 : 6,
+        touchAction: 'pan-y',
       }}
     >
       {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(-2)} width={ghostW} opacity={0.35} onClick={c.prevStrap} />}
