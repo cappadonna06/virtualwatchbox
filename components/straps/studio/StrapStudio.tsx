@@ -1,0 +1,354 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
+import { AnimatePresence, motion } from 'framer-motion'
+import { brand } from '@/lib/brand'
+import { useIsMobile } from '@/components/collection/useResponsiveState'
+import { Kicker, SpecBadge } from '@/components/straps/atoms'
+import type { StudioStrap } from '@/lib/strapStudio'
+import { useStudioController, type StudioController } from './useStudioController'
+import StudioComposite from './StudioComposite'
+import StrapPickerTray from './StrapPickerTray'
+import WatchPickerDropdown from './WatchPickerDropdown'
+
+function useViewport() {
+  const [size, setSize] = useState({ w: 1280, h: 960 })
+  useEffect(() => {
+    const sync = () => setSize({ w: window.innerWidth, h: window.innerHeight })
+    sync()
+    window.addEventListener('resize', sync)
+    return () => window.removeEventListener('resize', sync)
+  }, [])
+  return size
+}
+
+// Horizontal swipe → prev/next strap. Only fires when the gesture is decisively
+// horizontal so it never hijacks vertical page scroll, and never preventDefaults
+// (so native scrolling stays intact). Touch events only fire on touch devices.
+function useStageSwipe(onNext: () => void, onPrev: () => void) {
+  const start = useRef<{ x: number; y: number } | null>(null)
+  return {
+    onTouchStart: (e: React.TouchEvent) => {
+      const t = e.touches[0]
+      start.current = { x: t.clientX, y: t.clientY }
+    },
+    onTouchEnd: (e: React.TouchEvent) => {
+      if (!start.current) return
+      const t = e.changedTouches[0]
+      const dx = t.clientX - start.current.x
+      const dy = t.clientY - start.current.y
+      start.current = null
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+        if (dx < 0) onNext()
+        else onPrev()
+      }
+    },
+  }
+}
+
+export default function StrapStudio() {
+  const c = useStudioController()
+  const isMobile = useIsMobile()
+
+  return (
+    <div
+      style={{
+        background: brand.studio.canvas,
+        backgroundColor: brand.studio.void,
+        minHeight: '82vh',
+        paddingBottom: isMobile ? '26vh' : 20,
+      }}
+    >
+      <Masthead c={c} isMobile={isMobile} />
+
+      <main style={{ padding: isMobile ? '4px 12px 0' : '4px 24px 0' }}>
+        <Stage c={c} isMobile={isMobile} />
+        <CycleDots c={c} />
+        <CaptionBlock c={c} isMobile={isMobile} />
+      </main>
+
+      {!isMobile && (
+        <section style={{ maxWidth: 860, margin: '10px auto 0', padding: '0 24px' }}>
+          <div
+            style={{
+              background: brand.studio.panel,
+              border: `1px solid ${brand.studio.hairlineSoft}`,
+              borderRadius: brand.radius.xl,
+              padding: '14px 16px',
+              boxShadow: brand.shadow.sm,
+            }}
+          >
+            <StrapPickerTray c={c} />
+          </div>
+        </section>
+      )}
+
+      {isMobile && <StrapPickerTray c={c} />}
+    </div>
+  )
+}
+
+function Masthead({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
+  return (
+    <header
+      style={{
+        height: 52,
+        display: 'grid',
+        // Mobile: space-between beats strict centering — all three groups fit
+        // a 375pt width without overflow (kicker lands near enough to centre).
+        gridTemplateColumns: isMobile ? 'auto auto auto' : '1fr auto 1fr',
+        justifyContent: isMobile ? 'space-between' : undefined,
+        alignItems: 'center',
+        gap: isMobile ? 8 : 0,
+        padding: isMobile ? '0 12px' : '0 16px',
+        borderBottom: `1px solid ${brand.studio.hairlineSoft}`,
+      }}
+    >
+      <Link
+        href="/collection"
+        style={{
+          justifySelf: 'start', display: 'inline-flex', alignItems: 'center', gap: 6,
+          color: brand.studio.textLow, textDecoration: 'none',
+          font: `500 ${isMobile ? 12 : 13}px ${brand.font.sans}`, whiteSpace: 'nowrap',
+        }}
+      >
+        <span style={{ fontSize: isMobile ? 14 : 15 }}>←</span> Collection
+      </Link>
+      <div
+        style={{
+          justifySelf: 'center', font: `600 ${isMobile ? 10.5 : 12}px ${brand.font.sans}`,
+          letterSpacing: isMobile ? '0.18em' : '0.32em', textTransform: 'uppercase', color: brand.colors.goldDeep,
+          whiteSpace: 'nowrap',
+        }}
+      >
+        Strap Studio
+      </div>
+      <div style={{ justifySelf: 'end', display: 'flex', alignItems: 'center', gap: 8 }}>
+        {c.buyUrl && <CaptionCta label={isMobile ? 'Buy ↗' : 'Buy This Strap ↗'} href={c.buyUrl} primary compact />}
+        <CaptionCta label={isMobile ? 'Share ↗' : 'Share This Look ↗'} onClick={() => void c.shareLook()} compact />
+        <WatchPickerDropdown c={c} />
+      </div>
+    </header>
+  )
+}
+
+// Cycle indicators tied to the carousel: clickable dots for small sets, a tiny
+// counter for the big side-by-side catalog.
+function CycleDots({ c }: { c: StudioController }) {
+  const n = c.categoryStraps.length
+  if (n < 2 || c.strapIndex < 0) return <div style={{ height: 18 }} />
+  return (
+    <div style={{ height: 18, marginTop: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+      {n <= 8 ? (
+        c.categoryStraps.map((s, i) => {
+          const active = i === c.strapIndex
+          return (
+            <button
+              key={s.key}
+              onClick={() => c.selectStrap(s.id)}
+              aria-label={`Show ${s.label}`}
+              title={s.label}
+              style={{
+                width: active ? 7 : 6,
+                height: active ? 7 : 6,
+                borderRadius: '50%',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+                background: active ? brand.colors.gold : brand.colors.borderLight,
+                transition: 'background 0.2s ease, width 0.2s ease, height 0.2s ease',
+              }}
+            />
+          )
+        })
+      ) : (
+        <Kicker color={brand.studio.textLow} size={10} style={{ letterSpacing: '0.18em' }}>
+          {c.strapIndex + 1} / {n}
+        </Kicker>
+      )}
+    </div>
+  )
+}
+
+// Editorial caption beneath the composite — two lines, nothing more: serif
+// watch identity (brand + model + lug chip on ONE line) and the italic strap
+// caption. Counter lives in the CycleDots; share/buy live in the masthead.
+function CaptionBlock({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
+  const w = c.studioWatch
+  const s = c.currentStrap
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        marginTop: isMobile ? 4 : 6,
+        padding: '0 12px',
+      }}
+    >
+      <h1
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          gap: 10,
+          fontFamily: brand.font.serif,
+          fontSize: isMobile ? 19 : 26,
+          fontWeight: 400,
+          lineHeight: 1.12,
+          letterSpacing: '-0.01em',
+          color: brand.studio.textHi,
+          margin: 0,
+        }}
+      >
+        {w ? `${w.brand} ${w.model}`.trim() : 'Select a watch'}
+        {w?.lugWidthMm != null && <SpecBadge tone="width">{w.lugWidthMm} mm</SpecBadge>}
+      </h1>
+      <div style={{ height: isMobile ? 22 : 26, marginTop: 2 }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={s?.key ?? 'none'}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+            style={{ font: `italic 400 ${isMobile ? 15 : 18}px ${brand.font.serif}`, color: brand.studio.textMid }}
+          >
+            {s ? `on ${s.label}` : 'Choose a strap'}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
+  )
+}
+
+// Our button grammar: square corners, letterspaced DM Sans; the primary action
+// is ink with gold type (the Strap Drawer's studio-CTA treatment).
+function CaptionCta({ label, href, onClick, primary, compact }: { label: string; href?: string; onClick?: () => void; primary?: boolean; compact?: boolean }) {
+  const style: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    fontFamily: brand.font.sans,
+    fontSize: compact ? 11.5 : 12,
+    fontWeight: 600,
+    letterSpacing: '0.08em',
+    padding: compact ? '7px 12px' : '9px 18px',
+    background: primary ? brand.colors.ink : 'transparent',
+    color: primary ? brand.colors.gold : brand.colors.ink,
+    border: primary ? `1px solid ${brand.colors.ink}` : `1px solid ${brand.colors.borderLight}`,
+    borderRadius: brand.radius.btn,
+    cursor: 'pointer',
+    textDecoration: 'none',
+    whiteSpace: 'nowrap',
+  }
+  const motionProps = { whileTap: { scale: 0.97 }, transition: { type: 'spring' as const, stiffness: 500, damping: 30 } }
+  if (href) {
+    return <motion.a {...motionProps} href={href} target="_blank" rel="noopener noreferrer" style={style}>{label}</motion.a>
+  }
+  return <motion.button {...motionProps} onClick={onClick} style={style}>{label}</motion.button>
+}
+
+function Stage({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
+  const { w: vw, h: vh } = useViewport()
+  const ghostsPerSide = isMobile ? 1 : vw >= 1140 ? 2 : 1
+  const ghostW = isMobile ? 60 : vw >= 1280 ? 130 : 108
+  // Fixed row height so the watch centre, dots, caption, and tray sit at the
+  // SAME y in composite and side-by-side modes — no shift between watches.
+  // Mobile scales with viewport height so tall phones get a big watch while
+  // an 812pt iPhone still clears the bottom sheet.
+  const rowH = isMobile ? Math.max(270, Math.min(420, Math.round(vh * 0.42))) : 450
+  const swipe = useStageSwipe(c.nextStrap, c.prevStrap)
+
+  return (
+    <div
+      {...(isMobile ? swipe : {})}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: isMobile ? 8 : 26,
+        height: rowH,
+        marginTop: isMobile ? 4 : 6,
+        touchAction: 'pan-y',
+      }}
+    >
+      {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(-2)} width={ghostW} opacity={0.35} onClick={c.prevStrap} />}
+      {ghostsPerSide >= 1 && <GhostStrap strap={c.ghostAt(-1)} width={ghostW} opacity={0.62} onClick={c.prevStrap} />}
+
+      {/* On mobile the tappable side ghosts ARE the prev/next controls —
+          arrows + ghosts + stage don't all fit a 375pt width. */}
+      {!isMobile && <Arrow dir="prev" onClick={c.prevStrap} />}
+      <StudioComposite c={c} rowHeight={rowH} />
+      {!isMobile && <Arrow dir="next" onClick={c.nextStrap} />}
+
+      {ghostsPerSide >= 1 && <GhostStrap strap={c.ghostAt(1)} width={ghostW} opacity={0.62} onClick={c.nextStrap} />}
+      {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(2)} width={ghostW} opacity={0.35} onClick={c.nextStrap} />}
+    </div>
+  )
+}
+
+// In normal flow (flex-centered) — never absolutely positioned and never given a
+// static transform, so Framer's whileTap scale can't displace it.
+function Arrow({ dir, onClick }: { dir: 'prev' | 'next'; onClick: () => void }) {
+  return (
+    <motion.button
+      onClick={onClick}
+      aria-label={dir === 'prev' ? 'Previous strap' : 'Next strap'}
+      whileTap={{ scale: 0.88 }}
+      transition={{ type: 'spring', stiffness: 500, damping: 28 }}
+      style={{
+        flex: '0 0 auto',
+        width: 42,
+        height: 42,
+        borderRadius: '50%',
+        border: `1px solid ${brand.studio.hairline}`,
+        background: brand.studio.panel,
+        color: brand.studio.textHi,
+        cursor: 'pointer',
+        fontSize: 15,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: brand.shadow.sm,
+      }}
+    >
+      {dir === 'prev' ? '‹' : '›'}
+    </motion.button>
+  )
+}
+
+// Ghosted carousel neighbor — the full-strap product photo (the worn halves
+// render only in the composite centerpiece).
+function GhostStrap({ strap, width, opacity, onClick }: { strap?: StudioStrap; width: number; opacity: number; onClick: () => void }) {
+  if (!strap) return <div style={{ width, flex: '0 0 auto' }} />
+  return (
+    <button
+      onClick={onClick}
+      aria-label={`Show ${strap.label}`}
+      title={strap.label}
+      style={{
+        flex: '0 0 auto', width, padding: 0, border: 'none', background: 'transparent',
+        cursor: 'pointer', opacity, transition: 'opacity 0.2s ease',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.opacity = '0.92' }}
+      onMouseLeave={e => { e.currentTarget.style.opacity = String(opacity) }}
+    >
+      <div
+        style={{
+          width: '100%', aspectRatio: '1000 / 1200', borderRadius: brand.radius.md, overflow: 'hidden',
+          background: brand.studio.panel, border: `1px solid ${brand.studio.hairlineSoft}`,
+        }}
+      >
+        {strap.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={strap.imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        ) : null}
+      </div>
+    </button>
+  )
+}
+

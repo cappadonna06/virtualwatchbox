@@ -234,6 +234,30 @@ export const brand = {
       radius: 6,
     },
   },
+
+  /**
+   * Strap Studio surface (Feature 7). Light product-photography canvas (the
+   * straps/watches are shot on white) with the site's cream + ink + gold
+   * palette. Values mirror colors.* so the Studio stays in the brand system.
+   */
+  studio: {
+    /** Page canvas — site cream with a faint white halo behind the watch. */
+    canvas: 'radial-gradient(ellipse 64% 44% at 50% 32%, rgba(255,255,255,0.85) 0%, rgba(250,248,244,0) 70%), #FAF8F4',
+    /** Flat background fallback (matches colors.bg). */
+    void: '#FAF8F4',
+    /** Panels / trays / dropdowns / sheets. */
+    panel: '#FFFFFF',
+    panelSolid: '#FFFFFF',
+    /** Hairline borders (mirror colors.borderLight / colors.border). */
+    hairline: '#D4CBBF',
+    hairlineSoft: '#EAE5DC',
+    /** Text tiers (mirror colors.ink / inkSoft / muted). */
+    textHi: '#1A1410',
+    textMid: '#43392E',
+    textLow: '#6A5B48',
+    /** Soft warm shadow beneath the composite. */
+    compositeShadow: '0 24px 44px rgba(26,20,16,0.14)',
+  },
 } as const
 
 /**

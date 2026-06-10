@@ -442,7 +442,7 @@ export default function WatchSidebar({
                 Integrated
               </span>
             ) : (
-              <button style={btnAction} onClick={() => router.push(`/collection/straps?watchId=${watch.id}`)}>Straps →</button>
+              <button style={btnAction} onClick={() => router.push(`/collection/straps/studio?watchId=${watch.watchId}&source=compatible`)}>Studio →</button>
             )}
           </div>
         </div>

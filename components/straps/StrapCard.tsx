@@ -78,7 +78,6 @@ export function StrapCard({
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 13 }}>
           <SpecBadge tone="width">{strap.lugWidthMm} mm</SpecBadge>
           <SpecBadge>{materialLabel(strap.material)}</SpecBadge>
-          {strap.style && <SpecBadge>{strap.style.charAt(0).toUpperCase() + strap.style.slice(1)}</SpecBadge>}
         </div>
 
         <div style={{ marginTop: 'auto', paddingTop: 11, borderTop: `1px solid ${brand.colors.border}`, display: 'flex', alignItems: 'center', gap: 7 }}>

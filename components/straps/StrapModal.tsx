@@ -217,7 +217,6 @@ export function StrapModal({
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                 {f.lugWidthMm && <SpecBadge tone="width">{f.lugWidthMm} mm</SpecBadge>}
                 <SpecBadge>{materialLabel(f.material)}</SpecBadge>
-                {f.style && <SpecBadge>{f.style.charAt(0).toUpperCase() + f.style.slice(1)}</SpecBadge>}
               </div>
               {f.lugWidthMm && (
                 <div style={{ marginTop: 14, fontFamily: brand.font.sans, fontSize: 12, color: brand.colors.mutedDark, lineHeight: 1.5 }}>

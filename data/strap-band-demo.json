@@ -1,0 +1,137 @@
+{
+  "_comment": "Strap Studio demo band pairs (Delugs-style 'as worn' halves in public/demo-strap-swap-bands). pinY = spring-bar row; bodyLeft/Right = strap edges at the lug line, pins excluded. Measured via scripts/measure-strap-bands.ts + grid-overlay verification — all renders share the same framing (tops pin at y=326, bottoms at y≈265 of 520x640). fullImageId points at the matching 1000x1200 full-strap template master (lib/strapTemplates.ts) used for tray swatches + carousel ghosts; the halves render only in the composite centerpiece.",
+  "straps": [
+    {
+      "id": "band-gray-nubuck",
+      "label": "Gray Nubuck",
+      "material": "leather",
+      "subMaterial": "Nubuck",
+      "color": "Gray",
+      "colorHex": "#9A9C99",
+      "availableLugWidths": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        24
+      ],
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/gray-nubuck-top.webp",
+        "w": 520,
+        "h": 640,
+        "pinY": 326,
+        "bodyLeft": 103,
+        "bodyRight": 405
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/gray-nubuck-bottom.webp",
+        "w": 520,
+        "h": 640,
+        "pinY": 265,
+        "bodyLeft": 103,
+        "bodyRight": 406
+      },
+      "fullImageId": "leather-suede-grey"
+    },
+    {
+      "id": "band-black-rubber",
+      "label": "Black Rubber",
+      "material": "rubber",
+      "subMaterial": "Textured",
+      "color": "Black",
+      "colorHex": "#1C1C1C",
+      "availableLugWidths": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        24
+      ],
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/black-rubber-top.webp",
+        "w": 520,
+        "h": 640,
+        "pinY": 326,
+        "bodyLeft": 102,
+        "bodyRight": 407
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/black-rubber-bottom.webp",
+        "w": 520,
+        "h": 640,
+        "pinY": 265,
+        "bodyLeft": 100,
+        "bodyRight": 408
+      },
+      "fullImageId": "rubber-tread-black"
+    },
+    {
+      "id": "band-green-rubber",
+      "label": "Green Rubber",
+      "material": "rubber",
+      "subMaterial": "Waffle",
+      "color": "Green",
+      "colorHex": "#5E6E5B",
+      "availableLugWidths": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        24
+      ],
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/green-rubber-top.webp",
+        "w": 520,
+        "h": 640,
+        "pinY": 326,
+        "bodyLeft": 103,
+        "bodyRight": 407
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/green-rubber-bottom.webp",
+        "w": 520,
+        "h": 640,
+        "pinY": 264,
+        "bodyLeft": 104,
+        "bodyRight": 406
+      },
+      "fullImageId": "rubber-tropical-olive"
+    },
+    {
+      "id": "band-brown-alligator",
+      "label": "Brown Alligator",
+      "material": "exotic",
+      "subMaterial": "Alligator",
+      "color": "Burgundy Brown",
+      "colorHex": "#5E3038",
+      "availableLugWidths": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        24
+      ],
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/brown-alligator-top.webp",
+        "w": 520,
+        "h": 640,
+        "pinY": 326,
+        "bodyLeft": 102,
+        "bodyRight": 407
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/brown-alligator-bottom.webp",
+        "w": 520,
+        "h": 640,
+        "pinY": 265,
+        "bodyLeft": 100,
+        "bodyRight": 408
+      },
+      "fullImageId": "leather-alligator-burgundy"
+    }
+  ]
+}

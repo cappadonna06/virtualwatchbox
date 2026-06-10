@@ -13,6 +13,8 @@ import type { BraceletType } from '@/types/watch'
 // ResolvedOwnedWatch with its catalog row (getCatalogWatch → braceletType).
 export interface StrapDrawerWatch {
   id: string
+  /** Catalog watch id (public.watches.watch_id) — used to deep-link the Studio. */
+  watchId?: string
   brand: string
   model: string
   reference?: string
