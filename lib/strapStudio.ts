@@ -3,6 +3,7 @@
 // (user_straps), plus category derivation and watch-fit logic. The Studio UI
 // renders from this so the composite, picker, and footer share one source.
 
+import bandDemoRaw from '@/data/strap-band-demo.json'
 import type { StrapTemplate } from '@/lib/strapTemplates'
 import { getStrapTemplates, findTemplatePhoto } from '@/lib/strapTemplates'
 import { effectiveCompatibility, type FitState } from '@/lib/strapCompatibility'
@@ -10,6 +11,22 @@ import type { BraceletType, StrapMaterial, StrapWatchOverride, UserStrap } from 
 
 export type StrapCategory = 'Leather' | 'Rubber' | 'NATO' | 'Sailcloth' | 'Metal' | 'Exotic' | 'Other'
 export type StrapSource = 'template' | 'drawer'
+
+/**
+ * One half of an "as worn" strap render (Delugs-style). pinY is the spring-bar
+ * row; bodyLeft/Right are the strap edges at that row (pins excluded). The
+ * composite anchors the pin row into the watch's lug channel and scales the
+ * body width to the channel width — that's what makes the strap sit snugly
+ * between the lugs.
+ */
+export interface BandHalf {
+  url: string
+  w: number
+  h: number
+  pinY: number
+  bodyLeft: number
+  bodyRight: number
+}
 
 export interface StudioStrap {
   /** Stable unique key across sources. */
@@ -28,6 +45,8 @@ export interface StudioStrap {
   purchaseUrl?: string | null
   /** Present for drawer straps — enables override-aware fit + price. */
   userStrap?: UserStrap
+  /** Worn-render halves; only band-equipped straps appear in composite mode. */
+  band?: { top: BandHalf; bottom: BandHalf }
 }
 
 export interface StudioCompatTarget {
@@ -104,6 +123,40 @@ function drawerToStudio(s: UserStrap): StudioStrap {
 
 export function buildTemplateStraps(): StudioStrap[] {
   return getStrapTemplates().map(templateToStudio)
+}
+
+type BandDemoEntry = {
+  id: string
+  label: string
+  material: StrapMaterial
+  subMaterial: string
+  color: string
+  colorHex: string
+  availableLugWidths: number[]
+  bandTop: BandHalf
+  bandBottom: BandHalf
+}
+
+/**
+ * Demo band straps (data/strap-band-demo.json) — the only straps with worn
+ * top/bottom renders today, so the only ones the composite mode shows. The
+ * top half doubles as the swatch image.
+ */
+export function buildBandDemoStraps(): StudioStrap[] {
+  const entries = (bandDemoRaw as { straps: BandDemoEntry[] }).straps
+  return entries.map(e => ({
+    key: `band:${e.id}`,
+    source: 'template' as const,
+    id: e.id,
+    label: e.label,
+    sublabel: `${e.subMaterial} ${titleCase(e.material)}`,
+    material: e.material,
+    category: categoryOf(e.material),
+    colorHex: e.colorHex,
+    imageUrl: e.bandTop.url,
+    availableLugWidths: e.availableLugWidths,
+    band: { top: e.bandTop, bottom: e.bandBottom },
+  }))
 }
 
 export function buildDrawerStraps(straps: UserStrap[]): StudioStrap[] {

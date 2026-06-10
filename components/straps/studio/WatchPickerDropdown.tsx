@@ -33,13 +33,13 @@ export default function WatchPickerDropdown({ c }: { c: StudioController }) {
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
           height: 38, padding: '0 14px', borderRadius: brand.radius.pill,
-          border: `1px solid ${brand.studio.hairline}`, background: 'rgba(255,255,255,0.04)',
+          border: `1px solid ${brand.studio.hairline}`, background: brand.studio.panel,
           color: brand.studio.textHi, font: `500 13px ${brand.font.sans}`, cursor: 'pointer',
-          maxWidth: 200, whiteSpace: 'nowrap',
+          maxWidth: 200, whiteSpace: 'nowrap', boxShadow: brand.shadow.xs,
         }}
       >
         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{label}</span>
-        <span style={{ color: brand.colors.gold, fontSize: 11 }}>▾</span>
+        <span style={{ color: brand.colors.goldDeep, fontSize: 11 }}>▾</span>
       </button>
 
       <AnimatePresence>
@@ -61,8 +61,8 @@ export default function WatchPickerDropdown({ c }: { c: StudioController }) {
                     style={{
                       flex: 1, padding: '8px 10px', borderRadius: brand.radius.sm, border: 'none', cursor: 'pointer',
                       font: `500 12px ${brand.font.sans}`, letterSpacing: '0.03em',
-                      color: active ? brand.colors.ink : brand.studio.textMid,
-                      background: active ? brand.colors.gold : 'transparent',
+                      color: active ? brand.colors.slot : brand.studio.textMid,
+                      background: active ? brand.colors.ink : 'transparent',
                     }}
                   >
                     {t === 'owned' ? 'My Watches' : 'Browse Catalog'}
@@ -134,7 +134,7 @@ function CatalogSearch({ c, onPick }: { c: StudioController; onPick: () => void 
         style={{
           width: '100%', boxSizing: 'border-box', height: 38, padding: '0 12px',
           borderRadius: brand.radius.sm, border: `1px solid ${brand.studio.hairline}`,
-          background: 'rgba(255,255,255,0.05)', color: brand.studio.textHi,
+          background: brand.colors.bg, color: brand.studio.textHi,
           font: `400 13px ${brand.font.sans}`, outline: 'none',
         }}
       />
@@ -175,12 +175,12 @@ function WatchRow({
       style={{
         display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left',
         padding: 8, borderRadius: brand.radius.sm, cursor: 'pointer', border: 'none',
-        background: active ? 'rgba(201,168,76,0.12)' : 'transparent', marginBottom: 2,
+        background: active ? brand.colors.goldWash : 'transparent', marginBottom: 2,
       }}
-      onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
+      onMouseEnter={e => { if (!active) e.currentTarget.style.background = brand.colors.bg }}
       onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent' }}
     >
-      <div style={{ width: 42, height: 42, borderRadius: brand.radius.sm, background: 'rgba(255,255,255,0.06)', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: 42, height: 42, borderRadius: brand.radius.sm, background: brand.colors.paper, overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {imageUrl
           // eslint-disable-next-line @next/next/no-img-element
           ? <img src={imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
@@ -195,24 +195,24 @@ function WatchRow({
         </div>
       </div>
       {lugWidthMm != null && (
-        <span style={{ flexShrink: 0, font: `600 10px ${brand.font.sans}`, color: brand.colors.gold, border: `1px solid ${brand.studio.hairline}`, borderRadius: brand.radius.sm, padding: '2px 6px' }}>
+        <span style={{ flexShrink: 0, font: `600 10px ${brand.font.sans}`, color: brand.colors.goldDeep, border: `1px solid ${brand.colors.goldLine}`, borderRadius: brand.radius.sm, padding: '2px 6px' }}>
           {lugWidthMm}mm
         </span>
       )}
-      {active && <span style={{ color: brand.colors.gold, flexShrink: 0 }}>✓</span>}
+      {active && <span style={{ color: brand.colors.goldDeep, flexShrink: 0 }}>✓</span>}
     </button>
   )
 }
 
 const desktopPanel: React.CSSProperties = {
   position: 'absolute', top: 'calc(100% + 8px)', right: 0, width: 340,
-  background: brand.studio.panelSolid, border: `1px solid ${brand.studio.hairline}`,
+  background: brand.studio.panelSolid, border: `1px solid ${brand.studio.hairlineSoft}`,
   borderRadius: brand.radius.lg, boxShadow: brand.shadow.menu, zIndex: brand.zIndex.dropdown,
   overflow: 'hidden',
 }
 const mobilePanel: React.CSSProperties = {
-  position: 'fixed', top: 56, left: 8, right: 8,
-  background: brand.studio.panelSolid, border: `1px solid ${brand.studio.hairline}`,
+  position: 'fixed', top: 120, left: 8, right: 8,
+  background: brand.studio.panelSolid, border: `1px solid ${brand.studio.hairlineSoft}`,
   borderRadius: brand.radius.lg, boxShadow: brand.shadow.menu, zIndex: brand.zIndex.dropdown,
   overflow: 'hidden',
 }

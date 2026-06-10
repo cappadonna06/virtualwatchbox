@@ -8,6 +8,7 @@ import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import { usePrefersReducedMotion } from '@/components/collection/useResponsiveState'
 import { caseOnlyIds, getCaseOnly, type CaseOnlyEntry } from '@/lib/caseOnlyImages'
 import {
+  buildBandDemoStraps,
   buildDrawerStraps,
   buildTemplateStraps,
   deriveCategories,
@@ -53,6 +54,7 @@ export function useStudioController() {
 
   const templateStraps = useMemo(() => buildTemplateStraps(), [])
   const drawerStraps = useMemo(() => buildDrawerStraps(straps), [straps])
+  const bandStraps = useMemo(() => buildBandDemoStraps(), [])
   const allStraps = useMemo(() => [...templateStraps, ...drawerStraps], [templateStraps, drawerStraps])
 
   // ── Core state (URL-seeded) ───────────────────────────────────────────────
@@ -109,11 +111,15 @@ export function useStudioController() {
   )
 
   // ── Strap source / category / current selection ───────────────────────────
+  // Composite mode shows ONLY band-equipped straps: every one renders correctly
+  // worn on the watch. Flat template photos would read as "behind the case",
+  // so they stay exclusive to side-by-side watches (where they present well).
   const sourceStraps = useMemo(() => {
+    if (caseOnly) return bandStraps
     if (source === 'drawer') return drawerStraps
     if (source === 'compatible') return filterCompatible(allStraps, compatTarget, strapOverrides)
     return templateStraps
-  }, [source, drawerStraps, templateStraps, allStraps, compatTarget, strapOverrides])
+  }, [caseOnly, bandStraps, source, drawerStraps, templateStraps, allStraps, compatTarget, strapOverrides])
 
   const categories = useMemo(() => deriveCategories(sourceStraps), [sourceStraps])
   const effectiveCategory: 'All' | StrapCategory = categories.includes(activeCategory) ? activeCategory : 'All'
@@ -156,8 +162,12 @@ export function useStudioController() {
   const nextStrap = useCallback(() => cycle(1), [cycle])
   const prevStrap = useCallback(() => cycle(-1), [cycle])
 
-  const flankPrev = categoryStraps.length > 1 ? categoryStraps[((idx - 1) % categoryStraps.length + categoryStraps.length) % categoryStraps.length] : undefined
-  const flankNext = categoryStraps.length > 1 ? categoryStraps[(idx + 1) % categoryStraps.length] : undefined
+  /** Ghosted carousel neighbor at the given offset from the active strap (wraps). */
+  const ghostAt = useCallback((offset: number): StudioStrap | undefined => {
+    const n = categoryStraps.length
+    if (n < 2 || idx < 0) return undefined
+    return categoryStraps[((idx + offset) % n + n) % n]
+  }, [categoryStraps, idx])
 
   const changeSource = useCallback((s: StudioSourceMode) => {
     setSource(s)
@@ -213,7 +223,11 @@ export function useStudioController() {
 
   // ── Aggressive preloading (no spinner, ever) ──────────────────────────────
   const preloadUrls = useMemo(() => {
-    const urls: Array<string | undefined> = categoryStraps.map(s => s.imageUrl)
+    const urls: Array<string | undefined> = []
+    for (const s of categoryStraps) {
+      urls.push(s.imageUrl)
+      if (s.band) urls.push(s.band.top.url, s.band.bottom.url)
+    }
     if (caseOnly) urls.push(caseOnly.caseOnlyUrl)
     if (studioWatch?.imageUrl) urls.push(studioWatch.imageUrl)
     const here = collectionWatches.findIndex(w => w.watchId === watchId)
@@ -260,17 +274,18 @@ export function useStudioController() {
     // strap browsing
     source,
     setSource: changeSource,
+    showSourceToggle: !caseOnly,
     categories,
     activeCategory: effectiveCategory,
     setCategory: changeCategory,
     sourceStraps,
     categoryStraps,
     currentStrap,
+    strapIndex: idx,
     nextStrap,
     prevStrap,
     selectStrap,
-    flankPrev,
-    flankNext,
+    ghostAt,
     // watch picker
     collectionWatches,
     searchCatalog,

@@ -7,15 +7,13 @@ export const metadata = {
   description: 'See your watch on any strap — a premium visual configurator.',
 }
 
-// A dark, full-bleed fallback so there is never a flash of white while the
-// client studio (which reads URL state via useSearchParams) hydrates.
+// A cream fallback matching the site shell while the client studio (which
+// reads URL state via useSearchParams) hydrates — no background flash.
 function StudioFallback() {
   return (
     <div
       style={{
-        minHeight: '100vh',
-        width: '100vw',
-        marginLeft: 'calc(50% - 50vw)',
+        minHeight: '80vh',
         background: brand.studio.canvas,
         backgroundColor: brand.studio.void,
       }}

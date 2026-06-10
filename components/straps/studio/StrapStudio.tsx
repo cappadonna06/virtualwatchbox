@@ -1,15 +1,26 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { brand } from '@/lib/brand'
 import { useIsMobile } from '@/components/collection/useResponsiveState'
+import type { StudioStrap } from '@/lib/strapStudio'
 import { useStudioController, type StudioController } from './useStudioController'
 import StudioComposite from './StudioComposite'
 import StrapPickerTray from './StrapPickerTray'
 import WatchPickerDropdown from './WatchPickerDropdown'
-import StudioFooter from './StudioFooter'
-import type { StudioStrap } from '@/lib/strapStudio'
+
+function useViewportWidth() {
+  const [w, setW] = useState(1280)
+  useEffect(() => {
+    const sync = () => setW(window.innerWidth)
+    sync()
+    window.addEventListener('resize', sync)
+    return () => window.removeEventListener('resize', sync)
+  }, [])
+  return w
+}
 
 export default function StrapStudio() {
   const c = useStudioController()
@@ -18,43 +29,33 @@ export default function StrapStudio() {
   return (
     <div
       style={{
-        minHeight: '100vh',
         background: brand.studio.canvas,
         backgroundColor: brand.studio.void,
-        color: brand.studio.textHi,
-        position: 'relative',
-        // Break out of the centered, max-width 1280 `.site-main` so the dark
-        // canvas is genuinely full-bleed on every viewport.
-        width: '100vw',
-        marginLeft: 'calc(50% - 50vw)',
-        marginRight: 'calc(50% - 50vw)',
-        overflowX: 'hidden',
-        paddingBottom: isMobile ? '44vh' : 40,
+        minHeight: '82vh',
+        paddingBottom: isMobile ? '30vh' : 48,
       }}
     >
-      <TopBar c={c} />
+      <Masthead c={c} />
+      <CompatibilityStrip c={c} isMobile={isMobile} />
 
-      <main style={{ maxWidth: 1100, margin: '0 auto', padding: isMobile ? '8px 16px 0' : '24px 32px 0' }}>
+      <main style={{ padding: isMobile ? '4px 12px 0' : '8px 24px 0' }}>
         <Stage c={c} isMobile={isMobile} />
-        <TitleBlock c={c} isMobile={isMobile} />
-        {isMobile && <div style={{ marginTop: 14 }}><StudioFooter c={c} /></div>}
+        <InfoRow c={c} isMobile={isMobile} />
       </main>
 
       {!isMobile && (
-        <section style={{ maxWidth: 860, margin: '28px auto 0', padding: '0 32px' }}>
+        <section style={{ maxWidth: 860, margin: '26px auto 0', padding: '0 24px' }}>
           <div
             style={{
               background: brand.studio.panel,
               border: `1px solid ${brand.studio.hairlineSoft}`,
               borderRadius: brand.radius.xl,
               padding: '18px 20px',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
+              boxShadow: brand.shadow.sm,
             }}
           >
             <StrapPickerTray c={c} />
           </div>
-          <div style={{ marginTop: 22 }}><StudioFooter c={c} /></div>
         </section>
       )}
 
@@ -63,29 +64,23 @@ export default function StrapStudio() {
   )
 }
 
-function TopBar({ c }: { c: StudioController }) {
+function Masthead({ c }: { c: StudioController }) {
   return (
     <header
       style={{
-        height: 56,
+        height: 58,
         display: 'grid',
         gridTemplateColumns: '1fr auto 1fr',
         alignItems: 'center',
         padding: '0 16px',
         borderBottom: `1px solid ${brand.studio.hairlineSoft}`,
-        position: 'sticky',
-        top: 0,
-        zIndex: brand.zIndex.nav,
-        background: 'rgba(10,8,6,0.55)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
       }}
     >
       <Link
         href="/collection"
         style={{
           justifySelf: 'start', display: 'inline-flex', alignItems: 'center', gap: 6,
-          color: brand.studio.textMid, textDecoration: 'none', font: `500 13px ${brand.font.sans}`,
+          color: brand.studio.textLow, textDecoration: 'none', font: `500 13px ${brand.font.sans}`,
         }}
       >
         <span style={{ fontSize: 15 }}>←</span> Collection
@@ -93,7 +88,7 @@ function TopBar({ c }: { c: StudioController }) {
       <div
         style={{
           justifySelf: 'center', font: `600 12px ${brand.font.sans}`,
-          letterSpacing: '0.32em', textTransform: 'uppercase', color: brand.colors.gold,
+          letterSpacing: '0.32em', textTransform: 'uppercase', color: brand.colors.goldDeep,
         }}
       >
         Strap Studio
@@ -105,33 +100,61 @@ function TopBar({ c }: { c: StudioController }) {
   )
 }
 
-function Stage({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
+function CompatibilityStrip({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
+  const w = c.studioWatch
+  if (!w?.lugWidthMm) return null
+  const materials = isMobile ? '' : Array.from(new Set(c.sourceStraps.map(s => s.category.toLowerCase()))).join(', ')
   return (
     <div
       style={{
-        position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: isMobile ? 0 : 22,
-        maxWidth: 820,
-        margin: '0 auto',
-        paddingTop: isMobile ? 8 : 24,
+        textAlign: 'center',
+        padding: isMobile ? '8px 12px' : '10px 16px',
+        background: brand.studio.panel,
+        borderBottom: `1px solid ${brand.studio.hairlineSoft}`,
+        font: `400 ${isMobile ? 12 : 13}px ${brand.font.sans}`,
+        color: brand.studio.textMid,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
       }}
     >
-      {!isMobile && <FlankPreview strap={c.flankPrev} onClick={() => c.prevStrap()} side="left" />}
-
-      <div style={{ position: 'relative', flex: '0 1 520px', width: '100%' }}>
-        <Arrow dir="prev" onClick={() => c.prevStrap()} />
-        <StudioComposite c={c} maxWidth={isMobile ? 'min(82vw, 36vh)' : 520} />
-        <Arrow dir="next" onClick={() => c.nextStrap()} />
-      </div>
-
-      {!isMobile && <FlankPreview strap={c.flankNext} onClick={() => c.nextStrap()} side="right" />}
+      <span style={{ color: brand.colors.goldDeep, marginRight: 8 }}>✓</span>
+      All {w.lugWidthMm}mm straps fit your {w.brand} {w.model}{materials ? ` — ${materials}` : ''}
     </div>
   )
 }
 
+function Stage({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
+  const vw = useViewportWidth()
+  const ghostsPerSide = isMobile ? 0 : vw >= 1140 ? 2 : 1
+  const ghostW = vw >= 1280 ? 130 : 108
+  const caseHeight = isMobile ? 138 : 280
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: isMobile ? 10 : 26,
+        paddingTop: isMobile ? 10 : 18,
+      }}
+    >
+      {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(-2)} width={ghostW} opacity={0.22} onClick={c.prevStrap} />}
+      {ghostsPerSide >= 1 && <GhostStrap strap={c.ghostAt(-1)} width={ghostW} opacity={0.45} onClick={c.prevStrap} />}
+
+      <Arrow dir="prev" onClick={c.prevStrap} />
+      <StudioComposite c={c} caseHeight={caseHeight} />
+      <Arrow dir="next" onClick={c.nextStrap} />
+
+      {ghostsPerSide >= 1 && <GhostStrap strap={c.ghostAt(1)} width={ghostW} opacity={0.45} onClick={c.nextStrap} />}
+      {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(2)} width={ghostW} opacity={0.22} onClick={c.nextStrap} />}
+    </div>
+  )
+}
+
+// In normal flow (flex-centered) — never absolutely positioned and never given a
+// static transform, so Framer's whileTap scale can't displace it.
 function Arrow({ dir, onClick }: { dir: 'prev' | 'next'; onClick: () => void }) {
   return (
     <motion.button
@@ -140,85 +163,131 @@ function Arrow({ dir, onClick }: { dir: 'prev' | 'next'; onClick: () => void }) 
       whileTap={{ scale: 0.88 }}
       transition={{ type: 'spring', stiffness: 500, damping: 28 }}
       style={{
-        position: 'absolute',
-        top: '50%',
-        [dir === 'prev' ? 'left' : 'right']: -6,
-        transform: 'translateY(-50%)',
-        zIndex: 4,
-        width: 40,
-        height: 40,
+        flex: '0 0 auto',
+        width: 42,
+        height: 42,
         borderRadius: '50%',
         border: `1px solid ${brand.studio.hairline}`,
-        background: 'rgba(10,8,6,0.6)',
-        color: brand.colors.gold,
+        background: brand.studio.panel,
+        color: brand.studio.textHi,
         cursor: 'pointer',
-        fontSize: 16,
+        fontSize: 15,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backdropFilter: 'blur(6px)',
-        WebkitBackdropFilter: 'blur(6px)',
-      } as React.CSSProperties}
+        boxShadow: brand.shadow.sm,
+      }}
     >
-      {dir === 'prev' ? '◀' : '▶'}
+      {dir === 'prev' ? '‹' : '›'}
     </motion.button>
   )
 }
 
-function FlankPreview({ strap, onClick, side }: { strap?: StudioStrap; onClick: () => void; side: 'left' | 'right' }) {
-  if (!strap) return <div style={{ width: 80 }} />
+// Ghosted carousel neighbor. Band straps render their stacked worn halves
+// (reads as one flat strap, clasp in the middle — like the Delugs finder);
+// flat template straps render their product photo on a white card.
+function GhostStrap({ strap, width, opacity, onClick }: { strap?: StudioStrap; width: number; opacity: number; onClick: () => void }) {
+  if (!strap) return <div style={{ width, flex: '0 0 auto' }} />
   return (
     <button
       onClick={onClick}
-      aria-label={`${side === 'left' ? 'Previous' : 'Next'} strap: ${strap.label}`}
+      aria-label={`Show ${strap.label}`}
+      title={strap.label}
       style={{
-        flex: '0 0 auto', width: 80, height: 150, padding: 0, cursor: 'pointer',
-        borderRadius: brand.radius.md, overflow: 'hidden', opacity: 0.5,
-        border: `1px solid ${brand.studio.hairlineSoft}`, background: strap.colorHex ?? brand.colors.dark,
-        transition: 'opacity 0.2s ease, border-color 0.2s ease',
+        flex: '0 0 auto', width, padding: 0, border: 'none', background: 'transparent',
+        cursor: 'pointer', opacity, transition: 'opacity 0.2s ease',
       }}
-      onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.borderColor = brand.colors.gold }}
-      onMouseLeave={e => { e.currentTarget.style.opacity = '0.5'; e.currentTarget.style.borderColor = brand.studio.hairlineSoft }}
+      onMouseEnter={e => { e.currentTarget.style.opacity = '0.8' }}
+      onMouseLeave={e => { e.currentTarget.style.opacity = String(opacity) }}
     >
-      {strap.imageUrl
-        // eslint-disable-next-line @next/next/no-img-element
-        ? <img src={strap.imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-        : null}
+      {strap.band ? (
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={strap.band.top.url} alt="" style={{ width: '100%', display: 'block' }} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={strap.band.bottom.url} alt="" style={{ width: '100%', display: 'block', marginTop: `-${Math.round(width * 0.04)}px` }} />
+        </div>
+      ) : (
+        <div
+          style={{
+            width: '100%', aspectRatio: '520 / 980', borderRadius: brand.radius.md, overflow: 'hidden',
+            background: brand.studio.panel, border: `1px solid ${brand.studio.hairlineSoft}`,
+          }}
+        >
+          {strap.imageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={strap.imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+          ) : null}
+        </div>
+      )}
     </button>
   )
 }
 
-function TitleBlock({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
-  const w = c.studioWatch
+function InfoRow({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
+  const s = c.currentStrap
+  const n = c.categoryStraps.length
+  const showFollow = c.studioWatch ? !c.studioWatch.isOwned : false
+
   return (
-    <div style={{ textAlign: 'center', marginTop: isMobile ? 10 : 26 }}>
-      {w?.brand && (
-        <div style={{ font: `600 10px ${brand.font.sans}`, letterSpacing: '0.28em', textTransform: 'uppercase', color: brand.colors.gold, marginBottom: isMobile ? 4 : 8 }}>
-          {w.brand}
-        </div>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        gap: isMobile ? 12 : 20,
+        marginTop: isMobile ? 14 : 22,
+        padding: '0 12px',
+      }}
+    >
+      {n > 0 && c.strapIndex >= 0 && (
+        <span style={{ font: `400 13px ${brand.font.sans}`, color: brand.studio.textLow, flex: '0 0 auto' }}>
+          {c.strapIndex + 1} / {n}
+        </span>
       )}
-      <div style={{ font: `400 ${isMobile ? 21 : 28}px ${brand.font.serif}`, color: brand.studio.textHi, lineHeight: 1.12, padding: isMobile ? '0 16px' : 0 }}>
-        {w ? `${w.brand} ${w.model}`.trim() : 'Select a watch'}
-      </div>
-      <div style={{ height: isMobile ? 22 : 26, marginTop: 4 }}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={c.currentStrap?.key ?? 'none'}
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-            style={{ font: `italic 400 ${isMobile ? 15 : 18}px ${brand.font.serif}`, color: brand.studio.textMid }}
-          >
-            {c.currentStrap ? `on ${c.currentStrap.label}` : 'Choose a strap'}
-          </motion.div>
-        </AnimatePresence>
-      </div>
-      {!isMobile && w?.lugWidthMm != null && (
-        <div style={{ font: `400 11px ${brand.font.sans}`, letterSpacing: '0.05em', color: brand.studio.textLow, marginTop: 6 }}>
-          {w.lugWidthMm}mm compatible
+      <div style={{ textAlign: isMobile ? 'center' : 'left' }}>
+        <div style={{ font: `700 ${isMobile ? 17 : 19}px ${brand.font.sans}`, color: brand.studio.textHi }}>
+          {s?.label ?? 'Choose a strap'}
         </div>
-      )}
+        <div style={{ font: `400 12px ${brand.font.sans}`, color: brand.studio.textLow, marginTop: 2 }}>
+          {s?.sublabel}
+          {c.studioWatch?.lugWidthMm ? `${s?.sublabel ? ' · ' : ''}fits ${c.studioWatch.lugWidthMm}mm lugs` : ''}
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+        <CtaButton label="Share look" onClick={() => void c.shareLook()} />
+        {c.buyUrl && <CtaButton label="Buy Strap →" href={c.buyUrl} primary />}
+        {showFollow && (
+          <CtaButton
+            label={c.followed ? 'Followed ♥' : 'Add to followed ♡'}
+            active={c.followed}
+            onClick={c.toggleFollow}
+          />
+        )}
+      </div>
     </div>
   )
+}
+
+function CtaButton({ label, href, onClick, primary, active }: { label: string; href?: string; onClick?: () => void; primary?: boolean; active?: boolean }) {
+  const style: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    height: 42,
+    padding: '0 20px',
+    borderRadius: brand.radius.lg,
+    border: `1px solid ${primary ? brand.colors.ink : active ? brand.colors.goldLine : brand.studio.hairline}`,
+    background: primary ? brand.colors.ink : active ? brand.colors.goldWash : brand.studio.panel,
+    color: primary ? brand.colors.slot : active ? brand.colors.goldDeep : brand.studio.textHi,
+    font: `600 13px ${brand.font.sans}`,
+    letterSpacing: '0.02em',
+    cursor: 'pointer',
+    textDecoration: 'none',
+  }
+  const motionProps = { whileTap: { scale: 0.97 }, transition: { type: 'spring' as const, stiffness: 500, damping: 30 } }
+  if (href) {
+    return <motion.a {...motionProps} href={href} target="_blank" rel="noopener noreferrer" style={style}>{label}</motion.a>
+  }
+  return <motion.button {...motionProps} onClick={onClick} style={style}>{label}</motion.button>
 }

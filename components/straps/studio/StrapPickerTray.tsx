@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { brand } from '@/lib/brand'
-import { categoryAbbrev, type StrapCategory, type StudioStrap } from '@/lib/strapStudio'
+import { categoryAbbrev, type StudioStrap } from '@/lib/strapStudio'
 import { useIsMobile, usePrefersReducedMotion } from '@/components/collection/useResponsiveState'
 import type { StudioController } from './useStudioController'
 import type { StudioSourceMode } from './useStudioController'
@@ -22,7 +22,7 @@ export default function StrapPickerTray({ c }: { c: StudioController }) {
           if (info.offset.y < -40) setExpanded(true)
           else if (info.offset.y > 40) setExpanded(false)
         }}
-        animate={{ height: expanded ? '78vh' : '42vh' }}
+        animate={{ height: expanded ? '78vh' : '27vh' }}
         transition={{ type: 'spring', stiffness: 320, damping: 34 }}
         style={{
           position: 'fixed',
@@ -31,11 +31,9 @@ export default function StrapPickerTray({ c }: { c: StudioController }) {
           bottom: 0,
           zIndex: brand.zIndex.sidebar,
           background: brand.studio.panel,
-          backdropFilter: 'blur(18px)',
-          WebkitBackdropFilter: 'blur(18px)',
-          borderTop: `1px solid ${brand.studio.hairline}`,
+          borderTop: `1px solid ${brand.studio.hairlineSoft}`,
           borderRadius: `${brand.radius.xl}px ${brand.radius.xl}px 0 0`,
-          boxShadow: '0 -16px 40px rgba(0,0,0,0.4)',
+          boxShadow: '0 -12px 32px rgba(26,20,16,0.12)',
           display: 'flex',
           flexDirection: 'column',
           padding: '8px 16px 24px',
@@ -46,13 +44,15 @@ export default function StrapPickerTray({ c }: { c: StudioController }) {
           onClick={() => setExpanded(v => !v)}
           style={{
             alignSelf: 'center', width: 40, height: 5, borderRadius: 3, border: 'none',
-            background: brand.studio.textLow, margin: '4px 0 12px', cursor: 'pointer', flexShrink: 0,
+            background: brand.colors.borderLight, margin: '4px 0 12px', cursor: 'pointer', flexShrink: 0,
           }}
         />
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14, flexShrink: 0 }}>
-          <SourceToggle c={c} />
-        </div>
-        <div style={{ position: 'sticky', top: 0, flexShrink: 0 }}>
+        {c.showSourceToggle && (
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14, flexShrink: 0 }}>
+            <SourceToggle c={c} />
+          </div>
+        )}
+        <div style={{ position: 'sticky', top: 0, flexShrink: 0, background: brand.studio.panel }}>
           <CategoryTabs c={c} />
         </div>
         <div style={{ overflowY: 'auto', marginTop: 14, flex: 1 }}>
@@ -64,16 +64,18 @@ export default function StrapPickerTray({ c }: { c: StudioController }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%' }}>
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <SourceToggle c={c} />
-      </div>
+      {c.showSourceToggle && (
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <SourceToggle c={c} />
+        </div>
+      )}
       <CategoryTabs c={c} />
       <SwatchGrid c={c} columns={0} />
     </div>
   )
 }
 
-// ── Source toggle (All / My Drawer / Compatible) ──────────────────────────────
+// ── Source toggle (All / My Drawer / Compatible) — side-by-side mode only ─────
 function SourceToggle({ c }: { c: StudioController }) {
   const options: Array<{ key: StudioSourceMode; label: string }> = [
     { key: 'all', label: 'All Straps' },
@@ -87,7 +89,7 @@ function SourceToggle({ c }: { c: StudioController }) {
         padding: 3,
         gap: 2,
         borderRadius: brand.radius.pill,
-        background: 'rgba(255,255,255,0.05)',
+        background: brand.colors.bg,
         border: `1px solid ${brand.studio.hairlineSoft}`,
       }}
     >
@@ -105,8 +107,8 @@ function SourceToggle({ c }: { c: StudioController }) {
               cursor: 'pointer',
               font: `500 12px ${brand.font.sans}`,
               letterSpacing: '0.04em',
-              color: active ? brand.colors.ink : brand.studio.textMid,
-              background: active ? brand.colors.gold : 'transparent',
+              color: active ? brand.colors.slot : brand.studio.textMid,
+              background: active ? brand.colors.ink : 'transparent',
               transition: brand.transition.base,
             }}
           >
@@ -144,11 +146,11 @@ function CategoryTabs({ c }: { c: StudioController }) {
               cursor: 'pointer',
               font: `500 13px ${brand.font.sans}`,
               letterSpacing: '0.03em',
-              color: active ? brand.colors.gold : brand.studio.textMid,
+              color: active ? brand.colors.goldDeep : brand.studio.textLow,
               transition: brand.transition.base,
             }}
             onMouseEnter={e => { if (!active) e.currentTarget.style.color = brand.studio.textHi }}
-            onMouseLeave={e => { if (!active) e.currentTarget.style.color = brand.studio.textMid }}
+            onMouseLeave={e => { if (!active) e.currentTarget.style.color = brand.studio.textLow }}
           >
             {cat}
             {active && (
@@ -188,12 +190,13 @@ function SwatchGrid({ c, columns }: { c: StudioController; columns: number }) {
       box.scrollTo({ left, behavior: reduced ? 'auto' : 'smooth' })
     }
   }, [c.currentStrap?.key, reduced, grid])
+
   return (
     <div
       ref={containerRef}
       style={grid
         ? { display: 'grid', gridTemplateColumns: `repeat(${columns}, 1fr)`, gap: 12, paddingBottom: 8 }
-        : { display: 'flex', gap: 12, overflowX: 'auto', scrollSnapType: 'x mandatory', padding: '4px 2px 8px' }}
+        : { display: 'flex', gap: 12, overflowX: 'auto', scrollSnapType: 'x mandatory', padding: '4px 2px 8px', justifyContent: 'safe center' }}
     >
       {c.categoryStraps.map(s => (
         <Swatch
@@ -249,7 +252,7 @@ function Swatch({
           height: fullWidth ? 96 : 90,
           borderRadius: brand.radius.md,
           overflow: 'hidden',
-          background: strap.colorHex ?? brand.colors.dark,
+          background: strap.imageUrl ? brand.colors.white : strap.colorHex ?? brand.colors.paperWarm,
           border: active ? `2px solid ${brand.colors.gold}` : `1px solid ${brand.studio.hairlineSoft}`,
           boxShadow: active ? brand.shadow.gold : 'none',
           transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
@@ -264,7 +267,7 @@ function Swatch({
         style={{
           font: `500 9px ${brand.font.sans}`,
           letterSpacing: '0.08em',
-          color: active ? brand.colors.gold : brand.studio.textLow,
+          color: active ? brand.colors.goldDeep : brand.studio.textLow,
         }}
       >
         {categoryAbbrev(strap.category)}

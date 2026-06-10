@@ -232,10 +232,6 @@ export default function NavBar() {
     boxShadow: active ? `inset 2px 0 0 ${brand.colors.gold}` : 'none',
   }) as CSSProperties
 
-  // The Strap Studio is a full-bleed immersive dark surface with its own top bar
-  // (back link + watch picker), so the global cream nav is hidden on that route.
-  if (pathname?.startsWith('/collection/straps/studio')) return null
-
   return (
     <>
       <nav
