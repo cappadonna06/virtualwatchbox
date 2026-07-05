@@ -218,9 +218,18 @@ export function detectCaseBand(profile: Int32Array, windowFrac = 0.035): CaseBan
 }
 
 // Row-band alpha mask: opaque for rows in [topCut, bottomCut], transparent
-// outside, feathered at the edges for antialiasing. Shared by every provider
-// tier so mask application (applyCaseMask) is identical regardless of which
-// tier produced the cut.
+// outside, feathered at the edges for antialiasing.
+//
+// DO NOT use this alone for a real watch photo with drilled lugs — it cuts a
+// straight line across the FULL width, which chops through the middle of
+// every lug's taper (lugs are angled blades that extend well past the
+// bezel's own edge, not a flat shelf). Validated against a real photo (an
+// Omega Aqua Terra with long tapered lugs, test-fixtures/case-segmentation/):
+// a flat cut at the row where the profile "looks like case" sliced the lug
+// tips off into stubby flat triangles instead of their true pointed shape.
+// buildLugAwareMaskPng below is the fix. This function is kept only as the
+// building block INSIDE the case's confident plateau (topCut..bottomCut),
+// where there's no lug ambiguity to get wrong.
 export async function renderRowBandMaskPng(width: number, height: number, topCut: number, bottomCut: number, feather = 3): Promise<Buffer> {
   const buf = Buffer.alloc(width * height)
   const t0 = Math.max(0, topCut - feather)
@@ -233,6 +242,84 @@ export async function renderRowBandMaskPng(width: number, height: number, topCut
     else if (y >= t0 && y < t1 && t1 > t0) v = Math.round((255 * (y - t0)) / (t1 - t0))
     else if (y > b0 && y <= b1 && b1 > b0) v = Math.round((255 * (b1 - y)) / (b1 - b0))
     buf.fill(v, y * width, y * width + width)
+  }
+  return sharp(buf, { raw: { width, height, channels: 1 } }).png().toBuffer()
+}
+
+export interface StripMeasurement {
+  /** Half the strap's own width, measured well clear of any lug widening. */
+  halfWidth: number
+  /** Horizontal center of the strap at that measurement point. */
+  cx: number
+}
+
+// Measures the strap's true width from a band of rows guaranteed to be pure
+// strap (no lug widening yet) — the very top/bottom tip of a full-watch
+// photo is always plain strap material, real lugs never reach the image
+// edge. Averaging several rows rides out anti-aliasing noise on any one row.
+export function measureStrip(rgba: Buffer, width: number, yStart: number, yEnd: number, threshold = 24): StripMeasurement {
+  let sumHalfWidth = 0
+  let sumCx = 0
+  let count = 0
+  const lo = Math.max(0, Math.min(yStart, yEnd))
+  const hi = Math.max(yStart, yEnd)
+  for (let y = lo; y <= hi; y += 1) {
+    const span = spanAt(rgba, width, y, threshold)
+    if (!span) continue
+    sumHalfWidth += (span.right - span.left + 1) / 2
+    sumCx += (span.left + span.right) / 2
+    count += 1
+  }
+  if (!count) return { halfWidth: width * 0.15, cx: width / 2 }
+  return { halfWidth: sumHalfWidth / count, cx: sumCx / count }
+}
+
+// The actual fix for lug shape: within the case's confident plateau
+// (topCut..bottomCut), keep everything — no ambiguity there. Outside it (the
+// top/bottom transition zones where lugs live), classify by WIDTH, not row:
+// any opaque pixel further from center than the strap's own measured
+// half-width can only be lug material (the strap physically can't be that
+// wide), so it's kept unconditionally NO MATTER HOW FAR toward the tip it
+// extends — which is exactly what lets an angled, tapered lug blade survive
+// intact instead of being sliced flat. Pixels within the strap's width band
+// are strap (removed) once we're past the plateau, since that's the old
+// strap filling the gap between the lug tips at that row.
+export async function buildLugAwareMaskPng(
+  rgba: Buffer, width: number, height: number,
+  top: number, bottom: number, topCut: number, bottomCut: number,
+  topStrip: StripMeasurement, botStrip: StripMeasurement,
+  feather = 2,
+): Promise<Buffer> {
+  const buf = Buffer.alloc(width * height)
+  const marginX = Math.max(3, Math.round(width * 0.012))
+
+  for (let y = 0; y < height; y += 1) {
+    if (y < top || y > bottom) { buf.fill(0, y * width, y * width + width); continue }
+    if (y >= topCut && y <= bottomCut) { buf.fill(255, y * width, y * width + width); continue }
+
+    const strip = y < topCut ? topStrip : botStrip
+    const stripLeft = strip.cx - strip.halfWidth - marginX
+    const stripRight = strip.cx + strip.halfWidth + marginX
+    // Feather the row-band boundary too, so the plateau edge doesn't leave a
+    // hard seam where the strap-width column range meets the always-kept
+    // outer columns at exactly y = topCut / bottomCut.
+    const distToPlateau = y < topCut ? topCut - y : y - bottomCut
+    const rowFeather = Math.max(0, Math.min(1, 1 - distToPlateau / feather))
+
+    for (let x = 0; x < width; x += 1) {
+      let v: number
+      if (x < stripLeft - feather || x > stripRight + feather) {
+        v = 255 // outside the strap's own width — necessarily lug/case
+      } else if (x >= stripLeft + feather && x <= stripRight - feather) {
+        v = 0 // within strap width, past the plateau — the old strap
+      } else if (x < stripLeft + feather) {
+        v = Math.round((255 * (stripLeft + feather - x)) / (2 * feather))
+      } else {
+        v = Math.round((255 * (x - (stripRight - feather))) / (2 * feather))
+      }
+      if (rowFeather > 0) v = Math.round(v + (255 - v) * rowFeather)
+      buf[y * width + x] = v
+    }
   }
   return sharp(buf, { raw: { width, height, channels: 1 } }).png().toBuffer()
 }
@@ -380,19 +467,32 @@ export class GeometricSilhouetteProvider implements SegmentationProvider {
     const topCut = Math.min(bottom, top + band.topIdx + TRIM)
     const bottomCut = Math.max(top, top + band.botIdx - TRIM)
 
-    const topSpan = spanAt(data, width, topCut) ?? { left: 0, right: width }
-    const botSpan = spanAt(data, width, bottomCut) ?? { left: 0, right: width }
+    // Measure the strap's TRUE width from rows guaranteed to be pure strap —
+    // the image's own top/bottom tip, never reached by a real lug. Do NOT use
+    // the row span at topCut/bottomCut for this: when lugs are present, that
+    // span is the FULL case width (lug tip to lug tip), not the strap's
+    // width, which previously overstated lugWidthPx and mis-scaled whatever
+    // new strap gets composited in.
+    const stripRows = Math.max(6, Math.round((bottom - top) * 0.04))
+    const topStrip = measureStrip(data, width, top, Math.min(topCut - 1, top + stripRows))
+    const botStrip = measureStrip(data, width, Math.max(bottomCut + 1, bottom - stripRows), bottom)
+
     const lugGeometry: LugGeometry = {
-      topLugLeft: { x: topSpan.left, y: topCut },
-      topLugRight: { x: topSpan.right, y: topCut },
-      bottomLugLeft: { x: botSpan.left, y: bottomCut },
-      bottomLugRight: { x: botSpan.right, y: bottomCut },
-      lugWidthPx: Math.round(((topSpan.right - topSpan.left) + (botSpan.right - botSpan.left)) / 2),
+      topLugLeft: { x: Math.round(topStrip.cx - topStrip.halfWidth), y: topCut },
+      topLugRight: { x: Math.round(topStrip.cx + topStrip.halfWidth), y: topCut },
+      bottomLugLeft: { x: Math.round(botStrip.cx - botStrip.halfWidth), y: bottomCut },
+      bottomLugRight: { x: Math.round(botStrip.cx + botStrip.halfWidth), y: bottomCut },
+      lugWidthPx: Math.round(topStrip.halfWidth + botStrip.halfWidth),
       imageWidth: width,
       imageHeight: height,
     }
 
-    const caseMask = await renderRowBandMaskPng(width, height, topCut, bottomCut, 2)
+    // The actual fix for lug shape: keep the case's confident plateau
+    // whole, and in the top/bottom transition zones, keep anything wider
+    // than the strap's own measured width unconditionally (that's the lug,
+    // however far its taper extends) rather than a flat row cut. See
+    // buildLugAwareMaskPng's doc comment.
+    const caseMask = await buildLugAwareMaskPng(data, width, height, top, bottom, topCut, bottomCut, topStrip, botStrip)
     return {
       caseMask,
       lugGeometry,
@@ -516,7 +616,17 @@ export class ClaudeVisionLandmarkProvider implements SegmentationProvider {
       imageWidth: width,
       imageHeight: height,
     }
-    const caseMask = await renderRowBandMaskPng(width, height, topCut, bottomCut, 3)
+
+    // Claude's four points place the plateau boundary, but the MASK still
+    // needs to keep the lugs' full taper rather than a flat cut through them
+    // (see buildLugAwareMaskPng) — measure the strap's real width from the
+    // image tips exactly as the geometric tier does.
+    const { data: rgba, info } = await sharp(imageBuffer).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+    const { top, bottom } = alphaBoundsRows(rgba, info.width, info.height)
+    const stripRows = Math.max(6, Math.round((bottom - top) * 0.04))
+    const topStrip = measureStrip(rgba, width, top, Math.min(topCut - 1, top + stripRows))
+    const botStrip = measureStrip(rgba, width, Math.max(bottomCut + 1, bottom - stripRows), bottom)
+    const caseMask = await buildLugAwareMaskPng(rgba, width, height, top, bottom, topCut, bottomCut, topStrip, botStrip)
 
     let confidence = out.confident ? 0.85 : 0.5
     if (out.strap_attachment === 'integrated') confidence = Math.min(confidence, 0.3)

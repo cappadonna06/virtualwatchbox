@@ -2,10 +2,11 @@
 
 **Status:** tier-0 (geometric) and tier-1 (Claude vision) providers implemented,
 unit-validated on synthetic data (`npm run straps:segment-cases:selftest`), and
-smoke-tested against one real photo (`npm run straps:segment-cases:realtest`)
-— see "Real-photo validation" below for what that test found and fixed. Not
-yet run against the real catalog batch or with a live `ANTHROPIC_API_KEY` —
-see "What's still required."
+smoke-tested against real photos (`npm run straps:segment-cases:realtest`) —
+see "Real-photo validation" and "Lug shape" below for what those tests found
+and fixed, including a real masking bug (a flat cut chopping lug tips off)
+that only a real photo surfaced. Not yet run against the real catalog batch or
+with a live `ANTHROPIC_API_KEY` — see "What's still required."
 
 ---
 
@@ -51,15 +52,17 @@ This is implemented as `GeometricSilhouetteProvider` in
    directions for the steepest width drop over a small row window — a round
    case's width profile has its steepest slope right at the true case edge,
    so this lands close to the real lug line even though the exact "% of max
-   width" a case tapers at varies by design.
+   width" a case tapers at varies by design. This row (`topCut`/`bottomCut`)
+   marks the boundary of the case's *confident plateau* — everything between
+   them is unambiguously case (dial, crystal, bezel), no further reasoning
+   needed.
 3. Confidence is the drop's size relative to the case's own max width. A
    flat profile (integrated bracelet — Royal Oak, Nautilus) has **no** sharp
    drop by construction — that's the correct signal to escalate or skip, not
    a bug in the detector.
-4. The cut line is biased a couple of px into the case (never into the
-   strap) — the new strap layers *behind* the case at that exact row, so any
-   residual strap pixel above the cut would show as a visible remnant; a
-   slightly short case edge is imperceptible at render scale.
+4. Outside the plateau (the top/bottom transition zones, where real lugs
+   live) is where a flat cut breaks — see "Lug shape" below for the actual
+   masking logic there.
 
 This runs with **zero external API calls and zero marginal cost per image** —
 it's pure pixel math on data already in Storage. Validated against synthetic
@@ -111,6 +114,57 @@ escalating to Claude vision or a human dragging the four lug markers in
 guess. One real photo is one data point — expect further constant tuning once
 more real photos (ideally a batch across bracelet styles: oyster, jubilee,
 mesh, two-piece leather, rubber, NATO) go through it.
+
+## Lug shape: a flat cut chops the lugs off
+
+The first real-photo fix (window sizing, above) only addressed *where* the
+row cut lands. A second, more fundamental bug survived it: **a straight
+horizontal cut across the full image width cannot represent a lug**, because
+a real drilled lug is an angled blade — widest where it joins the case,
+tapering to a point well past the case's own body, toward the strap. A flat
+cut at any single row either slices through the middle of that taper (chopping
+the tip into a flat stub) or leaves strap material showing in the gap between
+the two lug tips at that same row — a per-row cut cannot get both right at
+once, because at the row where a real lug reaches its tip, the strap is also
+present (filling the gap between the two lugs), and a purely row-based mask
+can't tell those two things apart.
+
+Caught against a second real photo — an Omega Seamaster Aqua Terra with long,
+sharply tapered lugs. The flat cut sliced the lugs into short flat triangles
+instead of their true tapered shape.
+
+The fix, `buildLugAwareMaskPng` in `lib/caseSegmentation.ts`: within the
+confident plateau, keep everything (unchanged). In the transition zones,
+classify by **width, not row**: measure the strap's own true width from a
+band of rows guaranteed to be pure strap (`measureStrip` — the very top/bottom
+tip of a full-watch photo, which a real lug can never reach). Any opaque pixel
+further from center than that measured half-width can *only* be lug material —
+the strap is physically not that wide — so it's kept unconditionally, no
+matter how far its taper extends. Pixels within the strap's width, once past
+the plateau, are the old strap filling the gap between the lug tips, and get
+removed. This traces whatever the lug's *actual* shape is, angled or curved,
+because it's reading real pixel data rather than approximating a curve — the
+only decision being made is "wider than the strap, or not," which a flat cut
+could never express. `ClaudeVisionLandmarkProvider` got the same fix (its
+four points now only set the plateau boundary; the mask uses the same
+width-based classification as the geometric tier).
+
+This also fixed a second, related bug: `lugGeometry.lugWidthPx` (the value
+the Studio uses to width-scale a new strap) was computed from the row's
+*full* span at the cut — which, whenever real lugs were present, was the
+lug-tip-to-lug-tip width, not the strap's actual width, systematically
+overstating it. It now uses the same `measureStrip` measurement.
+
+A synthetic regression test for this specific bug lives in
+`scripts/segment-watch-cases.selftest.ts` (`runBladeLugTest`) — none of the
+capsule specs above have a true protruding lug (their case is one smooth
+taper), which is exactly why this bug slipped past all of them; the new test
+builds a plain circular case plus two triangular blades that extend past the
+circle's own edge, angled toward the strap, and checks that the tip survives
+in the output while the strap still gets removed from the gap between the
+two tips at a row past them. It also asserts the *old* flat-cut behavior
+really would have failed this case, so the test can't silently stop
+exercising the bug it's named for.
 
 ## Integrated bracelets: skip outright, don't just wait for low confidence
 
@@ -226,3 +280,19 @@ trusting this at scale:
    before running any of the above — it adds the `not_applicable` /
    `needs_review` / `rejected` status vocabulary and the `case_shape` /
    `strap_attachment_type` catalog columns the new code writes to.
+5. **Background removal on bright/white straps is its own open problem,
+   separate from case segmentation.** A second test photo (an Omega Aqua
+   Terra on a white rubber strap) hit this directly: parts of the strap were
+   photographed bright enough to be pixel-identical to the white studio
+   background (verified: a 20×20 patch of strap and a 20×20 patch of
+   background both sampled as flat `(250,250,250)`, zero variance in either).
+   No pixel-level method — color or texture — can recover a boundary that
+   isn't present in the data; this needs either better source photography
+   (true transparent PNGs, not screenshots) or a semantic ML background
+   remover (`applyMlBackgroundRemoval` in `lib/imageProcessing.ts` — unusable
+   in this sandbox; its nested `sharp` dependency needs its own native build
+   step this environment's `--ignore-scripts` `npm install` skipped, a
+   sandbox-specific problem, not a real deployment blocker). Not fixed here —
+   flagging so a real batch run doesn't mistake washed-out white-on-white
+   photos for case-segmentation failures when they're upstream background-
+   removal quality issues instead.

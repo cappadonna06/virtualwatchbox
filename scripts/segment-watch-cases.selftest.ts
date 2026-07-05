@@ -27,7 +27,7 @@
  * Usage: npx tsx scripts/segment-watch-cases.selftest.ts
  */
 import sharp from 'sharp'
-import { GeometricSilhouetteProvider } from '../lib/caseSegmentation'
+import { GeometricSilhouetteProvider, applyCaseMask, alphaBoundsRows, computeWidthProfile, detectCaseBand } from '../lib/caseSegmentation'
 
 interface Spec {
   name: string
@@ -169,7 +169,144 @@ async function run() {
   }
 
   console.log(`\n${pass} passed, ${fail} failed`)
-  if (fail > 0) process.exit(1)
+
+  const bladeOk = await runBladeLugTest()
+  console.log(bladeOk ? '\nBlade-lug regression test passed' : '\nBlade-lug regression test FAILED')
+
+  if (fail > 0 || !bladeOk) process.exit(1)
+}
+
+// ── Protruding blade-lug regression test ─────────────────────────────────────
+//
+// None of the capsule specs above have a real "lug" — their case is one
+// smooth taper, no separate feature sticking out further than the case's own
+// body. That's exactly why the flat row-cut bug (reported against a real
+// Omega Aqua Terra photo: long angled lug blades sliced into flat stubs)
+// slipped past every capsule spec. This models the real failure mode
+// directly: a round case (simple circle) PLUS two triangular lug blades that
+// extend well past the circle's own edge, angled down toward the strap —
+// checking that the lug tip survives even though it reaches deeper into
+// "strap territory" than any single flat cut could safely allow.
+function pointInTriangle(
+  px: number, py: number, ax: number, ay: number, bx: number, by: number, cx: number, cy: number,
+): boolean {
+  const sign = (x1: number, y1: number, x2: number, y2: number, x3: number, y3: number) =>
+    (x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3)
+  const d1 = sign(px, py, ax, ay, bx, by)
+  const d2 = sign(px, py, bx, by, cx, cy)
+  const d3 = sign(px, py, cx, cy, ax, ay)
+  const hasNeg = d1 < 0 || d2 < 0 || d3 < 0
+  const hasPos = d1 > 0 || d2 > 0 || d3 > 0
+  return !(hasNeg && hasPos)
+}
+
+async function runBladeLugTest(): Promise<boolean> {
+  const width = 800
+  const height = 1000
+  const cx = width / 2
+  const caseCenterY = 500
+  const caseRadius = 300
+  const strapHalfWidth = 70
+  const lugOuterOffset = 200 // lug's outer edge, past the strap's half-width
+  const lugLength = 130      // how far the lug tip reaches beyond the case circle's own edge
+  // A real drilled lug is WIDEST where it joins the case and TAPERS TO A POINT
+  // further away from the case (toward the strap direction) — i.e. for the
+  // top lugs, the tip has a SMALLER y than the base (closer to the image's
+  // top edge), not larger. Getting this backwards was the first draft's bug:
+  // it built a lug that pointed INTO the case, which the algorithm handles
+  // trivially (that region is already inside the confident plateau) and
+  // never exercised the actual fix.
+  const baseY = caseCenterY - caseRadius * 0.75 // wide end, inside the circle
+  const tipY = baseY - lugLength                // narrow end, beyond the circle's own top edge
+
+  const rTopA = { x: cx + strapHalfWidth, y: baseY }
+  const rTopB = { x: cx + strapHalfWidth + lugOuterOffset, y: baseY }
+  const rTopC = { x: cx + strapHalfWidth + lugOuterOffset * 0.3, y: tipY } // apex — the tip a flat cut would chop
+  const lTopA = { x: cx - strapHalfWidth, y: baseY }
+  const lTopB = { x: cx - strapHalfWidth - lugOuterOffset, y: baseY }
+  const lTopC = { x: cx - strapHalfWidth - lugOuterOffset * 0.3, y: tipY }
+
+  const botBaseY = height - 1 - baseY
+  const botTipY = height - 1 - tipY
+  const rBotA = { x: rTopA.x, y: botBaseY }
+  const rBotB = { x: rTopB.x, y: botBaseY }
+  const rBotC = { x: rTopC.x, y: botTipY }
+  const lBotA = { x: lTopA.x, y: botBaseY }
+  const lBotB = { x: lTopB.x, y: botBaseY }
+  const lBotC = { x: lTopC.x, y: botTipY }
+
+  const buf = Buffer.alloc(width * height * 4)
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const dx = x - cx
+      const dy = y - caseCenterY
+      const inCase = dx * dx + dy * dy <= caseRadius * caseRadius
+      const inStrap = Math.abs(dx) <= strapHalfWidth
+      const inRTop = pointInTriangle(x, y, rTopA.x, rTopA.y, rTopB.x, rTopB.y, rTopC.x, rTopC.y)
+      const inLTop = pointInTriangle(x, y, lTopA.x, lTopA.y, lTopB.x, lTopB.y, lTopC.x, lTopC.y)
+      const inRBot = pointInTriangle(x, y, rBotA.x, rBotA.y, rBotB.x, rBotB.y, rBotC.x, rBotC.y)
+      const inLBot = pointInTriangle(x, y, lBotA.x, lBotA.y, lBotB.x, lBotB.y, lBotC.x, lBotC.y)
+      const opaque = inCase || inStrap || inRTop || inLTop || inRBot || inLBot
+      const idx = (y * width + x) * 4
+      buf[idx] = 180; buf[idx + 1] = 180; buf[idx + 2] = 185
+      buf[idx + 3] = opaque ? 255 : 0
+    }
+  }
+  const srcPng = await sharp(buf, { raw: { width, height, channels: 4 } }).png().toBuffer()
+
+  const provider = new GeometricSilhouetteProvider()
+  const result = await provider.segmentCase(srcPng, { braceletType: 'strap' })
+  const masked = await applyCaseMask(srcPng, result.caseMask)
+  const { data: outData, info } = await sharp(masked).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+  const alphaAt = (x: number, y: number) => outData[(Math.round(y) * info.width + Math.round(x)) * 4 + 3]
+
+  let ok = true
+  const notes: string[] = []
+
+  // The lug tip — a few px back toward the base from the apex, so the sample
+  // point is safely inside the (very narrow, near-zero-width-at-the-point)
+  // triangle rather than right on its boundary — must survive in the output.
+  // That's the whole point of the fix.
+  const tipCheckPoints: Array<[number, number, string]> = [
+    [rTopC.x, rTopC.y + 8, 'top-right lug tip'],
+    [lTopC.x, lTopC.y + 8, 'top-left lug tip'],
+    [rBotC.x, rBotC.y - 8, 'bottom-right lug tip'],
+    [lBotC.x, lBotC.y - 8, 'bottom-left lug tip'],
+  ]
+  for (const [x, y, label] of tipCheckPoints) {
+    const a = alphaAt(x, y)
+    if (a < 200) { ok = false; notes.push(`${label} was removed (alpha=${a}) — lug got chopped`) }
+  }
+
+  // The strap, filling the gap BETWEEN the lugs at a row PAST the lug tips
+  // (further from the case than either tip reaches), must still be removed —
+  // the other half of the fix: not just "keep everything," but correctly
+  // distinguish lug-material from strap-fill at the same row.
+  const gapCheckPoints: Array<[number, number, string]> = [
+    [cx, tipY - 15, 'strap fill above the top lug tips'],
+    [cx, botTipY + 15, 'strap fill below the bottom lug tips'],
+  ]
+  for (const [x, y, label] of gapCheckPoints) {
+    const a = alphaAt(x, y)
+    if (a > 60) { ok = false; notes.push(`${label} was kept (alpha=${a}) — strap remnant left behind`) }
+  }
+
+  // Sanity: confirm the OLD flat-cut approach really would have failed this —
+  // otherwise this test isn't exercising the bug it claims to. Old topCut is
+  // a row deep inside the case (larger y than the tip); if it isn't, this
+  // synthetic scenario isn't actually reaching past where a flat cut would.
+  const { data: rawData } = await sharp(srcPng).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+  const { top, bottom } = alphaBoundsRows(rawData, width, height)
+  const profile = computeWidthProfile(rawData, width, top, bottom)
+  const oldBand = detectCaseBand(profile, 0.035)
+  const oldTopCut = top + oldBand.topIdx + 2
+  if (oldTopCut <= tipY) {
+    notes.push(`(note: old flat-cut topCut=${oldTopCut} would not actually have reached the lug tip at y=${tipY} — regression scenario may be too weak)`)
+  }
+
+  console.log(`  confidence=${result.confidence.toFixed(2)} strapAttachment=${result.strapAttachment}`)
+  if (notes.length) console.log(`  ${notes.join(' | ')}`)
+  return ok
 }
 
 void run()
