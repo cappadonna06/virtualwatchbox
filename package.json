@@ -37,6 +37,7 @@
     "images:bulk-approve": "tsx scripts/bulk-approve-reprocessed.ts",
     "straps:segment-cases": "tsx scripts/segment-watch-cases.ts",
     "straps:segment-cases:selftest": "tsx scripts/segment-watch-cases.selftest.ts",
+    "straps:segment-cases:realtest": "tsx scripts/segment-watch-cases.realtest.ts",
     "straps:sync-bridge": "tsx scripts/sync-case-bridge.ts",
     "prices:predict": "python3 scripts/predict-prices.py"
   },

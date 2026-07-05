@@ -310,8 +310,10 @@ const NEEDS_REVIEW_BELOW = 0.55
 
 // The 'auto' orchestrator: free tier first, pay for semantic reasoning only
 // on the hard cases.
-async function segmentAuto(imageBuffer: Buffer, id: string): Promise<{ result: SegmentationResult; providerUsed: string }> {
-  const geo = await new GeometricSilhouetteProvider().segmentCase(imageBuffer)
+async function segmentAuto(
+  imageBuffer: Buffer, id: string, hint?: { lugWidthMm?: number; braceletType?: string },
+): Promise<{ result: SegmentationResult; providerUsed: string }> {
+  const geo = await new GeometricSilhouetteProvider().segmentCase(imageBuffer, hint)
   if (geo.confidence >= ESCALATE_BELOW || !process.env.ANTHROPIC_API_KEY) {
     return { result: geo, providerUsed: 'geometric' }
   }
@@ -436,9 +438,27 @@ async function runSegment(supabase: SupabaseClient): Promise<void> {
       if (!srcUrl) { console.warn(`  ✗ ${id}: no primary image`); fa += 1; continue }
       const srcBuf = Buffer.from(await (await fetch(srcUrl)).arrayBuffer())
 
+      const hint = { braceletType: meta?.braceletType ?? undefined }
       const { result, providerUsed } = PROVIDER === 'auto'
-        ? await segmentAuto(srcBuf, id)
-        : { result: await getProvider().segmentCase(srcBuf, { braceletType: meta?.braceletType ?? undefined }), providerUsed: PROVIDER }
+        ? await segmentAuto(srcBuf, id, hint)
+        : { result: await getProvider().segmentCase(srcBuf, hint), providerUsed: PROVIDER }
+
+      // A provider (almost always the Claude tier) can discover a watch is
+      // integrated even when the catalog's own bracelet_type didn't say so —
+      // a catalog data gap, not a segmentation failure. Treat it exactly like
+      // the upfront catalog-known skip: no cutout gets uploaded, and the
+      // classification is written back so the NEXT run skips it before ever
+      // calling a provider.
+      if (result.strapAttachment === 'integrated') {
+        skipped += 1
+        await markNotApplicable(supabase, id)
+        await writeCaseClassification(supabase, id, result.caseShape, result.strapAttachment)
+        console.log(`  · skip ${id} (${providerUsed} identified an integrated bracelet the catalog missed)`)
+        const s = clusterStats.get(clusterKey) ?? { count: 0, sumConfidence: 0, skipped: 0 }
+        s.skipped += 1
+        clusterStats.set(clusterKey, s)
+        continue
+      }
 
       const masked = await applyCaseMask(srcBuf, result.caseMask)
       const norm = await normalizeCaseOnly(masked)

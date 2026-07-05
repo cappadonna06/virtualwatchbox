@@ -85,12 +85,21 @@ export default function WatchPickerDropdown({ c }: { c: StudioController }) {
 }
 
 function OwnedList({ c, onPick }: { c: StudioController; onPick: () => void }) {
-  if (!c.collectionWatches.length) {
-    return <div style={emptyHint}>No owned watches yet — try the catalog to dream.</div>
+  // Integrated-bracelet watches are never Studio-eligible — see isIntegrated's
+  // doc comment in useStudioController.
+  const eligible = c.collectionWatches.filter(w => !c.isIntegrated(w.watchId))
+  if (!eligible.length) {
+    return (
+      <div style={emptyHint}>
+        {c.collectionWatches.length
+          ? 'Your collection is all integrated-bracelet watches — Strap Studio doesn’t apply to those.'
+          : 'No owned watches yet — try the catalog to dream.'}
+      </div>
+    )
   }
   return (
     <div style={{ maxHeight: 360, overflowY: 'auto', padding: 6 }}>
-      {c.collectionWatches.map(w => (
+      {eligible.map(w => (
         <WatchRow
           key={w.id}
           active={w.watchId === c.watchId}
@@ -118,7 +127,8 @@ function CatalogSearch({ c, onPick }: { c: StudioController; onPick: () => void 
     const id = window.setTimeout(async () => {
       try {
         const res = await c.searchCatalog({ q: q.trim(), onlyWithImages: true, sortBy: 'heat', limit: 24 })
-        if (alive) setRows(res.rows)
+        // Integrated-bracelet watches are never Studio-eligible.
+        if (alive) setRows(res.rows.filter(w => w.braceletType !== 'integrated'))
       } catch {
         if (alive) setRows([])
       } finally {

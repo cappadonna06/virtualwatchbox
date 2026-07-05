@@ -1,8 +1,11 @@
 # Case Segmentation Strategy v2
 
-**Status:** tier-0 (geometric) and tier-1 (Claude vision) providers implemented and
-unit-validated on synthetic data (`npm run straps:segment-cases:selftest`). Not
-yet run against the real catalog — see "What's still required" below.
+**Status:** tier-0 (geometric) and tier-1 (Claude vision) providers implemented,
+unit-validated on synthetic data (`npm run straps:segment-cases:selftest`), and
+smoke-tested against one real photo (`npm run straps:segment-cases:realtest`)
+— see "Real-photo validation" below for what that test found and fixed. Not
+yet run against the real catalog batch or with a live `ANTHROPIC_API_KEY` —
+see "What's still required."
 
 ---
 
@@ -69,6 +72,70 @@ photo looks, where the strap visually plugs into the case) in
 npm run straps:segment-cases:selftest
 ```
 
+## Real-photo validation
+
+A real photo — a Tudor Black Bay GMT ("Pepsi") on a steel oyster bracelet,
+committed at `test-fixtures/case-segmentation/tudor-bb58-gmt-pepsi.webp`
+(see that directory's README for why this is a deliberate, narrow exception to
+the "never commit processed watch photos" rule) — surfaced a real gap the
+synthetic capsule model didn't cover: **a two-piece leather/rubber strap meets
+the case in a short, sharp junction, but a metal bracelet's end-links flare
+gradually across several links before reaching the lugs.** The original
+window size (tuned only against a short-taper capsule model) undershot the
+true case boundary by ~25px on this photo — visibly chopping into the bezel.
+
+Fix: `GeometricSilhouetteProvider.segmentCase()` now takes a
+`hint.braceletType` and widens its detection window when the hint isn't
+`'strap'` — which includes the catalog's most common convention, an *unset*
+`bracelet_type` meaning "plain metal bracelet" (2,491 of ~4.1k imaged
+watches), not "unknown." This fix also caught a real bug: the `'auto'`
+orchestrator (`segmentAuto` in `scripts/segment-watch-cases.ts`) was never
+actually passing the catalog hint through to the geometric tier at all — it
+only reached providers on the non-default `--provider=` path. Fixed; the
+synthetic self-test now covers both attachment families explicitly (short-cap
+"strap" specs with `hint.braceletType='strap'`, long-cap "bracelet" specs with
+no hint), and `scripts/segment-watch-cases.realtest.ts` runs the same
+provider against the committed real photo and writes annotated + case-only
+PNGs to `test-fixtures/case-segmentation/output/` (gitignored) for visual
+review — there's no exact pixel ground truth for a real photo the way there is
+for a synthetic one, so that script sanity-checks shape rather than exact
+position.
+
+After the fix, the Tudor photo's confidence rose from 0.448 → 0.496 — still
+correctly below both the escalation (0.7) and needs-review (0.55) thresholds.
+That's the right outcome, not a shortfall to chase further: this is a
+genuinely ambiguous case (gradual multi-link taper has no single "correct"
+row the way a sharp strap junction does), and the honest behavior is
+escalating to Claude vision or a human dragging the four lug markers in
+`/admin/image-review` → Case Segmentation, not an over-confident automated
+guess. One real photo is one data point — expect further constant tuning once
+more real photos (ideally a batch across bracelet styles: oyster, jubilee,
+mesh, two-piece leather, rubber, NATO) go through it.
+
+## Integrated bracelets: skip outright, don't just wait for low confidence
+
+The escalation tier exists to classify *ambiguous* cases (a metal bracelet
+photographed at an odd angle, an unusual case shape) — it is deliberately
+**not** the mechanism for handling watches the catalog already knows are
+integrated-bracelet designs (Royal Oak, Nautilus). Those are skipped before
+any provider ever runs (`runSegment` checks `catalogMeta.braceletType ===
+'integrated'` first). The Claude tier can still independently discover
+`strap_attachment: 'integrated'` on a watch the catalog *didn't* flag — a
+catalog data gap, not a segmentation failure — and the pipeline treats that
+identically to the upfront skip: no case-only image gets uploaded, and the
+classification is written back to `catalog_watches.strap_attachment_type` so
+the next run skips it before calling a provider at all.
+
+This distinction matters on the UI side too: integrated-bracelet watches
+aren't just missing a cutout (the side-by-side fallback, meant for watches
+pending processing) — they're never Studio-eligible, because the bracelet
+*is* the case design. All three documented entry points already gated this
+(`WatchSidebar`, the watch detail page, `StrapSidebar`'s compatibility
+engine), but the in-Studio watch picker (`WatchPickerDropdown`'s "My
+Watches"/"Browse Catalog" lists) didn't — you could reach an integrated watch
+by switching to it from inside the Studio. Fixed: `useStudioController`
+exposes `isIntegrated(id)`, and both picker lists filter it out.
+
 ## Three tiers, escalate only when needed
 
 | Tier | Provider | Cost | When |
@@ -129,12 +196,13 @@ up as unresolved review-queue items.
 ## What's still required (this session couldn't do it)
 
 This session ran in a sandboxed environment whose egress policy blocks
-Supabase Storage, the Replicate API, and the Anthropic API directly (only
+Supabase Storage and the Replicate/Anthropic APIs directly (only
 `anthropic.com`/`registry.npmjs.org`/a short allowlist are reachable) — so
-none of the three providers could be exercised against real catalog photos
-here. Everything above was validated the only way available: synthetic
-silhouettes built to match real watch-photo proportions, checked against
-analytic ground truth. Before trusting this at scale:
+neither the Claude vision tier nor a real catalog batch could be exercised
+here. What *could* be validated: the geometric tier's pure pixel logic, both
+against synthetic silhouettes (exact ground truth) and one real user-provided
+photo (visual review only — see "Real-photo validation" above). Before
+trusting this at scale:
 
 1. **Run the real batch.** `npm run straps:segment-cases -- --top 100 --by model-family`
    against the actual `data/catalog-heat-scores.json` top-100, with

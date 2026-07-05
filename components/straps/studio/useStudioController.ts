@@ -87,6 +87,17 @@ export function useStudioController() {
 
   const caseOnly: CaseOnlyEntry | undefined = useMemo(() => getCaseOnly(watchId), [watchId])
 
+  // Integrated-bracelet designs (Royal Oak / Nautilus style) are never
+  // Studio-eligible — the bracelet IS the case design, so "try a different
+  // strap" doesn't apply, not just "no cutout yet." The watch picker uses
+  // this to keep them out of both the owned list and catalog search, rather
+  // than letting a user land in the side-by-side fallback (which is meant for
+  // watches pending processing, not ones that structurally never qualify).
+  const isIntegrated = useCallback((id: string): boolean => {
+    const catalog = getCatalogWatch(id) || fetched.get(id)
+    return catalog?.braceletType === 'integrated'
+  }, [getCatalogWatch, fetched])
+
   const studioWatch: StudioWatch | null = useMemo(() => {
     if (!watchId) return null
     const owned = collectionWatches.find(w => w.watchId === watchId)
@@ -286,6 +297,7 @@ export function useStudioController() {
     collectionWatches,
     searchCatalog,
     setWatch,
+    isIntegrated,
     // footer
     buyUrl,
     shareLook,

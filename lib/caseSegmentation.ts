@@ -171,7 +171,16 @@ export interface CaseBandResult {
 // transitions — no ML segmentation required for the common two-piece-strap /
 // drilled-lug-bracelet case. A flat profile (no sharp transition) is the
 // correct signal for an integrated-bracelet design, not a detection failure.
-export function detectCaseBand(profile: Int32Array): CaseBandResult {
+//
+// windowFrac matters more than it looks: validated against a real photo (a
+// Tudor Black Bay GMT on a steel oyster bracelet), the default ~3.5% window
+// — tuned against two-piece leather/rubber straps, which meet the case in a
+// short, sharp junction — badly undershot the true case boundary. A metal
+// bracelet's end-links flare gradually across several links before reaching
+// the lugs, so its transition genuinely spans a much longer stretch of the
+// profile. GeometricSilhouetteProvider passes a wider window whenever the
+// catalog hint says "not a strap" for exactly this reason.
+export function detectCaseBand(profile: Int32Array, windowFrac = 0.035): CaseBandResult {
   const n = profile.length
   const margin = Math.max(2, Math.round(n * 0.05))
   let maxW = -1
@@ -183,7 +192,7 @@ export function detectCaseBand(profile: Int32Array): CaseBandResult {
     return { topIdx: margin, botIdx: n - 1 - margin, confidence: 0.15, sharpTransition: false }
   }
 
-  const window = Math.max(4, Math.round(n * 0.035))
+  const window = Math.max(4, Math.round(n * windowFrac))
   const rise = steepestRise(profile, margin, maxIdx, window)
   const fall = steepestFall(profile, maxIdx, n - 1 - margin, window)
   const topIdx = rise?.idx ?? margin
@@ -351,12 +360,17 @@ export async function deriveLugGeometry(rgba: Buffer, width: number, height: num
 // Tier 0 — free, deterministic, no external API. See detectCaseBand's doc
 // comment for the core insight this exploits.
 export class GeometricSilhouetteProvider implements SegmentationProvider {
-  async segmentCase(imageBuffer: Buffer): Promise<SegmentationResult> {
+  async segmentCase(imageBuffer: Buffer, hint?: { lugWidthMm?: number; braceletType?: string }): Promise<SegmentationResult> {
     const { data, info } = await sharp(imageBuffer).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
     const { width, height } = info
     const { top, bottom } = alphaBoundsRows(data, width, height)
     const profile = computeWidthProfile(data, width, top, bottom)
-    const band = detectCaseBand(profile)
+    // 'strap' (leather/rubber/NATO) meets the case abruptly; anything else —
+    // including the catalog's common "unset = plain metal bracelet" — flares
+    // gradually across several end-links, so it needs a wider window. See
+    // detectCaseBand's doc comment.
+    const windowFrac = hint?.braceletType === 'strap' ? 0.035 : 0.1
+    const band = detectCaseBand(profile, windowFrac)
 
     // Bias the cut a couple of px INTO the case (never into the strap) — the
     // new strap layers behind at this exact row, so any residual strap pixel

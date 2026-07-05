@@ -68,3 +68,7 @@ catboost_info/
 
 # Claude Code working artifacts (audit reports, backups, research scratch).
 .agents/
+
+# Visual output of scripts/segment-watch-cases.realtest.ts (annotated/case-only
+# PNGs for human review) — not exact-position ground truth, so not committed.
+test-fixtures/case-segmentation/output/
