@@ -281,6 +281,56 @@ up as unresolved review-queue items.
    tier, or the full enum from Claude) so future routing and admin triage
    don't need to decode the `lug_geometry` jsonb blob.
 
+## Runbook: casing the catalog
+
+This is the operational loop for pointing the pipeline at the watch database.
+The design above and the fixtures/tests are one system: every learning from a
+real photo lives in three places — the model change (lib/caseSegmentation.ts),
+a committed fixture proving it (test-fixtures/case-segmentation/), and a test
+that fails if it regresses (`selftest` for analytic ground truth, `realtest`
+for real photos).
+
+**Per-batch procedure:**
+
+1. `npm run straps:segment-cases:selftest && npm run straps:segment-cases:realtest`
+   — green before any batch touches production data.
+2. `npm run straps:segment-cases -- --top 100 --by model-family` (with
+   `ANTHROPIC_API_KEY` set for tier-1 escalation). Model-family ordering makes
+   shared failure modes obvious in review. The catalog's `bracelet_type` flows
+   in as the per-watch hint; integrated designs are skipped outright.
+3. Outcomes land by confidence: ≥ 0.9 auto-approved, 0.55-0.9 `pending`,
+   < 0.55 `needs_review` (after tier-1 escalation below 0.7). Review the
+   per-family summary the script prints, then work through
+   `/admin/image-review` → **Case Segmentation** — lowest confidence first
+   (the queue is sorted that way). Drag the four lug markers to correct;
+   approve/reject/not-applicable.
+4. `npm run straps:sync-bridge` — folds the reviewed Supabase state into the
+   committed `data/case-only-images.json`; commit it (mirror-of-live pattern,
+   same as `catalog:sync-heat`).
+
+**When a watch comes out wrong (the fixture loop — how this doc was built):**
+
+1. Copy its primary photo into `test-fixtures/case-segmentation/` and add a
+   row to that README naming what makes it hard.
+2. Add it to `FIXTURES` in `scripts/segment-watch-cases.realtest.ts` with the
+   right hint, run the realtest, and inspect the gitignored `output/` images —
+   zoom the channels; the failures live at the boundaries.
+3. Fix the model, re-run BOTH test suites (the other fixtures are the
+   regression net — every fix so far broke on its second real photo until the
+   first one was pinned), and where the failure is expressible analytically,
+   add a probe to the selftest.
+4. Commit fixture + fix + doc note together, so the learning can't drift
+   from the code.
+
+**Current case-shape coverage:** round (circle/ellipse fit), rectangular/tank
+(rounded-rect model with model competition — a trimmed circle fit will
+mis-explain a rectangle at rms ~8, so the rect model wins whenever the round
+fit is poor and the sides are straight). Cushion/tonneau land wherever their
+curvature genuinely fits better — a soft cushion may pass as a poor ellipse
+(confidence-capped) or fail to a row-band at 0.3; either way they stay in the
+escalation/review zone rather than shipping a bad cutout. A dedicated
+tonneau model is a known follow-up if review volume demands it.
+
 ## What's still required (this session couldn't do it)
 
 This session ran in a sandboxed environment whose egress policy blocks

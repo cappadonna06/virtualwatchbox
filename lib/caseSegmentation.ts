@@ -463,7 +463,79 @@ export function fitCaseBody(
   const maxDim = Math.max(width, yBottom - yTop + 1)
   const sane = (s: number) => s > maxDim * 0.1 && s < maxDim * 2
   if (!sane(f.a) || !sane(f.b)) return null
+  // Straight parallel sides (a rectangular/tank case) fit a near-infinite
+  // circle with a tiny residual — reject any fit whose radius wildly exceeds
+  // the silhouette's actual half-span so those cases fall through to the
+  // rounded-rectangle model instead of a degenerate "arc".
+  let spanMax = 0
+  for (const [x] of pts) spanMax = Math.max(spanMax, Math.abs(x - f.cx))
+  if (f.a > spanMax * 1.25) return null
   return { cx: f.cx, cy: f.cy, a: f.a, b: f.b, rms, samples }
+}
+
+export interface CaseRectFit {
+  left: number
+  right: number
+  /** Rows where the case's straight sides begin/end (the flat top/bottom
+   *  edges, before corner rounding). */
+  top: number
+  bottom: number
+  /** MAD of the side-edge samples, px — straightness/quality signal. */
+  mad: number
+  samples: number
+}
+
+// Rounded-rectangle case model (Cartier Tank et al.). The sides are straight
+// vertical lines: left/right = robust medians of the silhouette edges across
+// the band (percentile trim rejects the crown, same as the ellipse path), and
+// the case's vertical extent = the contiguous run of rows whose span reaches
+// both sides (corner rounding and the strap fall outside it). Returns null
+// when the sides aren't actually straight — that's a round case or noise,
+// not a rectangle.
+export function fitCaseRect(
+  rgba: Buffer, width: number, yTop: number, yBottom: number, threshold = 24,
+): CaseRectFit | null {
+  const rows: Array<{ y: number; left: number; right: number }> = []
+  for (let y = Math.max(0, yTop); y <= yBottom; y += 1) {
+    const span = spanAt(rgba, width, y, threshold)
+    if (span) rows.push({ y, left: span.left, right: span.right })
+  }
+  if (rows.length < 24) return null
+
+  const med = (vals: number[]) => [...vals].sort((p, q) => p - q)[Math.floor(vals.length / 2)]
+  // Trim crown/pusher rows: keep the 70% of rows whose right edge is closest
+  // to the median (protrusions are one-sided and a minority), then re-median.
+  let left = med(rows.map(r => r.left))
+  let right = med(rows.map(r => r.right))
+  for (let pass = 0; pass < 2; pass += 1) {
+    const l = left
+    const r = right
+    const scored = rows
+      .map(row => ({ row, err: Math.abs(row.left - l) + Math.abs(row.right - r) }))
+      .sort((p, q) => p.err - q.err)
+    const keep = scored.slice(0, Math.max(24, Math.floor(scored.length * 0.7))).map(s => s.row)
+    left = med(keep.map(k => k.left))
+    right = med(keep.map(k => k.right))
+  }
+  const inliers = rows.filter(r => Math.abs(r.left - left) <= 3 && Math.abs(r.right - right) <= 3)
+  if (inliers.length < rows.length * 0.4) return null
+  const devs = inliers.map(r => Math.abs(r.left - left) + Math.abs(r.right - right)).sort((p, q) => p - q)
+  const mad = devs[Math.floor(devs.length / 2)]
+
+  // Vertical extent: widest contiguous run of rows spanning both sides,
+  // scanned over the FULL image (the band only seeds the sides).
+  const tol = 10
+  let top = -1
+  let bottom = -1
+  const { top: alphaTop, bottom: alphaBottom } = alphaBoundsRows(rgba, width, rgba.length / (width * 4))
+  for (let y = alphaTop; y <= alphaBottom; y += 1) {
+    const span = spanAt(rgba, width, y, threshold)
+    const full = span != null && span.left <= left + tol && span.right >= right - tol
+    if (full && top < 0) top = y
+    if (full) bottom = y
+  }
+  if (top < 0 || bottom - top < (right - left) * 0.5) return null
+  return { left, right, top, bottom, mad, samples: inliers.length }
 }
 
 export interface LugZone {
@@ -604,11 +676,19 @@ export function refineChannelFloor(
   rgba: Buffer, width: number, height: number,
   body: { cx: number; cy: number; a: number; b: number },
   channelHalf: number, tipY: number, side: 'top' | 'bottom',
+  // Boundary prior per column. Defaults to the fitted ellipse arc; the
+  // rounded-rectangle path passes a flat line at the case's top/bottom edge,
+  // with a wider, ASYMMETRIC window — a rectangle's "first full-width row"
+  // is its corner tips, and the true boundary can sit far to either side:
+  // the Tank fixture's top strap rolls OVER the flat edge (boundary ~39 rows
+  // outside the prior) while its bottom rail sits ~55 rows INSIDE it.
+  prior?: { yAt: (x: number) => number; capY: number; window?: number; windowIn?: number },
 ): ChannelFloor {
   const { cx, cy, a, b } = body
   const x0 = Math.max(0, Math.floor(cx - channelHalf - 4))
   const x1 = Math.min(width - 1, Math.ceil(cx + channelHalf + 4))
-  const w = Math.max(4, Math.round(a * 0.06))
+  const w = prior?.window ?? Math.max(4, Math.round(a * 0.06))
+  const wIn = prior?.windowIn ?? w
   const biasIn = 1
   const rows = new Int32Array(x1 - x0 + 1)
 
@@ -627,7 +707,7 @@ export function refineChannelFloor(
   // shadowed strap alike; the handful of case-edge pixels that sneak into
   // the deepest rows are a minority the median ignores.
   const inward = side === 'top' ? 1 : -1
-  const capY = Math.round(side === 'top' ? cy - b : cy + b)
+  const capY = prior ? Math.round(prior.capY) : Math.round(side === 'top' ? cy - b : cy + b)
   const spanRows = Math.max(12, (capY - tipY) * inward - 2)
   const samples: Array<[number, number, number]> = []
   for (let k = 2; k <= spanRows; k += 1) {
@@ -649,19 +729,30 @@ export function refineChannelFloor(
   // sits in deep lug shadow (near-black), leaving its own edge highlights
   // (~30-40 luma) in an absolute ramp's gray zone — relative to a ~680
   // contrast they're unambiguously strap-side.
-  const caseSamples: Array<[number, number, number]> = []
-  for (let k = 3; k <= 9; k += 1) {
+  // With an arc prior, the rows just past the cap are reliably case (bezel).
+  // With a flat-line prior the boundary itself is uncertain, so instead scan
+  // the window's case side for the ROW most distinct from the strap — that
+  // self-selects the case metal (the Tank fixture's bright top rail) even
+  // when the rows adjacent to the prior are still strap, and even when other
+  // case-side content (a blue dial under a navy strap) resembles the strap.
+  const caseRowSpan = prior ? 2 * w : 9
+  let contrast = 0
+  let bestCase: [number, number, number] | null = null
+  for (let k = 3; k <= caseRowSpan; k += 1) {
     const y = capY + inward * k
     if (y < 0 || y >= height) break
+    const rowSamples: Array<[number, number, number]> = []
     for (let x = Math.max(x0 + 6, Math.round(cx - channelHalf * 0.6)); x <= Math.min(x1 - 6, Math.round(cx + channelHalf * 0.6)); x += 3) {
       const i = (y * width + x) * 4
-      if (rgba[i + 3] > 200) caseSamples.push([rgba[i], rgba[i + 1], rgba[i + 2]])
+      if (rgba[i + 3] > 200) rowSamples.push([rgba[i], rgba[i + 1], rgba[i + 2]])
     }
+    if (rowSamples.length < 4) continue
+    const rowMed = (k2: number) => rowSamples.map(s => s[k2]).sort((p, q) => p - q)[Math.floor(rowSamples.length / 2)]
+    const rowColor: [number, number, number] = [rowMed(0), rowMed(1), rowMed(2)]
+    const d = Math.abs(rowColor[0] - strapR) + Math.abs(rowColor[1] - strapG) + Math.abs(rowColor[2] - strapB)
+    if (d > contrast) { contrast = d; bestCase = rowColor }
   }
-  const caseMedian = (k: number) => caseSamples.map(s => s[k]).sort((p, q) => p - q)[Math.floor(caseSamples.length / 2)] ?? 128
-  const contrast = caseSamples.length >= 12
-    ? Math.abs(caseMedian(0) - strapR) + Math.abs(caseMedian(1) - strapG) + Math.abs(caseMedian(2) - strapB)
-    : 0
+  if (!bestCase) contrast = 0
   // Color mode iff the strap is decisively separable from the case metal —
   // a bracelet's steel-on-steel contrast (~90 on the Tudor fixture) stays in
   // texture mode; leather/rubber (~400-700) qualifies.
@@ -678,10 +769,12 @@ export function refineChannelFloor(
   for (let x = x0; x <= x1; x += 1) {
     const dx = x - cx
     const inside = 1 - (dx / a) * (dx / a)
-    const yArcF = inside > 0 ? (side === 'top' ? cy - b * Math.sqrt(inside) : cy + b * Math.sqrt(inside)) : cy
+    const yArcF = prior
+      ? prior.yAt(x)
+      : inside > 0 ? (side === 'top' ? cy - b * Math.sqrt(inside) : cy + b * Math.sqrt(inside)) : cy
     const yArc = Math.round(yArcF)
-    const lo = Math.max(side === 'top' ? tipY + 1 : Math.round(cy), yArc - w)
-    const hi = Math.min(side === 'top' ? Math.round(cy) : tipY - 1, yArc + w)
+    const lo = Math.max(side === 'top' ? tipY + 1 : Math.round(cy), yArc - (side === 'top' ? w : wIn))
+    const hi = Math.min(side === 'top' ? Math.round(cy) : tipY - 1, yArc + (side === 'top' ? wIn : w))
     let snapped = yArc
     if (colorMode) {
       // COLOR mode: boundary = outermost row that stops matching the strap's
@@ -838,6 +931,90 @@ export async function buildCaseContourMaskPng(
   return sharp(buf, { raw: { width, height, channels: 1 } }).png().toBuffer()
 }
 
+export interface RectContourParams {
+  rect: CaseRectFit
+  channelHalfTop: number
+  channelHalfBottom: number
+  floorTop?: ChannelFloor
+  floorBottom?: ChannelFloor
+  /** How deep past the flat edges the strap-color veto reaches. Must stay
+   *  clear of the dial — a blue dial under a navy strap would veto itself. */
+  vetoMargin?: number
+}
+
+// Rounded-rectangle sibling of buildCaseContourMaskPng (Cartier Tank et al.):
+// keep = the case rectangle between the snapped floors, plus everything the
+// corners round through above/below the flat edges OUTSIDE the strap channel
+// (only corner metal exists there — the strap is narrower than the case), plus
+// the crown protruding past a side. The color-mode strap veto covers every
+// uncertain zone, exactly as in the round path.
+export async function buildRectContourMaskPng(
+  width: number, height: number, p: RectContourParams, feather = 1.5, rgba?: Buffer,
+): Promise<Buffer> {
+  const { rect } = p
+  const cx = (rect.left + rect.right) / 2
+  const cornerReach = Math.round((rect.right - rect.left) * 0.15)
+  const crownPad = Math.round((rect.bottom - rect.top) * 0.08)
+  const buf = Buffer.alloc(width * height)
+  const floorRowAt = (floor: ChannelFloor | undefined, x: number): number | null => {
+    if (!floor) return null
+    const idx = x - floor.x0
+    if (idx < 0 || idx >= floor.rows.length) return null
+    return floor.rows[idx]
+  }
+  const vetoAt = (floor: ChannelFloor, x: number, y: number): number => {
+    if (!rgba || !floor.colorMode) return 1
+    const i = (y * width + x) * 4
+    if (rgba[i + 3] <= 60) return 1
+    const dist = Math.abs(rgba[i] - floor.strapColor.r)
+      + Math.abs(rgba[i + 1] - floor.strapColor.g)
+      + Math.abs(rgba[i + 2] - floor.strapColor.b)
+    const span = Math.max(1, floor.vetoFull - floor.vetoZero)
+    return Math.max(0, Math.min(1, (dist - floor.vetoZero) / span))
+  }
+  for (let y = 0; y < height; y += 1) {
+    const rowOff = y * width
+    for (let x = 0; x < width; x += 1) {
+      const dx = Math.abs(x - cx)
+      let keep: number
+      if (x < rect.left - feather || x > rect.right + feather) {
+        // Beyond the case sides: only the crown lives here, well inside the
+        // case's vertical span.
+        keep = y >= rect.top + crownPad && y <= rect.bottom - crownPad ? 1 : 0
+      } else {
+        const channelHalf = y < (rect.top + rect.bottom) / 2 ? p.channelHalfTop : p.channelHalfBottom
+        const floor = y < (rect.top + rect.bottom) / 2 ? p.floorTop : p.floorBottom
+        const floorRow = floorRowAt(floor, x)
+        let topBound: number
+        let botBound: number
+        if (dx <= channelHalf + 4 && floorRow != null) {
+          topBound = y < (rect.top + rect.bottom) / 2 ? floorRow : rect.top - cornerReach
+          botBound = y < (rect.top + rect.bottom) / 2 ? rect.bottom + cornerReach : floorRow
+        } else {
+          // Corner columns: the strap never reaches here (it's narrower than
+          // the case), so be generous — the alpha channel bounds the corners.
+          topBound = rect.top - cornerReach
+          botBound = rect.bottom + cornerReach
+        }
+        const kTop = Math.max(0, Math.min(1, (y - (topBound - feather)) / feather))
+        const kBot = Math.max(0, Math.min(1, ((botBound + feather) - y) / feather))
+        keep = Math.min(kTop, kBot)
+        // Strap veto over the uncertain zones: the strap rolls over a tank's
+        // flat edges, so the zone reaches vetoMargin past them — but never
+        // deep enough to touch the dial (a blue dial under a navy strap
+        // would veto itself).
+        const vm = p.vetoMargin ?? 3
+        if (keep > 0 && (y < rect.top + vm || y > rect.bottom - vm)) {
+          const f = y < (rect.top + rect.bottom) / 2 ? p.floorTop : p.floorBottom
+          if (f) keep *= vetoAt(f, x, y)
+        }
+      }
+      buf[rowOff + x] = Math.round(keep * 255)
+    }
+  }
+  return sharp(buf, { raw: { width, height, channels: 1 } }).png().toBuffer()
+}
+
 // Multiplies the source alpha channel by the mask's greyscale value — the one
 // mask-application implementation every provider tier shares (previously each
 // call site improvised its own sharp composite/blend, which is what made the
@@ -981,10 +1158,23 @@ export class GeometricSilhouetteProvider implements SegmentationProvider {
     const bandPad = Math.max(4, Math.round((bandBottomAbs - bandTopAbs) * 0.12))
 
     const body = fitCaseBody(data, width, bandTopAbs + bandPad, bandBottomAbs - bandPad)
+    // Model competition: a rectangular case (Cartier Tank) can still "pass"
+    // the circle fit — percentile trimming prunes the points down to a subset
+    // a mediocre circle explains (measured on the Tank fixture: a=213,
+    // rms 7.8 — real round cases fit at rms ≤ 2). So whenever the round fit
+    // is poor, try the rounded-rectangle model and let the better explanation
+    // win. On genuinely round watches fitCaseRect returns null (an arc's side
+    // edges fail its straight-side inlier bar), so round watches never take
+    // this branch by accident.
+    if (!body || body.rms > 4) {
+      const rect = fitCaseRect(data, width, bandTopAbs + bandPad, bandBottomAbs - bandPad)
+      if (rect && (!body || rect.mad * 2 < body.rms)) {
+        return this.segmentRectCase(data, width, height, top, rect)
+      }
+    }
     if (!body) {
-      // No stable case-body ellipse (rectangular/tonneau case or degenerate
-      // silhouette) — fall back to the coarse row band at low confidence so
-      // the auto orchestrator escalates to the Claude tier or human review.
+      // Neither model holds — coarse row band at low confidence so the auto
+      // orchestrator escalates to the Claude tier or human review.
       const caseMask = await renderRowBandMaskPng(width, height, bandTopAbs, bandBottomAbs, 2)
       return { caseMask, lugGeometry: null, confidence: 0.3, strapAttachment: 'unknown', caseShape: 'other' }
     }
@@ -1032,6 +1222,87 @@ export class GeometricSilhouetteProvider implements SegmentationProvider {
       confidence,
       caseShape: fitScore > 0.4 ? (roundish ? 'round' : 'cushion') : 'other',
       strapAttachment: tipScore > 0.35 && plausible ? 'drilled_lug' : 'unknown',
+    }
+  }
+
+  // Rounded-rectangle path (Cartier Tank et al.). The strap/case boundary is
+  // the case's flat top/bottom edge — refineChannelFloor runs with a
+  // flat-line prior instead of an arc, and the same color snap + strap veto
+  // find the exact edge. The strap on a tank is narrower than the case, so
+  // the "lug tips" ARE the boundary rows and the brancard corners are kept
+  // by the corner columns' generosity (nothing but case exists there).
+  private async segmentRectCase(
+    data: Buffer, width: number, height: number, alphaTop: number, rect: CaseRectFit,
+  ): Promise<SegmentationResult> {
+    const cx = (rect.left + rect.right) / 2
+    const halfW = (rect.right - rect.left) / 2
+    const halfH = (rect.bottom - rect.top) / 2
+    const pseudoBody = { cx, cy: (rect.top + rect.bottom) / 2, a: halfW, b: halfH }
+
+    // Measure the strap clear of the corner rounding — 8px above the "full
+    // width" row is still corner metal (measured on the Tank fixture:
+    // span 350 at top−8 vs the strap's true 284 at top−24).
+    const cornerClear = Math.max(16, Math.round(halfW * 0.16))
+    const channelHalfFor = (side: 'top' | 'bottom'): number => {
+      const y = side === 'top' ? rect.top - cornerClear : rect.bottom + cornerClear
+      const span = spanAt(data, width, Math.max(0, Math.min(height - 1, y)))
+      if (!span) return halfW * 0.7
+      const half = Math.max(cx - span.left, span.right - cx)
+      return Math.max(halfW * 0.3, Math.min(halfW * 0.95, half))
+    }
+    const channelHalfTop = channelHalfFor('top')
+    const channelHalfBottom = channelHalfFor('bottom')
+
+    const sampleReach = Math.min(80, Math.max(20, rect.top - alphaTop - 8))
+    // The boundary can sit far to EITHER side of the corner row: the Tank
+    // fixture's top strap rolls OVER the flat edge (boundary ~39 rows outside
+    // the prior) while its bottom rail sits ~55 rows INSIDE it — hence the
+    // asymmetric reach, deeper on the inward side.
+    const window = Math.max(12, Math.round(halfH * 0.18))
+    const windowIn = Math.max(window, Math.round(halfH * 0.3))
+    const floorTop = refineChannelFloor(
+      data, width, height, pseudoBody, channelHalfTop, rect.top - sampleReach, 'top',
+      { yAt: () => rect.top, capY: rect.top, window, windowIn },
+    )
+    const floorBottom = refineChannelFloor(
+      data, width, height, pseudoBody, channelHalfBottom, rect.bottom + sampleReach, 'bottom',
+      { yAt: () => rect.bottom, capY: rect.bottom, window, windowIn },
+    )
+
+    const caseMask = await buildRectContourMaskPng(width, height, {
+      rect, channelHalfTop, channelHalfBottom, floorTop, floorBottom,
+      vetoMargin: window,
+    }, 1.5, data)
+
+    const medianRow = (floor: ChannelFloor): number => {
+      const sorted = [...floor.rows].sort((p, q) => p - q)
+      return sorted[Math.floor(sorted.length / 2)]
+    }
+    const tipTopY = medianRow(floorTop)
+    const tipBottomY = medianRow(floorBottom)
+    const lugGeometry: LugGeometry = {
+      topLugLeft: { x: Math.round(cx - channelHalfTop), y: tipTopY },
+      topLugRight: { x: Math.round(cx + channelHalfTop), y: tipTopY },
+      bottomLugLeft: { x: Math.round(cx - channelHalfBottom), y: tipBottomY },
+      bottomLugRight: { x: Math.round(cx + channelHalfBottom), y: tipBottomY },
+      lugWidthPx: Math.round(channelHalfTop + channelHalfBottom),
+      imageWidth: width,
+      imageHeight: height,
+    }
+
+    const rectScore = Math.max(0, Math.min(1, 1 - rect.mad / 3))
+    const colorScore = floorTop.colorMode && floorBottom.colorMode ? 1 : 0.3
+    const channelRatio = (channelHalfTop + channelHalfBottom) / (2 * halfW)
+    const plausible = channelRatio > 0.35 && channelRatio < 0.98
+    const confidence = Math.max(0.1, Math.min(0.9,
+      0.2 + 0.25 * rectScore + 0.25 * colorScore + (plausible ? 0.15 : 0)))
+    const aspect = halfH / halfW
+    return {
+      caseMask,
+      lugGeometry,
+      confidence,
+      caseShape: aspect > 0.92 && aspect < 1.08 ? 'square' : 'rectangular',
+      strapAttachment: colorScore === 1 ? 'drilled_lug' : 'unknown',
     }
   }
 }

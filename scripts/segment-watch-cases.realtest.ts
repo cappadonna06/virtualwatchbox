@@ -29,6 +29,12 @@ const FIXTURES: Array<{ file: string; hint?: { braceletType?: string } }> = [
   // the lug span (tips only found because the scan is confined beyond the
   // case cap). Exercises the color-driven channel floor + strap veto.
   { file: 'iwc-portugieser-chrono-navy-strap.webp', hint: { braceletType: 'strap' } },
+  // Rectangular case (rounded-rect model): straight brancard sides, strap
+  // ROLLING OVER the flat top edge (~39 rows past the corner row) while the
+  // bottom rail sits ~55 rows inside it (asymmetric window), a navy strap
+  // over a BLUE dial (why the veto margin must stay clear of the dial), and
+  // a blue-cabochon crown kept by the beyond-the-sides rule.
+  { file: 'cartier-tank-mc-navy-strap.webp', hint: { braceletType: 'strap' } },
 ]
 
 async function main(): Promise<void> {
