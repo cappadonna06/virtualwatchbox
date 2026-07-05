@@ -7,6 +7,7 @@ import { brand } from '@/lib/brand'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { isAdminEmail } from '@/lib/auth/admin'
 import { withVersion } from '@/lib/watchImages/cacheBust'
+import CaseSegmentationReview from '@/components/admin/CaseSegmentationReview'
 
 export const dynamic = 'force-dynamic'
 
@@ -105,6 +106,7 @@ export default function AdminImageReviewPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
 
+  const [mode, setMode] = useState<'background' | 'case'>('background')
   const [status, setStatus] = useState<'all' | ReviewStatus>('needs_reprocess')
   const [page, setPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
@@ -255,6 +257,32 @@ export default function AdminImageReviewPage() {
       <p style={{ margin: '6px 0 24px', fontFamily: brand.font.sans, fontSize: 13, color: brand.colors.muted, maxWidth: 720 }}>
         Side-by-side check of the catalog&apos;s processed primary image vs. the original. Flag bad rows for re-processing; the batch script can re-run them with bumped quality settings.
       </p>
+
+      {/* Mode toggle */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+        {(['background', 'case'] as const).map(m => {
+          const active = mode === m
+          return (
+            <button
+              key={m}
+              onClick={() => setMode(m)}
+              style={{
+                padding: '9px 16px',
+                background: active ? brand.colors.gold : '#FFFFFF',
+                color: active ? brand.colors.white : brand.colors.ink,
+                border: `1px solid ${active ? brand.colors.gold : brand.colors.border}`,
+                borderRadius: brand.radius.md,
+                fontFamily: brand.font.sans, fontSize: 13, fontWeight: 600, letterSpacing: '0.02em',
+                cursor: 'pointer',
+              }}
+            >
+              {m === 'background' ? 'Background removal' : 'Case segmentation'}
+            </button>
+          )
+        })}
+      </div>
+
+      {mode === 'case' ? <CaseSegmentationReview /> : <>
 
       {/* Search */}
       <div style={{ marginBottom: 16, position: 'relative', maxWidth: 480 }}>
@@ -477,6 +505,7 @@ export default function AdminImageReviewPage() {
           No images in this view.
         </div>
       )}
+      </>}
     </div>
   )
 }

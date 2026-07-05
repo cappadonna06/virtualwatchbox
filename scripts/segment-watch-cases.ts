@@ -6,45 +6,57 @@
  * watch head for a true composite. Also derives lug-attachment geometry (where
  * the strap meets the case) used to position + width-scale the strap.
  *
- * Outputs, per watch:
- *   - watch-images/{catalog_watch_id}/case-only.png   (Supabase Storage, RGBA)
- *   - watch-images/{catalog_watch_id}/case-only.webp
- *   - watch_images columns (case_only_url, case_only_webp_url, lug_geometry,
- *     segmentation_confidence, segmentation_status) — requires migration 032;
- *     write is best-effort and degrades gracefully if not yet applied.
- *   - data/case-only-images.json  — committed static bridge the client reads at
- *     module-load (lib/caseOnlyImages.ts), so the Studio needs zero round-trips.
+ * The segmentation algorithms (providers) live in lib/caseSegmentation.ts —
+ * this file is the CLI/orchestration layer: argument parsing, Supabase I/O,
+ * the tiered 'auto' escalation policy, and the committed static bridge.
  *
- * ── Providers (swappable, provider-agnostic) ───────────────────────────────
- *   SegmentationProvider.segmentCase(buffer, hint) → { caseMask, lugGeometry, confidence }
+ * ── Why the old default (generic promptable SAM segmentation) didn't work ──
+ * Catalog photos already have clean transparent backgrounds — the hard part
+ * was never "find the watch," it's "find where the case ends and the strap
+ * begins" WITHIN a silhouette we already have. Generic segmentation models
+ * (grounded-SAM et al.) have no notion of "watch lug" and need a REPLICATE_API_TOKEN
+ * that was never actually configured for this project — that path produced
+ * zero real segmentations. See docs/playbooks/case-segmentation-strategy.md.
  *
- *   • ReplicateSamProvider (DEFAULT) — SAM 3 / grounded-SAM via the Replicate
- *     REST API (REPLICATE_API_TOKEN). Text+point hinted to "watch case head
- *     excluding strap/bracelet". Model id is configurable (REPLICATE_SEGMENT_MODEL).
- *   • OpenAiMaskProvider (FALLBACK) — OpenAI image-edit mask generation
- *     (OPENAI_API_KEY). Best-effort; less reliable than SAM. Unverified.
+ * ── Providers (swappable, provider-agnostic — see lib/caseSegmentation.ts) ──
+ *   • GeometricSilhouetteProvider (DEFAULT, tier 0, free) — width-profile
+ *     boundary detection on the existing alpha channel. Weak on integrated-
+ *     bracelet designs by construction (no sharp width transition) — which is
+ *     the correct signal to escalate or skip, not a bug.
+ *   • ClaudeVisionLandmarkProvider (tier 1, escalation) — for low-confidence
+ *     geometric results, asks Claude's vision API for the four lug-tip
+ *     landmark points directly as structured tool output (ANTHROPIC_API_KEY).
+ *   • ReplicateSamProvider (tier 2, rare heavy fallback) — SAM/grounded-SAM via
+ *     the Replicate REST API (REPLICATE_API_TOKEN). No longer the default.
+ *   • OpenAiMaskProvider (documented fallback, not wired for batch use).
  *   • --ingest mode bypasses providers entirely: the inputs are ALREADY
  *     case-only (e.g. curated 3D renders in public/demo-cases), so we only
  *     normalize → derive geometry → upload.
  *
- *   Premium 3rd-party option (NOT built — noted for future scaling): a paid
- *   segmentation/mask API such as remove.bg's mask tier, or a specialized
- *   watch-segmentation service, can drop in behind the same SegmentationProvider
- *   interface.
+ * Catalog watches tagged bracelet_type='integrated' (Royal Oak / Nautilus
+ * style, where the bracelet visually flows into the case with no drilled lug)
+ * are skipped outright — the Studio's own product design already keeps those
+ * side-by-side rather than composited, so attempting a cutout would be
+ * fighting the product, not a segmentation shortfall.
  *
  * ── Usage ──────────────────────────────────────────────────────────────────
- *   # Ingest pre-segmented case-only renders (primary path today):
+ *   # Ingest pre-segmented case-only renders (curated 3D demo assets):
  *   npm run straps:segment-cases -- --ingest public/demo-cases
  *
- *   # Segment the top 100 by heat score (scaling path; needs REPLICATE_API_TOKEN):
+ *   # Segment the top 100 by heat score (default: geometric + Claude escalation):
  *   npm run straps:segment-cases -- --top 100 --by heat-score
  *   npm run straps:segment-cases -- --only=tudor-black-bay-gmt-m79830rb
- *   #   --force        regenerate even if case-only already exists
- *   #   --provider=openai   use the OpenAI fallback instead of Replicate
- *   #   DRY_RUN=1      preview, no uploads / writes
+ *   npm run straps:segment-cases -- --top 300 --by model-family   # grouped batch + per-cluster report
+ *   #   --force               regenerate even if case-only already exists
+ *   #   --provider=geometric  force the free tier only, no Claude escalation
+ *   #   --provider=claude     force the Claude vision tier for every target
+ *   #   --provider=replicate  legacy heavy fallback
+ *   #   DRY_RUN=1             preview, no uploads / writes
  *
  * Required env (loaded from .env.local): SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL,
- * SUPABASE_SECRET_KEY/SERVICE_ROLE_KEY, and REPLICATE_API_TOKEN (segment path).
+ * SUPABASE_SECRET_KEY/SERVICE_ROLE_KEY. ANTHROPIC_API_KEY enables tier-1
+ * escalation; REPLICATE_API_TOKEN enables the legacy tier-2 fallback. Neither
+ * is required for tier-0 (geometric) segmentation to run.
  */
 
 import fs from 'node:fs'
@@ -52,6 +64,19 @@ import path from 'node:path'
 import sharp from 'sharp'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { cropToAlphaBounds } from '../lib/imageProcessing'
+import {
+  GeometricSilhouetteProvider,
+  ClaudeVisionLandmarkProvider,
+  ReplicateSamProvider,
+  OpenAiMaskProvider,
+  deriveLugGeometry,
+  applyCaseMask,
+  type LugGeometry,
+  type CaseShape,
+  type StrapAttachment,
+  type SegmentationProvider,
+  type SegmentationResult,
+} from '../lib/caseSegmentation'
 import { loadLocalEnv, repoRoot } from './watch-image-pipeline'
 
 loadLocalEnv()
@@ -59,6 +84,7 @@ loadLocalEnv()
 const BUCKET = 'watch-images'
 const OUTPUT_HEIGHT = 900
 const BRIDGE_PATH = path.join(repoRoot, 'data', 'case-only-images.json')
+const CATALOG_LIVE_PATH = path.join(repoRoot, 'data', 'catalog-live-imaged.json')
 
 // ── CLI args ────────────────────────────────────────────────────────────────
 const ARGV = process.argv.slice(2)
@@ -71,7 +97,8 @@ function arg(name: string): string | undefined {
 const INGEST_DIR = arg('--ingest')
 const TOP = Number(arg('--top') ?? 0)
 const ONLY = arg('--only')
-const PROVIDER = (arg('--provider') ?? 'replicate').toLowerCase()
+const BY = (arg('--by') ?? 'heat-score').toLowerCase()
+const PROVIDER = (arg('--provider') ?? 'auto').toLowerCase()
 const FORCE = ARGV.includes('--force')
 const DRY_RUN = process.env.DRY_RUN === '1'
 
@@ -81,32 +108,7 @@ const SUPABASE_KEY =
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
   process.env.SUPABASE_SERVICE_KEY
 
-// ── Types ─────────────────────────────────────────────────────────────────--
-export interface LugPoint { x: number; y: number }
-export interface LugGeometry {
-  /** y = OUTER TIP row of each lug channel (where straps anchor); x = channel
-   *  edges at the widest-gap row. See deriveLugGeometry. */
-  topLugLeft: LugPoint
-  topLugRight: LugPoint
-  bottomLugLeft: LugPoint
-  bottomLugRight: LugPoint
-  lugWidthPx: number
-  /** Pixel dimensions of the case-only image these coords live in. */
-  imageWidth: number
-  imageHeight: number
-}
-export interface SegmentationResult {
-  caseMask: Buffer // single-channel-ish alpha mask, white=case, black=strap
-  lugGeometry: LugGeometry | null
-  confidence: number
-}
-export interface SegmentationProvider {
-  segmentCase(
-    imageBuffer: Buffer,
-    hint?: { lugWidthMm?: number; braceletType?: string },
-  ): Promise<SegmentationResult>
-}
-
+type BridgeStatus = 'pending' | 'approved' | 'needs_review' | 'rejected'
 type BridgeEntry = {
   caseOnlyUrl: string
   caseOnlyPngUrl: string
@@ -116,7 +118,7 @@ type BridgeEntry = {
   model?: string
   reference?: string
   confidence: number
-  status: 'pending' | 'approved' | 'needs_review' | 'rejected'
+  status: BridgeStatus
 }
 
 // Curated case-only renders → catalog watch. The depicted watch's real lug width
@@ -141,152 +143,6 @@ const INGEST_MAP: Record<string, { id: string; brand: string; model: string; ref
 function fail(msg: string): never {
   console.error(`[segment-cases] ${msg}`)
   process.exit(1)
-}
-
-// ── Lug geometry: detect where the strap channel sits between the lug pair ────
-// In a case-only render the gap BETWEEN the two lugs (top + bottom) is
-// transparent — that gap is exactly where the strap attaches. We scan rows for
-// "two opaque runs separated by a gap": the gap centre is the strap centre and
-// the gap width ≈ the strap width.
-function opaqueRuns(rgba: Buffer, width: number, y: number, threshold = 24, minRun = 4): Array<[number, number]> {
-  const runs: Array<[number, number]> = []
-  let start = -1
-  for (let x = 0; x < width; x += 1) {
-    const a = rgba[(y * width + x) * 4 + 3]
-    if (a > threshold) {
-      if (start < 0) start = x
-    } else if (start >= 0) {
-      if (x - start >= minRun) runs.push([start, x - 1])
-      start = -1
-    }
-  }
-  if (start >= 0 && width - start >= minRun) runs.push([start, width - 1])
-  return runs
-}
-
-function alphaBoundsRows(rgba: Buffer, width: number, height: number, threshold = 24): { top: number; bottom: number } {
-  let top = height
-  let bottom = -1
-  for (let y = 0; y < height; y += 1) {
-    let any = false
-    for (let x = 0; x < width; x += 1) {
-      if (rgba[(y * width + x) * 4 + 3] > threshold) { any = true; break }
-    }
-    if (any) { if (y < top) top = y; bottom = y }
-  }
-  return { top: top === height ? 0 : top, bottom: bottom < 0 ? height - 1 : bottom }
-}
-
-// Find the strap channel (widest 2-run gap) within a vertical band.
-function findChannel(
-  rgba: Buffer, width: number, yStart: number, yEnd: number, step: number,
-): { left: number; right: number; y: number; gap: number } | null {
-  let best: { left: number; right: number; y: number; gap: number } | null = null
-  const lo = Math.min(yStart, yEnd)
-  const hi = Math.max(yStart, yEnd)
-  for (let y = lo; y <= hi; y += Math.max(1, step)) {
-    const runs = opaqueRuns(rgba, width, y)
-    if (runs.length < 2) continue
-    // Largest gap between adjacent runs on this row.
-    for (let i = 0; i < runs.length - 1; i += 1) {
-      const left = runs[i][1]
-      const right = runs[i + 1][0]
-      const gap = right - left
-      // The strap channel is a substantial central gap, not a tiny notch.
-      if (gap < width * 0.08) continue
-      const center = (left + right) / 2
-      const centrality = 1 - Math.abs(center - width / 2) / (width / 2)
-      if (centrality < 0.35) continue
-      if (!best || gap > best.gap) best = { left, right, y, gap }
-    }
-  }
-  return best
-}
-
-// Outermost row (scanning from the case's outer edge inward) where the
-// between-lugs gap exists — i.e. the lug TIP row. Strap pin rows anchor here;
-// the widest-gap row can land mid/inner-channel (it did for every bottom
-// channel), which anchored bottom straps too deep into the case.
-function findChannelTip(
-  rgba: Buffer, width: number, outerY: number, innerY: number,
-): number | null {
-  const dir = innerY > outerY ? 1 : -1
-  for (let y = outerY; dir > 0 ? y <= innerY : y >= innerY; y += dir) {
-    const runs = opaqueRuns(rgba, width, y)
-    if (runs.length < 2) continue
-    for (let i = 0; i < runs.length - 1; i += 1) {
-      const gap = runs[i + 1][0] - runs[i][1]
-      if (gap < width * 0.08) continue
-      const center = (runs[i][1] + runs[i + 1][0]) / 2
-      if (1 - Math.abs(center - width / 2) / (width / 2) < 0.35) continue
-      return y
-    }
-  }
-  return null
-}
-
-// LugGeometry semantics: the four lug-point y values are the OUTER TIP rows of
-// each channel (top: first gap row from the top; bottom: last from the bottom).
-// lugWidthPx + the x coordinates come from the widest-gap row, where the
-// channel edges are stable.
-async function deriveLugGeometry(rgba: Buffer, width: number, height: number): Promise<{ geom: LugGeometry; confidence: number }> {
-  const { top, bottom } = alphaBoundsRows(rgba, width, height)
-  const caseH = Math.max(1, bottom - top)
-  const step = Math.max(1, Math.round(caseH / 120))
-
-  // Top lugs: scan the top ~28% of the case downward.
-  const topChannel = findChannel(rgba, width, top, top + Math.round(caseH * 0.28), step)
-  // Bottom lugs: scan the bottom ~28% of the case upward.
-  const bottomChannel = findChannel(rgba, width, bottom, bottom - Math.round(caseH * 0.28), step)
-  const topTipY = findChannelTip(rgba, width, top, top + Math.round(caseH * 0.28))
-  const botTipY = findChannelTip(rgba, width, bottom, bottom - Math.round(caseH * 0.28))
-
-  let confidence = 0.4
-  let geom: LugGeometry
-
-  if (topChannel && bottomChannel) {
-    confidence = 0.9
-    const lugWidthPx = Math.round((topChannel.gap + bottomChannel.gap) / 2)
-    const topY = topTipY ?? topChannel.y
-    const botY = botTipY ?? bottomChannel.y
-    geom = {
-      topLugLeft: { x: topChannel.left, y: topY },
-      topLugRight: { x: topChannel.right, y: topY },
-      bottomLugLeft: { x: bottomChannel.left, y: botY },
-      bottomLugRight: { x: bottomChannel.right, y: botY },
-      lugWidthPx,
-      imageWidth: width,
-      imageHeight: height,
-    }
-  } else {
-    // Fallback: centre-based estimate from the case bounding box.
-    const ch = topChannel || bottomChannel
-    let left = 0
-    let right = width
-    for (let y = top; y <= bottom; y += step) {
-      const runs = opaqueRuns(rgba, width, y)
-      if (runs.length) {
-        left = Math.min(left || runs[0][0], runs[0][0])
-        right = Math.max(right === width ? runs[runs.length - 1][1] : right, runs[runs.length - 1][1])
-      }
-    }
-    const caseW = Math.max(1, right - left)
-    const cx = ch ? Math.round((ch.left + ch.right) / 2) : Math.round(left + caseW / 2)
-    const lugWidthPx = ch ? ch.gap : Math.round(caseW * 0.3)
-    const topY = top + Math.round(caseH * 0.08)
-    const botY = bottom - Math.round(caseH * 0.08)
-    confidence = ch ? 0.6 : 0.4
-    geom = {
-      topLugLeft: { x: cx - Math.round(lugWidthPx / 2), y: topY },
-      topLugRight: { x: cx + Math.round(lugWidthPx / 2), y: topY },
-      bottomLugLeft: { x: cx - Math.round(lugWidthPx / 2), y: botY },
-      bottomLugRight: { x: cx + Math.round(lugWidthPx / 2), y: botY },
-      lugWidthPx,
-      imageWidth: width,
-      imageHeight: height,
-    }
-  }
-  return { geom, confidence }
 }
 
 // ── Normalize a case-only RGBA buffer to the canonical output ─────────────────
@@ -330,9 +186,6 @@ async function uploadCaseOnly(
   return { caseOnlyPngUrl, caseOnlyUrl }
 }
 
-// Best-effort DB writes — never fatal (migration 032 may not be applied yet, and
-// a watch may not have a primary watch_images row). The static bridge is the
-// client's source of truth, so these are for the admin review surface + scaling.
 async function writeDbColumns(
   supabase: SupabaseClient, id: string, entry: BridgeEntry,
 ): Promise<void> {
@@ -352,7 +205,7 @@ async function writeDbColumns(
       .eq('variant', 'primary')
     if (error) {
       if (error.message?.includes('column') || error.code === '42703') {
-        console.warn(`  ⚠ watch_images case-only columns missing — apply migration 032 (bridge written regardless).`)
+        console.warn(`  ⚠ watch_images case-only columns missing — apply migration 032/034.`)
       } else {
         console.warn(`  ⚠ watch_images update warn: ${error.message}`)
       }
@@ -361,6 +214,33 @@ async function writeDbColumns(
     }
   } catch (e) {
     console.warn(`  ⚠ watch_images update skipped: ${(e as Error).message}`)
+  }
+}
+
+async function markNotApplicable(supabase: SupabaseClient, id: string): Promise<void> {
+  if (DRY_RUN) return
+  try {
+    await supabase
+      .from('watch_images')
+      .update({ segmentation_status: 'not_applicable' })
+      .eq('catalog_watch_id', id)
+      .eq('variant', 'primary')
+  } catch {
+    // best-effort — see writeDbColumns
+  }
+}
+
+async function writeCaseClassification(
+  supabase: SupabaseClient, id: string, caseShape: CaseShape | undefined, strapAttachment: StrapAttachment | undefined,
+): Promise<void> {
+  if (DRY_RUN || (!caseShape && !strapAttachment)) return
+  try {
+    const patch: Record<string, string> = {}
+    if (caseShape) patch.case_shape = caseShape
+    if (strapAttachment) patch.strap_attachment_type = strapAttachment
+    await supabase.from('catalog_watches').update(patch).eq('id', id)
+  } catch {
+    // best-effort — column may not exist yet if migration 034 isn't applied
   }
 }
 
@@ -388,52 +268,68 @@ function writeBridge(map: Record<string, BridgeEntry>): void {
   fs.writeFileSync(BRIDGE_PATH, JSON.stringify(sorted, null, 2) + '\n')
 }
 
-// ── Providers ────────────────────────────────────────────────────────────--
-class ReplicateSamProvider implements SegmentationProvider {
-  private token = process.env.REPLICATE_API_TOKEN
-  private model = process.env.REPLICATE_SEGMENT_MODEL
-    // A text-promptable SAM/grounded-segmentation model. Override per your
-    // Replicate account's preferred version pin.
-    || 'schananas/grounded_sam:ee871c19efb1941f55f66a3d7d960428c8a5afcb77449547fe8e5a3ab9ebc21c'
-
-  async segmentCase(imageBuffer: Buffer, hint?: { braceletType?: string }): Promise<SegmentationResult> {
-    if (!this.token) fail('REPLICATE_API_TOKEN required for the Replicate provider (or use --ingest / --provider=openai).')
-    const dataUri = `data:image/png;base64,${imageBuffer.toString('base64')}`
-    const prompt = 'watch case, bezel, crown and dial — the watch head only, excluding the strap and bracelet'
-    const create = await fetch('https://api.replicate.com/v1/predictions', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${this.token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ version: this.model.split(':')[1], input: { image: dataUri, mask_prompt: prompt, negative_mask_prompt: 'strap, bracelet, band, leather, rubber' } }),
-    })
-    if (!create.ok) throw new Error(`Replicate create failed: ${create.status} ${await create.text()}`)
-    let pred = await create.json() as { id: string; status: string; output?: unknown; error?: string; urls?: { get: string } }
-    const getUrl = pred.urls?.get || `https://api.replicate.com/v1/predictions/${pred.id}`
-    const started = Date.now()
-    while (pred.status !== 'succeeded' && pred.status !== 'failed' && pred.status !== 'canceled') {
-      if (Date.now() - started > 120_000) throw new Error('Replicate prediction timed out')
-      await new Promise(r => setTimeout(r, 1500))
-      const poll = await fetch(getUrl, { headers: { Authorization: `Bearer ${this.token}` } })
-      pred = await poll.json()
-    }
-    if (pred.status !== 'succeeded') throw new Error(`Replicate prediction ${pred.status}: ${pred.error ?? ''}`)
-    const maskUrl = Array.isArray(pred.output) ? String(pred.output[pred.output.length - 1]) : String(pred.output)
-    const maskRes = await fetch(maskUrl)
-    const caseMask = Buffer.from(await maskRes.arrayBuffer())
-    return { caseMask, lugGeometry: null, confidence: 0.75 }
-  }
+type CatalogMeta = {
+  braceletType: string | null
+  modelFamily: string | null
+  caseSizeMm: number | null
+  brand: string
+  model: string
+  reference: string
 }
 
-class OpenAiMaskProvider implements SegmentationProvider {
-  // Fallback. OpenAI image-edit mask generation is less reliable than SAM for
-  // fine watch-case isolation; provided for completeness and offline fallback.
-  // Unverified at scale — review every result in the admin Case Segmentation tab.
-  async segmentCase(): Promise<SegmentationResult> {
-    fail('OpenAI mask provider is a documented fallback and is not wired for batch use yet — use --ingest or the Replicate provider.')
+function loadCatalogMeta(): Map<string, CatalogMeta> {
+  const map = new Map<string, CatalogMeta>()
+  try {
+    const raw = JSON.parse(fs.readFileSync(CATALOG_LIVE_PATH, 'utf8')) as { watches: Array<Record<string, unknown>> }
+    for (const w of raw.watches ?? []) {
+      map.set(w.id as string, {
+        braceletType: (w.bracelet_type as string) ?? null,
+        modelFamily: (w.model_family as string) ?? null,
+        caseSizeMm: (w.case_size_mm as number) ?? null,
+        brand: (w.brand as string) ?? '',
+        model: (w.model as string) ?? '',
+        reference: (w.reference as string) ?? '',
+      })
+    }
+  } catch {
+    // Optional — clustering/skip logic degrades to "process everything" if missing.
   }
+  return map
 }
 
 function getProvider(): SegmentationProvider {
-  return PROVIDER === 'openai' ? new OpenAiMaskProvider() : new ReplicateSamProvider()
+  if (PROVIDER === 'openai') return new OpenAiMaskProvider()
+  if (PROVIDER === 'claude') return new ClaudeVisionLandmarkProvider()
+  if (PROVIDER === 'replicate') return new ReplicateSamProvider()
+  return new GeometricSilhouetteProvider()
+}
+
+const ESCALATE_BELOW = Number(process.env.SEGMENT_CONFIDENCE_ESCALATE ?? 0.7)
+const AUTO_APPROVE_AT = Number(process.env.SEGMENT_AUTO_APPROVE ?? 0.9)
+const NEEDS_REVIEW_BELOW = 0.55
+
+// The 'auto' orchestrator: free tier first, pay for semantic reasoning only
+// on the hard cases.
+async function segmentAuto(imageBuffer: Buffer, id: string): Promise<{ result: SegmentationResult; providerUsed: string }> {
+  const geo = await new GeometricSilhouetteProvider().segmentCase(imageBuffer)
+  if (geo.confidence >= ESCALATE_BELOW || !process.env.ANTHROPIC_API_KEY) {
+    return { result: geo, providerUsed: 'geometric' }
+  }
+  try {
+    const claude = await new ClaudeVisionLandmarkProvider().segmentCase(imageBuffer)
+    return claude.confidence > geo.confidence
+      ? { result: claude, providerUsed: 'claude' }
+      : { result: geo, providerUsed: 'geometric' }
+  } catch (e) {
+    console.warn(`  ⚠ claude escalation failed for ${id}, keeping geometric result: ${(e as Error).message}`)
+    return { result: geo, providerUsed: 'geometric' }
+  }
+}
+
+function statusForConfidence(confidence: number): BridgeStatus {
+  if (confidence >= AUTO_APPROVE_AT) return 'approved'
+  if (confidence >= NEEDS_REVIEW_BELOW) return 'pending'
+  return 'needs_review'
 }
 
 // ── Modes ────────────────────────────────────────────────────────────────--
@@ -480,11 +376,25 @@ async function runIngest(supabase: SupabaseClient, dir: string): Promise<void> {
   console.log(`\n[segment-cases] ingest done: ${ok} ok, ${fa} failed. Bridge → data/case-only-images.json`)
 }
 
-async function loadSegmentTargets(supabase: SupabaseClient): Promise<string[]> {
+async function loadSegmentTargets(supabase: SupabaseClient, catalogMeta: Map<string, CatalogMeta>): Promise<string[]> {
   if (ONLY) return ONLY.split(',').map(s => s.trim()).filter(Boolean)
-  // Top-N by heat score with an approved primary image but no case-only yet.
   const heat = JSON.parse(fs.readFileSync(path.join(repoRoot, 'data', 'catalog-heat-scores.json'), 'utf8')) as Record<string, number>
-  const ranked = Object.entries(heat).sort(([, a], [, b]) => b - a).map(([id]) => id)
+  let ranked = Object.entries(heat).sort(([, a], [, b]) => b - a).map(([id]) => id)
+
+  if (BY === 'model-family') {
+    // Group by (brand, model_family, bracelet_type) so a batch's admin-review
+    // pass reads as "one case family at a time" rather than shuffled by heat
+    // score alone — makes it obvious when a whole family shares one failure
+    // mode (e.g. all Milanese-mesh Aqua Terras hit the same low confidence).
+    const clusterKey = (id: string) => {
+      const m = catalogMeta.get(id)
+      return m ? `${m.brand}::${m.modelFamily ?? m.model}::${m.braceletType ?? 'na'}` : `unknown::${id}`
+    }
+    const order = new Map<string, number>()
+    ranked.forEach((id, i) => { if (!order.has(clusterKey(id))) order.set(clusterKey(id), i) })
+    ranked = [...ranked].sort((a, b) => (order.get(clusterKey(a))! - order.get(clusterKey(b))!) || (clusterKey(a).localeCompare(clusterKey(b))))
+  }
+
   const bridge = readBridge()
   const out: string[] = []
   for (const id of ranked) {
@@ -496,43 +406,81 @@ async function loadSegmentTargets(supabase: SupabaseClient): Promise<string[]> {
 }
 
 async function runSegment(supabase: SupabaseClient): Promise<void> {
-  const provider = getProvider()
-  const ids = await loadSegmentTargets(supabase)
+  const catalogMeta = loadCatalogMeta()
+  const ids = await loadSegmentTargets(supabase, catalogMeta)
   if (!ids.length) { console.log('[segment-cases] nothing to segment (all done, or empty heat list).'); return }
-  console.log(`[segment-cases] segmenting ${ids.length} watch(es) via ${PROVIDER}\n`)
+  console.log(`[segment-cases] segmenting ${ids.length} watch(es) via provider="${PROVIDER}"\n`)
   const bridge = readBridge()
+  const clusterStats = new Map<string, { count: number; sumConfidence: number; skipped: number }>()
   let ok = 0
   let fa = 0
+  let skipped = 0
   for (const id of ids) {
+    const meta = catalogMeta.get(id)
+    const clusterKey = meta ? `${meta.brand} ${meta.modelFamily ?? meta.model}` : id
+
+    if (meta?.braceletType === 'integrated') {
+      skipped += 1
+      await markNotApplicable(supabase, id)
+      console.log(`  · skip ${id} (integrated bracelet — Studio uses side-by-side, not a cutout)`)
+      const s = clusterStats.get(clusterKey) ?? { count: 0, sumConfidence: 0, skipped: 0 }
+      s.skipped += 1
+      clusterStats.set(clusterKey, s)
+      continue
+    }
+
     try {
       if (!FORCE && await objectExists(supabase, `${id}/case-only.webp`)) { console.log(`  · skip ${id} (exists)`); continue }
       const { data: rows } = await supabase.from('watch_images').select('webp_url, png_url').eq('catalog_watch_id', id).eq('variant', 'primary').limit(1)
       const srcUrl = rows?.[0]?.png_url || rows?.[0]?.webp_url
       if (!srcUrl) { console.warn(`  ✗ ${id}: no primary image`); fa += 1; continue }
       const srcBuf = Buffer.from(await (await fetch(srcUrl)).arrayBuffer())
-      const { caseMask, confidence } = await provider.segmentCase(srcBuf)
-      // Apply mask: keep only the case region (white in mask) → strap transparent.
-      const masked = await sharp(srcBuf).ensureAlpha()
-        .composite([{ input: await sharp(caseMask).resize({ width: (await sharp(srcBuf).metadata()).width }).toColourspace('b-w').toBuffer(), blend: 'dest-in' }])
-        .png().toBuffer()
+
+      const { result, providerUsed } = PROVIDER === 'auto'
+        ? await segmentAuto(srcBuf, id)
+        : { result: await getProvider().segmentCase(srcBuf, { braceletType: meta?.braceletType ?? undefined }), providerUsed: PROVIDER }
+
+      const masked = await applyCaseMask(srcBuf, result.caseMask)
       const norm = await normalizeCaseOnly(masked)
-      const { geom, confidence: geomConf } = await deriveLugGeometry(norm.rgba, norm.width, norm.height)
+
+      // Providers that already output semantic lug geometry (Claude tier, the
+      // geometric tier itself) keep it; only fall back to the legacy
+      // channel-gap heuristic when a provider (e.g. Replicate) returned none.
+      const { geom, confidence: geomConf } = result.lugGeometry
+        ? { geom: result.lugGeometry, confidence: result.confidence }
+        : await deriveLugGeometry(norm.rgba, norm.width, norm.height)
+
       const { caseOnlyPngUrl, caseOnlyUrl } = await uploadCaseOnly(supabase, id, norm.png, norm.webp)
+      const confidence = Math.min(result.confidence, geomConf)
       const entry: BridgeEntry = {
         caseOnlyUrl, caseOnlyPngUrl, lugGeometry: geom,
-        confidence: Math.min(confidence, geomConf), status: 'pending',
+        confidence, status: statusForConfidence(confidence),
       }
       bridge[id] = entry
       await writeDbColumns(supabase, id, entry)
+      await writeCaseClassification(supabase, id, result.caseShape, result.strapAttachment)
       ok += 1
-      console.log(`  ✓ ${id} (conf=${entry.confidence.toFixed(2)}) → pending review`)
+      const s = clusterStats.get(clusterKey) ?? { count: 0, sumConfidence: 0, skipped: 0 }
+      s.count += 1
+      s.sumConfidence += confidence
+      clusterStats.set(clusterKey, s)
+      console.log(`  ✓ ${id} (${providerUsed}, conf=${confidence.toFixed(2)}) → ${entry.status}`)
     } catch (e) {
       fa += 1
       console.warn(`  ✗ ${id}: ${(e as Error).message}`)
     }
   }
   writeBridge(bridge)
-  console.log(`\n[segment-cases] segment done: ${ok} ok, ${fa} failed. Review in /admin/image-review → Case Segmentation.`)
+  console.log(`\n[segment-cases] segment done: ${ok} ok, ${skipped} skipped (integrated), ${fa} failed. Review in /admin/image-review → Case Segmentation.`)
+
+  if (BY === 'model-family' && clusterStats.size) {
+    console.log('\n[segment-cases] per-family summary:')
+    const rows = [...clusterStats.entries()].sort(([, a], [, b]) => b.count - a.count)
+    for (const [key, s] of rows) {
+      const avg = s.count ? (s.sumConfidence / s.count).toFixed(2) : '—'
+      console.log(`  ${key.padEnd(40)} processed=${s.count}  skipped=${s.skipped}  avgConfidence=${avg}`)
+    }
+  }
 }
 
 async function main(): Promise<void> {

@@ -8,6 +8,16 @@
 
 ## Phase 1 — Case-Only Image Pipeline
 
+> **Superseded:** the SAM-3/Replicate-first plan below was never actually run
+> (no `REPLICATE_API_TOKEN` was ever configured for this project — zero real
+> segmentations came out of it). It's kept for history. The current pipeline
+> is a free, deterministic width-profile detector with a Claude-vision
+> escalation tier — see
+> [case-segmentation-strategy.md](case-segmentation-strategy.md), which also
+> covers what the Delugs reference actually demonstrates (real per-model
+> photography, not automated segmentation) and why that doesn't transfer
+> directly to a 40k-SKU catalog.
+
 **Objective:** Create transparent case-only images (watch head without strap) for the top 100 watches by heat score.
 
 ### Step 1A: Source case-only images
