@@ -222,14 +222,11 @@ export function detectCaseBand(profile: Int32Array, windowFrac = 0.035): CaseBan
 //
 // DO NOT use this alone for a real watch photo with drilled lugs — it cuts a
 // straight line across the FULL width, which chops through the middle of
-// every lug's taper (lugs are angled blades that extend well past the
-// bezel's own edge, not a flat shelf). Validated against a real photo (an
-// Omega Aqua Terra with long tapered lugs, test-fixtures/case-segmentation/):
-// a flat cut at the row where the profile "looks like case" sliced the lug
-// tips off into stubby flat triangles instead of their true pointed shape.
-// buildLugAwareMaskPng below is the fix. This function is kept only as the
-// building block INSIDE the case's confident plateau (topCut..bottomCut),
-// where there's no lug ambiguity to get wrong.
+// every lug's taper (lugs are angled horns that extend well past the case
+// body, not a flat shelf). Kept ONLY as the degraded fallback when
+// fitCaseBody finds no stable case-body ellipse (rectangular/tonneau cases)
+// — always paired with a low confidence so the orchestrator escalates; the
+// real mask is buildCaseContourMaskPng below.
 export async function renderRowBandMaskPng(width: number, height: number, topCut: number, bottomCut: number, feather = 3): Promise<Buffer> {
   const buf = Buffer.alloc(width * height)
   const t0 = Math.max(0, topCut - feather)
@@ -246,79 +243,453 @@ export async function renderRowBandMaskPng(width: number, height: number, topCut
   return sharp(buf, { raw: { width, height, channels: 1 } }).png().toBuffer()
 }
 
-export interface StripMeasurement {
-  /** Half the strap's own width, measured well clear of any lug widening. */
-  halfWidth: number
-  /** Horizontal center of the strap at that measurement point. */
+// ── The case-contour model ───────────────────────────────────────────────────
+//
+// What a watch head ACTUALLY looks like (verified against the curated 3D
+// case-only reference renders — Tudor BB58 GMT, Omega Aqua Terra, Oris Big
+// Crown — the same assets scripts/segment-watch-cases.ts ingests):
+//
+//   case-only silhouette = round case body (a circle) ∪ four lug horns ∪ crown
+//
+// and the strap channel between each lug pair is bounded by the lug INNER
+// faces on the sides and the case's own CURVED edge below — not a straight
+// line. Nothing exists beyond the lug tips. Two earlier mask generations got
+// this wrong in different ways: a flat row cut chopped the lugs into stubs,
+// and a strap-width column band left the between-lug cut straight (where the
+// real boundary is the case's curve) and kept bracelet fragments floating
+// above the lug tips (bracelet end-links near the case are wider than the
+// strap's far-tip width, so "wider than the strap" wrongly classified them
+// as lug material).
+//
+// The contour mask encodes the real shape directly:
+//   keep(x, y) = rows within [lug tip top, lug tip bottom] AND
+//                ( inside the fitted case circle    ← curved channel floor
+//                  OR |x − cx| ≥ channel half-width ← lug horns / case sides / crown )
+// Everything beyond the lug tips is dropped unconditionally — that's where
+// only strap/bracelet can exist.
+
+export interface CaseBodyFit {
   cx: number
+  cy: number
+  /** Horizontal semi-axis, px. */
+  a: number
+  /** Vertical semi-axis, px. */
+  b: number
+  /** RMS boundary residual of the inlier points, px — fit quality signal. */
+  rms: number
+  samples: number
 }
 
-// Measures the strap's true width from a band of rows guaranteed to be pure
-// strap (no lug widening yet) — the very top/bottom tip of a full-watch
-// photo is always plain strap material, real lugs never reach the image
-// edge. Averaging several rows rides out anti-aliasing noise on any one row.
-export function measureStrip(rgba: Buffer, width: number, yStart: number, yEnd: number, threshold = 24): StripMeasurement {
-  let sumHalfWidth = 0
-  let sumCx = 0
-  let count = 0
-  const lo = Math.max(0, Math.min(yStart, yEnd))
-  const hi = Math.max(yStart, yEnd)
-  for (let y = lo; y <= hi; y += 1) {
+/** Approx. distance from a point to the ellipse boundary, px (radial-ray
+ *  distance — exact for a circle, tight for the mild eccentricities real
+ *  product photos have). Negative inside, positive outside. */
+export function ellipseBoundaryDistance(fit: { cx: number; cy: number; a: number; b: number }, x: number, y: number): number {
+  const dx = x - fit.cx
+  const dy = y - fit.cy
+  const n = Math.sqrt((dx / fit.a) ** 2 + (dy / fit.b) ** 2)
+  if (n === 0) return -Math.min(fit.a, fit.b)
+  return Math.hypot(dx, dy) * (n - 1) / n
+}
+
+// Axis-aligned ellipse fit: A·x² + B·y² + C·x + D·y = 1, linear least squares
+// in (A, B, C, D). An ellipse, not a circle, because real product photos have
+// slight perspective squash — a circle fit on the Tudor fixture left ~6px RMS
+// of systematic residual (2.5% of r), enough for the channel-floor arc to sit
+// visibly off the bezel edge; the ellipse absorbs it.
+function ellipseFit(pts: Array<[number, number]>): { cx: number; cy: number; a: number; b: number } | null {
+  const M = [
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ]
+  const v = [0, 0, 0, 0]
+  for (const [x, y] of pts) {
+    const row = [x * x, y * y, x, y]
+    for (let i = 0; i < 4; i += 1) {
+      v[i] += row[i]
+      for (let j = 0; j < 4; j += 1) M[i][j] += row[i] * row[j]
+    }
+  }
+  // Gaussian elimination with partial pivoting on the 4×4 normal equations.
+  for (let col = 0; col < 4; col += 1) {
+    let pivot = col
+    for (let row = col + 1; row < 4; row += 1) {
+      if (Math.abs(M[row][col]) > Math.abs(M[pivot][col])) pivot = row
+    }
+    if (Math.abs(M[pivot][col]) < 1e-9) return null
+    if (pivot !== col) {
+      [M[col], M[pivot]] = [M[pivot], M[col]]
+      ;[v[col], v[pivot]] = [v[pivot], v[col]]
+    }
+    for (let row = col + 1; row < 4; row += 1) {
+      const f = M[row][col] / M[col][col]
+      for (let k = col; k < 4; k += 1) M[row][k] -= f * M[col][k]
+      v[row] -= f * v[col]
+    }
+  }
+  const sol = [0, 0, 0, 0]
+  for (let row = 3; row >= 0; row -= 1) {
+    let acc = v[row]
+    for (let k = row + 1; k < 4; k += 1) acc -= M[row][k] * sol[k]
+    sol[row] = acc / M[row][row]
+  }
+  const [A, B, C, D] = sol
+  // The LSQ can return the same ellipse with every coefficient negated —
+  // it's an ellipse iff A, B, and K all share one sign, making K/A and K/B
+  // (the squared semi-axes) positive.
+  const cx = -C / (2 * A)
+  const cy = -D / (2 * B)
+  const K = 1 + (C * C) / (4 * A) + (D * D) / (4 * B)
+  const aSq = K / A
+  const bSq = K / B
+  if (!(aSq > 0) || !(bSq > 0)) return null
+  return { cx, cy, a: Math.sqrt(aSq), b: Math.sqrt(bSq) }
+}
+
+// Kåsa algebraic circle fit — the constrained (a = b) sibling of ellipseFit.
+function circleFit(pts: Array<[number, number]>): { cx: number; cy: number; a: number; b: number } | null {
+  let sxx = 0, sxy = 0, syy = 0, sx = 0, sy = 0
+  let sxz = 0, syz = 0, sz = 0
+  const n = pts.length
+  for (const [x, y] of pts) {
+    const z = x * x + y * y
+    sxx += x * x; sxy += x * y; syy += y * y
+    sx += x; sy += y
+    sxz += x * z; syz += y * z; sz += z
+  }
+  const M = [
+    [sxx, sxy, sx],
+    [sxy, syy, sy],
+    [sx, sy, n],
+  ]
+  const v = [-sxz, -syz, -sz]
+  for (let col = 0; col < 3; col += 1) {
+    let pivot = col
+    for (let row = col + 1; row < 3; row += 1) {
+      if (Math.abs(M[row][col]) > Math.abs(M[pivot][col])) pivot = row
+    }
+    if (Math.abs(M[pivot][col]) < 1e-9) return null
+    if (pivot !== col) {
+      [M[col], M[pivot]] = [M[pivot], M[col]]
+      ;[v[col], v[pivot]] = [v[pivot], v[col]]
+    }
+    for (let row = col + 1; row < 3; row += 1) {
+      const f = M[row][col] / M[col][col]
+      for (let k = col; k < 3; k += 1) M[row][k] -= f * M[col][k]
+      v[row] -= f * v[col]
+    }
+  }
+  const sol = [0, 0, 0]
+  for (let row = 2; row >= 0; row -= 1) {
+    let acc = v[row]
+    for (let k = row + 1; k < 3; k += 1) acc -= M[row][k] * sol[k]
+    sol[row] = acc / M[row][row]
+  }
+  const [D, E, F] = sol
+  const cx = -D / 2
+  const cy = -E / 2
+  const rSq = cx * cx + cy * cy - F
+  if (!(rSq > 0)) return null
+  const r = Math.sqrt(rSq)
+  return { cx, cy, a: r, b: r }
+}
+
+type BodyShape = { cx: number; cy: number; a: number; b: number }
+
+function robustBodyFit(
+  pts: Array<[number, number]>,
+  fitFn: (p: Array<[number, number]>) => BodyShape | null,
+): { fit: BodyShape; rms: number; samples: number } | null {
+  // Percentile trim, not median×k: the crown contributes ~10-15% of edge
+  // points at a consistent +20-30px offset, which inflates a median-scaled
+  // tolerance enough to keep itself. Dropping the worst 22% per pass removes
+  // any minority outlier block regardless of its magnitude.
+  let keep = pts
+  let fit = fitFn(keep)
+  for (let pass = 0; pass < 3 && fit; pass += 1) {
+    const f = fit
+    const resid = keep.map(([x, y]) => Math.abs(ellipseBoundaryDistance(f, x, y)))
+    const sorted = [...resid].sort((p, q) => p - q)
+    const tol = Math.max(2.5, sorted[Math.floor(sorted.length * 0.78)])
+    const next = keep.filter((_, i) => resid[i] <= tol)
+    if (next.length < 24 || next.length === keep.length) break
+    keep = next
+    fit = fitFn(keep)
+  }
+  if (!fit) return null
+  const f = fit
+  const resid = keep.map(([x, y]) => Math.abs(ellipseBoundaryDistance(f, x, y)))
+  const rms = Math.sqrt(resid.reduce((acc, val) => acc + val * val, 0) / resid.length)
+  return { fit: f, rms, samples: keep.length }
+}
+
+// Fit the case body's outline from the silhouette's left/right edges across
+// the case band. The crown (right side) and lug shoulders are outliers — a
+// trim-and-refit pass drops them rather than letting them bend the fit.
+//
+// A circle and an axis-aligned ellipse are both tried, and the circle wins
+// unless the ellipse is decisively better: the sampled band only covers the
+// case's SIDE arcs (the caps are where lugs/strap live), and a free vertical
+// semi-axis extrapolated from side arcs alone drifts badly (the Tudor
+// fixture fit b≈253 against an observed cap implying ≈234 — a ~19px bulge in
+// the channel-floor arc), while a circle's cap position is pinned by the
+// sides' own curvature. The ellipse exists to absorb genuine perspective
+// squash when the data actually demands it.
+//
+// Returns null when no stable body exists (rectangular/tonneau cases,
+// degenerate silhouettes) — callers treat that as "escalate," not "guess."
+export function fitCaseBody(
+  rgba: Buffer, width: number, yTop: number, yBottom: number, threshold = 24,
+): CaseBodyFit | null {
+  const pts: Array<[number, number]> = []
+  for (let y = Math.max(0, yTop); y <= yBottom; y += 1) {
     const span = spanAt(rgba, width, y, threshold)
     if (!span) continue
-    sumHalfWidth += (span.right - span.left + 1) / 2
-    sumCx += (span.left + span.right) / 2
-    count += 1
+    pts.push([span.left, y], [span.right, y])
   }
-  if (!count) return { halfWidth: width * 0.15, cx: width / 2 }
-  return { halfWidth: sumHalfWidth / count, cx: sumCx / count }
+  if (pts.length < 24) return null
+
+  const circle = robustBodyFit(pts, circleFit)
+  const ellipse = robustBodyFit(pts, ellipseFit)
+  let chosen = circle
+  if (ellipse && (!circle || ellipse.rms < circle.rms * 0.7)) {
+    const aspect = ellipse.fit.a / ellipse.fit.b
+    if (aspect > 0.85 && aspect < 1.18) chosen = ellipse
+  }
+  if (!chosen) return null
+
+  const { fit: f, rms, samples } = chosen
+  const maxDim = Math.max(width, yBottom - yTop + 1)
+  const sane = (s: number) => s > maxDim * 0.1 && s < maxDim * 2
+  if (!sane(f.a) || !sane(f.b)) return null
+  return { cx: f.cx, cy: f.cy, a: f.a, b: f.b, rms, samples }
 }
 
-// The actual fix for lug shape: within the case's confident plateau
-// (topCut..bottomCut), keep everything — no ambiguity there. Outside it (the
-// top/bottom transition zones where lugs live), classify by WIDTH, not row:
-// any opaque pixel further from center than the strap's own measured
-// half-width can only be lug material (the strap physically can't be that
-// wide), so it's kept unconditionally NO MATTER HOW FAR toward the tip it
-// extends — which is exactly what lets an angled, tapered lug blade survive
-// intact instead of being sliced flat. Pixels within the strap's width band
-// are strap (removed) once we're past the plateau, since that's the old
-// strap filling the gap between the lug tips at that row.
-export async function buildLugAwareMaskPng(
+export interface LugZone {
+  /** Row of the lug tips — beyond it, only strap/bracelet exists. */
+  tipY: number
+  /** Channel half-width: distance from case centre to the lug inner faces,
+   *  measured from the strap/end-link just beyond the tips (an end link fills
+   *  the channel exactly, so its width IS the channel width). */
+  channelHalf: number
+  /** 0..1 — how cleanly the lug tips stood out from the strap behind them. */
+  sharpness: number
+}
+
+// Find one lug pair's tip row: scanning outward from the case body, the
+// silhouette span holds at the lug outer edges, then contracts sharply to the
+// strap/bracelet width the instant the lugs end. That contraction — not any
+// fixed width threshold — marks the tips, which is what lets this coexist
+// with bracelets whose end-links flare wider than the strap's far end (the
+// exact case where "wider than the strap ⇒ lug" broke and left floating
+// bracelet fragments above the tips).
+export function findLugZone(
+  rgba: Buffer, width: number,
+  body: CaseBodyFit, alphaTop: number, alphaBottom: number,
+  side: 'top' | 'bottom', threshold = 24,
+): LugZone | null {
+  const dir = side === 'top' ? -1 : 1
+  const startY = Math.round(body.cy)
+  // A real lug tip always has strap CONTINUING beyond it — that's what a
+  // strap does. The silhouette's own crop boundary (where the strap runs off
+  // the frame and antialiasing fades it out) produces the single biggest
+  // span contraction in the whole image, so without this margin the scan
+  // latches onto the image edge instead of the lugs.
+  const edgeMargin = Math.max(6, Math.round((alphaBottom - alphaTop) * 0.02))
+  const endY = side === 'top' ? alphaTop + edgeMargin : alphaBottom - edgeMargin
+  const spanHalfAt = (y: number): number => {
+    const span = spanAt(rgba, width, y, threshold)
+    if (!span) return -1
+    return Math.max(body.cx - span.left, span.right - body.cx)
+  }
+
+  // Enter the scan only once past the case's bulk — the lug/strap region.
+  let scanFrom = startY
+  while (scanFrom !== endY && spanHalfAt(scanFrom) >= body.a * 0.88) scanFrom += dir
+
+  const window = 2
+  let bestDrop = 0
+  let bestTip: number | null = null
+  for (let y = scanFrom; ; y += dir) {
+    const outer = y + dir * window
+    if (dir < 0 ? outer < endY : outer > endY) break
+    const near = spanHalfAt(y)
+    const far = spanHalfAt(outer)
+    if (near < 0 || far < 0) continue
+    const drop = near - far
+    if (drop > bestDrop) { bestDrop = drop; bestTip = y }
+  }
+  if (bestTip == null) return null
+
+  const minDrop = Math.max(3, body.a * 0.015)
+  // Full sharpness at a tip that protrudes ~6% of the case's semi-axis past
+  // the strap behind it — calibrated so a bracelet's modest-but-real tips
+  // (Tudor fixture: ~10-16px on a 234px case) still read as found.
+  const sharpness = Math.max(0, Math.min(1, (bestDrop - minDrop) / (body.a * 0.06)))
+  if (bestDrop < minDrop) return null
+
+  const tipY = bestTip
+
+  // Channel width from the rows just beyond the tips — pure strap/end-link.
+  const halves: number[] = []
+  for (let k = 3; k <= 10; k += 1) {
+    const y = tipY + dir * k
+    if (dir < 0 ? y < endY : y > endY) break
+    const h = spanHalfAt(y)
+    if (h > 0) halves.push(h)
+  }
+  halves.sort((a, b) => a - b)
+  const channelHalf = halves.length
+    ? halves[Math.floor(halves.length / 2)]
+    : body.a * 0.5
+  const clamped = Math.max(body.a * 0.2, Math.min(body.a * 0.92, channelHalf))
+  return { tipY, channelHalf: clamped, sharpness }
+}
+
+export interface ChannelFloor {
+  /** Absolute x of floors[0]. */
+  x0: number
+  /** Per-column boundary row (top side: first case row; bottom side: last). */
+  rows: Int32Array
+}
+
+// Snap the channel floor from the fitted arc to the ACTUAL case edge in the
+// pixels. The fit is measured from the case's SIDES, but between the lugs
+// the visible boundary is the bezel's outer edge (on a dive watch, the
+// serrated coin-edge ring), which sits a few px inside the side-profile
+// radius — leaving the fitted arc alone kept a thin band of bracelet
+// end-link (with its telltale vertical link lines) above the real bezel
+// edge on the Tudor fixture. Per column inside the channel, search a small
+// window around the fitted arc for the strongest vertical gradient (the
+// shadow line where the strap/end-link tucks under the bezel — steel-on-
+// steel still has one; a colored strap against a steel case has a huge one)
+// and snap the boundary there, falling back to the arc where no clear edge
+// exists. Median-smoothed across columns so one noisy column can't spike.
+export function refineChannelFloor(
   rgba: Buffer, width: number, height: number,
-  top: number, bottom: number, topCut: number, bottomCut: number,
-  topStrip: StripMeasurement, botStrip: StripMeasurement,
-  feather = 2,
-): Promise<Buffer> {
-  const buf = Buffer.alloc(width * height)
-  const marginX = Math.max(3, Math.round(width * 0.012))
+  body: { cx: number; cy: number; a: number; b: number },
+  channelHalf: number, tipY: number, side: 'top' | 'bottom',
+): ChannelFloor {
+  const { cx, cy, a, b } = body
+  const x0 = Math.max(0, Math.floor(cx - channelHalf - 4))
+  const x1 = Math.min(width - 1, Math.ceil(cx + channelHalf + 4))
+  const w = Math.max(4, Math.round(a * 0.06))
+  const biasIn = 1
+  const rows = new Int32Array(x1 - x0 + 1)
 
-  for (let y = 0; y < height; y += 1) {
-    if (y < top || y > bottom) { buf.fill(0, y * width, y * width + width); continue }
-    if (y >= topCut && y <= bottomCut) { buf.fill(255, y * width, y * width + width); continue }
+  const lumaAt = (x: number, y: number): number => {
+    if (y < 0 || y >= height) return 0
+    const i = (y * width + x) * 4
+    const alpha = rgba[i + 3] / 255
+    return (0.299 * rgba[i] + 0.587 * rgba[i + 1] + 0.114 * rgba[i + 2]) * alpha
+  }
 
-    const strip = y < topCut ? topStrip : botStrip
-    const stripLeft = strip.cx - strip.halfWidth - marginX
-    const stripRight = strip.cx + strip.halfWidth + marginX
-    // Feather the row-band boundary too, so the plateau edge doesn't leave a
-    // hard seam where the strap-width column range meets the always-kept
-    // outer columns at exactly y = topCut / bottomCut.
-    const distToPlateau = y < topCut ? topCut - y : y - bottomCut
-    const rowFeather = Math.max(0, Math.min(1, 1 - distToPlateau / feather))
-
-    for (let x = 0; x < width; x += 1) {
-      let v: number
-      if (x < stripLeft - feather || x > stripRight + feather) {
-        v = 255 // outside the strap's own width — necessarily lug/case
-      } else if (x >= stripLeft + feather && x <= stripRight - feather) {
-        v = 0 // within strap width, past the plateau — the old strap
-      } else if (x < stripLeft + feather) {
-        v = Math.round((255 * (stripLeft + feather - x)) / (2 * feather))
-      } else {
-        v = Math.round((255 * (x - (stripRight - feather))) / (2 * feather))
+  for (let x = x0; x <= x1; x += 1) {
+    const dx = x - cx
+    const inside = 1 - (dx / a) * (dx / a)
+    const yArcF = inside > 0 ? (side === 'top' ? cy - b * Math.sqrt(inside) : cy + b * Math.sqrt(inside)) : cy
+    const yArc = Math.round(yArcF)
+    const lo = Math.max(side === 'top' ? tipY + 1 : Math.round(cy), yArc - w)
+    const hi = Math.min(side === 'top' ? Math.round(cy) : tipY - 1, yArc + w)
+    // The case edge between the lugs is a CLUSTER of strong gradients, not a
+    // single line — on a dive bezel: (end-link → serrated ring) then
+    // (serrated ring → colored insert), with the insert boundary usually the
+    // strongest. Snapping to the strongest edge eats the serrated ring
+    // (measured on the Tudor fixture: ring rows 30-60, insert boundary
+    // 130-250, smooth end-link ≤ 24). The true boundary is the cluster's
+    // OUTER START: anchor at the strongest edge (definitely inside the
+    // boundary complex), then walk OUTWARD while gradients stay significant
+    // relative to that anchor (1-row gaps allowed — serration valleys), and
+    // snap where the cluster dies into the smooth strap/end-link.
+    let gMax = 0
+    let yMax = yArc
+    const gAt = (y: number) => Math.abs(lumaAt(x, y + 1) - lumaAt(x, y - 1))
+    for (let y = lo; y <= hi; y += 1) {
+      const g = gAt(y)
+      if (g > gMax) { gMax = g; yMax = y }
+    }
+    let snapped = yArc
+    if (gMax >= 12) {
+      const walkThr = Math.max(10, gMax * 0.1)
+      const out = side === 'top' ? -1 : 1
+      let outer = yMax
+      let gap = 0
+      for (let y = yMax + out; y >= lo && y <= hi; y += out) {
+        if (gAt(y) >= walkThr) { outer = y; gap = 0 } else if (++gap >= 2) break
       }
-      if (rowFeather > 0) v = Math.round(v + (255 - v) * rowFeather)
-      buf[y * width + x] = v
+      snapped = outer
+    }
+    rows[x - x0] = Math.round(snapped + (side === 'top' ? biasIn : -biasIn))
+  }
+
+  // Median smooth (window 5) — kills single-column spikes from serration
+  // texture or link-gap shadows without softening the real boundary.
+  const smoothed = new Int32Array(rows.length)
+  for (let i = 0; i < rows.length; i += 1) {
+    const windowVals: number[] = []
+    for (let k = -2; k <= 2; k += 1) {
+      const idx = Math.min(rows.length - 1, Math.max(0, i + k))
+      windowVals.push(rows[idx])
+    }
+    windowVals.sort((p, q) => p - q)
+    smoothed[i] = windowVals[2]
+  }
+  return { x0, rows: smoothed }
+}
+
+export interface CaseContourParams {
+  body: { cx: number; cy: number; a: number; b: number }
+  tipTopY: number
+  tipBottomY: number
+  channelHalfTop: number
+  channelHalfBottom: number
+  /** Pixel-snapped channel boundaries (refineChannelFloor). When present they
+   *  REPLACE the fitted arc inside the channel columns — the snapped edge is
+   *  usually a few px inside the arc, and taking the max of both would
+   *  resurrect exactly the end-link sliver the snap exists to remove. */
+  floorTop?: ChannelFloor
+  floorBottom?: ChannelFloor
+}
+
+// Render the contour mask described in the model comment above. The case
+// body's boundary is feathered along its ellipse (so the channel floor is a
+// smooth arc), the lug inner faces vertically, and the tip rows horizontally.
+// Inside the channel columns, a pixel-snapped floor (refineChannelFloor)
+// replaces the fitted arc when provided.
+export async function buildCaseContourMaskPng(
+  width: number, height: number, p: CaseContourParams, feather = 1.5,
+): Promise<Buffer> {
+  const { cx, cy } = p.body
+  const buf = Buffer.alloc(width * height)
+  const floorRowAt = (floor: ChannelFloor | undefined, x: number): number | null => {
+    if (!floor) return null
+    const idx = x - floor.x0
+    if (idx < 0 || idx >= floor.rows.length) return null
+    return floor.rows[idx]
+  }
+  for (let y = 0; y < height; y += 1) {
+    const tipRampTop = (y - (p.tipTopY - feather)) / feather
+    const tipRampBottom = ((p.tipBottomY + feather) - y) / feather
+    const tipGate = Math.max(0, Math.min(1, tipRampTop, tipRampBottom))
+    const rowOff = y * width
+    if (tipGate === 0) { buf.fill(0, rowOff, rowOff + width); continue }
+    const channelHalf = y < cy ? p.channelHalfTop : p.channelHalfBottom
+    for (let x = 0; x < width; x += 1) {
+      const dx = Math.abs(x - cx)
+      const bandKeep = Math.max(0, Math.min(1, (dx - (channelHalf - feather)) / feather))
+      let bodyKeep: number
+      const topFloorRow = y < cy ? floorRowAt(p.floorTop, x) : null
+      const botFloorRow = y >= cy ? floorRowAt(p.floorBottom, x) : null
+      if (dx < channelHalf + 4 && (topFloorRow != null || botFloorRow != null)) {
+        bodyKeep = topFloorRow != null
+          ? Math.max(0, Math.min(1, (y - (topFloorRow - feather)) / feather))
+          : Math.max(0, Math.min(1, ((botFloorRow! + feather) - y) / feather))
+      } else {
+        const d = ellipseBoundaryDistance(p.body, x, y)
+        bodyKeep = Math.max(0, Math.min(1, (feather - d) / feather))
+      }
+      buf[rowOff + x] = Math.round(Math.max(bodyKeep, bandKeep) * tipGate * 255)
     }
   }
   return sharp(buf, { raw: { width, height, channels: 1 } }).png().toBuffer()
@@ -444,8 +815,11 @@ export async function deriveLugGeometry(rgba: Buffer, width: number, height: num
 
 // ── Providers ────────────────────────────────────────────────────────────--
 
-// Tier 0 — free, deterministic, no external API. See detectCaseBand's doc
-// comment for the core insight this exploits.
+// Tier 0 — free, deterministic, no external API. Fits the case-contour model
+// (case-body ellipse + lug horns + crown — see the model comment above
+// CaseBodyFit) directly to the silhouette. When the model doesn't hold
+// (rectangular case, integrated bracelet, no detectable lug tips), confidence
+// drops below the escalation threshold instead of forcing a bad cut.
 export class GeometricSilhouetteProvider implements SegmentationProvider {
   async segmentCase(imageBuffer: Buffer, hint?: { lugWidthMm?: number; braceletType?: string }): Promise<SegmentationResult> {
     const { data, info } = await sharp(imageBuffer).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
@@ -454,50 +828,67 @@ export class GeometricSilhouetteProvider implements SegmentationProvider {
     const profile = computeWidthProfile(data, width, top, bottom)
     // 'strap' (leather/rubber/NATO) meets the case abruptly; anything else —
     // including the catalog's common "unset = plain metal bracelet" — flares
-    // gradually across several end-links, so it needs a wider window. See
-    // detectCaseBand's doc comment.
+    // gradually across several end-links, so the coarse band needs a wider
+    // window. The band only seeds the body fit's sampling range; the fit's
+    // own outlier trimming forgives an imprecise band.
     const windowFrac = hint?.braceletType === 'strap' ? 0.035 : 0.1
     const band = detectCaseBand(profile, windowFrac)
+    const bandTopAbs = top + band.topIdx
+    const bandBottomAbs = top + band.botIdx
+    const bandPad = Math.max(4, Math.round((bandBottomAbs - bandTopAbs) * 0.12))
 
-    // Bias the cut a couple of px INTO the case (never into the strap) — the
-    // new strap layers behind at this exact row, so any residual strap pixel
-    // above the cut would show as a visible remnant; a slightly short case
-    // edge is imperceptible at render scale.
-    const TRIM = 2
-    const topCut = Math.min(bottom, top + band.topIdx + TRIM)
-    const bottomCut = Math.max(top, top + band.botIdx - TRIM)
+    const body = fitCaseBody(data, width, bandTopAbs + bandPad, bandBottomAbs - bandPad)
+    if (!body) {
+      // No stable case-body ellipse (rectangular/tonneau case or degenerate
+      // silhouette) — fall back to the coarse row band at low confidence so
+      // the auto orchestrator escalates to the Claude tier or human review.
+      const caseMask = await renderRowBandMaskPng(width, height, bandTopAbs, bandBottomAbs, 2)
+      return { caseMask, lugGeometry: null, confidence: 0.3, strapAttachment: 'unknown', caseShape: 'other' }
+    }
 
-    // Measure the strap's TRUE width from rows guaranteed to be pure strap —
-    // the image's own top/bottom tip, never reached by a real lug. Do NOT use
-    // the row span at topCut/bottomCut for this: when lugs are present, that
-    // span is the FULL case width (lug tip to lug tip), not the strap's
-    // width, which previously overstated lugWidthPx and mis-scaled whatever
-    // new strap gets composited in.
-    const stripRows = Math.max(6, Math.round((bottom - top) * 0.04))
-    const topStrip = measureStrip(data, width, top, Math.min(topCut - 1, top + stripRows))
-    const botStrip = measureStrip(data, width, Math.max(bottomCut + 1, bottom - stripRows), bottom)
+    const topZone = findLugZone(data, width, body, top, bottom, 'top')
+    const botZone = findLugZone(data, width, body, top, bottom, 'bottom')
+
+    // Fallback tips: the case body's own extremes — an honest "no lugs found"
+    // shape (bare round case), never a cut through the middle of anything.
+    const tipTopY = topZone?.tipY ?? Math.max(top, Math.round(body.cy - body.b))
+    const tipBottomY = botZone?.tipY ?? Math.min(bottom, Math.round(body.cy + body.b))
+    const channelHalfTop = topZone?.channelHalf ?? body.a * 0.5
+    const channelHalfBottom = botZone?.channelHalf ?? body.a * 0.5
+
+    const caseMask = await buildCaseContourMaskPng(width, height, {
+      body, tipTopY, tipBottomY, channelHalfTop, channelHalfBottom,
+      floorTop: refineChannelFloor(data, width, height, body, channelHalfTop, tipTopY, 'top'),
+      floorBottom: refineChannelFloor(data, width, height, body, channelHalfBottom, tipBottomY, 'bottom'),
+    })
 
     const lugGeometry: LugGeometry = {
-      topLugLeft: { x: Math.round(topStrip.cx - topStrip.halfWidth), y: topCut },
-      topLugRight: { x: Math.round(topStrip.cx + topStrip.halfWidth), y: topCut },
-      bottomLugLeft: { x: Math.round(botStrip.cx - botStrip.halfWidth), y: bottomCut },
-      bottomLugRight: { x: Math.round(botStrip.cx + botStrip.halfWidth), y: bottomCut },
-      lugWidthPx: Math.round(topStrip.halfWidth + botStrip.halfWidth),
+      topLugLeft: { x: Math.round(body.cx - channelHalfTop), y: tipTopY },
+      topLugRight: { x: Math.round(body.cx + channelHalfTop), y: tipTopY },
+      bottomLugLeft: { x: Math.round(body.cx - channelHalfBottom), y: tipBottomY },
+      bottomLugRight: { x: Math.round(body.cx + channelHalfBottom), y: tipBottomY },
+      lugWidthPx: Math.round(channelHalfTop + channelHalfBottom),
       imageWidth: width,
       imageHeight: height,
     }
 
-    // The actual fix for lug shape: keep the case's confident plateau
-    // whole, and in the top/bottom transition zones, keep anything wider
-    // than the strap's own measured width unconditionally (that's the lug,
-    // however far its taper extends) rather than a flat row cut. See
-    // buildLugAwareMaskPng's doc comment.
-    const caseMask = await buildLugAwareMaskPng(data, width, height, top, bottom, topCut, bottomCut, topStrip, botStrip)
+    // Confidence blends: how cleanly the lug tips stood out, how well the
+    // case body matched an ellipse, and whether the channel/case ratio is a
+    // physically plausible watch (lug width ≈ half the case diameter).
+    const tipScore = ((topZone?.sharpness ?? 0) + (botZone?.sharpness ?? 0)) / 2
+    const fitScore = Math.max(0, Math.min(1, 1 - body.rms / (body.a * 0.02)))
+    const channelRatio = (channelHalfTop + channelHalfBottom) / (2 * body.a)
+    const plausible = channelRatio > 0.28 && channelRatio < 0.72
+    const confidence = Math.max(0.1, Math.min(0.97,
+      0.15 + 0.4 * tipScore + 0.3 * fitScore + (plausible ? 0.15 : 0)))
+
+    const roundish = Math.abs(body.a - body.b) / Math.max(body.a, body.b) < 0.12
     return {
       caseMask,
       lugGeometry,
-      confidence: band.confidence,
-      strapAttachment: band.sharpTransition ? 'drilled_lug' : 'unknown',
+      confidence,
+      caseShape: fitScore > 0.4 ? (roundish ? 'round' : 'cushion') : 'other',
+      strapAttachment: tipScore > 0.35 && plausible ? 'drilled_lug' : 'unknown',
     }
   }
 }
@@ -617,16 +1008,28 @@ export class ClaudeVisionLandmarkProvider implements SegmentationProvider {
       imageHeight: height,
     }
 
-    // Claude's four points place the plateau boundary, but the MASK still
-    // needs to keep the lugs' full taper rather than a flat cut through them
-    // (see buildLugAwareMaskPng) — measure the strap's real width from the
-    // image tips exactly as the geometric tier does.
-    const { data: rgba, info } = await sharp(imageBuffer).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
-    const { top, bottom } = alphaBoundsRows(rgba, info.width, info.height)
-    const stripRows = Math.max(6, Math.round((bottom - top) * 0.04))
-    const topStrip = measureStrip(rgba, width, top, Math.min(topCut - 1, top + stripRows))
-    const botStrip = measureStrip(rgba, width, Math.max(bottomCut + 1, bottom - stripRows), bottom)
-    const caseMask = await buildLugAwareMaskPng(rgba, width, height, top, bottom, topCut, bottomCut, topStrip, botStrip)
+    // Claude's four points ARE the lug tips and channel edges; the case
+    // body's curve still comes from fitting the silhouette (same contour
+    // model as the geometric tier — the between-lugs cut must follow the
+    // case's curved edge, not a straight line between the points).
+    const { data: rgba } = await sharp(imageBuffer).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+    const { top, bottom } = alphaBoundsRows(rgba, width, height)
+    const bandPad = Math.max(4, Math.round((bottomCut - topCut) * 0.12))
+    const body = fitCaseBody(rgba, width, topCut + bandPad, bottomCut - bandPad)
+    let caseMask: Buffer
+    if (body) {
+      const tipTopY = Math.max(top, topCut)
+      const tipBottomY = Math.min(bottom, bottomCut)
+      const channelHalfTop = (Math.abs(topRight.x - body.cx) + Math.abs(topLeft.x - body.cx)) / 2
+      const channelHalfBottom = (Math.abs(bottomRight.x - body.cx) + Math.abs(bottomLeft.x - body.cx)) / 2
+      caseMask = await buildCaseContourMaskPng(width, height, {
+        body, tipTopY, tipBottomY, channelHalfTop, channelHalfBottom,
+        floorTop: refineChannelFloor(rgba, width, height, body, channelHalfTop, tipTopY, 'top'),
+        floorBottom: refineChannelFloor(rgba, width, height, body, channelHalfBottom, tipBottomY, 'bottom'),
+      })
+    } else {
+      caseMask = await renderRowBandMaskPng(width, height, topCut, bottomCut, 3)
+    }
 
     let confidence = out.confident ? 0.85 : 0.5
     if (out.strap_attachment === 'integrated') confidence = Math.min(confidence, 0.3)

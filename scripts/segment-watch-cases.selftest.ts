@@ -1,130 +1,200 @@
 /**
  * Synthetic self-test for GeometricSilhouetteProvider (no network, no
  * Supabase — this sandbox's egress policy blocks Supabase Storage). Builds
- * "watch-shaped" RGBA silhouettes with known ground-truth case boundaries and
- * checks the detector recovers them within tolerance. See also
+ * watch silhouettes matching REAL case anatomy and checks the provider's
+ * mask against an analytic ground-truth mask (IoU + point probes). See also
  * scripts/segment-watch-cases.realtest.ts, which runs the same provider
- * against a committed real photo for visual (not exact-position) review.
+ * against a committed real photo for visual review.
  *
- * Shape model: a "capsule" case — a flat-sided body (constant width, like a
- * bezel) capped by an elliptical taper at top/bottom, fused with a narrower
- * strap band that's contiguous with the case (no free transparent gap — the
- * strap plugs directly into the case exactly like a real product photo).
+ * The shape model mirrors what the curated 3D case-only reference renders
+ * (Tudor BB58 GMT / Omega Aqua Terra / Oris Big Crown) actually show:
  *
- * Two families, with deliberately different cap heights — this split exists
- * because a real test photo (a Tudor Black Bay GMT on a steel oyster
- * bracelet, see the realtest script) revealed the two attachment types
- * genuinely have different transition physics: a two-piece leather/rubber
- * strap meets the case in a short, sharp junction, but a metal bracelet's
- * end-links flare gradually across several links before reaching the lugs.
- * GeometricSilhouetteProvider now takes a `hint.braceletType` and widens its
- * detection window accordingly — these specs exercise both paths.
- *   - STRAP specs: short cap (~8% of case height), hint braceletType='strap'.
- *   - BRACELET specs: long cap (~25-30% of case height), hint unset (the
- *     catalog's real convention: unset bracelet_type predominantly means
- *     "plain metal bracelet", not "unknown" — see catalog-live-imaged.json).
+ *   case = round body (circle) + four protruding lug horns + crown,
+ *   and between each lug pair the VISIBLE case boundary (the bezel's
+ *   serrated ring edge) sits a few px INSIDE the silhouette's side radius —
+ *   in the full photo, the strap/end-link tucks under the bezel and fills
+ *   that gap, so a mask that stops at the fitted silhouette arc keeps a
+ *   sliver of strap. The synthetic encodes that inset as a COLOR boundary
+ *   (strap-colored pixels between the bezel edge and the silhouette radius),
+ *   which is exactly what refineChannelFloor must snap to.
+ *
+ * Earlier generations of this test used a smooth "capsule" silhouette with
+ * no true lugs, no inset, no crown — and passed while real photos failed on
+ * every one of those features. Every spec here exists because a real photo
+ * broke the code in that specific way.
  *
  * Usage: npx tsx scripts/segment-watch-cases.selftest.ts
  */
 import sharp from 'sharp'
-import { GeometricSilhouetteProvider, applyCaseMask, alphaBoundsRows, computeWidthProfile, detectCaseBand } from '../lib/caseSegmentation'
+import { GeometricSilhouetteProvider, applyCaseMask } from '../lib/caseSegmentation'
 
 interface Spec {
   name: string
   width: number
   height: number
-  caseCenterY: number
-  caseRadiusX: number
-  /** Half-height of the constant-width body (bezel), before the lug taper starts. */
-  flatHalfHeight: number
-  /** Height of the elliptical taper cap beyond the flat body. */
-  capHeight: number
-  strapWidth: number
+  cx: number
+  cy: number
+  /** Case silhouette radius (widest side profile). */
+  rCase: number
+  /** How far INSIDE rCase the visible bezel edge sits between the lugs (the
+   *  serrated-ring inset); strap-colored pixels fill the ring between them. */
+  bezelInset: number
+  /** Channel half-width (lug inner faces at ±channelHalf from cx). 0 = no lugs. */
+  channelHalf: number
+  /** Lug horn thickness beyond the channel edge. */
+  lugThk: number
+  /** How far the lug tips extend past the case circle's top/bottom. */
+  lugTipExt: number
+  /** How deep into the case circle the lug horns root. */
+  lugRootDepth: number
+  /** Strap half-width at the image tip and at the case (linear taper). */
+  strapHalfTip: number
+  strapHalfCase: number
+  crown: boolean
   hint?: { braceletType?: string }
-  expectSharp: boolean
-  cutToleranceRatio: number // fraction of height allowed as error, only checked when expectSharp
-  /** For !expectSharp specs: confidence must stay at/under this — deliberately
-   *  loose for a "borderline" spec, where the correct system behavior is
-   *  landing in the escalation/review zone rather than confidently classified
-   *  either way. */
+  expect: 'drilled' | 'ambiguous'
+  minIoU?: number
   maxAmbiguousConfidence?: number
 }
 
-function halfWidthAt(spec: Spec, y: number): number {
-  const dCenter = Math.abs(y - spec.caseCenterY)
-  if (dCenter <= spec.flatHalfHeight) return spec.caseRadiusX
-  const dCap = (dCenter - spec.flatHalfHeight) / spec.capHeight
-  if (dCap >= 1) return 0
-  return spec.caseRadiusX * Math.sqrt(1 - dCap * dCap)
+const CASE_LUMA = 200
+const STRAP_LUMA = 110
+
+interface Built {
+  png: Buffer
+  /** 1 = case (truth keep), 0 = not. */
+  truth: Uint8Array
+  tipTopY: number
+  tipBottomY: number
 }
 
-function buildSynthetic(spec: Spec): Buffer {
-  const { width, height, strapWidth } = spec
-  const cx = width / 2
+function buildSynthetic(spec: Spec): Promise<Built> {
+  const { width, height, cx, cy, rCase, bezelInset, channelHalf, lugThk, lugTipExt, lugRootDepth, strapHalfTip, strapHalfCase, crown } = spec
   const buf = Buffer.alloc(width * height * 4)
+  const truth = new Uint8Array(width * height)
+
+  const tipTopY = Math.round(cy - rCase - lugTipExt)
+  const tipBottomY = Math.round(cy + rCase + lugTipExt)
+  const rootTopY = Math.round(cy - rCase + lugRootDepth)
+  const rootBottomY = Math.round(cy + rCase - lugRootDepth)
+
+  const strapHalfAt = (y: number): number => {
+    // t = 1 at the lug tips (strap at case width), 0 at the image edge
+    // (strap at its far-tip width) — a bracelet flares TOWARD the case.
+    const t = y < cy
+      ? Math.max(0, Math.min(1, y / Math.max(1, tipTopY)))
+      : Math.max(0, Math.min(1, (height - 1 - y) / Math.max(1, height - 1 - tipBottomY)))
+    return strapHalfTip + (strapHalfCase - strapHalfTip) * t
+  }
+
+  // Lug horn: widest at its root row, tapering to a point at the tip row.
+  const lugOuterAt = (y: number): number => {
+    if (!channelHalf || !lugThk) return 0
+    if (y < tipTopY || y > tipBottomY) return 0
+    if (y >= rootTopY && y <= rootBottomY) return 0
+    const span = y < cy ? rootTopY - tipTopY : tipBottomY - rootBottomY
+    const fromTip = y < cy ? y - tipTopY : tipBottomY - y
+    const t = Math.max(0, Math.min(1, fromTip / Math.max(1, span)))
+    return channelHalf + lugThk * (0.25 + 0.75 * t)
+  }
+
+  const crownRx = rCase * 0.09
+  const crownRy = rCase * 0.16
+  const crownCx = cx + rCase + crownRx * 0.5
+
   for (let y = 0; y < height; y += 1) {
-    const caseHalfW = halfWidthAt(spec, y)
-    const halfW = Math.max(caseHalfW, strapWidth / 2)
-    const left = Math.round(cx - halfW)
-    const right = Math.round(cx + halfW)
     for (let x = 0; x < width; x += 1) {
+      const dx = x - cx
+      const dy = y - cy
+      const dist = Math.hypot(dx, dy)
+      const adx = Math.abs(dx)
+
+      const inSilhouetteCircle = dist <= rCase
+      const inChannelColumns = adx <= channelHalf
+      // Between the lugs, the ring between the bezel edge and the silhouette
+      // radius is STRAP (end-link tucked under the bezel) — the exact sliver
+      // a fitted-arc-only mask wrongly keeps.
+      const inBezelRing = inSilhouetteCircle && dist > rCase - bezelInset && inChannelColumns && channelHalf > 0
+      const isCaseBody = inSilhouetteCircle && !inBezelRing
+
+      const inLug = channelHalf > 0 && adx > channelHalf && adx <= lugOuterAt(y)
+      const inCrown = crown && ((x - crownCx) / crownRx) ** 2 + (dy / crownRy) ** 2 <= 1
+      const inStrap = adx <= strapHalfAt(y)
+
+      const isCase = isCaseBody || inLug || inCrown
+      const opaque = isCase || inStrap || inBezelRing
+
       const idx = (y * width + x) * 4
-      buf[idx] = 40
-      buf[idx + 1] = 40
-      buf[idx + 2] = 40
-      buf[idx + 3] = x >= left && x <= right ? 255 : 0
+      if (opaque) {
+        const luma = isCase ? CASE_LUMA : STRAP_LUMA
+        buf[idx] = luma; buf[idx + 1] = luma; buf[idx + 2] = luma
+        buf[idx + 3] = 255
+        if (isCase) truth[y * width + x] = 1
+      }
     }
   }
-  return buf
-}
-
-// Analytic ground truth: the row where the case's own half-width (flat body +
-// elliptical taper) equals the strap's half-width.
-function trueTransitionRows(spec: Spec): { top: number; bottom: number } | null {
-  const k = (spec.strapWidth / 2) / spec.caseRadiusX
-  if (k >= 1) return null // strap as wide as the case — no real transition exists
-  const dCap = Math.sqrt(1 - k * k)
-  const offset = spec.flatHalfHeight + spec.capHeight * dCap
-  return { top: spec.caseCenterY - offset, bottom: spec.caseCenterY + offset }
+  return sharp(buf, { raw: { width, height, channels: 4 } }).png().toBuffer()
+    .then(png => ({ png, truth, tipTopY, tipBottomY }))
 }
 
 const SPECS: Spec[] = [
   {
-    name: 'round case, drilled-lug leather strap',
-    width: 800, height: 900, caseCenterY: 450, caseRadiusX: 300, flatHalfHeight: 260, capHeight: 70,
-    strapWidth: 140, hint: { braceletType: 'strap' }, expectSharp: true, cutToleranceRatio: 0.035,
+    name: 'dive watch, steel bracelet (flared end links, serrated-ring inset)',
+    width: 760, height: 1100, cx: 380, cy: 550, rCase: 270, bezelInset: 8,
+    channelHalf: 130, lugThk: 45, lugTipExt: 55, lugRootDepth: 150,
+    strapHalfTip: 100, strapHalfCase: 129, crown: true,
+    expect: 'drilled', minIoU: 0.965,
   },
   {
-    name: 'small dress case, slim NATO-ish strap',
-    width: 700, height: 900, caseCenterY: 460, caseRadiusX: 230, flatHalfHeight: 200, capHeight: 55,
-    strapWidth: 90, hint: { braceletType: 'strap' }, expectSharp: true, cutToleranceRatio: 0.04,
+    name: 'dive watch, leather strap (sharp junction, strap hint)',
+    width: 760, height: 1100, cx: 380, cy: 550, rCase: 270, bezelInset: 8,
+    channelHalf: 130, lugThk: 45, lugTipExt: 55, lugRootDepth: 150,
+    strapHalfTip: 118, strapHalfCase: 129, crown: true,
+    hint: { braceletType: 'strap' }, expect: 'drilled', minIoU: 0.965,
   },
   {
-    name: 'chunky sports case, thick rubber strap',
-    width: 800, height: 900, caseCenterY: 450, caseRadiusX: 320, flatHalfHeight: 300, capHeight: 40,
-    strapWidth: 200, hint: { braceletType: 'strap' }, expectSharp: true, cutToleranceRatio: 0.045,
+    name: 'small dress watch, slim strap, no crown bump, no bezel inset',
+    width: 700, height: 1000, cx: 350, cy: 500, rCase: 225, bezelInset: 0,
+    channelHalf: 100, lugThk: 34, lugTipExt: 45, lugRootDepth: 120,
+    strapHalfTip: 88, strapHalfCase: 99, crown: false,
+    hint: { braceletType: 'strap' }, expect: 'drilled', minIoU: 0.965,
   },
   {
-    name: 'round case, steel oyster bracelet (gradual multi-link flare)',
-    width: 800, height: 900, caseCenterY: 450, caseRadiusX: 300, flatHalfHeight: 210, capHeight: 220,
-    strapWidth: 230, hint: undefined, expectSharp: true, cutToleranceRatio: 0.09,
+    name: 'long tapered lugs (Aqua Terra style — the flat-cut killer)',
+    width: 760, height: 1150, cx: 380, cy: 575, rCase: 260, bezelInset: 6,
+    channelHalf: 120, lugThk: 42, lugTipExt: 85, lugRootDepth: 170,
+    strapHalfTip: 105, strapHalfCase: 119, crown: true,
+    hint: { braceletType: 'strap' }, expect: 'drilled', minIoU: 0.96,
   },
   {
-    name: 'round case, jubilee-style bracelet (gradual, narrower)',
-    width: 800, height: 900, caseCenterY: 450, caseRadiusX: 300, flatHalfHeight: 220, capHeight: 200,
-    strapWidth: 180, hint: undefined, expectSharp: true, cutToleranceRatio: 0.09,
+    name: 'integrated bracelet (Royal Oak / Nautilus style — no lugs at all)',
+    width: 760, height: 1100, cx: 380, cy: 550, rCase: 270, bezelInset: 0,
+    channelHalf: 0, lugThk: 0, lugTipExt: 0, lugRootDepth: 0,
+    strapHalfTip: 250, strapHalfCase: 256, crown: false,
+    expect: 'ambiguous', maxAmbiguousConfidence: 0.6,
   },
   {
-    name: 'integrated bracelet (Royal Oak / Nautilus style — no sharp transition)',
-    width: 800, height: 900, caseCenterY: 450, caseRadiusX: 300, flatHalfHeight: 260, capHeight: 70,
-    strapWidth: 560, hint: undefined, expectSharp: false, cutToleranceRatio: 1,
-  },
-  {
-    name: 'near-integrated chunky sports bracelet (borderline)',
-    width: 800, height: 900, caseCenterY: 450, caseRadiusX: 300, flatHalfHeight: 260, capHeight: 70,
-    strapWidth: 440, hint: undefined, expectSharp: false, cutToleranceRatio: 1, maxAmbiguousConfidence: 0.6,
+    name: 'near-integrated wide bracelet (borderline — must stay in escalation zone)',
+    width: 760, height: 1100, cx: 380, cy: 550, rCase: 270, bezelInset: 0,
+    channelHalf: 0, lugThk: 0, lugTipExt: 0, lugRootDepth: 0,
+    strapHalfTip: 200, strapHalfCase: 225, crown: false,
+    expect: 'ambiguous', maxAmbiguousConfidence: 0.65,
   },
 ]
+
+function iou(outAlpha: (x: number, y: number) => number, truth: Uint8Array, width: number, height: number): number {
+  let inter = 0
+  let union = 0
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const kept = outAlpha(x, y) > 127
+      const isCase = truth[y * width + x] === 1
+      if (kept && isCase) inter += 1
+      if (kept || isCase) union += 1
+    }
+  }
+  return union === 0 ? 1 : inter / union
+}
 
 async function run() {
   const provider = new GeometricSilhouetteProvider()
@@ -132,181 +202,70 @@ async function run() {
   let fail = 0
 
   for (const spec of SPECS) {
-    const png = await sharp(buildSynthetic(spec), { raw: { width: spec.width, height: spec.height, channels: 4 } }).png().toBuffer()
+    const { png, truth, tipTopY, tipBottomY } = await buildSynthetic(spec)
     const result = await provider.segmentCase(png, spec.hint)
-    const truth = trueTransitionRows(spec)
 
     let ok = true
     const notes: string[] = []
 
-    if (spec.expectSharp) {
-      if (!truth) { ok = false; notes.push('spec error: no analytic transition for an expectSharp case') }
-      else {
-        const tolPx = spec.height * spec.cutToleranceRatio
-        const topErr = Math.abs((result.lugGeometry?.topLugLeft.y ?? -9999) - truth.top)
-        const botErr = Math.abs((result.lugGeometry?.bottomLugLeft.y ?? -9999) - truth.bottom)
-        if (topErr > tolPx) { ok = false; notes.push(`top cut off by ${topErr.toFixed(1)}px (tol ${tolPx.toFixed(1)})`) }
-        if (botErr > tolPx) { ok = false; notes.push(`bottom cut off by ${botErr.toFixed(1)}px (tol ${tolPx.toFixed(1)})`) }
+    if (spec.expect === 'drilled') {
+      const masked = await applyCaseMask(png, result.caseMask)
+      const { data: outData, info } = await sharp(masked).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+      const alphaAt = (x: number, y: number) => outData[(y * info.width + x) * 4 + 3]
+
+      const score = iou(alphaAt, truth, spec.width, spec.height)
+      const minIoU = spec.minIoU ?? 0.95
+      if (score < minIoU) { ok = false; notes.push(`IoU ${score.toFixed(3)} < ${minIoU}`) }
+
+      // Point probes — each encodes a specific real-photo failure:
+      const probes: Array<[number, number, 'keep' | 'drop', string]> = [
+        // Lug tips survive (the flat-cut bug).
+        [spec.cx + spec.channelHalf + 8, tipTopY + 10, 'keep', 'top-right lug tip'],
+        [spec.cx - spec.channelHalf - 8, tipBottomY - 10, 'keep', 'bottom-left lug tip'],
+        // Nothing above/below the tips (floating bracelet fragments bug).
+        [spec.cx, tipTopY - 8, 'drop', 'strap above top lug tips'],
+        [spec.cx, tipBottomY + 8, 'drop', 'strap below bottom lug tips'],
+        // The channel floor follows the case's CURVE (straight-cut bug):
+        // just outside the bezel edge at centre = strap; just inside = case.
+        [spec.cx, Math.round(spec.cy - spec.rCase + spec.bezelInset + 4), 'keep', 'case just inside bezel edge (centre)'],
+        [spec.cx, Math.round(spec.cy - spec.rCase - 4), 'drop', 'strap just outside silhouette arc (centre)'],
+        // Mid-channel column, above the arc but below the tips — strap fill.
+        [spec.cx + Math.round(spec.channelHalf * 0.6), Math.round(spec.cy - spec.rCase - 12), 'drop', 'strap fill off-centre in channel'],
+      ]
+      // The serrated-ring inset (end-link tucked under the bezel): pixels in
+      // the ring between bezel edge and silhouette radius are strap and must
+      // be dropped — a fitted-arc-only mask keeps them.
+      if (spec.bezelInset >= 6) {
+        probes.push([spec.cx, Math.round(spec.cy - spec.rCase + Math.ceil(spec.bezelInset / 2)), 'drop', 'end-link sliver inside silhouette radius (bezel inset)'])
       }
-      if (result.confidence < 0.55) { ok = false; notes.push(`confidence too low: ${result.confidence.toFixed(2)} (expected >= 0.55)`) }
-      if (result.strapAttachment !== 'drilled_lug') { ok = false; notes.push(`strapAttachment=${result.strapAttachment}, expected drilled_lug`) }
+      if (spec.crown) {
+        probes.push([Math.round(spec.cx + spec.rCase + spec.rCase * 0.05), spec.cy, 'keep', 'crown'])
+      }
+      for (const [x, y, want, label] of probes) {
+        const a = alphaAt(x, y)
+        if (want === 'keep' && a < 200) { ok = false; notes.push(`${label}: removed (alpha=${a})`) }
+        if (want === 'drop' && a > 60) { ok = false; notes.push(`${label}: kept (alpha=${a})`) }
+      }
+
+      if (result.confidence < 0.6) { ok = false; notes.push(`confidence too low: ${result.confidence.toFixed(2)}`) }
+      if (result.strapAttachment !== 'drilled_lug') { ok = false; notes.push(`strapAttachment=${result.strapAttachment}`) }
+      notes.unshift(`IoU=${score.toFixed(3)}`)
     } else {
-      const cap = spec.maxAmbiguousConfidence ?? 0.45
-      if (result.confidence > cap) { ok = false; notes.push(`confidence too high for an ambiguous case: ${result.confidence.toFixed(2)} (expected <= ${cap})`) }
-      // Whether "borderline" or clearly integrated, this must stay below the
-      // orchestrator's escalation threshold so the real pipeline always
-      // routes it to Claude vision (or needs_review) rather than trusting it.
-      if (result.confidence >= 0.7) { ok = false; notes.push(`confidence ${result.confidence.toFixed(2)} would skip escalation entirely`) }
+      const cap = spec.maxAmbiguousConfidence ?? 0.55
+      if (result.confidence > cap) { ok = false; notes.push(`confidence too high for ambiguous case: ${result.confidence.toFixed(2)} > ${cap}`) }
+      if (result.confidence >= 0.7) { ok = false; notes.push('would skip escalation entirely') }
     }
 
     if (ok) pass += 1
     else fail += 1
     console.log(`${ok ? '✓' : '✗'} ${spec.name}`)
-    console.log(`   confidence=${result.confidence.toFixed(2)} strapAttachment=${result.strapAttachment}` +
-      (result.lugGeometry ? ` topCut=${result.lugGeometry.topLugLeft.y} bottomCut=${result.lugGeometry.bottomLugLeft.y} lugWidthPx=${result.lugGeometry.lugWidthPx}` : ''))
-    if (truth) console.log(`   ground truth: top=${truth.top.toFixed(1)} bottom=${truth.bottom.toFixed(1)}`)
+    console.log(`   confidence=${result.confidence.toFixed(2)} attachment=${result.strapAttachment} shape=${result.caseShape ?? '—'}` +
+      (result.lugGeometry ? ` tips=${result.lugGeometry.topLugLeft.y}/${result.lugGeometry.bottomLugLeft.y} channelPx=${result.lugGeometry.lugWidthPx}` : ''))
     if (notes.length) console.log(`   ${notes.join(' | ')}`)
   }
 
   console.log(`\n${pass} passed, ${fail} failed`)
-
-  const bladeOk = await runBladeLugTest()
-  console.log(bladeOk ? '\nBlade-lug regression test passed' : '\nBlade-lug regression test FAILED')
-
-  if (fail > 0 || !bladeOk) process.exit(1)
-}
-
-// ── Protruding blade-lug regression test ─────────────────────────────────────
-//
-// None of the capsule specs above have a real "lug" — their case is one
-// smooth taper, no separate feature sticking out further than the case's own
-// body. That's exactly why the flat row-cut bug (reported against a real
-// Omega Aqua Terra photo: long angled lug blades sliced into flat stubs)
-// slipped past every capsule spec. This models the real failure mode
-// directly: a round case (simple circle) PLUS two triangular lug blades that
-// extend well past the circle's own edge, angled down toward the strap —
-// checking that the lug tip survives even though it reaches deeper into
-// "strap territory" than any single flat cut could safely allow.
-function pointInTriangle(
-  px: number, py: number, ax: number, ay: number, bx: number, by: number, cx: number, cy: number,
-): boolean {
-  const sign = (x1: number, y1: number, x2: number, y2: number, x3: number, y3: number) =>
-    (x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3)
-  const d1 = sign(px, py, ax, ay, bx, by)
-  const d2 = sign(px, py, bx, by, cx, cy)
-  const d3 = sign(px, py, cx, cy, ax, ay)
-  const hasNeg = d1 < 0 || d2 < 0 || d3 < 0
-  const hasPos = d1 > 0 || d2 > 0 || d3 > 0
-  return !(hasNeg && hasPos)
-}
-
-async function runBladeLugTest(): Promise<boolean> {
-  const width = 800
-  const height = 1000
-  const cx = width / 2
-  const caseCenterY = 500
-  const caseRadius = 300
-  const strapHalfWidth = 70
-  const lugOuterOffset = 200 // lug's outer edge, past the strap's half-width
-  const lugLength = 130      // how far the lug tip reaches beyond the case circle's own edge
-  // A real drilled lug is WIDEST where it joins the case and TAPERS TO A POINT
-  // further away from the case (toward the strap direction) — i.e. for the
-  // top lugs, the tip has a SMALLER y than the base (closer to the image's
-  // top edge), not larger. Getting this backwards was the first draft's bug:
-  // it built a lug that pointed INTO the case, which the algorithm handles
-  // trivially (that region is already inside the confident plateau) and
-  // never exercised the actual fix.
-  const baseY = caseCenterY - caseRadius * 0.75 // wide end, inside the circle
-  const tipY = baseY - lugLength                // narrow end, beyond the circle's own top edge
-
-  const rTopA = { x: cx + strapHalfWidth, y: baseY }
-  const rTopB = { x: cx + strapHalfWidth + lugOuterOffset, y: baseY }
-  const rTopC = { x: cx + strapHalfWidth + lugOuterOffset * 0.3, y: tipY } // apex — the tip a flat cut would chop
-  const lTopA = { x: cx - strapHalfWidth, y: baseY }
-  const lTopB = { x: cx - strapHalfWidth - lugOuterOffset, y: baseY }
-  const lTopC = { x: cx - strapHalfWidth - lugOuterOffset * 0.3, y: tipY }
-
-  const botBaseY = height - 1 - baseY
-  const botTipY = height - 1 - tipY
-  const rBotA = { x: rTopA.x, y: botBaseY }
-  const rBotB = { x: rTopB.x, y: botBaseY }
-  const rBotC = { x: rTopC.x, y: botTipY }
-  const lBotA = { x: lTopA.x, y: botBaseY }
-  const lBotB = { x: lTopB.x, y: botBaseY }
-  const lBotC = { x: lTopC.x, y: botTipY }
-
-  const buf = Buffer.alloc(width * height * 4)
-  for (let y = 0; y < height; y += 1) {
-    for (let x = 0; x < width; x += 1) {
-      const dx = x - cx
-      const dy = y - caseCenterY
-      const inCase = dx * dx + dy * dy <= caseRadius * caseRadius
-      const inStrap = Math.abs(dx) <= strapHalfWidth
-      const inRTop = pointInTriangle(x, y, rTopA.x, rTopA.y, rTopB.x, rTopB.y, rTopC.x, rTopC.y)
-      const inLTop = pointInTriangle(x, y, lTopA.x, lTopA.y, lTopB.x, lTopB.y, lTopC.x, lTopC.y)
-      const inRBot = pointInTriangle(x, y, rBotA.x, rBotA.y, rBotB.x, rBotB.y, rBotC.x, rBotC.y)
-      const inLBot = pointInTriangle(x, y, lBotA.x, lBotA.y, lBotB.x, lBotB.y, lBotC.x, lBotC.y)
-      const opaque = inCase || inStrap || inRTop || inLTop || inRBot || inLBot
-      const idx = (y * width + x) * 4
-      buf[idx] = 180; buf[idx + 1] = 180; buf[idx + 2] = 185
-      buf[idx + 3] = opaque ? 255 : 0
-    }
-  }
-  const srcPng = await sharp(buf, { raw: { width, height, channels: 4 } }).png().toBuffer()
-
-  const provider = new GeometricSilhouetteProvider()
-  const result = await provider.segmentCase(srcPng, { braceletType: 'strap' })
-  const masked = await applyCaseMask(srcPng, result.caseMask)
-  const { data: outData, info } = await sharp(masked).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
-  const alphaAt = (x: number, y: number) => outData[(Math.round(y) * info.width + Math.round(x)) * 4 + 3]
-
-  let ok = true
-  const notes: string[] = []
-
-  // The lug tip — a few px back toward the base from the apex, so the sample
-  // point is safely inside the (very narrow, near-zero-width-at-the-point)
-  // triangle rather than right on its boundary — must survive in the output.
-  // That's the whole point of the fix.
-  const tipCheckPoints: Array<[number, number, string]> = [
-    [rTopC.x, rTopC.y + 8, 'top-right lug tip'],
-    [lTopC.x, lTopC.y + 8, 'top-left lug tip'],
-    [rBotC.x, rBotC.y - 8, 'bottom-right lug tip'],
-    [lBotC.x, lBotC.y - 8, 'bottom-left lug tip'],
-  ]
-  for (const [x, y, label] of tipCheckPoints) {
-    const a = alphaAt(x, y)
-    if (a < 200) { ok = false; notes.push(`${label} was removed (alpha=${a}) — lug got chopped`) }
-  }
-
-  // The strap, filling the gap BETWEEN the lugs at a row PAST the lug tips
-  // (further from the case than either tip reaches), must still be removed —
-  // the other half of the fix: not just "keep everything," but correctly
-  // distinguish lug-material from strap-fill at the same row.
-  const gapCheckPoints: Array<[number, number, string]> = [
-    [cx, tipY - 15, 'strap fill above the top lug tips'],
-    [cx, botTipY + 15, 'strap fill below the bottom lug tips'],
-  ]
-  for (const [x, y, label] of gapCheckPoints) {
-    const a = alphaAt(x, y)
-    if (a > 60) { ok = false; notes.push(`${label} was kept (alpha=${a}) — strap remnant left behind`) }
-  }
-
-  // Sanity: confirm the OLD flat-cut approach really would have failed this —
-  // otherwise this test isn't exercising the bug it claims to. Old topCut is
-  // a row deep inside the case (larger y than the tip); if it isn't, this
-  // synthetic scenario isn't actually reaching past where a flat cut would.
-  const { data: rawData } = await sharp(srcPng).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
-  const { top, bottom } = alphaBoundsRows(rawData, width, height)
-  const profile = computeWidthProfile(rawData, width, top, bottom)
-  const oldBand = detectCaseBand(profile, 0.035)
-  const oldTopCut = top + oldBand.topIdx + 2
-  if (oldTopCut <= tipY) {
-    notes.push(`(note: old flat-cut topCut=${oldTopCut} would not actually have reached the lug tip at y=${tipY} — regression scenario may be too weak)`)
-  }
-
-  console.log(`  confidence=${result.confidence.toFixed(2)} strapAttachment=${result.strapAttachment}`)
-  if (notes.length) console.log(`  ${notes.join(' | ')}`)
-  return ok
+  if (fail > 0) process.exit(1)
 }
 
 void run()

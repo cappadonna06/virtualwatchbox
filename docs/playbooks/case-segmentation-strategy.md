@@ -3,9 +3,10 @@
 **Status:** tier-0 (geometric) and tier-1 (Claude vision) providers implemented,
 unit-validated on synthetic data (`npm run straps:segment-cases:selftest`), and
 smoke-tested against real photos (`npm run straps:segment-cases:realtest`) —
-see "Real-photo validation" and "Lug shape" below for what those tests found
-and fixed, including a real masking bug (a flat cut chopping lug tips off)
-that only a real photo surfaced. Not yet run against the real catalog batch or
+see "Real-photo validation" and "How the mask design got here" below for what
+those tests found and fixed — three successive mask designs each broke against
+a real photo in a way no synthetic test had caught, and each failure is now a
+permanent regression probe. Not yet run against the real catalog batch or
 with a live `ANTHROPIC_API_KEY` — see "What's still required."
 
 ---
@@ -44,32 +45,65 @@ width profile from top to bottom. The case/strap boundary is where that
 profile transitions.
 
 This is implemented as `GeometricSilhouetteProvider` in
-[`lib/caseSegmentation.ts`](../../lib/caseSegmentation.ts):
+[`lib/caseSegmentation.ts`](../../lib/caseSegmentation.ts) via the
+**case-contour model** — what a watch head actually is, verified against the
+curated 3D case-only reference renders (Tudor BB58 GMT / Omega Aqua Terra /
+Oris Big Crown; the committed channel-zoom standard is
+`test-fixtures/case-segmentation/reference/`):
 
-1. Compute the per-row opaque-pixel span width (leftmost to rightmost opaque
-   x) for every row of the full watch silhouette.
-2. Find the widest row (the case's own diameter) and scan outward in both
-   directions for the steepest width drop over a small row window — a round
-   case's width profile has its steepest slope right at the true case edge,
-   so this lands close to the real lug line even though the exact "% of max
-   width" a case tapers at varies by design. This row (`topCut`/`bottomCut`)
-   marks the boundary of the case's *confident plateau* — everything between
-   them is unambiguously case (dial, crystal, bezel), no further reasoning
-   needed.
-3. Confidence is the drop's size relative to the case's own max width. A
-   flat profile (integrated bracelet — Royal Oak, Nautilus) has **no** sharp
-   drop by construction — that's the correct signal to escalate or skip, not
-   a bug in the detector.
-4. Outside the plateau (the top/bottom transition zones, where real lugs
-   live) is where a flat cut breaks — see "Lug shape" below for the actual
-   masking logic there.
+> case-only = round case body ∪ four lug horns ∪ crown; the strap channel
+> between each lug pair is bounded by the lug inner faces on the sides and
+> the case's own **curved** edge below; **nothing** exists beyond the lug
+> tips.
 
-This runs with **zero external API calls and zero marginal cost per image** —
-it's pure pixel math on data already in Storage. Validated against synthetic
-"capsule" silhouettes (flat bezel body + short elliptical lug taper, fused to
-a strap band with no artificial gap — modeling exactly how a real product
-photo looks, where the strap visually plugs into the case) in
-`scripts/segment-watch-cases.selftest.ts`. Run it with:
+Pipeline, all pure pixel math (zero external API calls, ~60ms/image):
+
+1. **Coarse band** (`detectCaseBand`): per-row silhouette span profile →
+   steepest contraction bounds the case's vertical extent. Only used to seed
+   the next step's sampling range.
+2. **Case-body fit** (`fitCaseBody`): robust circle fit (Kåsa) on the
+   silhouette's left/right edges across the band, with percentile trimming
+   to reject the crown and lug shoulders as outliers. An axis-aligned
+   ellipse is also fitted and wins only when decisively better — the sampled
+   arcs are the case's *sides*, and a free vertical semi-axis extrapolated
+   from side arcs alone drifts (measured: b≈253 fitted vs ≈234 observed on
+   the Tudor fixture), while a circle's cap is pinned by the sides' own
+   curvature. No stable fit (rectangular/tonneau case) → low confidence →
+   escalate, never guess.
+3. **Lug tips** (`findLugZone`): scanning outward from the case body, the
+   span holds at the lug outer edges then contracts sharply the instant the
+   lugs end — that contraction marks the tip row. The scan ignores rows near
+   the image's own crop edge (a strap running off-frame produces the biggest
+   contraction of all — a real tip always has strap *continuing beyond* it).
+   Channel width = the strap/end-link span measured just beyond the tips (an
+   end link fills the channel exactly).
+4. **Contour mask** (`buildCaseContourMaskPng`): keep = rows within the two
+   tip rows AND (inside the fitted body ∪ |x−cx| ≥ channel half-width).
+   That's the curved channel floor, the lug horns at full shape, the case
+   sides, and the crown — and a hard stop past the tips (no floating
+   bracelet fragments).
+5. **Channel-floor snap** (`refineChannelFloor`): the fitted arc is measured
+   from the case's sides, but the *visible* boundary between the lugs is the
+   bezel's outer edge (on a dive watch, the serrated coin-edge ring), a few
+   px inside the side-profile radius — the strap/end-link tucks under it.
+   Per channel column, the boundary is a **cluster** of gradients (measured
+   on the Tudor fixture: smooth end-link ≤ 24, serrated ring 30-60, ring →
+   colored insert 130-250), so the snap anchors at the strongest edge and
+   walks **outward** to the cluster's start — snapping to the strongest edge
+   alone eats the serrated ring, which is case. Falls back to the fitted arc
+   where no clear edge exists (steel-on-steel worst case); a colored strap
+   against a steel case makes this edge enormous, so strapped watches get
+   the most precise floors of all.
+
+Confidence blends tip sharpness, body-fit residual, and channel/case-ratio
+plausibility; integrated designs land at ≈0.58 (inside the escalation zone)
+and clean drilled-lug shapes at ≈0.78-0.81. Validated in
+`scripts/segment-watch-cases.selftest.ts` against synthetic silhouettes with
+real case anatomy — protruding lug horns, a bezel edge inset from the
+silhouette radius with strap-colored fill between (the end-link-under-bezel
+condition), a crown, flared bracelets — scored by IoU (≥0.995 achieved)
+against analytic ground truth plus targeted point probes, each of which
+encodes a failure a real photo actually caught. Run it with:
 
 ```
 npm run straps:segment-cases:selftest
@@ -115,56 +149,42 @@ guess. One real photo is one data point — expect further constant tuning once
 more real photos (ideally a batch across bracelet styles: oyster, jubilee,
 mesh, two-piece leather, rubber, NATO) go through it.
 
-## Lug shape: a flat cut chops the lugs off
+## How the mask design got here (three real-photo lessons)
 
-The first real-photo fix (window sizing, above) only addressed *where* the
-row cut lands. A second, more fundamental bug survived it: **a straight
-horizontal cut across the full image width cannot represent a lug**, because
-a real drilled lug is an angled blade — widest where it joins the case,
-tapering to a point well past the case's own body, toward the strap. A flat
-cut at any single row either slices through the middle of that taper (chopping
-the tip into a flat stub) or leaves strap material showing in the gap between
-the two lug tips at that same row — a per-row cut cannot get both right at
-once, because at the row where a real lug reaches its tip, the strap is also
-present (filling the gap between the two lugs), and a purely row-based mask
-can't tell those two things apart.
+The contour model above wasn't the first design — three earlier mask
+generations each failed against a real photo in a specific way, and each
+failure is now permanently encoded as a synthetic-selftest probe:
 
-Caught against a second real photo — an Omega Seamaster Aqua Terra with long,
-sharply tapered lugs. The flat cut sliced the lugs into short flat triangles
-instead of their true tapered shape.
+1. **A flat row cut chops the lugs off.** A drilled lug is an angled horn —
+   widest at the case, tapering to a tip well past the case's own body. At
+   the row where the lug reaches its tip, the strap is *also* present
+   (filling the gap between the two lugs), so no single horizontal cut can
+   both keep the tip and remove the strap. Caught on an Omega Aqua Terra
+   with long tapered lugs: the tips got sliced into flat stubs.
+2. **"Wider than the strap ⇒ lug" leaves floating bracelet fragments and a
+   straight channel cut.** The second design classified transition-zone
+   pixels by width against the strap's far-tip width. Two failures, both
+   caught on the Tudor BB GMT fixture: a bracelet's end-links near the case
+   are *wider* than its far end, so fragments of bracelet survived above the
+   lug tips; and the between-lugs boundary stayed a straight line where the
+   real boundary is the case's curved edge. The contour model's tip-row
+   hard-stop and fitted-arc channel floor replaced it.
+3. **The fitted arc alone keeps an end-link sliver over the bezel.** The fit
+   measures the case's *side* profile, but the visible case edge between the
+   lugs is the bezel's serrated ring, a few px inside that radius — the
+   end-link tucks under it, and the sliver between ring edge and fitted arc
+   showed vertical bracelet link-lines in the output. `refineChannelFloor`'s
+   gradient-cluster snap (see step 5 above) fixed it; the committed
+   channel-zoom standard in `test-fixtures/case-segmentation/reference/`
+   shows exactly the boundary it must reproduce.
 
-The fix, `buildLugAwareMaskPng` in `lib/caseSegmentation.ts`: within the
-confident plateau, keep everything (unchanged). In the transition zones,
-classify by **width, not row**: measure the strap's own true width from a
-band of rows guaranteed to be pure strap (`measureStrip` — the very top/bottom
-tip of a full-watch photo, which a real lug can never reach). Any opaque pixel
-further from center than that measured half-width can *only* be lug material —
-the strap is physically not that wide — so it's kept unconditionally, no
-matter how far its taper extends. Pixels within the strap's width, once past
-the plateau, are the old strap filling the gap between the lug tips, and get
-removed. This traces whatever the lug's *actual* shape is, angled or curved,
-because it's reading real pixel data rather than approximating a curve — the
-only decision being made is "wider than the strap, or not," which a flat cut
-could never express. `ClaudeVisionLandmarkProvider` got the same fix (its
-four points now only set the plateau boundary; the mask uses the same
-width-based classification as the geometric tier).
-
-This also fixed a second, related bug: `lugGeometry.lugWidthPx` (the value
-the Studio uses to width-scale a new strap) was computed from the row's
-*full* span at the cut — which, whenever real lugs were present, was the
-lug-tip-to-lug-tip width, not the strap's actual width, systematically
-overstating it. It now uses the same `measureStrip` measurement.
-
-A synthetic regression test for this specific bug lives in
-`scripts/segment-watch-cases.selftest.ts` (`runBladeLugTest`) — none of the
-capsule specs above have a true protruding lug (their case is one smooth
-taper), which is exactly why this bug slipped past all of them; the new test
-builds a plain circular case plus two triangular blades that extend past the
-circle's own edge, angled toward the strap, and checks that the tip survives
-in the output while the strap still gets removed from the gap between the
-two tips at a row past them. It also asserts the *old* flat-cut behavior
-really would have failed this case, so the test can't silently stop
-exercising the bug it's named for.
+Same evolution fixed `lugGeometry.lugWidthPx` (what the Studio width-scales
+straps against): it was the full row span at the cut — lug-tip-to-lug-tip
+when lugs exist, systematically overstated — and is now the channel width
+measured from the strap just beyond the lug tips, where an end link fills
+the channel exactly. `ClaudeVisionLandmarkProvider` shares the whole mask
+path (its four points set the tips and channel edges; the body fit and
+floor snap come from the pixels, same as the geometric tier).
 
 ## Integrated bracelets: skip outright, don't just wait for low confidence
 
