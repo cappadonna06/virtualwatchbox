@@ -237,6 +237,30 @@ committed real fixture:
    identical to polished steel — hangs exactly there. Texture mode keeps
    the symmetric window; the rect prior owns its own windows.
 
+8. **Rectangular cases are cut CASE-FIRST — no per-pixel veto.** The Tank
+   fixture's second review round (user: cut-into lugs on different corners,
+   jagged edges, floating band bits, "assume some symmetry... be less
+   focused on the band, more focused on finding the watch case and just
+   cutting out the rest") exposed two false assumptions: the strap is NOT
+   always narrower than the case (this one is nearly case-wide and overlaps
+   the brancards), and dark pixels are NOT classifiable (a polished rail's
+   near-black reflection bands read as "strap" to any color test — the veto
+   carved visible lug metal). `buildRectContourMaskPng` now finds the case
+   instead of policing the strap: per column, a METAL WALK anchored at the
+   case's vertical middle (always rail flank on rail columns, the dial — no
+   claim — on channel columns) keeps each rail to its natural silhouette
+   end, crossing dark metal freely (bounded) and stopping only at decisive
+   lit strap color or transparency. Walk claims that beat the floor are
+   audited (mostly-strap extension zones are bogus — a strap's bright
+   specular edge filament is per-pixel indistinguishable from metal) and
+   median-9 smoothed (filament-width claims die; symmetry and smooth edges
+   fall out of keeping the source silhouette). The floors alone rule the
+   channel columns, and their no-boundary fallback with a prior is now the
+   scan's deepest reach, not the prior line (the rect prior rows are the
+   RAIL-END rows — falling back to them kept a full-height strap sliver).
+   The realtest asserts left/right kept-extent symmetry (4% of height) on
+   every fixture.
+
 The Longines fixture also motivated a confidence change: softly-tapered
 lugs produce honest tips with tiny 2-row drops (tipScore ~0.15), which
 under-rated an otherwise clean color-anchored cut to escalation level.

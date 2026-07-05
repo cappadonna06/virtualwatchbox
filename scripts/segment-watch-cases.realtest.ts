@@ -138,6 +138,37 @@ async function main(): Promise<void> {
         if (!keptAt(i) && !outSeen[i] && data[i * 4 + 3] > 127 && out[i * 4 + 3] < data[i * 4 + 3] / 2) holePx += 1
       }
       if (holePx > 12) { rowOk = false; notes.push(`enclosed holes carved by the mask: ${holePx}px`) }
+
+      // Symmetry: a face-on product shot's case is left/right symmetric, so
+      // the kept extents of the outermost column quarters must roughly agree
+      // (user rule after the Tank's left brancard came back half-destroyed:
+      // "generally speaking I think we can assume some symmetry"). Loose 4%
+      // tolerance — real asymmetries (crown, pushers, occluding strap) stay
+      // well inside it; a carved-off lug or a strap filament dangling past
+      // one lug blows through it.
+      let xMin = W
+      let xMax = -1
+      for (let i = 0; i < N; i += 1) if (keptAt(i)) { const x = i % W; if (x < xMin) xMin = x; if (x > xMax) xMax = x }
+      if (xMax > xMin) {
+        const quarter = Math.max(1, Math.round((xMax - xMin + 1) / 4))
+        const zoneExtent = (x0: number, x1: number): [number, number] => {
+          let zTop = oi.height
+          let zBot = -1
+          for (let y = 0; y < oi.height; y += 1) {
+            for (let x = x0; x <= x1; x += 1) {
+              if (keptAt(y * W + x)) { if (y < zTop) zTop = y; if (y > zBot) zBot = y }
+            }
+          }
+          return [zTop, zBot]
+        }
+        const [lTop, lBot] = zoneExtent(xMin, xMin + quarter)
+        const [rTop, rBot] = zoneExtent(xMax - quarter, xMax)
+        const tol = Math.round(oi.height * 0.04)
+        if (Math.abs(lTop - rTop) > tol || Math.abs(lBot - rBot) > tol) {
+          rowOk = false
+          notes.push(`asymmetric case extents: left ${lTop}-${lBot} vs right ${rTop}-${rBot} (tol ${tol})`)
+        }
+      }
     }
 
     if (rowOk) ok += 1; else fail += 1

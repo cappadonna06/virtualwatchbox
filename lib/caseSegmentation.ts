@@ -861,7 +861,14 @@ export function refineChannelFloor(
           break
         }
       }
-      if (!found) snapped = yArc
+      // Nothing but strap in the whole window: with an explicit prior the
+      // prior line is no boundary estimate at all (the rect fit's top/bottom
+      // are the RAIL-END rows, and falling back to them silently kept a
+      // full-height strap sliver hugging a brancard's inner face on the Tank
+      // fixture) — the honest answer is "the case starts at least at my
+      // deepest reach". The fitted-arc fallback stays for the round path,
+      // where the arc IS a real case-boundary estimate.
+      if (!found) snapped = prior ? (side === 'top' ? hi : lo) : yArc
     } else {
       // TEXTURE mode: the case edge is a CLUSTER of strong gradients, not a
       // single line — on a dive bezel: (end-link → serrated ring) then
@@ -1028,24 +1035,33 @@ export interface RectContourParams {
   channelHalfBottom: number
   floorTop?: ChannelFloor
   floorBottom?: ChannelFloor
-  /** How deep past the flat edges the strap-color veto reaches. Must stay
-   *  clear of the dial — a blue dial under a navy strap would veto itself. */
-  vetoMargin?: number
 }
 
-// Rounded-rectangle sibling of buildCaseContourMaskPng (Cartier Tank et al.):
-// keep = the case rectangle between the snapped floors, plus everything the
-// corners round through above/below the flat edges OUTSIDE the strap channel
-// (only corner metal exists there — the strap is narrower than the case), plus
-// the crown protruding past a side. The color-mode strap veto covers every
-// uncertain zone, exactly as in the round path.
+// Rounded-rectangle sibling of buildCaseContourMaskPng (Cartier Tank et al.),
+// built case-first: per column, find where the CASE METAL actually ends and
+// cut everything else. No per-pixel color veto — on the Tank fixture the veto
+// read the brancards' near-black polished reflections as "strap" and carved
+// visible lug metal, while its jagged per-pixel verdicts left strap stubble
+// and floating band bits along every uncertain zone.
+//
+// Two per-column boundary sources, take whichever keeps MORE case:
+// • The snapped channel floor (strap↔case transition, robust mid-channel).
+// • A METAL WALK for the brancard/rail ends: anchored at the flat-edge row
+//   (a rail spans the case's full height, so that row is always rail metal),
+//   walk outward crossing dark metal freely (a polished rail's black
+//   reflection bands are colorimetrically strap — only structure can keep
+//   them), stopping at DECISIVE strap color (lit, chromatic — never a
+//   near-black pixel) or transparency. The rail keeps its natural silhouette
+//   end — smooth edges and left/right symmetry fall out by construction,
+//   and it works even where the strap overlaps the rail columns (this Tank's
+//   strap is nearly case-wide — the "strap is narrower than the case"
+//   assumption behind the old corner model is simply false on real photos).
 export async function buildRectContourMaskPng(
   width: number, height: number, p: RectContourParams, feather = 1.5, rgba?: Buffer,
 ): Promise<Buffer> {
   const { rect } = p
-  const cx = (rect.left + rect.right) / 2
-  const cornerReach = Math.round((rect.right - rect.left) * 0.15)
   const crownPad = Math.round((rect.bottom - rect.top) * 0.08)
+  const halfH = (rect.bottom - rect.top) / 2
   const buf = Buffer.alloc(width * height)
   const floorRowAt = (floor: ChannelFloor | undefined, x: number): number | null => {
     if (!floor) return null
@@ -1053,53 +1069,127 @@ export async function buildRectContourMaskPng(
     if (idx < 0 || idx >= floor.rows.length) return null
     return floor.rows[idx]
   }
-  const vetoAt = (floor: ChannelFloor, x: number, y: number): number => {
-    if (!rgba || !floor.colorMode) return 1
+
+  const lumaAt = (x: number, y: number): number => {
     const i = (y * width + x) * 4
-    if (rgba[i + 3] <= 60) return 1
-    const dist = strapRefDist(floor, rgba[i], rgba[i + 1], rgba[i + 2])
-    const span = Math.max(1, floor.vetoFull - floor.vetoZero)
-    return Math.max(0, Math.min(1, (dist - floor.vetoZero) / span))
+    return (0.299 * rgba![i] + 0.587 * rgba![i + 1] + 0.114 * rgba![i + 2]) * (rgba![i + 3] / 255)
   }
+  const alphaAt = (x: number, y: number): number => rgba![(y * width + x) * 4 + 3]
+  // Decisive strap: bright enough to have a color identity AND matching the
+  // floor's strap reference(s). Near-black pixels are never decisive — deep
+  // strap shadow and polished-rail reflection are indistinguishable there,
+  // and the walk's re-anchor cap bounds how far ambiguity can carry it.
+  const decisiveStrap = (floor: ChannelFloor | undefined, x: number, y: number): boolean => {
+    if (!rgba || !floor?.colorMode) return false
+    const i = (y * width + x) * 4
+    if (rgba[i + 3] <= 60) return false
+    if (lumaAt(x, y) < 45) return false
+    return strapRefDist(floor, rgba[i], rgba[i + 1], rgba[i + 2]) < floor.vetoZero
+  }
+  // Decisive metal: what the walk may re-anchor on. Requiring positive
+  // case-evidence (bright AND far from the strap references) — not merely
+  // "not decisively strap" — is what keeps the walk from chaining through a
+  // lit strap on ambiguous grain rows: ambiguity can be CROSSED (crossCap)
+  // but never extends the claim.
+  const metalish = (floor: ChannelFloor | undefined, x: number, y: number): boolean => {
+    if (alphaAt(x, y) <= 127 || lumaAt(x, y) < 60) return false
+    if (!floor?.colorMode) return true
+    const i = (y * width + x) * 4
+    return strapRefDist(floor, rgba![i], rgba![i + 1], rgba![i + 2]) >= floor.vetoFull
+  }
+
+  // How many rows of dark/ambiguous pixels the walk may cross before it must
+  // re-anchor on bright metal — bounds the damage on an all-dark strap.
+  const crossCap = Math.max(10, Math.round(halfH * 0.08))
+  // Returns the outermost decisive-metal row reachable from the anchor, or
+  // null (NO CLAIM) when the anchor itself isn't decisive metal. The anchor
+  // is the case's vertical middle: on a rail column that's bright rail flank
+  // (rails span the full case height); on a channel column it's the dial —
+  // not metal — so the walk correctly stays silent there and the floor rules.
+  const walkEnd = (floor: ChannelFloor | undefined, x: number, anchor: number, dir: -1 | 1): number | null => {
+    if (!rgba || !metalish(floor, x, anchor)) return null
+    let lastMetal = anchor
+    let transparent = 0
+    for (let y = anchor + dir; y >= 0 && y < height; y += dir) {
+      if (alphaAt(x, y) <= 60) {
+        transparent += 1
+        if (transparent >= 3) break
+        continue
+      }
+      transparent = 0
+      if (decisiveStrap(floor, x, y) && decisiveStrap(floor, x, y + dir)) break
+      if (metalish(floor, x, y)) lastMetal = y
+      else if (Math.abs(y - lastMetal) > crossCap) break
+    }
+    return lastMetal
+  }
+
+  // Per-column boundaries across the case width, then median-smoothed so a
+  // single column's verdict can't leave a jagged spike. The walk only ever
+  // EXTENDS the kept region past the floor (min/max) — a walk that dies
+  // early (a silver hand anchoring mid-dial, immediately fenced by the
+  // strap-colored dial) yields a claim inside the floor and loses the
+  // min/max, so channel columns always fall back to the floor.
+  const xL = Math.max(0, Math.floor(rect.left - 2))
+  const xR = Math.min(width - 1, Math.ceil(rect.right + 2))
+  const nCols = xR - xL + 1
+  const topBoundRaw = new Int32Array(nCols)
+  const botBoundRaw = new Int32Array(nCols)
+  const anchor = Math.round((rect.top + rect.bottom) / 2)
+  // A walk claim that beats the floor must actually be metal: a strap sliver
+  // hugging a rail's inner face carries a bright specular edge highlight the
+  // walk can re-anchor on, claiming a mostly-navy wedge. If the extension
+  // zone is dominated by decisive-strap pixels, the claim is bogus.
+  const auditClaim = (floor: ChannelFloor | undefined, x: number, from: number, to: number): boolean => {
+    if (!rgba) return true
+    let strapPx = 0
+    let opaquePx = 0
+    for (let y = Math.min(from, to); y <= Math.max(from, to); y += 1) {
+      if (alphaAt(x, y) <= 60) continue
+      opaquePx += 1
+      if (decisiveStrap(floor, x, y)) strapPx += 1
+    }
+    return opaquePx === 0 || strapPx / opaquePx <= 0.25
+  }
+  for (let x = xL; x <= xR; x += 1) {
+    const ft = floorRowAt(p.floorTop, x)
+    const fb = floorRowAt(p.floorBottom, x)
+    let wt = walkEnd(p.floorTop, x, anchor, -1)
+    let wb = walkEnd(p.floorBottom, x, anchor, 1)
+    if (wt != null && ft != null && wt < ft && !auditClaim(p.floorTop, x, wt, ft - 1)) wt = null
+    if (wb != null && fb != null && wb > fb && !auditClaim(p.floorBottom, x, fb + 1, wb)) wb = null
+    topBoundRaw[x - xL] = ft != null ? Math.min(ft, wt ?? ft) : (wt ?? Math.round(rect.top))
+    botBoundRaw[x - xL] = fb != null ? Math.max(fb, wb ?? fb) : (wb ?? Math.round(rect.bottom))
+  }
+  // Window 9: wide enough that a strap's 2-3px bright EDGE FILAMENT (per
+  // pixel it IS metal — bright, neutral, far from the strap references;
+  // only its shape betrays it) can't hold a claim, while a ~50px rail end
+  // shifts by at most a few columns of rounding.
+  const medianSmooth = (rows: Int32Array): Int32Array => {
+    const out = new Int32Array(rows.length)
+    for (let i = 0; i < rows.length; i += 1) {
+      const vals: number[] = []
+      for (let k = -4; k <= 4; k += 1) vals.push(rows[Math.min(rows.length - 1, Math.max(0, i + k))])
+      vals.sort((p2, q) => p2 - q)
+      out[i] = vals[4]
+    }
+    return out
+  }
+  const topBound = medianSmooth(topBoundRaw)
+  const botBound = medianSmooth(botBoundRaw)
+
   for (let y = 0; y < height; y += 1) {
     const rowOff = y * width
     for (let x = 0; x < width; x += 1) {
-      const dx = Math.abs(x - cx)
       let keep: number
-      if (x < rect.left - feather || x > rect.right + feather) {
+      if (x < xL || x > xR) {
         // Beyond the case sides: only the crown lives here, well inside the
         // case's vertical span.
         keep = y >= rect.top + crownPad && y <= rect.bottom - crownPad ? 1 : 0
       } else {
-        const channelHalf = y < (rect.top + rect.bottom) / 2 ? p.channelHalfTop : p.channelHalfBottom
-        const floor = y < (rect.top + rect.bottom) / 2 ? p.floorTop : p.floorBottom
-        const floorRow = floorRowAt(floor, x)
-        let topBound: number
-        let botBound: number
-        if (dx <= channelHalf + 4 && floorRow != null) {
-          topBound = y < (rect.top + rect.bottom) / 2 ? floorRow : rect.top - cornerReach
-          botBound = y < (rect.top + rect.bottom) / 2 ? rect.bottom + cornerReach : floorRow
-        } else {
-          // Corner columns: the strap never reaches here (it's narrower than
-          // the case), so be generous — the alpha channel bounds the corners.
-          topBound = rect.top - cornerReach
-          botBound = rect.bottom + cornerReach
-        }
-        const kTop = Math.max(0, Math.min(1, (y - (topBound - feather)) / feather))
-        const kBot = Math.max(0, Math.min(1, ((botBound + feather) - y) / feather))
+        const kTop = Math.max(0, Math.min(1, (y - (topBound[x - xL] - feather)) / feather))
+        const kBot = Math.max(0, Math.min(1, ((botBound[x - xL] + feather) - y) / feather))
         keep = Math.min(kTop, kBot)
-        // Strap veto over the uncertain zones: the strap rolls over a tank's
-        // flat edges, so the zone reaches vetoMargin past them — but never
-        // deep enough to touch the dial (a blue dial under a navy strap
-        // would veto itself), and ONLY within the channel columns: the strap
-        // physically can't exist beyond the channel width, and the brancards'
-        // shadowed outer faces there read as "strap" to the veto (it carved
-        // the bottom-right lug's face off the Cartier fixture).
-        const vm = p.vetoMargin ?? 3
-        if (keep > 0 && dx < channelHalf + 3 && (y < rect.top + vm || y > rect.bottom - vm)) {
-          const f = y < (rect.top + rect.bottom) / 2 ? p.floorTop : p.floorBottom
-          if (f) keep *= vetoAt(f, x, y)
-        }
       }
       buf[rowOff + x] = Math.round(keep * 255)
     }
@@ -1517,17 +1607,14 @@ export class GeometricSilhouetteProvider implements SegmentationProvider {
 
     const rawMask = await buildRectContourMaskPng(width, height, {
       rect, channelHalfTop, channelHalfBottom, floorTop, floorBottom,
-      vetoMargin: window,
     }, 1.5, data)
-    // Lug bands for a tank = the brancard columns (between the channel edge
-    // and the case sides), over the full case height plus the corner reach —
-    // this is where the gouge lived: the brancard's inner face overlaps the
-    // channel-edge columns, and the per-column floor cut through solid metal.
-    const brancardReach = Math.round((rect.bottom - rect.top) * 0.2)
+    // No color reclaim here: the metal walk already keeps the full visible
+    // rails (reclaim was the old fix for the veto carving them, and its
+    // strap-adjacent creep is what floated band bits back in). Largest
+    // component + enclosed-hole fill still apply.
     const caseMask = await solidifyCaseMaskPng(rawMask, data, width, height, {
       cy: (rect.top + rect.bottom) / 2, floorTop, floorBottom,
-      lugBand: (x, y) => Math.abs(x - cx) >= Math.min(channelHalfTop, channelHalfBottom) - 6
-        && y >= rect.top - brancardReach && y <= rect.bottom + brancardReach,
+      lugBand: () => false,
     })
 
     const medianRow = (floor: ChannelFloor): number => {
