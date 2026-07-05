@@ -192,6 +192,20 @@ failure is now permanently encoded as a synthetic-selftest probe:
    channel-zoom standard in `test-fixtures/case-segmentation/reference/`
    shows exactly the boundary it must reproduce.
 
+4. **Geometry can carve holes in solid metal, and leave islands.** On the
+   Cartier Tank fixture, the per-column channel floor cut at the rail row —
+   but the brancard's inner face overlaps those same columns and continues
+   past the rail, so the cut carved a diagonal gouge out of the lug; small
+   strap fragments also survived disconnected from the case. The rule
+   (user-stated): **lugs never have holes** — the case is ONE solid
+   connected component. `solidifyCaseMaskPng` enforces it as a mask
+   post-pass on every provider path: keep only the largest kept component
+   (floaters die), color-reclaim removed-but-case-colored pixels attached to
+   the case within the lug bands (the gouge grows back; mid-channel reclaim
+   stays off so strap stitching can't creep in), and fill any fully enclosed
+   holes. The realtest asserts both invariants on every fixture: largest
+   component ≥ 99.5% of kept pixels, zero mask-carved enclosed holes.
+
 Same evolution fixed `lugGeometry.lugWidthPx` (what the Studio width-scales
 straps against): it was the full row span at the cut — lug-tip-to-lug-tip
 when lugs exist, systematically overstated — and is now the channel width

@@ -1002,9 +1002,12 @@ export async function buildRectContourMaskPng(
         // Strap veto over the uncertain zones: the strap rolls over a tank's
         // flat edges, so the zone reaches vetoMargin past them — but never
         // deep enough to touch the dial (a blue dial under a navy strap
-        // would veto itself).
+        // would veto itself), and ONLY within the channel columns: the strap
+        // physically can't exist beyond the channel width, and the brancards'
+        // shadowed outer faces there read as "strap" to the veto (it carved
+        // the bottom-right lug's face off the Cartier fixture).
         const vm = p.vetoMargin ?? 3
-        if (keep > 0 && (y < rect.top + vm || y > rect.bottom - vm)) {
+        if (keep > 0 && dx < channelHalf + 3 && (y < rect.top + vm || y > rect.bottom - vm)) {
           const f = y < (rect.top + rect.bottom) / 2 ? p.floorTop : p.floorBottom
           if (f) keep *= vetoAt(f, x, y)
         }
@@ -1013,6 +1016,130 @@ export async function buildRectContourMaskPng(
     }
   }
   return sharp(buf, { raw: { width, height, channels: 1 } }).png().toBuffer()
+}
+
+// ── Mask solidification (the "lugs never have holes" rule) ──────────────────
+//
+// The geometric mask can be wrong in two structural ways that no boundary
+// tuning fixes, both caught on the Cartier Tank fixture:
+//   • A GOUGE: at columns where a lug's inner face overlaps the channel edge,
+//     the per-column floor cuts at the channel boundary while the lug itself
+//     continues past it in those same columns — carving a notch into solid
+//     case metal.
+//   • FLOATERS: stray kept fragments (strap slivers, specks) disconnected
+//     from the case.
+// Same worldview as the watch background-removal pipeline: the case is ONE
+// solid connected component. Three passes over the built mask:
+//   1. Keep only the largest kept component (floaters die).
+//   2. Reclaim: grow the kept region into removed-but-opaque neighbors that
+//      are case-colored (strap-distance ≥ the veto's case threshold), scoped
+//      to the lug bands via `lugBand` — mid-channel reclaim is disabled so a
+//      strap's case-colored stitching can't creep back in. Color-mode only;
+//      steel-on-steel has no per-pixel color signal to reclaim with.
+//   3. Fill enclosed holes: any removed-but-opaque region unreachable from
+//      the image border is interior to the case and gets restored.
+export async function solidifyCaseMaskPng(
+  maskPng: Buffer, rgba: Buffer, width: number, height: number,
+  opts: {
+    cy: number
+    floorTop?: ChannelFloor
+    floorBottom?: ChannelFloor
+    /** Columns/rows where color reclaim may operate (the lug bands). */
+    lugBand?: (x: number, y: number) => boolean
+  },
+): Promise<Buffer> {
+  const maskRaw = await sharp(maskPng).raw().toBuffer({ resolveWithObject: true })
+  const ch = maskRaw.info.channels
+  const n = width * height
+  const mask = Buffer.alloc(n)
+  for (let i = 0; i < n; i += 1) mask[i] = maskRaw.data[i * ch]
+  const opaque = (i: number) => rgba[i * 4 + 3] > 60
+  const kept = (i: number) => mask[i] >= 128 && opaque(i)
+
+  // Pass 1: largest connected component of kept pixels.
+  const label = new Int32Array(n).fill(-1)
+  const stack: number[] = []
+  let bestLabel = -1
+  let bestSize = 0
+  let nextLabel = 0
+  for (let i = 0; i < n; i += 1) {
+    if (label[i] >= 0 || !kept(i)) continue
+    let size = 0
+    stack.push(i)
+    label[i] = nextLabel
+    while (stack.length) {
+      const p = stack.pop()!
+      size += 1
+      const px = p % width
+      if (px > 0 && label[p - 1] < 0 && kept(p - 1)) { label[p - 1] = nextLabel; stack.push(p - 1) }
+      if (px < width - 1 && label[p + 1] < 0 && kept(p + 1)) { label[p + 1] = nextLabel; stack.push(p + 1) }
+      if (p >= width && label[p - width] < 0 && kept(p - width)) { label[p - width] = nextLabel; stack.push(p - width) }
+      if (p < n - width && label[p + width] < 0 && kept(p + width)) { label[p + width] = nextLabel; stack.push(p + width) }
+    }
+    if (size > bestSize) { bestSize = size; bestLabel = nextLabel }
+    nextLabel += 1
+  }
+  for (let i = 0; i < n; i += 1) {
+    if (mask[i] >= 128 && (label[i] !== bestLabel)) mask[i] = 0
+  }
+
+  // Pass 2: color reclaim into the lug bands.
+  const floorFor = (i: number) => (Math.floor(i / width) < opts.cy ? opts.floorTop : opts.floorBottom)
+  const reclaimable = (i: number): boolean => {
+    if (mask[i] >= 128 || !opaque(i)) return false
+    const x = i % width
+    const y = Math.floor(i / width)
+    if (opts.lugBand && !opts.lugBand(x, y)) return false
+    const floor = floorFor(i)
+    if (!floor?.colorMode) return false
+    const dist = Math.abs(rgba[i * 4] - floor.strapColor.r)
+      + Math.abs(rgba[i * 4 + 1] - floor.strapColor.g)
+      + Math.abs(rgba[i * 4 + 2] - floor.strapColor.b)
+    return dist >= floor.vetoFull
+  }
+  for (let i = 0; i < n; i += 1) {
+    if (mask[i] >= 128 && label[i] === bestLabel) {
+      const px = i % width
+      if ((px > 0 && reclaimable(i - 1)) || (px < width - 1 && reclaimable(i + 1))
+        || (i >= width && reclaimable(i - width)) || (i < n - width && reclaimable(i + width))) {
+        stack.push(i)
+      }
+    }
+  }
+  while (stack.length) {
+    const p = stack.pop()!
+    const px = p % width
+    for (const q of [px > 0 ? p - 1 : -1, px < width - 1 ? p + 1 : -1, p >= width ? p - width : -1, p < n - width ? p + width : -1]) {
+      if (q >= 0 && reclaimable(q)) { mask[q] = 255; stack.push(q) }
+    }
+  }
+
+  // Pass 3: fill enclosed holes — flood the "not kept" region from the image
+  // border; anything unreached that is source-opaque is interior to the case.
+  const outside = new Uint8Array(n)
+  const notKept = (i: number) => mask[i] < 128
+  for (let x = 0; x < width; x += 1) {
+    for (const i of [x, (height - 1) * width + x]) {
+      if (notKept(i) && !outside[i]) { outside[i] = 1; stack.push(i) }
+    }
+  }
+  for (let y = 0; y < height; y += 1) {
+    for (const i of [y * width, y * width + width - 1]) {
+      if (notKept(i) && !outside[i]) { outside[i] = 1; stack.push(i) }
+    }
+  }
+  while (stack.length) {
+    const p = stack.pop()!
+    const px = p % width
+    for (const q of [px > 0 ? p - 1 : -1, px < width - 1 ? p + 1 : -1, p >= width ? p - width : -1, p < n - width ? p + width : -1]) {
+      if (q >= 0 && notKept(q) && !outside[q]) { outside[q] = 1; stack.push(q) }
+    }
+  }
+  for (let i = 0; i < n; i += 1) {
+    if (notKept(i) && !outside[i] && opaque(i)) mask[i] = 255
+  }
+
+  return sharp(mask, { raw: { width, height, channels: 1 } }).png().toBuffer()
 }
 
 // Multiplies the source alpha channel by the mask's greyscale value — the one
@@ -1189,11 +1316,16 @@ export class GeometricSilhouetteProvider implements SegmentationProvider {
     const channelHalfTop = topZone?.channelHalf ?? body.a * 0.5
     const channelHalfBottom = botZone?.channelHalf ?? body.a * 0.5
 
-    const caseMask = await buildCaseContourMaskPng(width, height, {
-      body, tipTopY, tipBottomY, channelHalfTop, channelHalfBottom,
-      floorTop: refineChannelFloor(data, width, height, body, channelHalfTop, tipTopY, 'top'),
-      floorBottom: refineChannelFloor(data, width, height, body, channelHalfBottom, tipBottomY, 'bottom'),
+    const floorTop = refineChannelFloor(data, width, height, body, channelHalfTop, tipTopY, 'top')
+    const floorBottom = refineChannelFloor(data, width, height, body, channelHalfBottom, tipBottomY, 'bottom')
+    const rawMask = await buildCaseContourMaskPng(width, height, {
+      body, tipTopY, tipBottomY, channelHalfTop, channelHalfBottom, floorTop, floorBottom,
     }, 1.5, data)
+    const caseMask = await solidifyCaseMaskPng(rawMask, data, width, height, {
+      cy: body.cy, floorTop, floorBottom,
+      lugBand: (x, y) => Math.abs(x - body.cx) >= Math.min(channelHalfTop, channelHalfBottom) - 2
+        && y >= tipTopY && y <= tipBottomY,
+    })
 
     const lugGeometry: LugGeometry = {
       topLugLeft: { x: Math.round(body.cx - channelHalfTop), y: tipTopY },
@@ -1269,10 +1401,20 @@ export class GeometricSilhouetteProvider implements SegmentationProvider {
       { yAt: () => rect.bottom, capY: rect.bottom, window, windowIn },
     )
 
-    const caseMask = await buildRectContourMaskPng(width, height, {
+    const rawMask = await buildRectContourMaskPng(width, height, {
       rect, channelHalfTop, channelHalfBottom, floorTop, floorBottom,
       vetoMargin: window,
     }, 1.5, data)
+    // Lug bands for a tank = the brancard columns (between the channel edge
+    // and the case sides), over the full case height plus the corner reach —
+    // this is where the gouge lived: the brancard's inner face overlaps the
+    // channel-edge columns, and the per-column floor cut through solid metal.
+    const brancardReach = Math.round((rect.bottom - rect.top) * 0.2)
+    const caseMask = await solidifyCaseMaskPng(rawMask, data, width, height, {
+      cy: (rect.top + rect.bottom) / 2, floorTop, floorBottom,
+      lugBand: (x, y) => Math.abs(x - cx) >= Math.min(channelHalfTop, channelHalfBottom) - 6
+        && y >= rect.top - brancardReach && y <= rect.bottom + brancardReach,
+    })
 
     const medianRow = (floor: ChannelFloor): number => {
       const sorted = [...floor.rows].sort((p, q) => p - q)
@@ -1436,11 +1578,16 @@ export class ClaudeVisionLandmarkProvider implements SegmentationProvider {
       const tipBottomY = Math.min(bottom, bottomCut)
       const channelHalfTop = (Math.abs(topRight.x - body.cx) + Math.abs(topLeft.x - body.cx)) / 2
       const channelHalfBottom = (Math.abs(bottomRight.x - body.cx) + Math.abs(bottomLeft.x - body.cx)) / 2
-      caseMask = await buildCaseContourMaskPng(width, height, {
-        body, tipTopY, tipBottomY, channelHalfTop, channelHalfBottom,
-        floorTop: refineChannelFloor(rgba, width, height, body, channelHalfTop, tipTopY, 'top'),
-        floorBottom: refineChannelFloor(rgba, width, height, body, channelHalfBottom, tipBottomY, 'bottom'),
+      const floorTop = refineChannelFloor(rgba, width, height, body, channelHalfTop, tipTopY, 'top')
+      const floorBottom = refineChannelFloor(rgba, width, height, body, channelHalfBottom, tipBottomY, 'bottom')
+      const rawMask = await buildCaseContourMaskPng(width, height, {
+        body, tipTopY, tipBottomY, channelHalfTop, channelHalfBottom, floorTop, floorBottom,
       }, 1.5, rgba)
+      caseMask = await solidifyCaseMaskPng(rawMask, rgba, width, height, {
+        cy: body.cy, floorTop, floorBottom,
+        lugBand: (x, y) => Math.abs(x - body.cx) >= Math.min(channelHalfTop, channelHalfBottom) - 2
+          && y >= tipTopY && y <= tipBottomY,
+      })
     } else {
       caseMask = await renderRowBandMaskPng(width, height, topCut, bottomCut, 3)
     }
