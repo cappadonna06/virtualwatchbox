@@ -72,11 +72,15 @@ Pipeline, all pure pixel math (zero external API calls, ~60ms/image):
    escalate, never guess.
 3. **Lug tips** (`findLugZone`): scanning outward from the case body, the
    span holds at the lug outer edges then contracts sharply the instant the
-   lugs end — that contraction marks the tip row. The scan ignores rows near
-   the image's own crop edge (a strap running off-frame produces the biggest
-   contraction of all — a real tip always has strap *continuing beyond* it).
-   Channel width = the strap/end-link span measured just beyond the tips (an
-   end link fills the channel exactly).
+   lugs end — that contraction marks the tip row. Two hard-won constraints:
+   the scan ignores rows near the image's own crop edge (a strap running
+   off-frame produces the biggest contraction of all — a real tip always has
+   strap *continuing beyond* it), and it is confined to rows BEYOND the case
+   cap (cy ± 0.95b) — inside the cap, the case arc's own slope and a chrono
+   pusher's shoulder produce comparable drops (the IWC Portugieser fixture
+   "found" its top tips at the top pusher's edge and chopped the whole cap
+   off). Channel width = the strap/end-link span measured just beyond the
+   tips (an end link fills the channel exactly).
 4. **Contour mask** (`buildCaseContourMaskPng`): keep = rows within the two
    tip rows AND (inside the fitted body ∪ |x−cx| ≥ channel half-width).
    That's the curved channel floor, the lug horns at full shape, the case
@@ -86,14 +90,24 @@ Pipeline, all pure pixel math (zero external API calls, ~60ms/image):
    from the case's sides, but the *visible* boundary between the lugs is the
    bezel's outer edge (on a dive watch, the serrated coin-edge ring), a few
    px inside the side-profile radius — the strap/end-link tucks under it.
-   Per channel column, the boundary is a **cluster** of gradients (measured
-   on the Tudor fixture: smooth end-link ≤ 24, serrated ring 30-60, ring →
-   colored insert 130-250), so the snap anchors at the strongest edge and
-   walks **outward** to the cluster's start — snapping to the strongest edge
-   alone eats the serrated ring, which is case. Falls back to the fitted arc
-   where no clear edge exists (steel-on-steel worst case); a colored strap
-   against a steel case makes this edge enormous, so strapped watches get
-   the most precise floors of all.
+   Two regimes, selected by the measured strap↔case contrast (strap color
+   sampled from the channel between tips and cap; case color from just
+   inside the cap):
+   - **Color mode** (contrast ≥ 240 — leather/rubber/fabric): the boundary
+     is where pixels stop matching the strap's color, scanned outside-in
+     with 3-row persistence; a per-pixel strap-color **veto** then cleans
+     the transition zone (strap edges hugging the lug faces, anti-aliased
+     stubble on the arc). All color thresholds scale to the measured
+     contrast — absolute values failed on the IWC fixture, whose channel
+     strap sits in near-black lug shadow while its edge highlights land in
+     any fixed ramp's gray zone.
+   - **Texture mode** (weak contrast — a steel bracelet on a steel case):
+     the boundary is a **cluster** of gradients (measured on the Tudor
+     fixture: smooth end-link ≤ 24, serrated ring 30-60, ring → colored
+     insert 130-250); the snap anchors at the strongest edge and walks
+     **outward** to the cluster's start — snapping to the strongest edge
+     alone eats the serrated ring, which is case.
+   Falls back to the fitted arc where no signal clears the bar.
 
 Confidence blends tip sharpness, body-fit residual, and channel/case-ratio
 plausibility; integrated designs land at ≈0.58 (inside the escalation zone)

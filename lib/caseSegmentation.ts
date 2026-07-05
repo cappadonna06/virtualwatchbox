@@ -504,9 +504,18 @@ export function findLugZone(
     return Math.max(body.cx - span.left, span.right - body.cx)
   }
 
-  // Enter the scan only once past the case's bulk — the lug/strap region.
+  // Lug tips always sit BEYOND the case cap (in a face-on shot the lugs hold
+  // the spring bar past the case edge), so the drop-scan is confined to rows
+  // outside cy ± 0.95b. Scanning any of the case-body rows invites false
+  // tips: the case arc's own slope near the cap produces window-drops of the
+  // same magnitude as a subtle real tip, and a chrono pusher's shoulder
+  // produces a bigger one (an IWC Portugieser fixture "found" its top lug
+  // tips at the top pusher's edge, chopping the entire case cap off).
+  const capEdge = Math.round(side === 'top' ? body.cy - body.b * 0.95 : body.cy + body.b * 0.95)
   let scanFrom = startY
   while (scanFrom !== endY && spanHalfAt(scanFrom) >= body.a * 0.88) scanFrom += dir
+  if (dir < 0 ? capEdge < scanFrom : capEdge > scanFrom) scanFrom = capEdge
+  if (dir < 0 ? scanFrom <= endY : scanFrom >= endY) return null
 
   const window = 2
   let bestDrop = 0
@@ -552,6 +561,16 @@ export interface ChannelFloor {
   x0: number
   /** Per-column boundary row (top side: first case row; bottom side: last). */
   rows: Int32Array
+  /** True when the strap's color was decisively separable from the case
+   *  metal — enables the per-pixel strap veto in the mask; false for metal
+   *  bracelets (texture mode). */
+  colorMode: boolean
+  /** Median strap RGB the boundary/veto classifies against. */
+  strapColor: { r: number; g: number; b: number }
+  /** Veto ramp in strap-color-distance units, scaled to the measured
+   *  strap↔case contrast: ≤ vetoZero → strap (removed), ≥ vetoFull → case. */
+  vetoZero: number
+  vetoFull: number
 }
 
 // Snap the channel floor from the fitted arc to the ACTUAL case edge in the
@@ -560,12 +579,27 @@ export interface ChannelFloor {
 // serrated coin-edge ring), which sits a few px inside the side-profile
 // radius — leaving the fitted arc alone kept a thin band of bracelet
 // end-link (with its telltale vertical link lines) above the real bezel
-// edge on the Tudor fixture. Per column inside the channel, search a small
-// window around the fitted arc for the strongest vertical gradient (the
-// shadow line where the strap/end-link tucks under the bezel — steel-on-
-// steel still has one; a colored strap against a steel case has a huge one)
-// and snap the boundary there, falling back to the arc where no clear edge
-// exists. Median-smoothed across columns so one noisy column can't spike.
+// edge on the Tudor fixture.
+//
+// Two boundary regimes, chosen by the strap's own color (sampled from the
+// channel just inside the lug tips — guaranteed strap):
+//
+// • COLOR mode — the strap is visually distinct from metal (dark or
+//   saturated: leather, rubber, fabric). The boundary is simply where
+//   pixels stop matching the strap's color, scanned outside-in with a
+//   3-row persistence guard (stitching and scale highlights are 1-2 rows).
+//   This can't creep into strap texture (alligator scales stay
+//   strap-colored however much they gradient) and preserves any bezel ring
+//   for free — the first non-strap row IS the ring's outer edge.
+// • TEXTURE mode — the strap reads as metal (a bracelet: bright, no
+//   chroma), so color can't separate end-link steel from bezel steel. The
+//   boundary is a gradient CLUSTER (measured on the Tudor fixture: smooth
+//   end-link ≤ 24, serrated ring 30-60, ring → insert 130-250): anchor on
+//   the strongest edge and walk outward to the cluster's start — snapping
+//   at the strongest edge alone eats the serrated ring, which is case.
+//
+// Falls back to the fitted arc where no signal clears the bar. Median-
+// smoothed across columns so one noisy column can't spike.
 export function refineChannelFloor(
   rgba: Buffer, width: number, height: number,
   body: { cx: number; cy: number; a: number; b: number },
@@ -585,6 +619,62 @@ export function refineChannelFloor(
     return (0.299 * rgba[i] + 0.587 * rgba[i + 1] + 0.114 * rgba[i + 2]) * alpha
   }
 
+  // Strap color: median RGB over the WHOLE channel span between the lug tips
+  // and the case cap. Sampling only the rows right under the tips collapsed
+  // the reference to near-black on the IWC fixture (that band is the strap's
+  // deepest lug shadow), which made the strap's own mid-gray edge pixels
+  // measure as "not strap" and survive the veto. The full span sees lit and
+  // shadowed strap alike; the handful of case-edge pixels that sneak into
+  // the deepest rows are a minority the median ignores.
+  const inward = side === 'top' ? 1 : -1
+  const capY = Math.round(side === 'top' ? cy - b : cy + b)
+  const spanRows = Math.max(12, (capY - tipY) * inward - 2)
+  const samples: Array<[number, number, number]> = []
+  for (let k = 2; k <= spanRows; k += 1) {
+    const y = tipY + inward * k
+    if (y < 0 || y >= height) break
+    for (let x = x0 + 4; x <= x1 - 4; x += 3) {
+      const i = (y * width + x) * 4
+      if (rgba[i + 3] > 200) samples.push([rgba[i], rgba[i + 1], rgba[i + 2]])
+    }
+  }
+  const median = (k: number) => samples.map(s => s[k]).sort((p, q) => p - q)[Math.floor(samples.length / 2)] ?? 128
+  const strapR = median(0)
+  const strapG = median(1)
+  const strapB = median(2)
+
+  // Case reference: rows just past the cap, inside the case body — the bezel
+  // top surface. The strap↔case CONTRAST scales every color threshold below:
+  // absolute thresholds failed on the IWC fixture because the channel strap
+  // sits in deep lug shadow (near-black), leaving its own edge highlights
+  // (~30-40 luma) in an absolute ramp's gray zone — relative to a ~680
+  // contrast they're unambiguously strap-side.
+  const caseSamples: Array<[number, number, number]> = []
+  for (let k = 3; k <= 9; k += 1) {
+    const y = capY + inward * k
+    if (y < 0 || y >= height) break
+    for (let x = Math.max(x0 + 6, Math.round(cx - channelHalf * 0.6)); x <= Math.min(x1 - 6, Math.round(cx + channelHalf * 0.6)); x += 3) {
+      const i = (y * width + x) * 4
+      if (rgba[i + 3] > 200) caseSamples.push([rgba[i], rgba[i + 1], rgba[i + 2]])
+    }
+  }
+  const caseMedian = (k: number) => caseSamples.map(s => s[k]).sort((p, q) => p - q)[Math.floor(caseSamples.length / 2)] ?? 128
+  const contrast = caseSamples.length >= 12
+    ? Math.abs(caseMedian(0) - strapR) + Math.abs(caseMedian(1) - strapG) + Math.abs(caseMedian(2) - strapB)
+    : 0
+  // Color mode iff the strap is decisively separable from the case metal —
+  // a bracelet's steel-on-steel contrast (~90 on the Tudor fixture) stays in
+  // texture mode; leather/rubber (~400-700) qualifies.
+  const colorMode = samples.length >= 24 && contrast >= 240
+  const boundaryThr = contrast * 0.45
+  const vetoZero = contrast * 0.3
+  const vetoFull = contrast * 0.45
+  const strapDistAt = (x: number, y: number): number => {
+    const i = (y * width + x) * 4
+    if (rgba[i + 3] <= 60) return 0 // transparent counts as strap-side (removed either way)
+    return Math.abs(rgba[i] - strapR) + Math.abs(rgba[i + 1] - strapG) + Math.abs(rgba[i + 2] - strapB)
+  }
+
   for (let x = x0; x <= x1; x += 1) {
     const dx = x - cx
     const inside = 1 - (dx / a) * (dx / a)
@@ -592,33 +682,49 @@ export function refineChannelFloor(
     const yArc = Math.round(yArcF)
     const lo = Math.max(side === 'top' ? tipY + 1 : Math.round(cy), yArc - w)
     const hi = Math.min(side === 'top' ? Math.round(cy) : tipY - 1, yArc + w)
-    // The case edge between the lugs is a CLUSTER of strong gradients, not a
-    // single line — on a dive bezel: (end-link → serrated ring) then
-    // (serrated ring → colored insert), with the insert boundary usually the
-    // strongest. Snapping to the strongest edge eats the serrated ring
-    // (measured on the Tudor fixture: ring rows 30-60, insert boundary
-    // 130-250, smooth end-link ≤ 24). The true boundary is the cluster's
-    // OUTER START: anchor at the strongest edge (definitely inside the
-    // boundary complex), then walk OUTWARD while gradients stay significant
-    // relative to that anchor (1-row gaps allowed — serration valleys), and
-    // snap where the cluster dies into the smooth strap/end-link.
-    let gMax = 0
-    let yMax = yArc
-    const gAt = (y: number) => Math.abs(lumaAt(x, y + 1) - lumaAt(x, y - 1))
-    for (let y = lo; y <= hi; y += 1) {
-      const g = gAt(y)
-      if (g > gMax) { gMax = g; yMax = y }
-    }
     let snapped = yArc
-    if (gMax >= 12) {
-      const walkThr = Math.max(10, gMax * 0.1)
-      const out = side === 'top' ? -1 : 1
-      let outer = yMax
-      let gap = 0
-      for (let y = yMax + out; y >= lo && y <= hi; y += out) {
-        if (gAt(y) >= walkThr) { outer = y; gap = 0 } else if (++gap >= 2) break
+    if (colorMode) {
+      // COLOR mode: boundary = outermost row that stops matching the strap's
+      // color, with 3-row persistence (stitching/scale highlights span 1-2).
+      const start = side === 'top' ? lo : hi
+      const step = side === 'top' ? 1 : -1
+      let found = false
+      for (let y = start; y >= lo && y <= hi; y += step) {
+        if (strapDistAt(x, y) >= boundaryThr && strapDistAt(x, y + step) >= boundaryThr && strapDistAt(x, y + 2 * step) >= boundaryThr) {
+          snapped = y
+          found = true
+          break
+        }
       }
-      snapped = outer
+      if (!found) snapped = yArc
+    } else {
+      // TEXTURE mode: the case edge is a CLUSTER of strong gradients, not a
+      // single line — on a dive bezel: (end-link → serrated ring) then
+      // (serrated ring → colored insert), with the insert boundary usually
+      // the strongest. Snapping to the strongest edge eats the serrated ring
+      // (measured on the Tudor fixture: ring rows 30-60, insert boundary
+      // 130-250, smooth end-link ≤ 24). The true boundary is the cluster's
+      // OUTER START: anchor at the strongest edge (definitely inside the
+      // boundary complex), then walk OUTWARD while gradients stay
+      // significant relative to that anchor (1-row gaps allowed — serration
+      // valleys), and snap where the cluster dies into the smooth end-link.
+      let gMax = 0
+      let yMax = yArc
+      const gAt = (y: number) => Math.abs(lumaAt(x, y + 1) - lumaAt(x, y - 1))
+      for (let y = lo; y <= hi; y += 1) {
+        const g = gAt(y)
+        if (g > gMax) { gMax = g; yMax = y }
+      }
+      if (gMax >= 12) {
+        const walkThr = Math.max(10, gMax * 0.1)
+        const out = side === 'top' ? -1 : 1
+        let outer = yMax
+        let gap = 0
+        for (let y = yMax + out; y >= lo && y <= hi; y += out) {
+          if (gAt(y) >= walkThr) { outer = y; gap = 0 } else if (++gap >= 2) break
+        }
+        snapped = outer
+      }
     }
     rows[x - x0] = Math.round(snapped + (side === 'top' ? biasIn : -biasIn))
   }
@@ -635,7 +741,7 @@ export function refineChannelFloor(
     windowVals.sort((p, q) => p - q)
     smoothed[i] = windowVals[2]
   }
-  return { x0, rows: smoothed }
+  return { x0, rows: smoothed, colorMode, strapColor: { r: strapR, g: strapG, b: strapB }, vetoZero, vetoFull }
 }
 
 export interface CaseContourParams {
@@ -657,8 +763,18 @@ export interface CaseContourParams {
 // smooth arc), the lug inner faces vertically, and the tip rows horizontally.
 // Inside the channel columns, a pixel-snapped floor (refineChannelFloor)
 // replaces the fitted arc when provided.
+//
+// When a floor ran in COLOR mode, a per-pixel strap-color veto also runs
+// over that side's transition zone (between the tip row and the case body,
+// out to just past the lug faces): geometry decides the region, but color
+// gets the last word per pixel. This is what removes the residue geometry
+// alone can't express — the strap edge hugging a lug's inner face, and
+// anti-aliased strap stubble along the snapped floor (seen on the IWC
+// Portugieser fixture's navy alligator strap). Metal bracelets (texture
+// mode) skip the veto — end-link steel matches case steel, so a color veto
+// there would eat the case itself.
 export async function buildCaseContourMaskPng(
-  width: number, height: number, p: CaseContourParams, feather = 1.5,
+  width: number, height: number, p: CaseContourParams, feather = 1.5, rgba?: Buffer,
 ): Promise<Buffer> {
   const { cx, cy } = p.body
   const buf = Buffer.alloc(width * height)
@@ -667,6 +783,16 @@ export async function buildCaseContourMaskPng(
     const idx = x - floor.x0
     if (idx < 0 || idx >= floor.rows.length) return null
     return floor.rows[idx]
+  }
+  const vetoAt = (floor: ChannelFloor, x: number, y: number): number => {
+    if (!rgba) return 1
+    const i = (y * width + x) * 4
+    if (rgba[i + 3] <= 60) return 1 // transparent — mask value irrelevant
+    const dist = Math.abs(rgba[i] - floor.strapColor.r)
+      + Math.abs(rgba[i + 1] - floor.strapColor.g)
+      + Math.abs(rgba[i + 2] - floor.strapColor.b)
+    const span = Math.max(1, floor.vetoFull - floor.vetoZero)
+    return Math.max(0, Math.min(1, (dist - floor.vetoZero) / span))
   }
   for (let y = 0; y < height; y += 1) {
     const tipRampTop = (y - (p.tipTopY - feather)) / feather
@@ -689,7 +815,24 @@ export async function buildCaseContourMaskPng(
         const d = ellipseBoundaryDistance(p.body, x, y)
         bodyKeep = Math.max(0, Math.min(1, (feather - d) / feather))
       }
-      buf[rowOff + x] = Math.round(Math.max(bodyKeep, bandKeep) * tipGate * 255)
+      let keep = Math.max(bodyKeep, bandKeep) * tipGate
+      // Strap veto: only in the transition zone (outside the case body,
+      // within the channel) of a color-mode side. The x-reach is
+      // channelHalf + 3 along the lug faces — enough to clean the strap edge
+      // hugging a face without reaching into the lug's own dark shadow band
+      // (near-black, reads as "strap" to the veto) — but widens to +8 within
+      // 12 rows of the snapped floor, where the strap corner tucks into the
+      // lug-face/arc junction and any shaved lug shadow merges into the
+      // case's own shadow anyway.
+      if (keep > 0 && ellipseBoundaryDistance(p.body, x, y) > -3) {
+        const floor = y < cy ? p.floorTop : p.floorBottom
+        if (floor?.colorMode) {
+          const floorRow = floorRowAt(floor, x)
+          const nearFloor = floorRow != null && Math.abs(y - floorRow) <= 12
+          if (dx < channelHalf + (nearFloor ? 8 : 3)) keep *= vetoAt(floor, x, y)
+        }
+      }
+      buf[rowOff + x] = Math.round(keep * 255)
     }
   }
   return sharp(buf, { raw: { width, height, channels: 1 } }).png().toBuffer()
@@ -860,7 +1003,7 @@ export class GeometricSilhouetteProvider implements SegmentationProvider {
       body, tipTopY, tipBottomY, channelHalfTop, channelHalfBottom,
       floorTop: refineChannelFloor(data, width, height, body, channelHalfTop, tipTopY, 'top'),
       floorBottom: refineChannelFloor(data, width, height, body, channelHalfBottom, tipBottomY, 'bottom'),
-    })
+    }, 1.5, data)
 
     const lugGeometry: LugGeometry = {
       topLugLeft: { x: Math.round(body.cx - channelHalfTop), y: tipTopY },
@@ -1026,7 +1169,7 @@ export class ClaudeVisionLandmarkProvider implements SegmentationProvider {
         body, tipTopY, tipBottomY, channelHalfTop, channelHalfBottom,
         floorTop: refineChannelFloor(rgba, width, height, body, channelHalfTop, tipTopY, 'top'),
         floorBottom: refineChannelFloor(rgba, width, height, body, channelHalfBottom, tipBottomY, 'bottom'),
-      })
+      }, 1.5, rgba)
     } else {
       caseMask = await renderRowBandMaskPng(width, height, topCut, bottomCut, 3)
     }

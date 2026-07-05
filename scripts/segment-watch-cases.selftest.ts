@@ -51,6 +51,10 @@ interface Spec {
   strapHalfTip: number
   strapHalfCase: number
   crown: boolean
+  /** Strap fill luma. ≥150 reads as metal against the 200-luma case (weak
+   *  contrast → texture-mode floor snap, like a steel bracelet); darker
+   *  values read as leather/rubber (color-mode floor + strap veto). */
+  strapLuma?: number
   hint?: { braceletType?: string }
   expect: 'drilled' | 'ambiguous'
   minIoU?: number
@@ -58,7 +62,6 @@ interface Spec {
 }
 
 const CASE_LUMA = 200
-const STRAP_LUMA = 110
 
 interface Built {
   png: Buffer
@@ -69,7 +72,7 @@ interface Built {
 }
 
 function buildSynthetic(spec: Spec): Promise<Built> {
-  const { width, height, cx, cy, rCase, bezelInset, channelHalf, lugThk, lugTipExt, lugRootDepth, strapHalfTip, strapHalfCase, crown } = spec
+  const { width, height, cx, cy, rCase, bezelInset, channelHalf, lugThk, lugTipExt, lugRootDepth, strapHalfTip, strapHalfCase, crown, strapLuma } = spec
   const buf = Buffer.alloc(width * height * 4)
   const truth = new Uint8Array(width * height)
 
@@ -126,7 +129,7 @@ function buildSynthetic(spec: Spec): Promise<Built> {
 
       const idx = (y * width + x) * 4
       if (opaque) {
-        const luma = isCase ? CASE_LUMA : STRAP_LUMA
+        const luma = isCase ? CASE_LUMA : (strapLuma ?? 110)
         buf[idx] = luma; buf[idx + 1] = luma; buf[idx + 2] = luma
         buf[idx + 3] = 255
         if (isCase) truth[y * width + x] = 1
@@ -139,10 +142,10 @@ function buildSynthetic(spec: Spec): Promise<Built> {
 
 const SPECS: Spec[] = [
   {
-    name: 'dive watch, steel bracelet (flared end links, serrated-ring inset)',
+    name: 'dive watch, steel bracelet (flared end links, serrated-ring inset, texture-mode floor)',
     width: 760, height: 1100, cx: 380, cy: 550, rCase: 270, bezelInset: 8,
     channelHalf: 130, lugThk: 45, lugTipExt: 55, lugRootDepth: 150,
-    strapHalfTip: 100, strapHalfCase: 129, crown: true,
+    strapHalfTip: 100, strapHalfCase: 129, crown: true, strapLuma: 170,
     expect: 'drilled', minIoU: 0.965,
   },
   {

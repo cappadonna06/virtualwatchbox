@@ -18,7 +18,8 @@ writes annotated images for a human to eyeball, to `output/` (gitignored).
 
 | File | Watch | Attachment | Notes |
 |---|---|---|---|
-| `tudor-bb58-gmt-pepsi.webp` | Tudor Black Bay GMT ("Pepsi"), steel oyster bracelet | drilled-lug, metal bracelet | User-provided hard case — a steel bracelet's end-links flare gradually across several links before reaching the lugs, unlike a two-piece strap's short, sharp junction. This is what drove `GeometricSilhouetteProvider`'s `hint.braceletType`-based window sizing (see its doc comment). |
+| `tudor-bb58-gmt-pepsi.webp` | Tudor Black Bay GMT ("Pepsi"), steel oyster bracelet | drilled-lug, metal bracelet | User-provided hard case — a steel bracelet's end-links flare gradually across several links before reaching the lugs, unlike a two-piece strap's short, sharp junction. Steel-on-steel means the channel floor must come from the TEXTURE-mode gradient-cluster walk (color can't separate end-link from bezel), and its serrated coin-edge bezel ring is the canonical "don't eat the ring" regression. |
+| `iwc-portugieser-chrono-navy-strap.webp` | IWC Portugieser Chronograph, navy alligator strap | drilled-lug, leather strap | User-provided color-mode case: dark strap against a steel case drives the COLOR-mode channel floor + per-pixel strap veto. Also hard in two other ways — chrono pushers + crown are three fit outliers on one side, and the top strap is *wider than the lug span*, so the lug tips are only findable because the tip scan is confined beyond the case cap (an unconstrained scan "found" the tips at the top pusher's shoulder and chopped the whole cap off). The channel strap sits in deep lug shadow (near-black), which is why the veto thresholds scale to the measured strap↔case contrast instead of absolute values. |
 
 ## Reference imagery (ground-truth standards, not test inputs)
 

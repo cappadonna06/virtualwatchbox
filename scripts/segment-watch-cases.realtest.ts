@@ -24,6 +24,11 @@ const FIXTURES: Array<{ file: string; hint?: { braceletType?: string } }> = [
   // hint left unset — matches the catalog's real convention where a plain
   // metal bracelet is usually an unset bracelet_type, not an explicit tag.
   { file: 'tudor-bb58-gmt-pepsi.webp' },
+  // Color-mode strap watch: navy alligator against a steel case, chrono
+  // pushers + crown for the body fit to reject, and a top strap WIDER than
+  // the lug span (tips only found because the scan is confined beyond the
+  // case cap). Exercises the color-driven channel floor + strap veto.
+  { file: 'iwc-portugieser-chrono-navy-strap.webp', hint: { braceletType: 'strap' } },
 ]
 
 async function main(): Promise<void> {
