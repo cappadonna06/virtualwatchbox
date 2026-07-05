@@ -35,6 +35,13 @@ const FIXTURES: Array<{ file: string; hint?: { braceletType?: string } }> = [
   // over a BLUE dial (why the veto margin must stay clear of the dial), and
   // a blue-cabochon crown kept by the beyond-the-sides rule.
   { file: 'cartier-tank-mc-navy-strap.webp', hint: { braceletType: 'strap' } },
+  // Round steel case, brown alligator with contrast stitching, strap ending
+  // INSIDE the frame (deployant shot): the in-frame rounded strap end that
+  // beat the softly-tapered lug tips (tip persistence rule), the three-tone
+  // leather (dark grain / lit grain / tan cut edge) that defeats a median
+  // color distance (albedo-line strap model), and the near-white painted
+  // edge coat indistinguishable from steel (outward window clamp).
+  { file: 'longines-master-brown-strap.webp', hint: { braceletType: 'strap' } },
 ]
 
 async function main(): Promise<void> {

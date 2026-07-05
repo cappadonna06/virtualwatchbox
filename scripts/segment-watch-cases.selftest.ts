@@ -55,6 +55,13 @@ interface Spec {
    *  contrast → texture-mode floor snap, like a steel bracelet); darker
    *  values read as leather/rubber (color-mode floor + strap veto). */
   strapLuma?: number
+  /** TOP strap ends this many rows below the image top (deployant product
+   *  shot) instead of running off the frame. */
+  strapEndInset?: number
+  /** Rows over which that in-frame strap end rounds off — the rounded
+   *  collapse is what produced span drops big enough to beat the real lug
+   *  tips (Longines fixture false tip). */
+  strapEndRound?: number
   hint?: { braceletType?: string }
   expect: 'drilled' | 'ambiguous'
   minIoU?: number
@@ -72,7 +79,7 @@ interface Built {
 }
 
 function buildSynthetic(spec: Spec): Promise<Built> {
-  const { width, height, cx, cy, rCase, bezelInset, channelHalf, lugThk, lugTipExt, lugRootDepth, strapHalfTip, strapHalfCase, crown, strapLuma } = spec
+  const { width, height, cx, cy, rCase, bezelInset, channelHalf, lugThk, lugTipExt, lugRootDepth, strapHalfTip, strapHalfCase, crown, strapLuma, strapEndInset, strapEndRound } = spec
   const buf = Buffer.alloc(width * height * 4)
   const truth = new Uint8Array(width * height)
 
@@ -122,7 +129,16 @@ function buildSynthetic(spec: Spec): Promise<Built> {
 
       const inLug = channelHalf > 0 && adx > channelHalf && adx <= lugOuterAt(y)
       const inCrown = crown && ((x - crownCx) / crownRx) ** 2 + (dy / crownRy) ** 2 <= 1
-      const inStrap = adx <= strapHalfAt(y)
+      let strapEndFactor = 1
+      if (strapEndInset && y < cy) {
+        const round = strapEndRound ?? 1
+        if (y < strapEndInset) strapEndFactor = 0
+        else if (y < strapEndInset + round) {
+          const t = (strapEndInset + round - y) / round
+          strapEndFactor = Math.sqrt(Math.max(0, 1 - t * t))
+        }
+      }
+      const inStrap = strapEndFactor > 0 && adx <= strapHalfAt(y) * strapEndFactor
 
       const isCase = isCaseBody || inLug || inCrown
       const opaque = isCase || inStrap || inBezelRing
@@ -168,6 +184,18 @@ const SPECS: Spec[] = [
     channelHalf: 120, lugThk: 42, lugTipExt: 85, lugRootDepth: 170,
     strapHalfTip: 105, strapHalfCase: 119, crown: true,
     hint: { braceletType: 'strap' }, expect: 'drilled', minIoU: 0.96,
+  },
+  {
+    // The Longines fixture's false-tip bug: a strap that ends INSIDE the
+    // frame (rounded deployant-shot end) collapses its span over ~30 rows —
+    // drops that dwarf a softly-tapered lug tip's. The tip scan must reject
+    // candidates with no persistent strap beyond them.
+    name: 'strap ends inside the frame (rounded deployant-shot end)',
+    width: 700, height: 1000, cx: 350, cy: 560, rCase: 225, bezelInset: 0,
+    channelHalf: 100, lugThk: 34, lugTipExt: 45, lugRootDepth: 120,
+    strapHalfTip: 88, strapHalfCase: 99, crown: false,
+    strapEndInset: 60, strapEndRound: 36,
+    hint: { braceletType: 'strap' }, expect: 'drilled', minIoU: 0.965,
   },
   {
     name: 'integrated bracelet (Royal Oak / Nautilus style — no lugs at all)',

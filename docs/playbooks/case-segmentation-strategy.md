@@ -163,11 +163,12 @@ guess. One real photo is one data point — expect further constant tuning once
 more real photos (ideally a batch across bracelet styles: oyster, jubilee,
 mesh, two-piece leather, rubber, NATO) go through it.
 
-## How the mask design got here (three real-photo lessons)
+## How the mask design got here (real-photo lessons)
 
-The contour model above wasn't the first design — three earlier mask
+The contour model above wasn't the first design — earlier mask
 generations each failed against a real photo in a specific way, and each
-failure is now permanently encoded as a synthetic-selftest probe:
+failure is now permanently encoded as a synthetic-selftest probe or a
+committed real fixture:
 
 1. **A flat row cut chops the lugs off.** A drilled lug is an angled horn —
    widest at the case, tapering to a tip well past the case's own body. At
@@ -205,6 +206,45 @@ failure is now permanently encoded as a synthetic-selftest probe:
    stays off so strap stitching can't creep in), and fill any fully enclosed
    holes. The realtest asserts both invariants on every fixture: largest
    component ≥ 99.5% of kept pixels, zero mask-carved enclosed holes.
+
+5. **A strap that ends inside the frame fakes a lug tip.** The tip scan
+   marks the biggest span contraction as the lug tips, with an edge margin
+   protecting against straps cropped AT the frame — but a deployant product
+   shot (Longines Master fixture) ends its strap with a rounded tip *inside*
+   the frame, and that collapse produces drops that dwarf a softly-tapered
+   lug's. `findLugZone` now requires persistent strap beyond a candidate tip
+   (≥30% of the case half-width still present ~12% further out; off-frame
+   counts as persisting). Encoded as the "strap ends inside the frame"
+   synthetic spec.
+6. **A median strap color can't classify a multi-tone strap — use the
+   albedo line.** The same Longines strap spans dark shadowed grain, lit
+   grain, and a pale tan cut edge; the tan measures d≈223 from the median
+   (unambiguously "case" to a distance test) yet is obviously strap to a
+   human. One material under varying illumination spans a RAY through the
+   RGB origin: all three tones sit within ~0.06 normalized residual of that
+   line while steel sits at ~0.15. `ChannelFloor.strapLine` (enabled only
+   when the measured case color is decisively off the line — a near-black
+   strap under steel is colinear with it, and there the median distance
+   already works) classifies any-brightness strap pixels in the floor scan,
+   the mask veto, and the solidify reclaim via `strapRefDist`.
+7. **Color-mode floors get asymmetric trust regions.** With a reliable
+   color stop condition, the floor scan may walk deep inside the fitted
+   arc (`0.14a` — the Longines bezel edge sits ~0.09a inside the
+   side-profile radius, unreachable with the old symmetric 0.06a window)
+   but barely outside it (max(3, 2·rms) rows): a round case physically
+   cannot extend past its own fitted circle, and the one thing color can
+   never cut — a strap's near-white painted edge coat, colorimetrically
+   identical to polished steel — hangs exactly there. Texture mode keeps
+   the symmetric window; the rect prior owns its own windows.
+
+The Longines fixture also motivated a confidence change: softly-tapered
+lugs produce honest tips with tiny 2-row drops (tipScore ~0.15), which
+under-rated an otherwise clean color-anchored cut to escalation level.
+When BOTH channel floors ran in color mode AND real tips were found on
+both sides AND the channel is decisively narrower than the case
+(ratio < 0.6 — integrated attachments must stay in the escalation zone no
+matter how separable their color), the color evidence stands in for soft
+tips (`tipEvidence = max(tipScore, 0.8·colorScore)`).
 
 Same evolution fixed `lugGeometry.lugWidthPx` (what the Studio width-scales
 straps against): it was the full row span at the cut — lug-tip-to-lug-tip
@@ -328,7 +368,11 @@ for real photos).
    row to that README naming what makes it hard.
 2. Add it to `FIXTURES` in `scripts/segment-watch-cases.realtest.ts` with the
    right hint, run the realtest, and inspect the gitignored `output/` images —
-   zoom the channels; the failures live at the boundaries.
+   zoom the channels; the failures live at the boundaries. Set
+   `SEGMENT_DEBUG=1` to print the fitted body, lug zones, and per-floor
+   internals (color mode, strap references, veto thresholds, sample floor
+   rows) — this is how the Longines tan-band failure was localized to
+   "unreachable window" vs "misclassified color", which need different fixes.
 3. Fix the model, re-run BOTH test suites (the other fixtures are the
    regression net — every fix so far broke on its second real photo until the
    first one was pinned), and where the failure is expressible analytically,

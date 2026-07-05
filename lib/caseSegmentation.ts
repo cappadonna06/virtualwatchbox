@@ -590,6 +590,22 @@ export function findLugZone(
   if (dir < 0 ? scanFrom <= endY : scanFrom >= endY) return null
 
   const window = 2
+
+  // A true lug tip has substantial strap PERSISTING beyond it; a strap's own
+  // rounded end (a deployant-clasp product shot where the strap ends INSIDE
+  // the frame — the edgeMargin above only covers straps cropped AT the frame)
+  // is a span collapse to zero, whose per-window drops dwarf a real tip's.
+  // Require ≥30% of the case half-width to still be there ~12% further out;
+  // a row past the image bounds counts as persisting (that's a cropped
+  // strap, which edgeMargin already handles).
+  const height = Math.floor(rgba.length / (width * 4))
+  const persistDist = Math.max(window + 4, Math.round(body.a * 0.12))
+  const persists = (y: number): boolean => {
+    const py = y + dir * persistDist
+    if (py < 0 || py >= height) return true
+    return spanHalfAt(py) >= body.a * 0.3
+  }
+
   let bestDrop = 0
   let bestTip: number | null = null
   for (let y = scanFrom; ; y += dir) {
@@ -599,7 +615,7 @@ export function findLugZone(
     const far = spanHalfAt(outer)
     if (near < 0 || far < 0) continue
     const drop = near - far
-    if (drop > bestDrop) { bestDrop = drop; bestTip = y }
+    if (drop > bestDrop && persists(y)) { bestDrop = drop; bestTip = y }
   }
   if (bestTip == null) return null
 
@@ -639,6 +655,13 @@ export interface ChannelFloor {
   colorMode: boolean
   /** Median strap RGB the boundary/veto classifies against. */
   strapColor: { r: number; g: number; b: number }
+  /** Albedo-line strap model for chromatic straps: pixels within `thr`
+   *  normalized residual of the ray through the RGB origin along (r,g,b)
+   *  count as strap at ANY brightness (the same leather's shadowed grain,
+   *  lit grain, and pale cut edge are colinear; a median-distance test reads
+   *  the bright tones as "case"). Only set when the measured case color sits
+   *  decisively off that line, so it can never absorb the case itself. */
+  strapLine?: { r: number; g: number; b: number; thr: number }
   /** Veto ramp in strap-color-distance units, scaled to the measured
    *  strap↔case contrast: ≤ vetoZero → strap (removed), ≥ vetoFull → case. */
   vetoZero: number
@@ -674,7 +697,7 @@ export interface ChannelFloor {
 // smoothed across columns so one noisy column can't spike.
 export function refineChannelFloor(
   rgba: Buffer, width: number, height: number,
-  body: { cx: number; cy: number; a: number; b: number },
+  body: { cx: number; cy: number; a: number; b: number; rms?: number },
   channelHalf: number, tipY: number, side: 'top' | 'bottom',
   // Boundary prior per column. Defaults to the fitted ellipse arc; the
   // rounded-rectangle path passes a flat line at the case's top/bottom edge,
@@ -760,11 +783,60 @@ export function refineChannelFloor(
   const boundaryThr = contrast * 0.45
   const vetoZero = contrast * 0.3
   const vetoFull = contrast * 0.45
+
+  // Albedo-line strap model: one material under varying illumination spans a
+  // RAY through the RGB origin, not a ball around a median — a brown
+  // alligator's dark shadowed grain (47,41,33), lit grain (105,89,78) and
+  // bright tan cut edge (139,115,90) are colinear within a normalized
+  // residual of ~0.06, while the steel case sits at ~0.15 off that line at
+  // matched brightness (measured on the Longines fixture, where the tan edge
+  // band was d≈223 from the median — "case" to a distance test — and hung as
+  // a 10-row kept band under the lug tips). A pixel close to the strap's
+  // albedo line is strap NO MATTER how bright: that's what a median distance
+  // can never express. Enabled only when the measured case color itself sits
+  // decisively OFF the line — a near-black strap under a steel case is
+  // colinear with it (both neutral), and there the plain median distance is
+  // already decisive.
+  const strapNorm = Math.hypot(strapR, strapG, strapB)
+  const lineResidualNorm = (r: number, g: number, b: number): number => {
+    const dot = (r * strapR + g * strapG + b * strapB) / strapNorm
+    if (dot < 40) return 0 // too dark to have a direction — strap-side either way
+    const pr = dot * (strapR / strapNorm)
+    const pg = dot * (strapG / strapNorm)
+    const pb = dot * (strapB / strapNorm)
+    return (Math.abs(r - pr) + Math.abs(g - pg) + Math.abs(b - pb)) / Math.max(60, dot)
+  }
+  let strapLine: NonNullable<ChannelFloor['strapLine']> | undefined
+  if (colorMode && bestCase && strapNorm >= 45) {
+    const caseResNorm = lineResidualNorm(bestCase[0], bestCase[1], bestCase[2])
+    if (caseResNorm >= 0.11) {
+      strapLine = {
+        r: strapR, g: strapG, b: strapB,
+        thr: Math.min(0.25, caseResNorm * 0.55),
+      }
+    }
+  }
   const strapDistAt = (x: number, y: number): number => {
     const i = (y * width + x) * 4
     if (rgba[i + 3] <= 60) return 0 // transparent counts as strap-side (removed either way)
+    if (strapLine && lineResidualNorm(rgba[i], rgba[i + 1], rgba[i + 2]) < strapLine.thr) return 0
     return Math.abs(rgba[i] - strapR) + Math.abs(rgba[i + 1] - strapG) + Math.abs(rgba[i + 2] - strapB)
   }
+
+  // In COLOR mode the scan has a reliable stop condition (the strap→case
+  // color transition), so let it reach deeper inside the fitted arc than the
+  // default trust region: the bezel edge between the lugs can sit well
+  // inside the side-profile radius the body was fitted on (~0.09a on the
+  // Longines fixture, past the default 0.06a window — the tan band it kept
+  // was UNREACHABLE, not just misclassified). The OUTWARD reach shrinks to
+  // the fit's own error instead: a round case physically cannot extend past
+  // its fitted circle, so a boundary out there is always misread strap (the
+  // Longines strap's near-white painted edge coat is indistinguishable from
+  // polished steel — only this geometric bound cuts it). Texture mode keeps
+  // the symmetric window (its gradient walk has no color stop), and an
+  // explicit prior (rect path) owns its windows outright.
+  const wInEff = !prior && colorMode ? Math.max(wIn, Math.round(a * 0.14)) : wIn
+  const wOutEff = !prior && colorMode ? Math.max(3, Math.round((body.rms ?? 2) * 2)) : w
 
   for (let x = x0; x <= x1; x += 1) {
     const dx = x - cx
@@ -773,8 +845,8 @@ export function refineChannelFloor(
       ? prior.yAt(x)
       : inside > 0 ? (side === 'top' ? cy - b * Math.sqrt(inside) : cy + b * Math.sqrt(inside)) : cy
     const yArc = Math.round(yArcF)
-    const lo = Math.max(side === 'top' ? tipY + 1 : Math.round(cy), yArc - (side === 'top' ? w : wIn))
-    const hi = Math.min(side === 'top' ? Math.round(cy) : tipY - 1, yArc + (side === 'top' ? wIn : w))
+    const lo = Math.max(side === 'top' ? tipY + 1 : Math.round(cy), yArc - (side === 'top' ? wOutEff : wInEff))
+    const hi = Math.min(side === 'top' ? Math.round(cy) : tipY - 1, yArc + (side === 'top' ? wInEff : wOutEff))
     let snapped = yArc
     if (colorMode) {
       // COLOR mode: boundary = outermost row that stops matching the strap's
@@ -834,7 +906,28 @@ export function refineChannelFloor(
     windowVals.sort((p, q) => p - q)
     smoothed[i] = windowVals[2]
   }
-  return { x0, rows: smoothed, colorMode, strapColor: { r: strapR, g: strapG, b: strapB }, vetoZero, vetoFull }
+  return { x0, rows: smoothed, colorMode, strapColor: { r: strapR, g: strapG, b: strapB }, strapLine, vetoZero, vetoFull }
+}
+
+// Distance from a pixel to the floor's strap reference — 0 when the pixel
+// lies on the strap's albedo line (any brightness of the same material),
+// else the L1 distance to the median. Comparable against the floor's
+// vetoZero/vetoFull/boundary thresholds.
+export function strapRefDist(
+  floor: Pick<ChannelFloor, 'strapColor' | 'strapLine'>,
+  r: number, g: number, b: number,
+): number {
+  const line = floor.strapLine
+  if (line) {
+    const n = Math.hypot(line.r, line.g, line.b)
+    const dot = (r * line.r + g * line.g + b * line.b) / n
+    if (dot >= 40) {
+      const res = (Math.abs(r - dot * (line.r / n)) + Math.abs(g - dot * (line.g / n)) + Math.abs(b - dot * (line.b / n)))
+        / Math.max(60, dot)
+      if (res < line.thr) return 0
+    }
+  }
+  return Math.abs(r - floor.strapColor.r) + Math.abs(g - floor.strapColor.g) + Math.abs(b - floor.strapColor.b)
 }
 
 export interface CaseContourParams {
@@ -881,9 +974,7 @@ export async function buildCaseContourMaskPng(
     if (!rgba) return 1
     const i = (y * width + x) * 4
     if (rgba[i + 3] <= 60) return 1 // transparent — mask value irrelevant
-    const dist = Math.abs(rgba[i] - floor.strapColor.r)
-      + Math.abs(rgba[i + 1] - floor.strapColor.g)
-      + Math.abs(rgba[i + 2] - floor.strapColor.b)
+    const dist = strapRefDist(floor, rgba[i], rgba[i + 1], rgba[i + 2])
     const span = Math.max(1, floor.vetoFull - floor.vetoZero)
     return Math.max(0, Math.min(1, (dist - floor.vetoZero) / span))
   }
@@ -966,9 +1057,7 @@ export async function buildRectContourMaskPng(
     if (!rgba || !floor.colorMode) return 1
     const i = (y * width + x) * 4
     if (rgba[i + 3] <= 60) return 1
-    const dist = Math.abs(rgba[i] - floor.strapColor.r)
-      + Math.abs(rgba[i + 1] - floor.strapColor.g)
-      + Math.abs(rgba[i + 2] - floor.strapColor.b)
+    const dist = strapRefDist(floor, rgba[i], rgba[i + 1], rgba[i + 2])
     const span = Math.max(1, floor.vetoFull - floor.vetoZero)
     return Math.max(0, Math.min(1, (dist - floor.vetoZero) / span))
   }
@@ -1092,9 +1181,7 @@ export async function solidifyCaseMaskPng(
     if (opts.lugBand && !opts.lugBand(x, y)) return false
     const floor = floorFor(i)
     if (!floor?.colorMode) return false
-    const dist = Math.abs(rgba[i * 4] - floor.strapColor.r)
-      + Math.abs(rgba[i * 4 + 1] - floor.strapColor.g)
-      + Math.abs(rgba[i * 4 + 2] - floor.strapColor.b)
+    const dist = strapRefDist(floor, rgba[i * 4], rgba[i * 4 + 1], rgba[i * 4 + 2])
     return dist >= floor.vetoFull
   }
   for (let i = 0; i < n; i += 1) {
@@ -1318,6 +1405,18 @@ export class GeometricSilhouetteProvider implements SegmentationProvider {
 
     const floorTop = refineChannelFloor(data, width, height, body, channelHalfTop, tipTopY, 'top')
     const floorBottom = refineChannelFloor(data, width, height, body, channelHalfBottom, tipBottomY, 'bottom')
+    if (process.env.SEGMENT_DEBUG) {
+      console.error('[debug] body', JSON.stringify(body))
+      console.error('[debug] zones', JSON.stringify({ topZone, botZone }))
+      for (const [f, s] of [[floorTop, 'top'], [floorBottom, 'bottom']] as const) {
+        const cols = [130, 160, 200, 237, 280, 320, 345].filter(x => x - f.x0 >= 0 && x - f.x0 < f.rows.length)
+        console.error(`[debug] floor ${s}`, JSON.stringify({
+          colorMode: f.colorMode, strapColor: f.strapColor, strapLine: f.strapLine ?? null,
+          vetoZero: Math.round(f.vetoZero), vetoFull: Math.round(f.vetoFull),
+          rows: cols.map(x => `${x}:${f.rows[x - f.x0]}`).join(' '),
+        }))
+      }
+    }
     const rawMask = await buildCaseContourMaskPng(width, height, {
       body, tipTopY, tipBottomY, channelHalfTop, channelHalfBottom, floorTop, floorBottom,
     }, 1.5, data)
@@ -1340,12 +1439,27 @@ export class GeometricSilhouetteProvider implements SegmentationProvider {
     // Confidence blends: how cleanly the lug tips stood out, how well the
     // case body matched an ellipse, and whether the channel/case ratio is a
     // physically plausible watch (lug width ≈ half the case diameter).
+    // Tip sharpness alone under-rates softly tapered lugs (the Longines
+    // fixture's flare spreads over ~6 rows, so its best 2-row drop is tiny) —
+    // but when both channel floors ran in COLOR mode, the cut is anchored by
+    // a decisive strap↔case color separation, which the fixtures showed is
+    // the more reliable boundary evidence. Let that stand in for soft tips —
+    // ONLY when tips were actually detected on both sides AND the strap is
+    // decisively narrower than the case (a real lug channel). If either zone
+    // is a fallback (integrated/near-integrated — no contraction found, and
+    // the fallback channelHalf of a·0.5 fakes a plausible ratio), the doubt
+    // is whether lugs exist at all, and color can't answer that — those must
+    // stay in the escalation zone no matter how separable the strap color is.
     const tipScore = ((topZone?.sharpness ?? 0) + (botZone?.sharpness ?? 0)) / 2
-    const fitScore = Math.max(0, Math.min(1, 1 - body.rms / (body.a * 0.02)))
+    const colorScore = (floorTop.colorMode ? 0.5 : 0) + (floorBottom.colorMode ? 0.5 : 0)
     const channelRatio = (channelHalfTop + channelHalfBottom) / (2 * body.a)
+    const tipEvidence = topZone && botZone && channelRatio < 0.6
+      ? Math.max(tipScore, colorScore * 0.8)
+      : tipScore
+    const fitScore = Math.max(0, Math.min(1, 1 - body.rms / (body.a * 0.02)))
     const plausible = channelRatio > 0.28 && channelRatio < 0.72
     const confidence = Math.max(0.1, Math.min(0.97,
-      0.15 + 0.4 * tipScore + 0.3 * fitScore + (plausible ? 0.15 : 0)))
+      0.15 + 0.4 * tipEvidence + 0.3 * fitScore + (plausible ? 0.15 : 0)))
 
     const roundish = Math.abs(body.a - body.b) / Math.max(body.a, body.b) < 0.12
     return {
@@ -1353,7 +1467,7 @@ export class GeometricSilhouetteProvider implements SegmentationProvider {
       lugGeometry,
       confidence,
       caseShape: fitScore > 0.4 ? (roundish ? 'round' : 'cushion') : 'other',
-      strapAttachment: tipScore > 0.35 && plausible ? 'drilled_lug' : 'unknown',
+      strapAttachment: tipEvidence > 0.35 && plausible ? 'drilled_lug' : 'unknown',
     }
   }
 
