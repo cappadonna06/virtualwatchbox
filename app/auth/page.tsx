@@ -1,10 +1,15 @@
 'use client'
 
-import { Suspense, useState } from 'react'
+import { Suspense, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { brand } from '@/lib/brand'
 import { createClient } from '@/lib/supabase/client'
+import TurnstileWidget, { type TurnstileHandle } from '@/components/auth/TurnstileWidget'
+
+// Public site key. When unset (local dev without a widget), the form submits
+// without a token — which only works while Supabase CAPTCHA is off.
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
 type AuthState = 'idle' | 'loading' | 'sending' | 'sent'
 
@@ -31,6 +36,8 @@ function AuthPageInner() {
   const [email, setEmail] = useState('')
   const [authState, setAuthState] = useState<AuthState>('idle')
   const [error, setError] = useState<string | null>(null)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const turnstileRef = useRef<TurnstileHandle>(null)
   const searchParams = useSearchParams()
   const rawNext = searchParams?.get('next') ?? null
   // Only allow same-origin paths to avoid open-redirect via the query string.
@@ -59,15 +66,25 @@ function AuthPageInner() {
   async function handleMagicLink(e: React.FormEvent) {
     e.preventDefault()
     if (!email.trim() || authState === 'sending') return
+    if (TURNSTILE_SITE_KEY && !captchaToken) {
+      setError('Still checking your browser. Try again in a moment.')
+      return
+    }
     setAuthState('sending')
     setError(null)
     const supabase = createClient()
     const { error: authError } = await supabase.auth.signInWithOtp({
       email: email.trim(),
-      options: { emailRedirectTo: callbackUrl() },
+      options: {
+        emailRedirectTo: callbackUrl(),
+        captchaToken: captchaToken ?? undefined,
+      },
     })
+    turnstileRef.current?.reset()
     if (authError) {
-      setError(authError.message)
+      setError(/captcha/i.test(authError.message)
+        ? 'We couldn\u2019t verify your browser. Refresh the page and try again.'
+        : authError.message)
       setAuthState('idle')
     } else {
       setAuthState('sent')
@@ -337,6 +354,14 @@ function AuthPageInner() {
                     transition: `border-color ${brand.transition.fast}`,
                   }}
                 />
+                {TURNSTILE_SITE_KEY && (
+                  <TurnstileWidget
+                    ref={turnstileRef}
+                    siteKey={TURNSTILE_SITE_KEY}
+                    action="magic-link"
+                    onToken={setCaptchaToken}
+                  />
+                )}
                 {error && (
                   <p
                     style={{

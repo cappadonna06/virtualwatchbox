@@ -124,6 +124,13 @@ The premium visual configurator at `/collection/straps/studio` — a light produ
 - **Entry points:** sidebar "Studio →" (`WatchSidebar`), strap drawer "Try in Strap Studio" (`StrapSidebar`), watch detail link — all deep-link with the **catalog** id (`watch.watchId`), not the owned id.
 - **Deferred follow-ups (NOT built):** saved looks (migration 033 `saved_looks` + `/api/saved-looks` + panel), the server-side composited share image (`/api/strap-studio/composite`, `/api/og/look/[hash]` — "Share look" currently copies the state URL only), the Discover strap-suggestions section, and the `/admin/image-review` "Case Segmentation" review tab.
 
+## Auth, Bot Protection & Analytics
+
+- **Sign-in:** Google OAuth or magic link (`app/auth/page.tsx`). In Nov 2026 the magic-link form was abused from Tor to mail strangers (515 junk accounts, deleted 2026-11-11). The form now sends a Cloudflare Turnstile token (`components/auth/TurnstileWidget.tsx`, public key `NEXT_PUBLIC_TURNSTILE_SITE_KEY`); Supabase Auth → Attack Protection verifies it server-side with the secret. Don't remove the token or add another `signInWithOtp` / `signUp` call without it.
+- **Redirect allow-list** (Supabase Auth → URL Configuration) is `https://virtualwatchbox.com/**`, `https://www.virtualwatchbox.com/**`, `http://localhost:3000/**`. Never add a `*.vercel.app` wildcard: anyone can host one and capture a victim's session.
+- **Users dashboard:** `/admin/users` (API `app/api/admin/users`, shared logic `lib/admin/users.ts`). An email-only account that never signed in and owns no data is a "suspected bot" after 24h; the DELETE route re-checks that server-side unless `force` is set for one confirmed account. Add any new user-owned table to `USER_DATA_TABLES` so it counts as data.
+- **Traffic:** Vercel Web Analytics + Speed Insights via `components/SiteAnalytics.tsx` (admin pages excluded). There is no in-app pageview store.
+
 ## Tech Stack
 
 - **Framework:** Next.js 14, App Router, TypeScript

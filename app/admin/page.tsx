@@ -144,6 +144,12 @@ export default function AdminDashboardPage() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
         <Tile
+          title="Users"
+          description="Who signed up, who's active, who has a collection. Flags and removes bot signups from the magic-link form."
+          href="/admin/users"
+          cta="Review users →"
+        />
+        <Tile
           title="Catalog Manager"
           description="Add, edit, and import watch metadata. Sort by heat to see what to photograph next."
           href="/admin/catalog"
