@@ -7,6 +7,7 @@ import { AuthProvider } from '@/lib/auth/AuthProvider'
 import { CollectionSessionProvider } from './collection/CollectionSessionProvider'
 import { WatchImagesProvider } from '@/lib/watchImages/WatchImagesProvider'
 import { CatalogProvider } from '@/lib/catalog/CatalogProvider'
+import SiteAnalytics from '@/components/SiteAnalytics'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -179,6 +180,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </CollectionSessionProvider>
           </CatalogProvider>
         </AuthProvider>
+        <SiteAnalytics />
       </body>
     </html>
   )
