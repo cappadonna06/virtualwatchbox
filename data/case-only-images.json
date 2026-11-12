@@ -33,6 +33,76 @@
     "reference": "191.032",
     "lugWidthMm": 20
   },
+  "a-lange-and-sohne-205-086": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/a-lange-and-sohne-205-086/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/a-lange-and-sohne-205-086/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 190,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 596,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 188,
+        "y": 896
+      },
+      "bottomLugRight": {
+        "x": 596,
+        "y": 896
+      },
+      "lugWidthPx": 407,
+      "imageWidth": 827,
+      "imageHeight": 900,
+      "topCaseEdgeY": 54,
+      "bottomCaseEdgeY": 834
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "A. Lange & Söhne",
+    "model": "Saxonia Thin",
+    "reference": "205.086",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/a-lange-and-sohne-205-086/primary.webp"
+  },
+  "a-lange-and-sohne-234-026": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/a-lange-and-sohne-234-026/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/a-lange-and-sohne-234-026/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 188,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 582,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 186,
+        "y": 897
+      },
+      "bottomLugRight": {
+        "x": 584,
+        "y": 897
+      },
+      "lugWidthPx": 396,
+      "imageWidth": 770,
+      "imageHeight": 900,
+      "topCaseEdgeY": 59,
+      "bottomCaseEdgeY": 806
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "A. Lange & Söhne",
+    "model": "1815 Up/Down",
+    "reference": "234.026",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/a-lange-and-sohne-234-026/primary.webp"
+  },
   "breitling-a17326211b1p1": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/breitling-a17326211b1p1/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/breitling-a17326211b1p1/case-only.png",
@@ -134,6 +204,41 @@
     "model": "Tank Must Large",
     "reference": "WSTA0041",
     "lugWidthMm": 19
+  },
+  "grand-seiko-sbga211": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/grand-seiko-sbga211/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/grand-seiko-sbga211/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 201,
+        "y": 8
+      },
+      "topLugRight": {
+        "x": 583,
+        "y": 8
+      },
+      "bottomLugLeft": {
+        "x": 202,
+        "y": 891
+      },
+      "bottomLugRight": {
+        "x": 577,
+        "y": 891
+      },
+      "lugWidthPx": 379,
+      "imageWidth": 852,
+      "imageHeight": 900,
+      "topCaseEdgeY": 91,
+      "bottomCaseEdgeY": 804
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Grand Seiko",
+    "model": "Heritage Snowflake",
+    "reference": "SBGA211",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/grand-seiko-sbga211/primary.webp"
   },
   "hamilton-h69439931": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h69439931/case-only.webp",
@@ -474,6 +579,111 @@
     "model": "Portugieser Chronograph",
     "reference": "IW371606",
     "lugWidthMm": 20
+  },
+  "jaeger-lecoultre-q3848422": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/jaeger-lecoultre-q3848422/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/jaeger-lecoultre-q3848422/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 69,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 478,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 70,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 491,
+        "y": 898
+      },
+      "lugWidthPx": 415,
+      "imageWidth": 601,
+      "imageHeight": 900,
+      "topCaseEdgeY": 52,
+      "bottomCaseEdgeY": 747
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Jaeger-LeCoultre",
+    "model": "Reverso Classic Medium Thin",
+    "reference": "Q3848422",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/jaeger-lecoultre-q3848422/primary.webp"
+  },
+  "jaeger-lecoultre-q4148420": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/jaeger-lecoultre-q4148420/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/jaeger-lecoultre-q4148420/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 196,
+        "y": 6
+      },
+      "topLugRight": {
+        "x": 585,
+        "y": 6
+      },
+      "bottomLugLeft": {
+        "x": 196,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 586,
+        "y": 898
+      },
+      "lugWidthPx": 390,
+      "imageWidth": 829,
+      "imageHeight": 900,
+      "topCaseEdgeY": 51,
+      "bottomCaseEdgeY": 812
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Jaeger-LeCoultre",
+    "model": "Master Control Calendar",
+    "reference": "Q4148420",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/jaeger-lecoultre-q4148420/primary.webp"
+  },
+  "jaeger-lecoultre-q9008480": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/jaeger-lecoultre-q9008480/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/jaeger-lecoultre-q9008480/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 189,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 601,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 191,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 597,
+        "y": 899
+      },
+      "lugWidthPx": 409,
+      "imageWidth": 811,
+      "imageHeight": 900,
+      "topCaseEdgeY": 42,
+      "bottomCaseEdgeY": 801
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Jaeger-LeCoultre",
+    "model": "Polaris Automatic",
+    "reference": "Q9008480",
+    "lugWidthMm": 21,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/jaeger-lecoultre-q9008480/primary.webp"
   },
   "nomos-737": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-737/case-only.webp",
@@ -2942,5 +3152,40 @@
     "model": "Fiftysix",
     "reference": "4600E/000A-B487",
     "lugWidthMm": 20
+  },
+  "zenith-03-3200-3600-21-c903": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/zenith-03-3200-3600-21-c903/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/zenith-03-3200-3600-21-c903/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 187,
+        "y": 9
+      },
+      "topLugRight": {
+        "x": 572,
+        "y": 9
+      },
+      "bottomLugLeft": {
+        "x": 185,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 568,
+        "y": 899
+      },
+      "lugWidthPx": 384,
+      "imageWidth": 804,
+      "imageHeight": 900,
+      "topCaseEdgeY": 74,
+      "bottomCaseEdgeY": 814
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Zenith",
+    "model": "Chronomaster Original",
+    "reference": "03.3200.3600/21.C903",
+    "lugWidthMm": 19,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/zenith-03-3200-3600-21-c903/primary.webp"
   }
 }
