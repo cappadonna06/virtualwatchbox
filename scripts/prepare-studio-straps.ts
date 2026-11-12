@@ -18,12 +18,18 @@ function median(values: number[]): number {
   return values.sort((a, b) => a - b)[Math.floor(values.length / 2)]
 }
 
-async function renderHalf(master: Buffer, imageWidth: number, name: string, top: boolean, perforated: boolean) {
+async function renderHalf(master: Buffer, imageWidth: number, name: string, top: boolean, options: {
+  perforated: boolean
+  ivoryRubber: boolean
+}) {
   const height = top ? 225 : 250
   const width = BODY_WIDTH + SIDE_PAD * 2
   const center = Math.round(imageWidth * (top ? 0.64 : 0.36))
   const tone = (x: number, y: number) => {
     const p = (y * imageWidth + x) * 3
+    // Ivory is close to the white backing in brightness. Warmth separates it
+    // from the backing and the exposed steel tips on this product master.
+    if (options.ivoryRubber) return 255 - Math.max(0, master[p] - master[p + 2]) * 4
     return Math.min(master[p], master[p + 1], master[p + 2])
   }
   const findSide = (row: number, inward: 1 | -1) => {
@@ -61,7 +67,7 @@ async function renderHalf(master: Buffer, imageWidth: number, name: string, top:
   const attachment = median(edgeRows.slice(Math.round(bodyWidth * 0.42), Math.round(bodyWidth * 0.58)))
   if (attachment === 124) throw new Error('Could not find the spring-bar end')
   const start = Math.min(...edgeRows) - 1
-  const end = perforated ? 415 : top ? 260 : 285
+  const end = options.perforated ? 415 : top ? 260 : 285
   const endLeft = findSide(end - 9, 1)
   const endRight = findSide(end - 9, -1)
   const travel = (end - start) / (height - 1)
@@ -89,8 +95,10 @@ async function renderHalf(master: Buffer, imageWidth: number, name: string, top:
       const src = (y * imageWidth + x) * 3
       const dest = (destY * width + destX) * 4
       // The white backing is visible through the racing perforations.
-      const insidePerforation = perforated && column > BODY_WIDTH * 0.23 && column < BODY_WIDTH * 0.77
-      const opacity = insidePerforation ? Math.max(0, Math.min(1, (244 - tone(x, y)) / 24)) : 1
+      const insidePerforation = options.perforated && column > BODY_WIDTH * 0.23 && column < BODY_WIDTH * 0.77
+      const opacity = options.ivoryRubber
+        ? Math.max(0, Math.min(1, (205 - tone(x, y)) / 32))
+        : insidePerforation ? Math.max(0, Math.min(1, (244 - tone(x, y)) / 24)) : 1
       for (let channel = 0; channel < 3; channel += 1) rgba[dest + channel] = Math.round(master[src + channel] * shade)
       rgba[dest + 3] = Math.round(255 * opacity)
     }
@@ -120,10 +128,13 @@ async function main() {
       if (!response.ok) throw new Error(`Template image HTTP ${response.status}`)
       const { data, info } = await sharp(Buffer.from(await response.arrayBuffer())).resize(1125, 1350)
         .flatten({ background: 'white' }).removeAlpha().raw().toBuffer({ resolveWithObject: true })
-      const perforated = template.subMaterial === 'Rally'
+      const options = {
+        perforated: template.subMaterial === 'Rally',
+        ivoryRubber: template.id === 'rubber-ribbed-ivory',
+      }
       const [top, bottom] = await Promise.all([
-        renderHalf(data, info.width, prior ? path.basename(prior.bandTop.url) : `${id}-top.webp`, true, perforated),
-        renderHalf(data, info.width, prior ? path.basename(prior.bandBottom.url) : `${id}-bottom.webp`, false, perforated),
+        renderHalf(data, info.width, prior ? path.basename(prior.bandTop.url) : `${id}-top.webp`, true, options),
+        renderHalf(data, info.width, prior ? path.basename(prior.bandBottom.url) : `${id}-bottom.webp`, false, options),
       ])
       await Promise.all([top, bottom].map(half => fs.writeFile(path.join(ASSET_DIR, half.name), half.output)))
       const metadata = prior ?? {

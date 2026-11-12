@@ -148,6 +148,8 @@ type KindKey =
   | 'leather-rally'
   | 'rubber-waffle'
   | 'canvas-twill'
+  | 'rubber-ribbed'
+  | 'canvas-herringbone'
 
 type Kind = {
   descriptor: string
@@ -226,6 +228,18 @@ const KINDS: Record<KindKey, Kind> = {
   'canvas-twill': {
     descriptor: 'cotton twill canvas watch strap with a straight folded spring-bar end',
     texture: 'A warm, matte, diagonal cotton weave with slight natural thread variation',
+    stitch: true,
+    singlePiece: false,
+  },
+  'rubber-ribbed': {
+    descriptor: 'molded FKM rubber watch strap with two raised longitudinal ribs and a straight spring-bar end',
+    texture: 'Matte molded rubber with a smooth border and rounded raised ribs',
+    stitch: false,
+    singlePiece: false,
+  },
+  'canvas-herringbone': {
+    descriptor: 'cotton herringbone canvas watch strap with a folded spring-bar end',
+    texture: 'A fine chevron weave and tonal stitching that stops before the rolled ends',
     stitch: true,
     singlePiece: false,
   },
@@ -322,6 +336,8 @@ const STRAPS: StrapDef[] = [
   { name: 'leather-rally-cognac', kind: 'leather-rally', material: 'leather', subMaterial: 'Rally', color: 'Cognac', colorHex: '#8A4B24', style: 'sporty', tier: 2 },
   { name: 'rubber-waffle-navy', kind: 'rubber-waffle', material: 'rubber', subMaterial: 'Waffle', color: 'Navy', colorHex: '#2A3550', style: 'sporty', tier: 2 },
   { name: 'canvas-twill-tan', kind: 'canvas-twill', material: 'canvas', subMaterial: 'Cotton Twill', color: 'Tan', colorHex: '#B08552', style: 'rugged', tier: 2 },
+  { name: 'rubber-ribbed-ivory', kind: 'rubber-ribbed', material: 'rubber', subMaterial: 'Ribbed', color: 'Ivory', colorHex: '#E3D6B9', style: 'sporty', tier: 2 },
+  { name: 'canvas-herringbone-olive', kind: 'canvas-herringbone', material: 'canvas', subMaterial: 'Herringbone', color: 'Olive', colorHex: '#484F34', style: 'rugged', tier: 2 },
 
 ]
 

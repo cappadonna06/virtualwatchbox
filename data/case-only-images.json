@@ -33,6 +33,41 @@
     "reference": "191.032",
     "lugWidthMm": 20
   },
+  "a-lange-and-sohne-201-027": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/a-lange-and-sohne-201-027/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/a-lange-and-sohne-201-027/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 191,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 593,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 191,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 595,
+        "y": 899
+      },
+      "lugWidthPx": 403,
+      "imageWidth": 829,
+      "imageHeight": 900,
+      "topCaseEdgeY": 55,
+      "bottomCaseEdgeY": 839
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "A. Lange & Söhne",
+    "model": "Saxonia Thin",
+    "reference": "201.027",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/a-lange-and-sohne-201-027/primary.webp"
+  },
   "a-lange-and-sohne-205-086": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/a-lange-and-sohne-205-086/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/a-lange-and-sohne-205-086/case-only.png",
@@ -102,6 +137,41 @@
     "reference": "234.026",
     "lugWidthMm": 20,
     "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/a-lange-and-sohne-234-026/primary.webp"
+  },
+  "a-lange-and-sohne-414-028": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/a-lange-and-sohne-414-028/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/a-lange-and-sohne-414-028/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 185,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 568,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 183,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 568,
+        "y": 899
+      },
+      "lugWidthPx": 384,
+      "imageWidth": 805,
+      "imageHeight": 900,
+      "topCaseEdgeY": 65,
+      "bottomCaseEdgeY": 808
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "A. Lange & Söhne",
+    "model": "1815 Chronograph",
+    "reference": "414.028",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/a-lange-and-sohne-414-028/primary.webp"
   },
   "breitling-a17326211b1p1": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/breitling-a17326211b1p1/case-only.webp",
@@ -347,6 +417,41 @@
     "lugWidthMm": 20,
     "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/grand-seiko-sbga211/primary.webp"
   },
+  "grand-seiko-sbgm221": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/grand-seiko-sbgm221/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/grand-seiko-sbgm221/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 193,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 574,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 191,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 570,
+        "y": 899
+      },
+      "lugWidthPx": 380,
+      "imageWidth": 833,
+      "imageHeight": 900,
+      "topCaseEdgeY": 68,
+      "bottomCaseEdgeY": 834
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Grand Seiko",
+    "model": "Elegance GMT",
+    "reference": "SBGM221",
+    "lugWidthMm": 19,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/grand-seiko-sbgm221/primary.webp"
+  },
   "hamilton-h69439931": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h69439931/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h69439931/case-only.png",
@@ -585,6 +690,41 @@
     "reference": "IW329301",
     "lugWidthMm": 21
   },
+  "iwc-iw356501": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw356501/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw356501/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 198,
+        "y": 4
+      },
+      "topLugRight": {
+        "x": 591,
+        "y": 4
+      },
+      "bottomLugLeft": {
+        "x": 195,
+        "y": 891
+      },
+      "bottomLugRight": {
+        "x": 593,
+        "y": 891
+      },
+      "lugWidthPx": 396,
+      "imageWidth": 846,
+      "imageHeight": 900,
+      "topCaseEdgeY": 57,
+      "bottomCaseEdgeY": 838
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "IWC",
+    "model": "Portofino Automatic",
+    "reference": "IW356501",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw356501/primary.webp"
+  },
   "iwc-iw371446": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw371446/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw371446/case-only.png",
@@ -686,6 +826,76 @@
     "model": "Portugieser Chronograph",
     "reference": "IW371606",
     "lugWidthMm": 20
+  },
+  "iwc-iw387902": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw387902/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw387902/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 189,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 545,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 184,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 549,
+        "y": 899
+      },
+      "lugWidthPx": 361,
+      "imageWidth": 812,
+      "imageHeight": 900,
+      "topCaseEdgeY": 73,
+      "bottomCaseEdgeY": 805
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "IWC",
+    "model": "Pilot's Watch Chronograph Spitfire",
+    "reference": "IW387902",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw387902/primary.webp"
+  },
+  "iwc-iw500705": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw500705/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw500705/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 165,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 602,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 175,
+        "y": 892
+      },
+      "bottomLugRight": {
+        "x": 599,
+        "y": 892
+      },
+      "lugWidthPx": 431,
+      "imageWidth": 828,
+      "imageHeight": 900,
+      "topCaseEdgeY": 64,
+      "bottomCaseEdgeY": 822
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "IWC",
+    "model": "Portugieser Automatic",
+    "reference": "IW500705",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw500705/primary.webp"
   },
   "jaeger-lecoultre-q2438522": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/jaeger-lecoultre-q2438522/case-only.webp",
@@ -2222,6 +2432,41 @@
     "lugWidthMm": 20,
     "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5320g-001/primary.webp"
   },
+  "patek-philippe-5396g-011": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5396g-011/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5396g-011/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 173,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 596,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 170,
+        "y": 895
+      },
+      "bottomLugRight": {
+        "x": 584,
+        "y": 895
+      },
+      "lugWidthPx": 419,
+      "imageWidth": 792,
+      "imageHeight": 900,
+      "topCaseEdgeY": 65,
+      "bottomCaseEdgeY": 823
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Patek Philippe",
+    "model": "Complications",
+    "reference": "5396G-011",
+    "lugWidthMm": 21,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5396g-011/primary.webp"
+  },
   "patek-philippe-5524g-001": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5524g-001/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5524g-001/case-only.png",
@@ -2325,6 +2570,111 @@
     "model": "Complications",
     "reference": "5905/1A-001",
     "lugWidthMm": 21
+  },
+  "patek-philippe-5905p-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5905p-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5905p-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 180,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 578,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 182,
+        "y": 895
+      },
+      "bottomLugRight": {
+        "x": 581,
+        "y": 895
+      },
+      "lugWidthPx": 399,
+      "imageWidth": 798,
+      "imageHeight": 900,
+      "topCaseEdgeY": 62,
+      "bottomCaseEdgeY": 805
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Patek Philippe",
+    "model": "Complications",
+    "reference": "5905P-001",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5905p-001/primary.webp"
+  },
+  "patek-philippe-5905r-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5905r-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5905r-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 169,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 598,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 184,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 584,
+        "y": 898
+      },
+      "lugWidthPx": 415,
+      "imageWidth": 814,
+      "imageHeight": 900,
+      "topCaseEdgeY": 58,
+      "bottomCaseEdgeY": 829
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Patek Philippe",
+    "model": "Complications",
+    "reference": "5905R-001",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5905r-001/primary.webp"
+  },
+  "patek-philippe-5930g-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5930g-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5930g-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 187,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 590,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 186,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 591,
+        "y": 899
+      },
+      "lugWidthPx": 404,
+      "imageWidth": 818,
+      "imageHeight": 900,
+      "topCaseEdgeY": 55,
+      "bottomCaseEdgeY": 827
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Patek Philippe",
+    "model": "Complications",
+    "reference": "5930G-001",
+    "lugWidthMm": 21,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5930g-001/primary.webp"
   },
   "patek-philippe-5960-1a-001": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5960-1a-001/case-only.webp",
