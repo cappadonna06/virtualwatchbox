@@ -815,5 +815,43 @@
     ],
     "affiliatePartner": null,
     "affiliateUrl": null
+  },
+  {
+    "id": "rubber-ribbed-ivory",
+    "material": "rubber",
+    "subMaterial": "Ribbed",
+    "color": "Ivory",
+    "colorHex": "#E3D6B9",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/rubber-ribbed-ivory.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "canvas-herringbone-olive",
+    "material": "canvas",
+    "subMaterial": "Herringbone",
+    "color": "Olive",
+    "colorHex": "#484F34",
+    "style": "rugged",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/canvas-herringbone-olive.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
   }
 ]

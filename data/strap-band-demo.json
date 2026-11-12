@@ -1505,6 +1505,76 @@
         "bodyLeft": 2,
         "bodyRight": 302
       }
+    },
+    {
+      "id": "rubber-ribbed-ivory",
+      "label": "Ribbed Ivory",
+      "material": "rubber",
+      "subMaterial": "Ribbed",
+      "color": "Ivory",
+      "colorHex": "#E3D6B9",
+      "availableLugWidths": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        24
+      ],
+      "fullImageId": "rubber-ribbed-ivory",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/rubber-ribbed-ivory-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 202,
+        "endY": 223,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/rubber-ribbed-ivory-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 22,
+        "endY": 1,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "canvas-herringbone-olive",
+      "label": "Herringbone Olive",
+      "material": "canvas",
+      "subMaterial": "Herringbone",
+      "color": "Olive",
+      "colorHex": "#484F34",
+      "availableLugWidths": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        24
+      ],
+      "fullImageId": "canvas-herringbone-olive",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/canvas-herringbone-olive-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 202,
+        "endY": 223,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/canvas-herringbone-olive-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 22,
+        "endY": 1,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
     }
   ]
 }
