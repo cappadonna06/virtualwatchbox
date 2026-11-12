@@ -1,7 +1,7 @@
 {
   "_meta": {
     "note": "Snapshot of the LIVE on-site catalog (Supabase catalog_watches rows that have a watch_images photo). Source of truth is Supabase; regenerate with `npm run catalog:export-live`. Do not hand-edit.",
-    "catalog_total": 40601,
+    "catalog_total": 40621,
     "on_site_total": 4161,
     "with_lug_width": 3841,
     "integrated_bracelet": 607,
@@ -39809,7 +39809,7 @@
       "reference": "6119G-001",
       "watch_type": "Dress",
       "case_size_mm": 39,
-      "lug_width_mm": 18,
+      "lug_width_mm": 21,
       "bracelet_type": "strap",
       "dial_color": "Grey",
       "estimated_value": 34020
@@ -39822,7 +39822,7 @@
       "reference": "6119R-001",
       "watch_type": "Dress",
       "case_size_mm": 39,
-      "lug_width_mm": 18,
+      "lug_width_mm": 21,
       "bracelet_type": "strap",
       "dial_color": "Ivory",
       "estimated_value": 36754
@@ -42110,7 +42110,7 @@
       "reference": "5320G-001",
       "watch_type": "Dress",
       "case_size_mm": 40,
-      "lug_width_mm": 21,
+      "lug_width_mm": 20,
       "bracelet_type": "strap",
       "dial_color": "Cream",
       "estimated_value": 79950
@@ -43046,7 +43046,7 @@
       "reference": "5230P-001",
       "watch_type": "GMT",
       "case_size_mm": 38.5,
-      "lug_width_mm": 21,
+      "lug_width_mm": 20,
       "bracelet_type": "strap",
       "dial_color": "Blue",
       "estimated_value": 71000
@@ -45802,7 +45802,7 @@
       "reference": "124270",
       "watch_type": "Field",
       "case_size_mm": 36,
-      "lug_width_mm": 20,
+      "lug_width_mm": 19,
       "bracelet_type": null,
       "dial_color": "Black",
       "estimated_value": 9282
@@ -46881,7 +46881,7 @@
       "reference": "126600",
       "watch_type": "Diver",
       "case_size_mm": 43,
-      "lug_width_mm": 21,
+      "lug_width_mm": 22,
       "bracelet_type": null,
       "dial_color": "Black",
       "estimated_value": 15750
@@ -51717,7 +51717,7 @@
       "reference": "M79470-0001",
       "watch_type": "GMT",
       "case_size_mm": 39,
-      "lug_width_mm": 22,
+      "lug_width_mm": 20,
       "bracelet_type": null,
       "dial_color": "Black",
       "estimated_value": 4379
