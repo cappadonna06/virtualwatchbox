@@ -389,13 +389,14 @@ async function runIngest(supabase: SupabaseClient, dir: string): Promise<void> {
       }
       if (!DRY_RUN) {
         const metadataPath = path.join(directory, `${id}.json`)
-        const metadata: { sourceId?: string } = fs.existsSync(metadataPath)
+        const metadata: { sourceId?: string; sourceUrl?: string } = fs.existsSync(metadataPath)
           ? JSON.parse(fs.readFileSync(metadataPath, 'utf8')) : {}
         const { caseOnlyPngUrl, caseOnlyUrl } = await uploadCaseOnly(supabase, id, norm.png, norm.webp)
         const entry: CaseOnlyEntry = {
           caseOnlyUrl, caseOnlyPngUrl, lugGeometry: geom, confidence, status: 'approved', catalogReferenceVerified: true,
           brand: watch.brand, model: watch.model, reference: watch.reference, lugWidthMm: watch.lug_width_mm!,
           sourceCatalogId: metadata.sourceId !== id ? metadata.sourceId : undefined,
+          sourcePhotoUrl: metadata.sourceUrl,
         }
         await writeDbColumns(supabase, id, entry)
         bridge[id] = entry

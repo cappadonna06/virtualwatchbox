@@ -18,7 +18,7 @@ function median(values: number[]): number {
   return values.sort((a, b) => a - b)[Math.floor(values.length / 2)]
 }
 
-async function renderHalf(master: Buffer, imageWidth: number, name: string, top: boolean) {
+async function renderHalf(master: Buffer, imageWidth: number, name: string, top: boolean, perforated: boolean) {
   const height = top ? 225 : 250
   const width = BODY_WIDTH + SIDE_PAD * 2
   const center = Math.round(imageWidth * (top ? 0.64 : 0.36))
@@ -61,7 +61,7 @@ async function renderHalf(master: Buffer, imageWidth: number, name: string, top:
   const attachment = median(edgeRows.slice(Math.round(bodyWidth * 0.42), Math.round(bodyWidth * 0.58)))
   if (attachment === 124) throw new Error('Could not find the spring-bar end')
   const start = Math.min(...edgeRows) - 1
-  const end = top ? 260 : 285
+  const end = perforated ? 415 : top ? 260 : 285
   const endLeft = findSide(end - 9, 1)
   const endRight = findSide(end - 9, -1)
   const travel = (end - start) / (height - 1)
@@ -88,8 +88,11 @@ async function renderHalf(master: Buffer, imageWidth: number, name: string, top:
       const destY = top ? height - 1 - row : row
       const src = (y * imageWidth + x) * 3
       const dest = (destY * width + destX) * 4
+      // The white backing is visible through the racing perforations.
+      const insidePerforation = perforated && column > BODY_WIDTH * 0.23 && column < BODY_WIDTH * 0.77
+      const opacity = insidePerforation ? Math.max(0, Math.min(1, (244 - tone(x, y)) / 24)) : 1
       for (let channel = 0; channel < 3; channel += 1) rgba[dest + channel] = Math.round(master[src + channel] * shade)
-      rgba[dest + 3] = 255
+      rgba[dest + 3] = Math.round(255 * opacity)
     }
   }
 
@@ -117,9 +120,10 @@ async function main() {
       if (!response.ok) throw new Error(`Template image HTTP ${response.status}`)
       const { data, info } = await sharp(Buffer.from(await response.arrayBuffer())).resize(1125, 1350)
         .flatten({ background: 'white' }).removeAlpha().raw().toBuffer({ resolveWithObject: true })
+      const perforated = template.subMaterial === 'Rally'
       const [top, bottom] = await Promise.all([
-        renderHalf(data, info.width, prior ? path.basename(prior.bandTop.url) : `${id}-top.webp`, true),
-        renderHalf(data, info.width, prior ? path.basename(prior.bandBottom.url) : `${id}-bottom.webp`, false),
+        renderHalf(data, info.width, prior ? path.basename(prior.bandTop.url) : `${id}-top.webp`, true, perforated),
+        renderHalf(data, info.width, prior ? path.basename(prior.bandBottom.url) : `${id}-bottom.webp`, false, perforated),
       ])
       await Promise.all([top, bottom].map(half => fs.writeFile(path.join(ASSET_DIR, half.name), half.output)))
       const metadata = prior ?? {

@@ -10,10 +10,10 @@ export const MATERIALS: StrapMaterial[] = [
 ]
 
 export const SUB_MATERIALS: Record<StrapMaterial, string[]> = {
-  leather: ['Smooth', 'Alligator', 'Suede', 'Pebbled', 'Shell Cordovan'],
-  rubber: ['Smooth', 'Tropic', 'Tread', 'FKM'],
+  leather: ['Smooth', 'Alligator', 'Suede', 'Pebbled', 'Shell Cordovan', 'Rally'],
+  rubber: ['Smooth', 'Tropic', 'Tread', 'FKM', 'Waffle'],
   nylon: ['NATO', 'Seatbelt', 'Perlon', 'Single-pass'],
-  canvas: ['Cordura', 'Sailcloth', 'Waxed'],
+  canvas: ['Cordura', 'Sailcloth', 'Waxed', 'Cotton Twill'],
   fabric: ['Sailcloth', 'Tweed', 'Denim'],
   metal: ['Oyster', 'Jubilee', 'President', 'H-Link', 'Milanese', 'Beads of Rice', 'Mesh'],
   silicone: ['Smooth', 'Textured'],

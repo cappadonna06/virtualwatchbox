@@ -43,6 +43,7 @@ export interface CaseOnlyEntry {
   model?: string
   reference?: string
   sourceCatalogId?: string
+  sourcePhotoUrl?: string
   confidence: number
   catalogReferenceVerified?: boolean
   status: 'pending' | 'approved' | 'needs_review' | 'rejected'
