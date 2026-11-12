@@ -6,6 +6,32 @@
 
 ---
 
+## Adding coverage to the current Studio
+
+The Studio uses the exact catalog ID, with a reviewed transparent watch head and separate top and bottom strap textures. The watch pixels come from the catalog photo. Each strap end sits on its own spring-bar centerline, with only the bar sleeve extending inward. A straight-ended strap can show daylight between the end and the case, especially near the shoulders. Unapproved references and integrated bracelets continue to use the side-by-side view.
+
+Use a small, representative batch. Watches already photographed on straight leather or fabric straps are good candidates. Metal end links can be difficult to separate from the lugs. A high model score still requires visual review.
+
+If the manufacturer confirms an identical case, bezel, and dial on another strap variant, prepare one target with `--only=TARGET_ID --source-id=PHOTO_VARIANT_ID`. The review image uses the alternate catalog photo and records its ID beside the candidate.
+
+```sh
+# Prepare local candidates and a review.html comparison page.
+npm run straps:segment-cases -- --review-dir /tmp/studio-cases --only=WATCH_ID,ANOTHER_WATCH_ID
+# Or use --top 20 to prioritize the imaged catalog by heat.
+# DRY_RUN=1 lists those candidates without sending images to the model.
+
+# Approve the exact IDs whose original dial, crown, bezel, and both lugs are intact.
+npm run straps:segment-cases -- --ingest /tmp/studio-cases --only=APPROVED_ID
+```
+
+The first command runs SAM 3 with case and location prompts, and applies the chosen mask to the source pixels. Preparation requires the Replicate token and Supabase credentials. The second command validates both lug channels, publishes the PNG/WebP pair to Supabase, and updates the case-only bridge. Use the Studio at desktop and mobile widths to inspect both strap joins. Commit the bridge to release the approved references with the site.
+
+The default fit uses the center of the case silhouette and the sleeve depth from the strap image. It leaves a small clearance at the center. A curved case naturally opens the gap toward the shoulders. Run `npm run straps:segment-cases -- --measure-clearance` to backfill existing approved exact-reference cutouts. If a reference image shows the spring-bar position, put `<catalog-id>.spring-bars.json` next to the reviewed cutout with `topSpringBarY`, `bottomSpringBarY`, or both, measured on the normalized 900 px cutout. Ingest carries those positions into the Studio.
+
+To add on-watch versions of existing two-piece strap templates, run `npx tsx scripts/prepare-studio-straps.ts [template-id ...]`. The converter extracts the photographed attachment ends of the Drawer master's buckle and tail pieces and keeps their silhouette, stitch stops, and surface finish. It records the center of each sleeve and the estimated spring-bar row. Check the previews for white halos, intact stitches, and matching material before committing. The full template remains the swatch and side-by-side image.
+
+The sections below describe the original MVP design.
+
 ## Phase 1 — Case-Only Image Pipeline
 
 **Objective:** Create transparent case-only images (watch head without strap) for the top 100 watches by heat score.

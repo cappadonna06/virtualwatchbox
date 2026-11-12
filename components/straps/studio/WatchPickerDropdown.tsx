@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { brand } from '@/lib/brand'
+import { caseOnlyIds, getCaseOnly, hasCaseOnly } from '@/lib/caseOnlyImages'
 import type { CatalogWatch } from '@/types/watch'
 import { useIsMobile } from '@/components/collection/useResponsiveState'
 import type { StudioController } from './useStudioController'
@@ -99,6 +100,7 @@ function OwnedList({ c, onPick }: { c: StudioController; onPick: () => void }) {
           model={w.model}
           reference={w.reference}
           lugWidthMm={w.lugWidthMm}
+          hasPreview={hasCaseOnly(w.watchId)}
           onClick={() => { c.setWatch(w.watchId); onPick() }}
         />
       ))}
@@ -110,14 +112,16 @@ function CatalogSearch({ c, onPick }: { c: StudioController; onPick: () => void 
   const [q, setQ] = useState('')
   const [rows, setRows] = useState<CatalogWatch[]>([])
   const [loading, setLoading] = useState(false)
+  const { searchCatalog } = c
+  const query = q.trim()
 
   useEffect(() => {
-    if (q.trim().length < 2) { setRows([]); return }
+    if (query.length < 2) { setRows([]); setLoading(false); return }
     let alive = true
     setLoading(true)
     const id = window.setTimeout(async () => {
       try {
-        const res = await c.searchCatalog({ q: q.trim(), onlyWithImages: true, sortBy: 'heat', limit: 24 })
+        const res = await searchCatalog({ q: query, onlyWithImages: true, sortBy: 'heat', limit: 24 })
         if (alive) setRows(res.rows)
       } catch {
         if (alive) setRows([])
@@ -126,7 +130,7 @@ function CatalogSearch({ c, onPick }: { c: StudioController; onPick: () => void 
       }
     }, 220)
     return () => { alive = false; window.clearTimeout(id) }
-  }, [q, c])
+  }, [query, searchCatalog])
 
   return (
     <div style={{ padding: 6 }}>
@@ -134,7 +138,7 @@ function CatalogSearch({ c, onPick }: { c: StudioController; onPick: () => void 
         autoFocus
         value={q}
         onChange={e => setQ(e.target.value)}
-        placeholder="Search 35,000 watches…"
+        placeholder="Search by model or reference…"
         style={{
           width: '100%', boxSizing: 'border-box', height: 38, padding: '0 12px',
           borderRadius: brand.radius.sm, border: `1px solid ${brand.studio.hairline}`,
@@ -143,9 +147,10 @@ function CatalogSearch({ c, onPick }: { c: StudioController; onPick: () => void 
         }}
       />
       <div style={{ maxHeight: 300, overflowY: 'auto', marginTop: 6 }}>
-        {loading && <div style={emptyHint}>Searching…</div>}
-        {!loading && q.trim().length >= 2 && rows.length === 0 && <div style={emptyHint}>No matches.</div>}
-        {rows.map(w => (
+        {query.length < 2 && <PreviewList c={c} onPick={onPick} />}
+        {query.length >= 2 && loading && <div style={emptyHint}>Searching…</div>}
+        {query.length >= 2 && !loading && rows.length === 0 && <div style={emptyHint}>No matches.</div>}
+        {query.length >= 2 && !loading && rows.map(w => (
           <WatchRow
             key={w.id}
             active={w.id === c.watchId}
@@ -154,6 +159,7 @@ function CatalogSearch({ c, onPick }: { c: StudioController; onPick: () => void 
             model={w.model}
             reference={w.reference}
             lugWidthMm={w.lugWidthMm}
+            hasPreview={hasCaseOnly(w.id)}
             onClick={() => { c.setWatch(w.id, w); onPick() }}
           />
         ))}
@@ -162,8 +168,32 @@ function CatalogSearch({ c, onPick }: { c: StudioController; onPick: () => void 
   )
 }
 
+function PreviewList({ c, onPick }: { c: StudioController; onPick: () => void }) {
+  return (
+    <>
+      <div style={{ ...emptyHint, textAlign: 'left', padding: '8px 10px 4px' }}>Watches with on-watch previews</div>
+      {caseOnlyIds().map(id => {
+        const preview = getCaseOnly(id)
+        if (!preview) return null
+        return (
+          <WatchRow
+            key={id}
+            active={id === c.watchId}
+            imageUrl={preview.caseOnlyUrl}
+            brand={preview.brand ?? ''}
+            model={preview.model ?? ''}
+            reference={preview.reference}
+            lugWidthMm={preview.lugWidthMm}
+            onClick={() => { c.setWatch(id); onPick() }}
+          />
+        )
+      })}
+    </>
+  )
+}
+
 function WatchRow({
-  active, imageUrl, brand: b, model, reference, lugWidthMm, onClick,
+  active, imageUrl, brand: b, model, reference, lugWidthMm, hasPreview, onClick,
 }: {
   active: boolean
   imageUrl?: string
@@ -171,6 +201,7 @@ function WatchRow({
   model: string
   reference?: string
   lugWidthMm?: number
+  hasPreview?: boolean
   onClick: () => void
 }) {
   return (
@@ -195,7 +226,7 @@ function WatchRow({
           {b} {model}
         </div>
         <div style={{ font: `400 11px ${brand.font.sans}`, color: brand.studio.textLow, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {reference || '—'}
+          {[reference, hasPreview && 'On-watch preview'].filter(Boolean).join(' · ')}
         </div>
       </div>
       {lugWidthMm != null && (
