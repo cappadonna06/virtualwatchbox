@@ -13,6 +13,8 @@ interface Props {
   options: SortOption[]
   onChange: (value: string) => void
   label?: string
+  ariaLabel?: string
+  align?: 'start' | 'end'
   /** Compact trigger: narrower min-width and no eyebrow label. For mobile. */
   compact?: boolean
 }
@@ -22,6 +24,8 @@ export default function SortDropdown({
   options,
   onChange,
   label = 'Order',
+  ariaLabel,
+  align = 'end',
   compact = false,
 }: Props) {
   const triggerMinWidth = compact ? 132 : brand.controls.dropdown.minWidth
@@ -67,6 +71,7 @@ export default function SortDropdown({
     >
       <button
         type="button"
+        aria-label={ariaLabel}
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen(current => !current)}
@@ -163,8 +168,10 @@ export default function SortDropdown({
         style={{
           position: 'absolute',
           top: `calc(100% + ${brand.controls.dropdown.menuOffset}px)`,
-          right: 0,
+          [align === 'start' ? 'left' : 'right']: 0,
           minWidth: menuMinWidth,
+          maxHeight: 'min(320px, 50dvh)',
+          overflowY: 'auto',
           padding: brand.controls.dropdown.menuPadding,
           borderRadius: brand.radius.lg,
           border: `1px solid ${brand.colors.borderMid}`,
@@ -173,7 +180,7 @@ export default function SortDropdown({
           zIndex: brand.zIndex.dropdown,
           opacity: open ? 1 : 0,
           transform: open ? 'translateY(0) scale(1)' : 'translateY(-4px) scale(0.98)',
-          transformOrigin: 'top right',
+          transformOrigin: align === 'start' ? 'top left' : 'top right',
           pointerEvents: open ? 'auto' : 'none',
           transition: `opacity ${brand.transition.base}, transform ${brand.transition.base}`,
         }}
@@ -188,6 +195,7 @@ export default function SortDropdown({
               type="button"
               role="menuitemradio"
               aria-checked={isActive}
+              tabIndex={open ? 0 : -1}
               onMouseEnter={() => setHoveredValue(option.value)}
               onMouseLeave={() => setHoveredValue(null)}
               onClick={() => {

@@ -44,7 +44,7 @@ function BandComposite({ c, rowHeight }: { c: StudioController; rowHeight: numbe
   // half rises up) with a spring, like snapping onto the spring bars; the
   // outgoing strap just fades fast so it never fights the incoming one.
   const halfMotion = (dir: 1 | -1) => reducedMotion
-    ? { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.15 } }
+    ? { initial: false as const, animate: { opacity: 1 }, transition: { duration: 0 } }
     : {
         initial: { opacity: 0, y: dir * -14 },
         animate: { opacity: 1, y: 0 },
@@ -58,7 +58,7 @@ function BandComposite({ c, rowHeight }: { c: StudioController; rowHeight: numbe
         {band && (
           <motion.div
             key={currentStrap?.key ?? 'none'}
-            exit={{ opacity: 0, transition: { duration: 0.14 } }}
+            exit={{ opacity: 0, transition: { duration: reducedMotion ? 0 : 0.14 } }}
             style={{ position: 'absolute', inset: 0, zIndex: 1 }}
           >
             <motion.img
