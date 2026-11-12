@@ -338,6 +338,9 @@ const STRAPS: StrapDef[] = [
   { name: 'canvas-twill-tan', kind: 'canvas-twill', material: 'canvas', subMaterial: 'Cotton Twill', color: 'Tan', colorHex: '#B08552', style: 'rugged', tier: 2 },
   { name: 'rubber-ribbed-ivory', kind: 'rubber-ribbed', material: 'rubber', subMaterial: 'Ribbed', color: 'Ivory', colorHex: '#E3D6B9', style: 'sporty', tier: 2 },
   { name: 'canvas-herringbone-olive', kind: 'canvas-herringbone', material: 'canvas', subMaterial: 'Herringbone', color: 'Olive', colorHex: '#484F34', style: 'rugged', tier: 2 },
+  { name: 'leather-suede-sand', kind: 'leather-suede', material: 'leather', subMaterial: 'Suede', color: 'Sand', colorHex: '#B89159', style: 'casual', tier: 2 },
+  { name: 'fabric-sailcloth-charcoal', kind: 'fabric-sailcloth', material: 'fabric', subMaterial: 'Sailcloth', color: 'Charcoal', colorHex: '#424348', style: 'sporty', tier: 2 },
+  { name: 'rubber-tropical-oxblood', kind: 'rubber-tropical', material: 'rubber', subMaterial: 'Tropic', color: 'Oxblood', colorHex: '#71262C', style: 'sporty', tier: 2 },
 
 ]
 

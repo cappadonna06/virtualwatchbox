@@ -20,6 +20,7 @@ function median(values: number[]): number {
 
 async function renderHalf(master: Buffer, imageWidth: number, name: string, top: boolean, options: {
   perforated: boolean
+  endRow: number
   ivoryRubber: boolean
 }) {
   const height = top ? 225 : 250
@@ -67,7 +68,7 @@ async function renderHalf(master: Buffer, imageWidth: number, name: string, top:
   const attachment = median(edgeRows.slice(Math.round(bodyWidth * 0.42), Math.round(bodyWidth * 0.58)))
   if (attachment === 124) throw new Error('Could not find the spring-bar end')
   const start = Math.min(...edgeRows) - 1
-  const end = options.perforated ? 415 : top ? 260 : 285
+  const end = options.endRow
   const endLeft = findSide(end - 9, 1)
   const endRight = findSide(end - 9, -1)
   const travel = (end - start) / (height - 1)
@@ -94,7 +95,7 @@ async function renderHalf(master: Buffer, imageWidth: number, name: string, top:
       const destY = top ? height - 1 - row : row
       const src = (y * imageWidth + x) * 3
       const dest = (destY * width + destX) * 4
-      // The white backing is visible through the racing perforations.
+      // The white backing is visible through the perforations.
       const insidePerforation = options.perforated && column > BODY_WIDTH * 0.23 && column < BODY_WIDTH * 0.77
       const opacity = options.ivoryRubber
         ? Math.max(0, Math.min(1, (205 - tone(x, y)) / 32))
@@ -128,13 +129,17 @@ async function main() {
       if (!response.ok) throw new Error(`Template image HTTP ${response.status}`)
       const { data, info } = await sharp(Buffer.from(await response.arrayBuffer())).resize(1125, 1350)
         .flatten({ background: 'white' }).removeAlpha().raw().toBuffer({ resolveWithObject: true })
+      const rally = template.subMaterial === 'Rally'
+      const oxbloodTropic = template.id === 'rubber-tropical-oxblood'
       const options = {
-        perforated: template.subMaterial === 'Rally',
+        perforated: rally || oxbloodTropic,
         ivoryRubber: template.id === 'rubber-ribbed-ivory',
       }
       const [top, bottom] = await Promise.all([
-        renderHalf(data, info.width, prior ? path.basename(prior.bandTop.url) : `${id}-top.webp`, true, options),
-        renderHalf(data, info.width, prior ? path.basename(prior.bandBottom.url) : `${id}-bottom.webp`, false, options),
+        renderHalf(data, info.width, prior ? path.basename(prior.bandTop.url) : `${id}-top.webp`, true,
+          { ...options, endRow: rally ? 415 : 260 }),
+        renderHalf(data, info.width, prior ? path.basename(prior.bandBottom.url) : `${id}-bottom.webp`, false,
+          { ...options, endRow: rally ? 415 : oxbloodTropic ? 273 : 285 }),
       ])
       await Promise.all([top, bottom].map(half => fs.writeFile(path.join(ASSET_DIR, half.name), half.output)))
       const metadata = prior ?? {

@@ -853,5 +853,62 @@
     ],
     "affiliatePartner": null,
     "affiliateUrl": null
+  },
+  {
+    "id": "leather-suede-sand",
+    "material": "leather",
+    "subMaterial": "Suede",
+    "color": "Sand",
+    "colorHex": "#B89159",
+    "style": "casual",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-suede-sand.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "fabric-sailcloth-charcoal",
+    "material": "fabric",
+    "subMaterial": "Sailcloth",
+    "color": "Charcoal",
+    "colorHex": "#424348",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/fabric-sailcloth-charcoal.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "rubber-tropical-oxblood",
+    "material": "rubber",
+    "subMaterial": "Tropic",
+    "color": "Oxblood",
+    "colorHex": "#71262C",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/rubber-tropical-oxblood.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
   }
 ]

@@ -1142,6 +1142,41 @@
     "lugWidthMm": 21,
     "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/jaeger-lecoultre-q9028180/primary.webp"
   },
+  "longines-l3-812-4-63-2": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-812-4-63-2/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-812-4-63-2/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 190,
+        "y": 10
+      },
+      "topLugRight": {
+        "x": 598,
+        "y": 10
+      },
+      "bottomLugLeft": {
+        "x": 188,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 598,
+        "y": 899
+      },
+      "lugWidthPx": 409,
+      "imageWidth": 856,
+      "imageHeight": 900,
+      "topCaseEdgeY": 52,
+      "bottomCaseEdgeY": 828
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Longines",
+    "model": "Spirit Zulu Time",
+    "reference": "L3.812.4.63.2",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://api.ecom.longines.com/media/catalog/product/w/a/watch-collection-longines-spirit-zulu-time-l3-812-4-63-2-595ed3-hero.png?w=1600"
+  },
   "nomos-737": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-737/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-737/case-only.png",
@@ -1175,6 +1210,41 @@
     "reference": "737",
     "lugWidthMm": 20,
     "catalogReferenceVerified": true
+  },
+  "nomos-753": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-753/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-753/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 175,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 536,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 182,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 546,
+        "y": 898
+      },
+      "lugWidthPx": 363,
+      "imageWidth": 778,
+      "imageHeight": 900,
+      "topCaseEdgeY": 103,
+      "bottomCaseEdgeY": 807
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "NOMOS",
+    "model": "Club",
+    "reference": "753",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-753/primary.webp"
   },
   "omega-130-30-39-21-02-001": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-130-30-39-21-02-001/case-only.webp",
@@ -1211,6 +1281,41 @@
     "lugWidthMm": 20,
     "sourceCatalogId": "omega-130-33-39-21-02-001",
     "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-constellation-globemaster-co-axial-master-chronometer-39-mm-13033392102001-b7c8cb.png"
+  },
+  "omega-210-22-42-20-01-004": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-22-42-20-01-004/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-22-42-20-01-004/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 224,
+        "y": 4
+      },
+      "topLugRight": {
+        "x": 593,
+        "y": 4
+      },
+      "bottomLugLeft": {
+        "x": 226,
+        "y": 896
+      },
+      "bottomLugRight": {
+        "x": 594,
+        "y": 896
+      },
+      "lugWidthPx": 369,
+      "imageWidth": 872,
+      "imageHeight": 900,
+      "topCaseEdgeY": 60,
+      "bottomCaseEdgeY": 831
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Seamaster Diver 300M James Bond Limited Edition",
+    "reference": "210.22.42.20.01.004",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-22-42-20-01-004/primary.webp"
   },
   "omega-210-30-42-20-01-001": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-30-42-20-01-001/case-only.webp",
@@ -1883,6 +1988,41 @@
     "sourceCatalogId": "omega-234-32-41-21-01-001",
     "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-seamaster-300-co-axial-master-chronometer-41-mm-23432412101001-e4e87d.png"
   },
+  "omega-234-32-41-21-03-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-234-32-41-21-03-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-234-32-41-21-03-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 188,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 595,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 183,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 599,
+        "y": 898
+      },
+      "lugWidthPx": 412,
+      "imageWidth": 837,
+      "imageHeight": 900,
+      "topCaseEdgeY": 45,
+      "bottomCaseEdgeY": 807
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Seamaster 300",
+    "reference": "234.32.41.21.03.001",
+    "lugWidthMm": 21,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-234-32-41-21-03-001/primary.webp"
+  },
   "omega-310-30-42-50-01-001": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-310-30-42-50-01-001/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-310-30-42-50-01-001/case-only.png",
@@ -1990,6 +2130,41 @@
     "lugWidthMm": 20,
     "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-speedmaster-moonwatch-professional-co-axial-master-chronometer-chronograph-42-mm-31032425001001-df6aad.png"
   },
+  "omega-310-32-42-50-01-002": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-310-32-42-50-01-002/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-310-32-42-50-01-002/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 208,
+        "y": 6
+      },
+      "topLugRight": {
+        "x": 593,
+        "y": 6
+      },
+      "bottomLugLeft": {
+        "x": 199,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 590,
+        "y": 898
+      },
+      "lugWidthPx": 388,
+      "imageWidth": 845,
+      "imageHeight": 900,
+      "topCaseEdgeY": 37,
+      "bottomCaseEdgeY": 812
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Speedmaster Professional Moonwatch",
+    "reference": "310.32.42.50.01.002",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-310-32-42-50-01-002/primary.webp"
+  },
   "omega-310-32-42-50-02-001": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-310-32-42-50-02-001/case-only-a3e71d4e32ba.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-310-32-42-50-02-001/case-only-a3e71d4e32ba.png",
@@ -2060,6 +2235,76 @@
     "lugWidthMm": 20,
     "sourceCatalogId": "omega-311-33-42-30-01-001",
     "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-speedmaster-moonwatch-professional-chronograph-42-mm-31133423001001-1c287f.png"
+  },
+  "omega-329-32-44-51-01-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-329-32-44-51-01-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-329-32-44-51-01-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 210,
+        "y": 4
+      },
+      "topLugRight": {
+        "x": 597,
+        "y": 4
+      },
+      "bottomLugLeft": {
+        "x": 203,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 590,
+        "y": 898
+      },
+      "lugWidthPx": 387,
+      "imageWidth": 845,
+      "imageHeight": 900,
+      "topCaseEdgeY": 56,
+      "bottomCaseEdgeY": 830
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Speedmaster Racing",
+    "reference": "329.32.44.51.01.001",
+    "lugWidthMm": 21,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-329-32-44-51-01-001/primary.webp"
+  },
+  "omega-332-12-41-51-11-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-332-12-41-51-11-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-332-12-41-51-11-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 191,
+        "y": 5
+      },
+      "topLugRight": {
+        "x": 553,
+        "y": 5
+      },
+      "bottomLugLeft": {
+        "x": 189,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 614,
+        "y": 899
+      },
+      "lugWidthPx": 394,
+      "imageWidth": 802,
+      "imageHeight": 900,
+      "topCaseEdgeY": 75,
+      "bottomCaseEdgeY": 807
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Speedmaster '57",
+    "reference": "332.12.41.51.11.001",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-332-12-41-51-11-001/primary.webp"
   },
   "omega-3510-50-00": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-3510-50-00/case-only.webp",
@@ -2432,6 +2677,41 @@
     "lugWidthMm": 20,
     "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5320g-001/primary.webp"
   },
+  "patek-philippe-5327g-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5327g-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5327g-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 192,
+        "y": 4
+      },
+      "topLugRight": {
+        "x": 564,
+        "y": 4
+      },
+      "bottomLugLeft": {
+        "x": 189,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 561,
+        "y": 898
+      },
+      "lugWidthPx": 372,
+      "imageWidth": 791,
+      "imageHeight": 900,
+      "topCaseEdgeY": 71,
+      "bottomCaseEdgeY": 814
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Patek Philippe",
+    "model": "Grand Complications",
+    "reference": "5327G-001",
+    "lugWidthMm": 19,
+    "sourcePhotoUrl": "https://patek-res.cloudinary.com/media/202285/51887"
+  },
   "patek-philippe-5396g-011": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5396g-011/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5396g-011/case-only.png",
@@ -2709,6 +2989,41 @@
     "model": "Complications",
     "reference": "5960/1A-001",
     "lugWidthMm": 21
+  },
+  "patek-philippe-5960p-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5960p-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5960p-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 180,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 567,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 182,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 568,
+        "y": 899
+      },
+      "lugWidthPx": 387,
+      "imageWidth": 801,
+      "imageHeight": 900,
+      "topCaseEdgeY": 74,
+      "bottomCaseEdgeY": 806
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Patek Philippe",
+    "model": "Complications",
+    "reference": "5960P-001",
+    "lugWidthMm": 21,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5960p-001/primary.webp"
   },
   "patek-philippe-6119g-001": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-6119g-001/case-only.webp",
@@ -3551,6 +3866,41 @@
     "lugWidthMm": 20,
     "sourcePhotoUrl": "https://media.rolex.com/image/upload/f_png/c_limit,w_1600/v1/a677b2c664f6/catalogue/2026/upright-c/m228235-0025"
   },
+  "seiko-sarb017": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/seiko-sarb017/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/seiko-sarb017/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 190,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 584,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 192,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 609,
+        "y": 899
+      },
+      "lugWidthPx": 406,
+      "imageWidth": 861,
+      "imageHeight": 900,
+      "topCaseEdgeY": 58,
+      "bottomCaseEdgeY": 811
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Seiko",
+    "model": "Mechanical",
+    "reference": "SARB017",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/seiko-sarb017/primary.webp"
+  },
   "seiko-sarb033": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/seiko-sarb033/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/seiko-sarb033/case-only.png",
@@ -3618,6 +3968,41 @@
     "model": "104 St Sa I",
     "reference": "104.010",
     "lugWidthMm": 20
+  },
+  "sinn-104-012": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/sinn-104-012/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/sinn-104-012/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 198,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 593,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 204,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 592,
+        "y": 899
+      },
+      "lugWidthPx": 392,
+      "imageWidth": 869,
+      "imageHeight": 900,
+      "topCaseEdgeY": 50,
+      "bottomCaseEdgeY": 839
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Sinn",
+    "model": "104 St Sa I",
+    "reference": "104.012",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/sinn-104-012/primary.webp"
   },
   "sinn-556-010": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/sinn-556-010/case-only-3ffbb530646e.webp",
@@ -3962,6 +4347,41 @@
     "lugWidthMm": 20,
     "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79030n-0001/primary.webp"
   },
+  "tudor-m79210cnu-0001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79210cnu-0001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79210cnu-0001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 185,
+        "y": 1
+      },
+      "topLugRight": {
+        "x": 592,
+        "y": 1
+      },
+      "bottomLugLeft": {
+        "x": 183,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 592,
+        "y": 898
+      },
+      "lugWidthPx": 408,
+      "imageWidth": 841,
+      "imageHeight": 900,
+      "topCaseEdgeY": 71,
+      "bottomCaseEdgeY": 844
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Tudor",
+    "model": "Black Bay Ceramic",
+    "reference": "M79210CNU-0001",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79210cnu-0001/primary.webp"
+  },
   "tudor-m79360n-0002": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79360n-0002/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79360n-0002/case-only.png",
@@ -4031,6 +4451,41 @@
     "reference": "M79470-0001",
     "lugWidthMm": 20,
     "sourcePhotoUrl": "https://media.tudorwatch.com/image/upload/f_png/c_limit,w_1600/v1/catalogue/0yi5ee8b69yh3/upright-cb-with-drop-shadow/tudor-m79470-0002"
+  },
+  "tudor-m79470-0003": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79470-0003/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79470-0003/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 188,
+        "y": 9
+      },
+      "topLugRight": {
+        "x": 556,
+        "y": 9
+      },
+      "bottomLugLeft": {
+        "x": 187,
+        "y": 879
+      },
+      "bottomLugRight": {
+        "x": 559,
+        "y": 879
+      },
+      "lugWidthPx": 370,
+      "imageWidth": 804,
+      "imageHeight": 900,
+      "topCaseEdgeY": 73,
+      "bottomCaseEdgeY": 799
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Tudor",
+    "model": "Black Bay Pro",
+    "reference": "M79470-0003",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79470-0003/primary.webp"
   },
   "tudor-m79830rb": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79830rb/case-only.webp",
@@ -4172,6 +4627,41 @@
     "model": "Ranger",
     "reference": "M79950-0001",
     "lugWidthMm": 20
+  },
+  "vacheron-constantin-4600e-000a-b442": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/vacheron-constantin-4600e-000a-b442/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/vacheron-constantin-4600e-000a-b442/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 188,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 570,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 189,
+        "y": 897
+      },
+      "bottomLugRight": {
+        "x": 573,
+        "y": 897
+      },
+      "lugWidthPx": 383,
+      "imageWidth": 805,
+      "imageHeight": 900,
+      "topCaseEdgeY": 67,
+      "bottomCaseEdgeY": 797
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Vacheron Constantin",
+    "model": "Fiftysix Self-Winding",
+    "reference": "4600E/000A-B442",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://www.berrysjewellers.co.uk/cdn/shop/files/4600e-000a-b442_6.webp?v=1742224787&width=2048"
   },
   "vacheron-constantin-4600e-000a-b487": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/vacheron-constantin-4600e-000a-b487/case-only.webp",

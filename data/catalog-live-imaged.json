@@ -35618,7 +35618,7 @@
     {
       "id": "omega-210-22-42-20-01-004",
       "brand": "Omega",
-      "model": "Seamaster Diver 300M No Time To Die Edition",
+      "model": "Seamaster Diver 300M James Bond Limited Edition",
       "model_family": "Seamaster Diver 300M",
       "reference": "210.22.42.20.01.004",
       "watch_type": "Diver",
@@ -36760,6 +36760,19 @@
       "estimated_value": 9178
     },
     {
+      "id": "omega-329-32-44-51-01-001",
+      "brand": "Omega",
+      "model": "Speedmaster Racing",
+      "model_family": "Speedmaster (Non-Moonwatch)",
+      "reference": "329.32.44.51.01.001",
+      "watch_type": "Chronograph",
+      "case_size_mm": 44.25,
+      "lug_width_mm": 21,
+      "bracelet_type": "strap",
+      "dial_color": "Black",
+      "estimated_value": 8665
+    },
+    {
       "id": "omega-3510-50-00",
       "brand": "Omega",
       "model": "Speedmaster Reduced",
@@ -36940,19 +36953,6 @@
       "bracelet_type": null,
       "dial_color": "White",
       "estimated_value": 8702
-    },
-    {
-      "id": "omega-329-32-44-51-01-001",
-      "brand": "Omega",
-      "model": "Speedmaster Super Racing",
-      "model_family": "Speedmaster (Non-Moonwatch)",
-      "reference": "329.32.44.51.01.001",
-      "watch_type": "Chronograph",
-      "case_size_mm": 44.25,
-      "lug_width_mm": 21,
-      "bracelet_type": "strap",
-      "dial_color": "Black",
-      "estimated_value": 8665
     },
     {
       "id": "omega-428-17-26-60-04-003",
@@ -41720,7 +41720,7 @@
       "reference": "5327G-001",
       "watch_type": "Dress",
       "case_size_mm": 39,
-      "lug_width_mm": 21,
+      "lug_width_mm": 19,
       "bracelet_type": "strap",
       "dial_color": "Blue",
       "estimated_value": 86241
@@ -51743,7 +51743,7 @@
       "reference": "M79470-0003",
       "watch_type": "GMT",
       "case_size_mm": 39,
-      "lug_width_mm": 22,
+      "lug_width_mm": 20,
       "bracelet_type": "strap",
       "dial_color": "Black",
       "estimated_value": 3835
