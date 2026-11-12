@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 import sharp from 'sharp'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import bands from '../data/strap-band-demo.json'
@@ -364,7 +365,7 @@ function mountedReview(directory: string, id: string, g: LugGeometry, lugWidth: 
     .map(band => {
       const halves = ([['top', band.bandTop], ['bottom', band.bandBottom]] as const).map(([end, half]) => {
         const rect = strapBandPlacement(g, half, end, frame)
-        const src = path.relative(directory, path.join(repoRoot, 'public', half.url)).split(path.sep).map(encodeURIComponent).join('/')
+        const src = pathToFileURL(path.join(repoRoot, 'public', half.url)).href
         const clip = rect.clipPath ? `;clip-path:${rect.clipPath}` : ''
         return `<img alt="" src="${src}" style="left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;height:${rect.height}px${clip}">`
       }).join('')
