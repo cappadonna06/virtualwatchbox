@@ -12,11 +12,18 @@ import {
   buildDrawerStraps,
   buildTemplateStraps,
   deriveCategories,
+  emptyStudioStrapFilters,
   filterByCategory,
   filterCompatible,
-  type StrapCategory,
+  filterStudioStraps,
+  groupStudioStraps,
+  strapColorFamily,
+  strapDesign,
+  strapFilterOptions,
+  type StudioCategoryFilter,
   type StudioCompatTarget,
   type StudioStrap,
+  type StudioStrapFilters,
 } from '@/lib/strapStudio'
 import type { BraceletType, CatalogWatch } from '@/types/watch'
 import { useStrapPreloader } from './useStrapPreloader'
@@ -67,7 +74,8 @@ export function useStudioController() {
     () => parseSourceMode(search.get('source')) ?? 'all',
   )
   const [strapId, setStrapId] = useState<string>(() => search.get('strapId') || '')
-  const [activeCategory, setActiveCategory] = useState<'All' | StrapCategory>('All')
+  const [activeCategory, setActiveCategory] = useState<StudioCategoryFilter>('All')
+  const [filters, setFilters] = useState(emptyStudioStrapFilters)
   const [isSwapping, setIsSwapping] = useState(false)
   const [failedCaseUrl, setFailedCaseUrl] = useState<string>()
   const [fetched, setFetched] = useState<Map<string, CatalogWatch>>(new Map())
@@ -121,19 +129,25 @@ export function useStudioController() {
   }, [renderMode, compatibleBands, source, drawerStraps, templateStraps, compatTarget, strapOverrides])
 
   const categories = useMemo(() => deriveCategories(sourceStraps), [sourceStraps])
-  const effectiveCategory: 'All' | StrapCategory = categories.includes(activeCategory) ? activeCategory : 'All'
+  const effectiveCategory = categories.includes(activeCategory) ? activeCategory : 'All'
   const categoryStraps = useMemo(() => filterByCategory(sourceStraps, effectiveCategory), [sourceStraps, effectiveCategory])
+  const colorOptions = useMemo(() => strapFilterOptions(categoryStraps, strapColorFamily, filters.color), [categoryStraps, filters.color])
+  const designOptions = useMemo(() => strapFilterOptions(categoryStraps, strapDesign, filters.design), [categoryStraps, filters.design])
+  const groups = useMemo(
+    () => groupStudioStraps(filterStudioStraps(categoryStraps, filters), effectiveCategory),
+    [categoryStraps, filters, effectiveCategory],
+  )
+  const visibleStraps = useMemo(() => groups.flatMap(g => g.straps), [groups])
 
   const currentStrap: StudioStrap | undefined = useMemo(
-    () => categoryStraps.find(s => s.id === strapId || s.templateId === strapId) ?? categoryStraps[0],
-    [categoryStraps, strapId],
+    () => sourceStraps.find(s => s.id === strapId) ?? sourceStraps.find(s => s.templateId === strapId) ?? sourceStraps[0],
+    [sourceStraps, strapId],
   )
 
-  // Keep strapId valid as source/category change (auto-jump to first in list).
+  // Browsing filters must leave the current look shareable, even with zero matches.
   useEffect(() => {
-    if (!categoryStraps.length) return
-    if (!categoryStraps.some(s => s.id === strapId || s.templateId === strapId)) setStrapId(categoryStraps[0].id)
-  }, [categoryStraps, strapId])
+    if (currentStrap && currentStrap.id !== strapId) setStrapId(currentStrap.id)
+  }, [currentStrap, strapId])
 
   const triggerSwap = useCallback(() => {
     if (reducedMotion) return
@@ -145,36 +159,44 @@ export function useStudioController() {
   }, [reducedMotion])
 
   const selectStrap = useCallback((id: string) => {
-    setStrapId(prev => {
-      if (prev !== id) triggerSwap()
-      return id
-    })
-  }, [triggerSwap])
+    if (currentStrap?.id !== id) triggerSwap()
+    setStrapId(id)
+  }, [currentStrap?.id, triggerSwap])
 
-  const idx = categoryStraps.findIndex(s => s.id === currentStrap?.id)
+  const idx = visibleStraps.findIndex(s => s.key === currentStrap?.key)
+  const canCycle = visibleStraps.length > 1 || (idx < 0 && visibleStraps.length === 1)
+  const ghostAt = useCallback((offset: number): StudioStrap | undefined => {
+    const n = visibleStraps.length
+    if (!n || (idx >= 0 && Math.abs(offset) >= n)) return
+    const next = idx >= 0 ? idx + offset : offset > 0 ? offset - 1 : offset
+    return visibleStraps[((next % n) + n) % n]
+  }, [visibleStraps, idx])
+
   const cycle = useCallback((delta: number) => {
-    const n = categoryStraps.length
-    if (!n) return
-    const next = categoryStraps[((idx + delta) % n + n) % n]
+    const next = ghostAt(delta)
     if (next) selectStrap(next.id)
-  }, [categoryStraps, idx, selectStrap])
+  }, [ghostAt, selectStrap])
   const nextStrap = useCallback(() => cycle(1), [cycle])
   const prevStrap = useCallback(() => cycle(-1), [cycle])
 
-  /** Ghosted carousel neighbor at the given offset from the active strap (wraps). */
-  const ghostAt = useCallback((offset: number): StudioStrap | undefined => {
-    const n = categoryStraps.length
-    if (n < 2 || idx < 0) return undefined
-    return categoryStraps[((idx + offset) % n + n) % n]
-  }, [categoryStraps, idx])
+  const clearFilters = useCallback(() => {
+    setActiveCategory('All')
+    setFilters(emptyStudioStrapFilters)
+  }, [])
 
   const changeSource = useCallback((s: StudioSourceMode) => {
     setSource(s)
-    setActiveCategory('All')
-  }, [])
+    clearFilters()
+  }, [clearFilters])
 
-  const changeCategory = useCallback((c: 'All' | StrapCategory) => {
+  const changeCategory = useCallback((c: StudioCategoryFilter) => {
+    if (c === effectiveCategory) return
     setActiveCategory(c)
+    setFilters(previous => previous.design ? { ...previous, design: '' } : previous)
+  }, [effectiveCategory])
+
+  const setFilter = useCallback((field: keyof StudioStrapFilters, value: string) => {
+    setFilters(previous => ({ ...previous, [field]: value }))
   }, [])
 
   // ── Watch switching + incompatible-strap auto-swap ────────────────────────
@@ -198,18 +220,18 @@ export function useStudioController() {
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const t = e.target as HTMLElement | null
-      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return
+      if (!canCycle || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || t?.closest('input, textarea, select, [role="menu"], [contenteditable="true"]')) return
       if (e.key === 'ArrowRight') { e.preventDefault(); nextStrap() }
       else if (e.key === 'ArrowLeft') { e.preventDefault(); prevStrap() }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [nextStrap, prevStrap])
+  }, [canCycle, nextStrap, prevStrap])
 
   // ── Aggressive preloading (no spinner, ever) ──────────────────────────────
   const preloadUrls = useMemo(() => {
     const urls: Array<string | undefined> = []
-    for (const s of categoryStraps) {
+    for (const s of sourceStraps) {
       urls.push(s.imageUrl)
       if (s.band) urls.push(s.band.top.url, s.band.bottom.url)
     }
@@ -222,7 +244,7 @@ export function useStudioController() {
       urls.push(getImageUrl(w.watchId) || w.imageUrl)
     }
     return urls
-  }, [categoryStraps, caseOnly, studioWatch, collectionWatches, watchId, getImageUrl])
+  }, [sourceStraps, caseOnly, studioWatch, collectionWatches, watchId, getImageUrl])
   useStrapPreloader(preloadUrls)
 
   // ── Footer actions ────────────────────────────────────────────────────────
@@ -258,9 +280,16 @@ export function useStudioController() {
     activeCategory: effectiveCategory,
     setCategory: changeCategory,
     sourceStraps,
-    categoryStraps,
+    visibleStraps,
+    groups,
+    filters,
+    setFilter,
+    clearFilters,
+    colorOptions,
+    designOptions,
     currentStrap,
     strapIndex: idx,
+    canCycle,
     nextStrap,
     prevStrap,
     selectStrap,

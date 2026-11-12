@@ -37,9 +37,10 @@ export interface StudioStrap {
   source: StrapSource
   id: string
   label: string
-  sublabel?: string
   material: StrapMaterial
   category: StrapCategory
+  color: string
+  design: string
   colorHex?: string
   /** Vertical master image; '' when none (UI falls back to a CSS swatch). */
   imageUrl: string
@@ -82,15 +83,20 @@ function titleCase(s: string): string {
   return s.length ? s[0].toUpperCase() + s.slice(1) : s
 }
 
+function colorName(color: string): string {
+  return titleCase(color.trim().replace(/\bgrey\b/gi, 'gray'))
+}
+
 function templateToStudio(t: StrapTemplate): StudioStrap {
   return {
     key: `tpl:${t.id}`,
     source: 'template',
     id: t.id,
     label: `${t.subMaterial} ${t.color}`.trim(),
-    sublabel: titleCase(t.material),
     material: t.material,
     category: categoryOf(t.material),
+    color: colorName(t.color),
+    design: t.subMaterial,
     colorHex: t.colorHex,
     imageUrl: t.imageUrl || '',
     availableLugWidths: t.availableLugWidths,
@@ -106,9 +112,10 @@ function drawerToStudio(s: UserStrap): StudioStrap {
     source: 'drawer',
     id: s.id,
     label,
-    sublabel: s.brand || titleCase(s.material),
     material: s.material,
     category: categoryOf(s.material),
+    color: colorName(s.color),
+    design: titleCase(s.subMaterial?.trim() || ''),
     colorHex: s.colorHex,
     imageUrl: photo,
     availableLugWidths: [s.lugWidthMm],
@@ -145,9 +152,10 @@ export function buildBandDemoStraps(): StudioStrap[] {
       id: e.id,
       templateId: e.fullImageId,
       label: e.label,
-      sublabel: `${e.subMaterial} ${titleCase(e.material)}`,
       material: e.material,
-      category: categoryOf(e.material),
+      category: categoryOf(template?.material ?? e.material),
+      color: colorName(e.color),
+      design: e.subMaterial,
       colorHex: e.colorHex,
       imageUrl: template?.imageUrl || e.bandTop.url,
       availableLugWidths: e.availableLugWidths,
@@ -190,8 +198,89 @@ export function isCompatible(strap: StudioStrap, watch: StudioCompatTarget | nul
   return studioFit(strap, watch, overrides) !== 'excluded'
 }
 
-export function filterByCategory(straps: StudioStrap[], category: 'All' | StrapCategory): StudioStrap[] {
+export type StudioCategoryFilter = 'All' | StrapCategory
+
+export type StudioStrapFilters = { query: string; color: string; design: string }
+export const emptyStudioStrapFilters: StudioStrapFilters = { query: '', color: '', design: '' }
+
+export function filterByCategory(straps: StudioStrap[], category: StudioCategoryFilter): StudioStrap[] {
   return category === 'All' ? straps : straps.filter(s => s.category === category)
+}
+
+const COLOR_FAMILIES: Array<[string, RegExp]> = [
+  ['Black', /\bblack\b/i],
+  ['Gray', /\b(gray|charcoal|silver)\b/i],
+  ['White & cream', /\b(white|cream|ivory)\b/i],
+  ['Brown & tan', /\b(brown|tan|cognac|beige|camel|chocolate|khaki|taupe|honey)\b/i],
+  ['Blue', /\b(blue|navy|indigo|teal)\b/i],
+  ['Green', /\b(green|olive|sage)\b/i],
+  ['Red & burgundy', /\b(red|burgundy|wine|maroon|oxblood)\b/i],
+]
+
+export function strapColorFamily(strap: StudioStrap): string {
+  return COLOR_FAMILIES.find(([, pattern]) => pattern.test(strap.color))?.[0] ?? strap.color
+}
+
+export function strapDesign(strap: StudioStrap): string {
+  return strap.design || strap.category
+}
+
+function compareLabels(a: string, b: string): number {
+  return a.localeCompare(b, 'en', { sensitivity: 'base' })
+}
+
+export function strapFilterOptions(straps: StudioStrap[], label: (strap: StudioStrap) => string, selected: string) {
+  return [...new Set([...straps.map(label), selected].filter(Boolean))].sort(compareLabels)
+}
+
+function searchText(text: string): string {
+  return text.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase()
+    .replace(/\bgrey\b/g, 'gray').replace(/[^a-z0-9]+/g, ' ').trim()
+}
+
+export function filterStudioStraps(straps: StudioStrap[], { query, color, design }: StudioStrapFilters): StudioStrap[] {
+  const terms = searchText(query).split(' ').filter(Boolean)
+  return straps.filter(s => {
+    if (color && strapColorFamily(s) !== color) return false
+    if (design && strapDesign(s) !== design) return false
+    if (!terms.length) return true
+    const text = searchText([
+      s.label, s.category, s.material, s.design, s.color, s.userStrap?.brand, s.userStrap?.style,
+      // Group shades for common color names without replacing their specific names on the cards.
+      strapColorFamily(s).split(' & ')[0],
+    ].join(' '))
+    return terms.every(term => text.includes(term))
+  })
+}
+
+function spreadDesigns(straps: StudioStrap[]): StudioStrap[] {
+  const nextColorIndex = new Map<string, number>()
+  return straps.map(strap => {
+    const design = strapDesign(strap)
+    const colorIndex = nextColorIndex.get(design) ?? 0
+    nextColorIndex.set(design, colorIndex + 1)
+    return { strap, colorIndex }
+  }).sort((a, b) => a.colorIndex - b.colorIndex).map(({ strap }) => strap)
+}
+
+export function groupStudioStraps(straps: StudioStrap[], category: StudioCategoryFilter) {
+  const sorted = [...straps].sort((a, b) =>
+    CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category)
+    || compareLabels(strapDesign(a), strapDesign(b))
+    || compareLabels(a.color, b.color)
+    || compareLabels(a.label, b.label),
+  )
+  const groups = new Map<string, StudioStrap[]>()
+  for (const strap of sorted) {
+    const label = category === 'All' ? strap.category : strapDesign(strap)
+    const group = groups.get(label)
+    if (group) group.push(strap)
+    else groups.set(label, [strap])
+  }
+  return Array.from(groups, ([label, straps]) => ({
+    label,
+    straps: category === 'All' ? spreadDesigns(straps) : straps,
+  }))
 }
 
 export function filterCompatible(straps: StudioStrap[], watch: StudioCompatTarget | null, overrides: StrapWatchOverride[]): StudioStrap[] {

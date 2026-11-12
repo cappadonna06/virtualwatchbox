@@ -50,6 +50,7 @@ function useStageSwipe(onNext: () => void, onPrev: () => void) {
 export default function StrapStudio() {
   const c = useStudioController()
   const isMobile = useIsMobile()
+  const viewport = useViewport()
 
   return (
     <div
@@ -57,51 +58,41 @@ export default function StrapStudio() {
         background: brand.studio.canvas,
         backgroundColor: brand.studio.void,
         minHeight: '82vh',
-        paddingBottom: isMobile ? '26vh' : 20,
+        paddingBottom: 24,
       }}
     >
-      <Masthead c={c} isMobile={isMobile} />
+      <Masthead c={c} isMobile={isMobile} stacked={isMobile && (viewport.w < 370 || Boolean(c.buyUrl))} />
 
-      <main style={{ padding: isMobile ? '4px 12px 0' : '4px 24px 0' }}>
-        <Stage c={c} isMobile={isMobile} />
+      <section aria-label="Watch preview" style={{
+        padding: isMobile ? '4px 12px 10px' : '4px 24px 0',
+        position: 'sticky',
+        top: isMobile ? 80 : 77,
+        zIndex: 2,
+        background: brand.studio.canvas,
+      }}>
+        <Stage c={c} isMobile={isMobile} viewport={viewport} />
         <CycleDots c={c} />
         <CaptionBlock c={c} isMobile={isMobile} />
-      </main>
+      </section>
 
-      {!isMobile && (
-        <section style={{ maxWidth: 860, margin: '10px auto 0', padding: '0 24px' }}>
-          <div
-            style={{
-              background: brand.studio.panel,
-              border: `1px solid ${brand.studio.hairlineSoft}`,
-              borderRadius: brand.radius.xl,
-              padding: '14px 16px',
-              boxShadow: brand.shadow.sm,
-            }}
-          >
-            <StrapPickerTray c={c} />
-          </div>
-        </section>
-      )}
-
-      {isMobile && <StrapPickerTray c={c} />}
+      <div style={{ maxWidth: 1080, margin: '10px auto 0', padding: isMobile ? '0 12px' : '0 24px' }}>
+        <StrapPickerTray c={c} isMobile={isMobile} />
+      </div>
     </div>
   )
 }
 
-function Masthead({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
+function Masthead({ c, isMobile, stacked }: { c: StudioController; isMobile: boolean; stacked: boolean }) {
   return (
     <header
       style={{
-        height: 52,
+        minHeight: 52,
         display: 'grid',
-        // Mobile: space-between beats strict centering — all three groups fit
-        // a 375pt width without overflow (kicker lands near enough to centre).
-        gridTemplateColumns: isMobile ? 'auto auto auto' : '1fr auto 1fr',
+        gridTemplateColumns: stacked ? 'auto 1fr' : isMobile ? 'auto minmax(0, 1fr) auto' : '1fr auto 1fr',
         justifyContent: isMobile ? 'space-between' : undefined,
         alignItems: 'center',
         gap: isMobile ? 8 : 0,
-        padding: isMobile ? '0 12px' : '0 16px',
+        padding: stacked ? '8px 12px' : isMobile ? '0 12px' : '0 16px',
         borderBottom: `1px solid ${brand.studio.hairlineSoft}`,
       }}
     >
@@ -119,12 +110,16 @@ function Masthead({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
         style={{
           justifySelf: 'center', font: `600 ${isMobile ? 10.5 : 12}px ${brand.font.sans}`,
           letterSpacing: isMobile ? '0.18em' : '0.32em', textTransform: 'uppercase', color: brand.colors.goldDeep,
-          whiteSpace: 'nowrap',
+          whiteSpace: 'nowrap', gridColumn: stacked ? '1 / -1' : undefined, gridRow: stacked ? 2 : undefined,
         }}
       >
         Strap Studio
       </div>
-      <div style={{ justifySelf: 'end', display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{
+        justifySelf: 'end', display: 'flex', flexWrap: stacked ? 'wrap' : undefined,
+        justifyContent: 'flex-end', alignItems: 'center', gap: 8,
+        gridColumn: stacked ? 2 : undefined, gridRow: stacked ? 1 : undefined,
+      }}>
         {c.buyUrl && <CaptionCta label={isMobile ? 'Buy ↗' : 'Buy This Strap ↗'} href={c.buyUrl} primary compact />}
         <CaptionCta label={isMobile ? 'Share ↗' : 'Share This Look ↗'} onClick={() => void c.shareLook()} compact />
         <WatchPickerDropdown c={c} />
@@ -136,12 +131,12 @@ function Masthead({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
 // Cycle indicators tied to the carousel: clickable dots for small sets, a tiny
 // counter for the big side-by-side catalog.
 function CycleDots({ c }: { c: StudioController }) {
-  const n = c.categoryStraps.length
+  const n = c.visibleStraps.length
   if (n < 2 || c.strapIndex < 0) return <div style={{ height: 18 }} />
   return (
     <div style={{ height: 18, marginTop: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
       {n <= 8 ? (
-        c.categoryStraps.map((s, i) => {
+        c.visibleStraps.map((s, i) => {
           const active = i === c.strapIndex
           return (
             <button
@@ -212,10 +207,10 @@ function CaptionBlock({ c, isMobile }: { c: StudioController; isMobile: boolean 
         <AnimatePresence mode="wait">
           <motion.div
             key={s?.key ?? 'none'}
-            initial={{ opacity: 0, y: 4 }}
+            initial={c.reducedMotion ? false : { opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: c.reducedMotion ? 0 : 0.22, ease: [0.4, 0, 0.2, 1] }}
             style={{ font: `italic 400 ${isMobile ? 15 : 18}px ${brand.font.serif}`, color: brand.studio.textMid }}
           >
             {s ? `on ${s.label}` : 'Choose a strap'}
@@ -252,15 +247,13 @@ function CaptionCta({ label, href, onClick, primary, compact }: { label: string;
   return <motion.button {...motionProps} onClick={onClick} style={style}>{label}</motion.button>
 }
 
-function Stage({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
-  const { w: vw, h: vh } = useViewport()
-  const ghostsPerSide = isMobile ? 1 : vw >= 1140 ? 2 : 1
-  const ghostW = isMobile ? 60 : vw >= 1280 ? 130 : 108
-  // Fixed row height so the watch centre, dots, caption, and tray sit at the
-  // SAME y in composite and side-by-side modes — no shift between watches.
-  // Mobile scales with viewport height so tall phones get a big watch while
-  // an 812pt iPhone still clears the bottom sheet.
-  const rowH = isMobile ? Math.max(270, Math.min(420, Math.round(vh * 0.42))) : 450
+function Stage({ c, isMobile, viewport: { w: vw, h: vh } }: { c: StudioController; isMobile: boolean; viewport: { w: number; h: number } }) {
+  const ghostsPerSide = c.renderMode === 'side-by-side'
+    ? Number(vw >= 1100)
+    : isMobile ? 1 : vw >= 1140 ? 2 : 1
+  const ghostW = isMobile ? (vw < 360 ? 48 : 60) : vw >= 1280 ? 130 : 108
+  const rowH = isMobile ? Math.max(210, Math.min(300, Math.round(vh * 0.32)))
+    : Math.max(330, Math.min(430, Math.round(vh * 0.44)))
   const swipe = useStageSwipe(c.nextStrap, c.prevStrap)
 
   return (
@@ -271,32 +264,33 @@ function Stage({ c, isMobile }: { c: StudioController; isMobile: boolean }) {
         alignItems: 'center',
         justifyContent: 'center',
         gap: isMobile ? 8 : 26,
-        height: rowH,
+        height: rowH - (isMobile ? 38 : 68),
         marginTop: isMobile ? 4 : 6,
         touchAction: 'pan-y',
       }}
     >
-      {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(-2)} width={ghostW} opacity={0.35} onClick={c.prevStrap} />}
-      {ghostsPerSide >= 1 && <GhostStrap strap={c.ghostAt(-1)} width={ghostW} opacity={0.62} onClick={c.prevStrap} />}
+      {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(-2)} width={ghostW} opacity={0.35} onSelect={c.selectStrap} />}
+      {ghostsPerSide >= 1 && <GhostStrap strap={c.ghostAt(-1)} width={ghostW} opacity={0.62} onSelect={c.selectStrap} />}
 
       {/* On mobile the tappable side ghosts ARE the prev/next controls —
           arrows + ghosts + stage don't all fit a 375pt width. */}
-      {!isMobile && <Arrow dir="prev" onClick={c.prevStrap} />}
+      {!isMobile && <Arrow dir="prev" onClick={c.prevStrap} disabled={!c.canCycle} />}
       <StudioComposite c={c} rowHeight={rowH} />
-      {!isMobile && <Arrow dir="next" onClick={c.nextStrap} />}
+      {!isMobile && <Arrow dir="next" onClick={c.nextStrap} disabled={!c.canCycle} />}
 
-      {ghostsPerSide >= 1 && <GhostStrap strap={c.ghostAt(1)} width={ghostW} opacity={0.62} onClick={c.nextStrap} />}
-      {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(2)} width={ghostW} opacity={0.35} onClick={c.nextStrap} />}
+      {ghostsPerSide >= 1 && <GhostStrap strap={c.ghostAt(1)} width={ghostW} opacity={0.62} onSelect={c.selectStrap} />}
+      {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(2)} width={ghostW} opacity={0.35} onSelect={c.selectStrap} />}
     </div>
   )
 }
 
 // In normal flow (flex-centered) — never absolutely positioned and never given a
 // static transform, so Framer's whileTap scale can't displace it.
-function Arrow({ dir, onClick }: { dir: 'prev' | 'next'; onClick: () => void }) {
+function Arrow({ dir, onClick, disabled }: { dir: 'prev' | 'next'; onClick: () => void; disabled: boolean }) {
   return (
     <motion.button
       onClick={onClick}
+      disabled={disabled}
       aria-label={dir === 'prev' ? 'Previous strap' : 'Next strap'}
       whileTap={{ scale: 0.88 }}
       transition={{ type: 'spring', stiffness: 500, damping: 28 }}
@@ -308,7 +302,8 @@ function Arrow({ dir, onClick }: { dir: 'prev' | 'next'; onClick: () => void }) 
         border: `1px solid ${brand.studio.hairline}`,
         background: brand.studio.panel,
         color: brand.studio.textHi,
-        cursor: 'pointer',
+        cursor: disabled ? 'default' : 'pointer',
+        opacity: disabled ? 0.35 : 1,
         fontSize: 15,
         display: 'flex',
         alignItems: 'center',
@@ -323,11 +318,11 @@ function Arrow({ dir, onClick }: { dir: 'prev' | 'next'; onClick: () => void }) 
 
 // Ghosted carousel neighbor — the full-strap product photo (the worn halves
 // render only in the composite centerpiece).
-function GhostStrap({ strap, width, opacity, onClick }: { strap?: StudioStrap; width: number; opacity: number; onClick: () => void }) {
+function GhostStrap({ strap, width, opacity, onSelect }: { strap?: StudioStrap; width: number; opacity: number; onSelect: (id: string) => void }) {
   if (!strap) return <div style={{ width, flex: '0 0 auto' }} />
   return (
     <button
-      onClick={onClick}
+      onClick={() => onSelect(strap.id)}
       aria-label={`Show ${strap.label}`}
       title={strap.label}
       style={{
