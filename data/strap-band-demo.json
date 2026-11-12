@@ -1575,6 +1575,111 @@
         "bodyLeft": 2,
         "bodyRight": 302
       }
+    },
+    {
+      "id": "leather-suede-sand",
+      "label": "Suede Sand",
+      "material": "leather",
+      "subMaterial": "Suede",
+      "color": "Sand",
+      "colorHex": "#B89159",
+      "availableLugWidths": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        24
+      ],
+      "fullImageId": "leather-suede-sand",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/leather-suede-sand-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 201,
+        "endY": 222,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/leather-suede-sand-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 23,
+        "endY": 2,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "fabric-sailcloth-charcoal",
+      "label": "Sailcloth Charcoal",
+      "material": "fabric",
+      "subMaterial": "Sailcloth",
+      "color": "Charcoal",
+      "colorHex": "#424348",
+      "availableLugWidths": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        24
+      ],
+      "fullImageId": "fabric-sailcloth-charcoal",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/fabric-sailcloth-charcoal-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 202,
+        "endY": 223,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/fabric-sailcloth-charcoal-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 22,
+        "endY": 1,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "rubber-tropical-oxblood",
+      "label": "Tropic Oxblood",
+      "material": "rubber",
+      "subMaterial": "Tropic",
+      "color": "Oxblood",
+      "colorHex": "#71262C",
+      "availableLugWidths": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        24
+      ],
+      "fullImageId": "rubber-tropical-oxblood",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/rubber-tropical-oxblood-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 202,
+        "endY": 223,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/rubber-tropical-oxblood-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 22,
+        "endY": 1,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
     }
   ]
 }

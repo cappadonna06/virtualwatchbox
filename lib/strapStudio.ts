@@ -211,7 +211,7 @@ const COLOR_FAMILIES: Array<[string, RegExp]> = [
   ['Black', /\bblack\b/i],
   ['Gray', /\b(gray|charcoal|silver)\b/i],
   ['White & cream', /\b(white|cream|ivory)\b/i],
-  ['Brown & tan', /\b(brown|tan|cognac|beige|camel|chocolate|khaki|taupe|honey)\b/i],
+  ['Brown & tan', /\b(brown|tan|cognac|beige|camel|chocolate|khaki|taupe|honey|sand)\b/i],
   ['Blue', /\b(blue|navy|indigo|teal)\b/i],
   ['Green', /\b(green|olive|sage)\b/i],
   ['Red & burgundy', /\b(red|burgundy|wine|maroon|oxblood)\b/i],
