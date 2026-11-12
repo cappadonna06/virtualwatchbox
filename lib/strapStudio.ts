@@ -6,6 +6,7 @@
 import bandDemoRaw from '@/data/strap-band-demo.json'
 import type { StrapTemplate } from '@/lib/strapTemplates'
 import { findTemplate, getStrapTemplates, findTemplatePhoto } from '@/lib/strapTemplates'
+import { withVersion } from '@/lib/watchImages/cacheBust'
 import { effectiveCompatibility, type FitState } from '@/lib/strapCompatibility'
 import type { BraceletType, StrapMaterial, StrapWatchOverride, UserStrap } from '@/types/watch'
 
@@ -26,6 +27,8 @@ export interface BandHalf {
   pinY: number
   bodyLeft: number
   bodyRight: number
+  /** Center of the photographed end. The alpha silhouette already includes the sleeve. */
+  endY?: number
 }
 
 export interface StudioStrap {
@@ -45,6 +48,7 @@ export interface StudioStrap {
   purchaseUrl?: string | null
   /** Present for drawer straps — enables override-aware fit + price. */
   userStrap?: UserStrap
+  templateId?: string
   /** Worn-render halves; only band-equipped straps appear in composite mode. */
   band?: { top: BandHalf; bottom: BandHalf }
 }
@@ -131,28 +135,29 @@ type BandDemoEntry = {
   fullImageId?: string
 }
 
-/**
- * Demo band straps (data/strap-band-demo.json) — the only straps with worn
- * top/bottom renders today, so the only ones the composite mode shows. The
- * worn halves render exclusively in the composite centerpiece; browsing
- * imagery (tray swatches, carousel ghosts) uses the matching full-strap
- * template master via fullImageId.
- */
 export function buildBandDemoStraps(): StudioStrap[] {
   const entries = (bandDemoRaw as { straps: BandDemoEntry[] }).straps
-  return entries.map(e => ({
-    key: `band:${e.id}`,
-    source: 'template' as const,
-    id: e.id,
-    label: e.label,
-    sublabel: `${e.subMaterial} ${titleCase(e.material)}`,
-    material: e.material,
-    category: categoryOf(e.material),
-    colorHex: e.colorHex,
-    imageUrl: (e.fullImageId ? findTemplate(e.fullImageId)?.imageUrl : undefined) || e.bandTop.url,
-    availableLugWidths: e.availableLugWidths,
-    band: { top: e.bandTop, bottom: e.bandBottom },
-  }))
+  return entries.map(e => {
+    const template = e.fullImageId ? findTemplate(e.fullImageId) : undefined
+    return {
+      key: `band:${e.id}`,
+      source: 'template',
+      id: e.id,
+      templateId: e.fullImageId,
+      label: e.label,
+      sublabel: `${e.subMaterial} ${titleCase(e.material)}`,
+      material: e.material,
+      category: categoryOf(e.material),
+      colorHex: e.colorHex,
+      imageUrl: template?.imageUrl || e.bandTop.url,
+      availableLugWidths: e.availableLugWidths,
+      affiliateUrl: template?.affiliateUrl,
+      band: {
+        top: { ...e.bandTop, url: withVersion(e.bandTop.url) ?? e.bandTop.url },
+        bottom: { ...e.bandBottom, url: withVersion(e.bandBottom.url) ?? e.bandBottom.url },
+      },
+    }
+  })
 }
 
 export function buildDrawerStraps(straps: UserStrap[]): StudioStrap[] {

@@ -14,7 +14,6 @@ import {
   deriveCategories,
   filterByCategory,
   filterCompatible,
-  isCompatible,
   type StrapCategory,
   type StudioCompatTarget,
   type StudioStrap,
@@ -70,6 +69,7 @@ export function useStudioController() {
   const [strapId, setStrapId] = useState<string>(() => search.get('strapId') || '')
   const [activeCategory, setActiveCategory] = useState<'All' | StrapCategory>('All')
   const [isSwapping, setIsSwapping] = useState(false)
+  const [failedCaseUrl, setFailedCaseUrl] = useState<string>()
   const [fetched, setFetched] = useState<Map<string, CatalogWatch>>(new Map())
   const swapTimer = useRef<number | undefined>(undefined)
 
@@ -106,37 +106,33 @@ export function useStudioController() {
     }
   }, [watchId, collectionWatches, getCatalogWatch, fetched, getImageUrl, getTransparentUrl])
 
-  const renderMode: 'composite' | 'side-by-side' = caseOnly ? 'composite' : 'side-by-side'
-
   const compatTarget: StudioCompatTarget | null = useMemo(
     () => (studioWatch ? { id: studioWatch.catalogId, lugWidthMm: studioWatch.lugWidthMm, braceletType: studioWatch.braceletType } : null),
     [studioWatch],
   )
 
-  // ── Strap source / category / current selection ───────────────────────────
-  // Composite mode shows ONLY band-equipped straps: every one renders correctly
-  // worn on the watch. Flat template photos would read as "behind the case",
-  // so they stay exclusive to side-by-side watches (where they present well).
-  // Both side-by-side sources are ALWAYS compatibility-filtered — incompatible
-  // straps never show; compatibility is a rule, not a mode.
+  const compatibleBands = useMemo(() => filterCompatible(bandStraps, compatTarget, strapOverrides),
+    [bandStraps, compatTarget, strapOverrides])
+  const renderMode = caseOnly && caseOnly.caseOnlyUrl !== failedCaseUrl && compatibleBands.length
+    ? 'composite' : 'side-by-side'
   const sourceStraps = useMemo(() => {
-    if (caseOnly) return bandStraps
+    if (renderMode === 'composite') return compatibleBands
     return filterCompatible(source === 'drawer' ? drawerStraps : templateStraps, compatTarget, strapOverrides)
-  }, [caseOnly, bandStraps, source, drawerStraps, templateStraps, compatTarget, strapOverrides])
+  }, [renderMode, compatibleBands, source, drawerStraps, templateStraps, compatTarget, strapOverrides])
 
   const categories = useMemo(() => deriveCategories(sourceStraps), [sourceStraps])
   const effectiveCategory: 'All' | StrapCategory = categories.includes(activeCategory) ? activeCategory : 'All'
   const categoryStraps = useMemo(() => filterByCategory(sourceStraps, effectiveCategory), [sourceStraps, effectiveCategory])
 
   const currentStrap: StudioStrap | undefined = useMemo(
-    () => categoryStraps.find(s => s.id === strapId) ?? categoryStraps[0],
+    () => categoryStraps.find(s => s.id === strapId || s.templateId === strapId) ?? categoryStraps[0],
     [categoryStraps, strapId],
   )
 
   // Keep strapId valid as source/category change (auto-jump to first in list).
   useEffect(() => {
     if (!categoryStraps.length) return
-    if (!categoryStraps.some(s => s.id === strapId)) setStrapId(categoryStraps[0].id)
+    if (!categoryStraps.some(s => s.id === strapId || s.templateId === strapId)) setStrapId(categoryStraps[0].id)
   }, [categoryStraps, strapId])
 
   const triggerSwap = useCallback(() => {
@@ -186,20 +182,6 @@ export function useStudioController() {
     if (watch) setFetched(prev => new Map(prev).set(catalogId, watch))
     setWatchId(catalogId)
   }, [])
-
-  useEffect(() => {
-    if (!currentStrap || !compatTarget) return
-    if (!isCompatible(currentStrap, compatTarget, strapOverrides)) {
-      const fallback = categoryStraps.find(s => isCompatible(s, compatTarget, strapOverrides))
-        ?? sourceStraps.find(s => isCompatible(s, compatTarget, strapOverrides))
-      if (fallback && fallback.id !== currentStrap.id) {
-        setStrapId(fallback.id)
-        triggerSwap()
-      }
-    }
-    // Only re-check when the watch (compat target) changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [compatTarget?.id, compatTarget?.lugWidthMm])
 
   // ── URL sync (shareable state) ────────────────────────────────────────────
   useEffect(() => {
@@ -264,13 +246,14 @@ export function useStudioController() {
     // data
     studioWatch,
     caseOnly,
+    setFailedCaseUrl,
     renderMode,
     reducedMotion,
     isSwapping,
     // strap browsing
     source,
     setSource: changeSource,
-    showSourceToggle: !caseOnly && drawerStraps.length > 0,
+    showSourceToggle: renderMode === 'side-by-side' && drawerStraps.length > 0,
     categories,
     activeCategory: effectiveCategory,
     setCategory: changeCategory,

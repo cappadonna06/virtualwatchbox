@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { brand } from '@/lib/brand'
 import { channelMetrics } from '@/lib/caseOnlyImages'
@@ -24,10 +25,15 @@ export default function StudioComposite({ c, rowHeight }: { c: StudioController;
 
 // ── Composite: worn band halves behind the case ──────────────────────────────
 function BandComposite({ c, rowHeight }: { c: StudioController; rowHeight: number }) {
-  const { caseOnly, currentStrap, isSwapping, reducedMotion, studioWatch } = c
+  const { caseOnly, currentStrap, isSwapping, reducedMotion, setFailedCaseUrl, studioWatch } = c
+  const caseImage = useRef<HTMLImageElement>(null)
+  const caseUrl = caseOnly?.caseOnlyUrl
+  useEffect(() => {
+    const image = caseImage.current
+    if (caseUrl && image?.complete && !image.naturalWidth) setFailedCaseUrl(caseUrl)
+  }, [caseUrl, setFailedCaseUrl])
   if (!caseOnly) return null
   const g = caseOnly.lugGeometry
-  const { centerXRatio, widthRatio } = channelMetrics(g)
 
   const caseH = Math.floor(rowHeight / 2.05)
   const caseW = caseH * (g.imageWidth / g.imageHeight)
@@ -36,31 +42,27 @@ function BandComposite({ c, rowHeight }: { c: StudioController; rowHeight: numbe
   const caseTop = (stageH - caseH) / 2
   const caseLeft = (stageW - caseW) / 2
 
-  // Lug channel in stage px. lug_geometry y values are the channel OUTER TIP
-  // rows; the spring bar sits a touch inside, hence the tuck insets toward
-  // case centre. The insets are ASYMMETRIC because the band images are: the
-  // top half has ~40px of strap texture below its pins (fills the transparent
-  // top channel seamlessly), but the bottom half's tuck edge sits ~35px above
-  // its pins with lining above it — a deeper bottom inset pulls the whole
-  // tuck across the channel window so no lining/stitched edge peeks through.
-  const chCenterX = caseLeft + centerXRatio * caseW
-  const chW = widthRatio * caseW
-  const topChY = caseTop + ((g.topLugLeft.y + g.topLugRight.y) / 2 / g.imageHeight) * caseH + caseH * 0.04
-  const botChY = caseTop + ((g.bottomLugLeft.y + g.bottomLugRight.y) / 2 / g.imageHeight) * caseH - caseH * 0.075
-
-  const bandRect = (half: BandHalf, anchorY: number) => {
-    const s = chW / (half.bodyRight - half.bodyLeft)
+  const bandRect = (half: BandHalf, end: 'top' | 'bottom') => {
+    const bandWidth = half.bodyRight - half.bodyLeft
+    const sleeve = half.endY === undefined ? bandWidth * 0.07 : Math.abs(half.endY - half.pinY)
+    const channel = channelMetrics(g, end, sleeve / bandWidth)
+    const scale = channel.widthRatio * caseW / bandWidth
+    const cropTop = end === 'bottom' ? Math.max(0, half.pinY - sleeve) : 0
+    const cropBottom = end === 'top' ? Math.max(0, half.h - half.pinY - sleeve) : 0
     return {
-      left: chCenterX - ((half.bodyLeft + half.bodyRight) / 2) * s,
-      top: anchorY - half.pinY * s,
-      width: half.w * s,
-      height: half.h * s,
+      left: caseLeft + channel.centerXRatio * caseW - (half.bodyLeft + half.bodyRight) / 2 * scale,
+      top: caseTop + channel.springBarYRatio * caseH - half.pinY * scale,
+      width: half.w * scale,
+      height: half.h * scale,
+      clipPath: half.endY !== undefined
+        ? undefined
+        : `inset(${cropTop * scale}px 0 ${cropBottom * scale}px round ${bandWidth * scale * 0.018}px)`,
     }
   }
 
   const band = currentStrap?.band
-  const topRect = band ? bandRect(band.top, topChY) : null
-  const bottomRect = band ? bandRect(band.bottom, botChY) : null
+  const topRect = band ? bandRect(band.top, 'top') : null
+  const bottomRect = band ? bandRect(band.bottom, 'bottom') : null
 
   // "Fit-in" swap: the halves slide INTO the lugs (top half drops down, bottom
   // half rises up) with a spring, like snapping onto the spring bars; the
@@ -114,7 +116,7 @@ function BandComposite({ c, rowHeight }: { c: StudioController; rowHeight: numbe
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={caseOnly.caseOnlyUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
+        <img ref={caseImage} src={caseOnly.caseOnlyUrl} onError={() => setFailedCaseUrl(caseOnly.caseOnlyUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
       </motion.div>
 
       <span style={srOnly}>

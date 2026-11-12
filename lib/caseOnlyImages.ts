@@ -15,13 +15,17 @@ export interface LugPoint {
 }
 
 export interface LugGeometry {
-  /** y = OUTER TIP row of each lug channel — the strap's spring-bar anchor
-   *  line (plus a small tuck inset toward case centre). x = channel edges at
-   *  the widest-gap row. Produced by scripts/segment-watch-cases.ts. */
+  /** y = outer tip row. x = channel edges at the widest-gap row. */
   topLugLeft: LugPoint
   topLugRight: LugPoint
   bottomLugLeft: LugPoint
   bottomLugRight: LugPoint
+  /** Spring-bar centerline in image pixels when measured from a reference photo. */
+  topSpringBarY?: number
+  bottomSpringBarY?: number
+  /** Center of the visible case edge inside each lug channel. */
+  topCaseEdgeY?: number
+  bottomCaseEdgeY?: number
   /** Strap channel width between the lug pair, in image pixels. */
   lugWidthPx: number
   /** Pixel dimensions of the case-only image these coords live in. */
@@ -38,7 +42,9 @@ export interface CaseOnlyEntry {
   brand?: string
   model?: string
   reference?: string
+  sourceCatalogId?: string
   confidence: number
+  catalogReferenceVerified?: boolean
   status: 'pending' | 'approved' | 'needs_review' | 'rejected'
 }
 
@@ -65,16 +71,26 @@ export function hasCaseOnly(catalogWatchId: string | undefined | null): boolean 
   return Boolean(catalogWatchId) && MAP.has(catalogWatchId!)
 }
 
-/** Catalog ids that have an approved case-only asset (Studio composite-ready). */
+/** Exact catalog references available in the Studio watch picker. */
 export function caseOnlyIds(): string[] {
-  return Array.from(MAP.keys())
+  return Array.from(MAP).filter(([, entry]) => entry.catalogReferenceVerified).map(([id]) => id)
 }
 
-/** Strap channel centre + width as fractions of the case-only image, for CSS placement. */
-export function channelMetrics(g: LugGeometry): { centerXRatio: number; widthRatio: number } {
-  const cx = (g.topLugLeft.x + g.topLugRight.x + g.bottomLugLeft.x + g.bottomLugRight.x) / 4
+export function channelMetrics(g: LugGeometry, end: 'top' | 'bottom', sleeveToWidth: number) {
+  const left = end === 'top' ? g.topLugLeft : g.bottomLugLeft
+  const right = end === 'top' ? g.topLugRight : g.bottomLugRight
+  const width = right.x - left.x
+  const tipY = (left.y + right.y) / 2
+  const measuredY = end === 'top' ? g.topSpringBarY : g.bottomSpringBarY
+  const caseEdgeY = end === 'top' ? g.topCaseEdgeY : g.bottomCaseEdgeY
+  const direction = end === 'top' ? 1 : -1
+  const setback = caseEdgeY === undefined
+    ? width * 0.09
+    : Math.max(0, (caseEdgeY - tipY) * direction - width * (sleeveToWidth + 0.009))
+  const springBarY = measuredY ?? tipY + direction * setback
   return {
-    centerXRatio: cx / g.imageWidth,
-    widthRatio: g.lugWidthPx / g.imageWidth,
+    centerXRatio: (left.x + right.x) / 2 / g.imageWidth,
+    widthRatio: width / g.imageWidth,
+    springBarYRatio: springBarY / g.imageHeight,
   }
 }
