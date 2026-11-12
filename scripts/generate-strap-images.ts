@@ -145,6 +145,9 @@ type KindKey =
   | 'fabric-sailcloth'
   | 'rubber-tropical'
   | 'rubber-tread'
+  | 'leather-rally'
+  | 'rubber-waffle'
+  | 'canvas-twill'
 
 type Kind = {
   descriptor: string
@@ -208,6 +211,25 @@ const KINDS: Record<KindKey, Kind> = {
     singlePiece: false,
     clasp: 'deployant',
   },
+  'leather-rally': {
+    descriptor: 'perforated rally racing calfskin strap with a finished straight spring-bar sleeve',
+    texture: 'Visible round racing perforations, subtle leather grain, and contrasting saddle stitch',
+    stitch: true,
+    singlePiece: false,
+  },
+  'rubber-waffle': {
+    descriptor: 'molded FKM rubber watch strap with a straight spring-bar end and raised square waffle cells',
+    texture: 'An even grid of raised squares bordered by a smooth molded rim',
+    stitch: false,
+    singlePiece: false,
+  },
+  'canvas-twill': {
+    descriptor: 'cotton twill canvas watch strap with a straight folded spring-bar end',
+    texture: 'A warm, matte, diagonal cotton weave with slight natural thread variation',
+    stitch: true,
+    singlePiece: false,
+  },
+
 }
 
 // Demo-band reference filenames under public/demo-bands/
@@ -297,6 +319,10 @@ const STRAPS: StrapDef[] = [
   // ---- Rubber: Tread (2) ----
   { name: 'rubber-tread-black', kind: 'rubber-tread', material: 'rubber', subMaterial: 'Tread', color: 'Black', colorHex: '#1A1410', style: 'sporty', tier: 1, reference: REF.rubberBlack, recolor: true },
   { name: 'rubber-tread-grey', kind: 'rubber-tread', material: 'rubber', subMaterial: 'Tread', color: 'Grey', colorHex: '#6E6A63', style: 'sporty', tier: 1, reference: REF.rubberOlive, recolor: true },
+  { name: 'leather-rally-cognac', kind: 'leather-rally', material: 'leather', subMaterial: 'Rally', color: 'Cognac', colorHex: '#8A4B24', style: 'sporty', tier: 2 },
+  { name: 'rubber-waffle-navy', kind: 'rubber-waffle', material: 'rubber', subMaterial: 'Waffle', color: 'Navy', colorHex: '#2A3550', style: 'sporty', tier: 2 },
+  { name: 'canvas-twill-tan', kind: 'canvas-twill', material: 'canvas', subMaterial: 'Cotton Twill', color: 'Tan', colorHex: '#B08552', style: 'rugged', tier: 2 },
+
 ]
 
 // Sample set for the review preview (one per material family + sub-material branch)

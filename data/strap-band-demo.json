@@ -1400,6 +1400,111 @@
         "bodyRight": 302
       },
       "fullImageId": "rubber-tread-grey"
+    },
+    {
+      "id": "leather-rally-cognac",
+      "label": "Rally Cognac",
+      "material": "leather",
+      "subMaterial": "Rally",
+      "color": "Cognac",
+      "colorHex": "#8A4B24",
+      "availableLugWidths": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        24
+      ],
+      "fullImageId": "leather-rally-cognac",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/leather-rally-cognac-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 202,
+        "endY": 223,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/leather-rally-cognac-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 22,
+        "endY": 1,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "rubber-waffle-navy",
+      "label": "Waffle Navy",
+      "material": "rubber",
+      "subMaterial": "Waffle",
+      "color": "Navy",
+      "colorHex": "#2A3550",
+      "availableLugWidths": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        24
+      ],
+      "fullImageId": "rubber-waffle-navy",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/rubber-waffle-navy-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 202,
+        "endY": 223,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/rubber-waffle-navy-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 22,
+        "endY": 1,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "canvas-twill-tan",
+      "label": "Cotton Twill Tan",
+      "material": "canvas",
+      "subMaterial": "Cotton Twill",
+      "color": "Tan",
+      "colorHex": "#B08552",
+      "availableLugWidths": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        24
+      ],
+      "fullImageId": "canvas-twill-tan",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/canvas-twill-tan-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 202,
+        "endY": 223,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/canvas-twill-tan-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 22,
+        "endY": 1,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
     }
   ]
 }

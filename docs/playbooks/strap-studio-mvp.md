@@ -12,7 +12,11 @@ The Studio uses the exact catalog ID, with a reviewed transparent watch head and
 
 Use a small, representative batch. Watches already photographed on straight leather or fabric straps are good candidates. Metal end links can be difficult to separate from the lugs. A high model score still requires visual review.
 
+The [popular-watch queue](../../data/strap-studio-popular-queue.json) preserves the ranked references for this rollout. Use the approved case manifest to determine which references have shipped. Keep uncertain lugs and unsupported strap interfaces in review.
+
 If the manufacturer confirms an identical case, bezel, and dial on another strap variant, prepare one target with `--only=TARGET_ID --source-id=PHOTO_VARIANT_ID`. The review image uses the alternate catalog photo and records its ID beside the candidate.
+
+When preparing a cutout directly from a manufacturer photo, retain the original watch pixels and include the image URL as `sourceUrl` in the candidate's `<catalog-id>.json`. Ingest records that provenance in the case manifest.
 
 ```sh
 # Prepare local candidates and a review.html comparison page.

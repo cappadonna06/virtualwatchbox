@@ -1,4 +1,38 @@
 {
+  "a-lange-and-sohne-191-032": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/a-lange-and-sohne-191-032/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/a-lange-and-sohne-191-032/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 169,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 598,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 180,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 579,
+        "y": 898
+      },
+      "lugWidthPx": 414,
+      "imageWidth": 812,
+      "imageHeight": 900,
+      "topCaseEdgeY": 61,
+      "bottomCaseEdgeY": 812
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "A. Lange & Söhne",
+    "model": "Lange 1",
+    "reference": "191.032",
+    "lugWidthMm": 20
+  },
   "breitling-a17326211b1p1": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/breitling-a17326211b1p1/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/breitling-a17326211b1p1/case-only.png",
@@ -237,6 +271,108 @@
     "reference": "IW326901",
     "lugWidthMm": 20
   },
+  "iwc-iw328203": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw328203/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw328203/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 190,
+        "y": 5
+      },
+      "topLugRight": {
+        "x": 571,
+        "y": 5
+      },
+      "bottomLugLeft": {
+        "x": 187,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 575,
+        "y": 899
+      },
+      "lugWidthPx": 385,
+      "imageWidth": 838,
+      "imageHeight": 900,
+      "topCaseEdgeY": 76,
+      "bottomCaseEdgeY": 825
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "IWC",
+    "model": "Pilot's Watch Mark XX",
+    "reference": "IW328203",
+    "lugWidthMm": 20
+  },
+  "iwc-iw329301": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw329301/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw329301/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 195,
+        "y": 7
+      },
+      "topLugRight": {
+        "x": 562,
+        "y": 7
+      },
+      "bottomLugLeft": {
+        "x": 199,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 563,
+        "y": 899
+      },
+      "lugWidthPx": 366,
+      "imageWidth": 849,
+      "imageHeight": 900,
+      "topCaseEdgeY": 82,
+      "bottomCaseEdgeY": 835
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "IWC",
+    "model": "Big Pilot's Watch 43",
+    "reference": "IW329301",
+    "lugWidthMm": 21
+  },
+  "iwc-iw371446": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw371446/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw371446/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 200,
+        "y": 5
+      },
+      "topLugRight": {
+        "x": 576,
+        "y": 5
+      },
+      "bottomLugLeft": {
+        "x": 200,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 576,
+        "y": 898
+      },
+      "lugWidthPx": 376,
+      "imageWidth": 836,
+      "imageHeight": 900,
+      "topCaseEdgeY": 69,
+      "bottomCaseEdgeY": 834
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "IWC",
+    "model": "Portugieser Chronograph",
+    "reference": "IW371446",
+    "lugWidthMm": 20
+  },
   "iwc-iw371606": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw371606/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw371606/case-only.png",
@@ -304,6 +440,325 @@
     "reference": "737",
     "lugWidthMm": 20,
     "catalogReferenceVerified": true
+  },
+  "omega-210-30-42-20-01-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-30-42-20-01-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-30-42-20-01-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 220,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 590,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 222,
+        "y": 896
+      },
+      "bottomLugRight": {
+        "x": 591,
+        "y": 896
+      },
+      "lugWidthPx": 370,
+      "imageWidth": 871,
+      "imageHeight": 900,
+      "topCaseEdgeY": 56,
+      "bottomCaseEdgeY": 826
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Seamaster Diver 300M",
+    "reference": "210.30.42.20.01.001",
+    "lugWidthMm": 20,
+    "sourceCatalogId": "omega-210-32-42-20-01-001",
+    "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-seamaster-diver-300m-co-axial-master-chronometer-42-mm-21032422001001-bd73d9.png"
+  },
+  "omega-210-30-42-20-03-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-30-42-20-03-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-30-42-20-03-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 220,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 589,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 221,
+        "y": 896
+      },
+      "bottomLugRight": {
+        "x": 590,
+        "y": 896
+      },
+      "lugWidthPx": 369,
+      "imageWidth": 869,
+      "imageHeight": 900,
+      "topCaseEdgeY": 58,
+      "bottomCaseEdgeY": 826
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Seamaster Diver 300M",
+    "reference": "210.30.42.20.03.001",
+    "lugWidthMm": 20,
+    "sourceCatalogId": "omega-210-32-42-20-03-001",
+    "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-seamaster-diver-300m-co-axial-master-chronometer-42-mm-21032422003001-1c0482.png"
+  },
+  "omega-210-30-42-20-04-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-30-42-20-04-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-30-42-20-04-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 220,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 589,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 225,
+        "y": 896
+      },
+      "bottomLugRight": {
+        "x": 590,
+        "y": 896
+      },
+      "lugWidthPx": 367,
+      "imageWidth": 869,
+      "imageHeight": 900,
+      "topCaseEdgeY": 58,
+      "bottomCaseEdgeY": 826
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Seamaster Diver 300M",
+    "reference": "210.30.42.20.04.001",
+    "lugWidthMm": 20,
+    "sourceCatalogId": "omega-210-32-42-20-04-001",
+    "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-seamaster-diver-300m-co-axial-master-chronometer-42-mm-21032422004001-923c27.png"
+  },
+  "omega-210-30-42-20-06-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-30-42-20-06-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-30-42-20-06-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 220,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 589,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 222,
+        "y": 896
+      },
+      "bottomLugRight": {
+        "x": 590,
+        "y": 896
+      },
+      "lugWidthPx": 369,
+      "imageWidth": 869,
+      "imageHeight": 900,
+      "topCaseEdgeY": 58,
+      "bottomCaseEdgeY": 826
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Seamaster Diver 300M",
+    "reference": "210.30.42.20.06.001",
+    "lugWidthMm": 20,
+    "sourceCatalogId": "omega-210-32-42-20-06-001",
+    "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-seamaster-diver-300m-co-axial-master-chronometer-42-mm-21032422006001-2f96ba.png"
+  },
+  "omega-210-32-42-20-01-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-32-42-20-01-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-32-42-20-01-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 220,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 590,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 222,
+        "y": 896
+      },
+      "bottomLugRight": {
+        "x": 591,
+        "y": 896
+      },
+      "lugWidthPx": 370,
+      "imageWidth": 871,
+      "imageHeight": 900,
+      "topCaseEdgeY": 56,
+      "bottomCaseEdgeY": 826
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Seamaster Diver 300M",
+    "reference": "210.32.42.20.01.001",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-seamaster-diver-300m-co-axial-master-chronometer-42-mm-21032422001001-bd73d9.png"
+  },
+  "omega-210-32-42-20-03-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-32-42-20-03-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-32-42-20-03-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 220,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 589,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 221,
+        "y": 896
+      },
+      "bottomLugRight": {
+        "x": 590,
+        "y": 896
+      },
+      "lugWidthPx": 369,
+      "imageWidth": 869,
+      "imageHeight": 900,
+      "topCaseEdgeY": 58,
+      "bottomCaseEdgeY": 826
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Seamaster Diver 300M",
+    "reference": "210.32.42.20.03.001",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-seamaster-diver-300m-co-axial-master-chronometer-42-mm-21032422003001-1c0482.png"
+  },
+  "omega-210-32-42-20-04-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-32-42-20-04-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-32-42-20-04-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 220,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 590,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 225,
+        "y": 896
+      },
+      "bottomLugRight": {
+        "x": 591,
+        "y": 896
+      },
+      "lugWidthPx": 368,
+      "imageWidth": 871,
+      "imageHeight": 900,
+      "topCaseEdgeY": 56,
+      "bottomCaseEdgeY": 826
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Seamaster Diver 300M",
+    "reference": "210.32.42.20.04.001",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-seamaster-diver-300m-co-axial-master-chronometer-42-mm-21032422004001-923c27.png"
+  },
+  "omega-210-32-42-20-06-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-32-42-20-06-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-32-42-20-06-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 220,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 589,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 222,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 590,
+        "y": 898
+      },
+      "lugWidthPx": 369,
+      "imageWidth": 869,
+      "imageHeight": 900,
+      "topCaseEdgeY": 58,
+      "bottomCaseEdgeY": 826
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Seamaster Diver 300M",
+    "reference": "210.32.42.20.06.001",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-seamaster-diver-300m-co-axial-master-chronometer-42-mm-21032422006001-2f96ba.png"
+  },
+  "omega-210-32-42-20-10-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-32-42-20-10-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-210-32-42-20-10-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 220,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 590,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 222,
+        "y": 896
+      },
+      "bottomLugRight": {
+        "x": 591,
+        "y": 896
+      },
+      "lugWidthPx": 370,
+      "imageWidth": 871,
+      "imageHeight": 900,
+      "topCaseEdgeY": 57,
+      "bottomCaseEdgeY": 826
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Seamaster Diver 300M",
+    "reference": "210.32.42.20.10.001",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-seamaster-diver-300m-co-axial-master-chronometer-42-mm-21032422010001-a0ed87.png"
   },
   "omega-220-10-41-21-03-001": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-10-41-21-03-001/case-only.webp",
@@ -406,6 +861,114 @@
     "model": "Seamaster Aqua Terra",
     "reference": "231.10.42.21.03.003",
     "lugWidthMm": 20
+  },
+  "omega-234-30-41-21-01-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-234-30-41-21-01-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-234-30-41-21-01-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 192,
+        "y": 10
+      },
+      "topLugRight": {
+        "x": 579,
+        "y": 10
+      },
+      "bottomLugLeft": {
+        "x": 185,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 581,
+        "y": 899
+      },
+      "lugWidthPx": 392,
+      "imageWidth": 822,
+      "imageHeight": 900,
+      "topCaseEdgeY": 55,
+      "bottomCaseEdgeY": 807
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Seamaster 300",
+    "reference": "234.30.41.21.01.001",
+    "lugWidthMm": 21,
+    "sourceCatalogId": "omega-234-32-41-21-01-001",
+    "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-seamaster-300-co-axial-master-chronometer-41-mm-23432412101001-e4e87d.png"
+  },
+  "omega-310-30-42-50-01-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-310-30-42-50-01-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-310-30-42-50-01-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 206,
+        "y": 4
+      },
+      "topLugRight": {
+        "x": 590,
+        "y": 4
+      },
+      "bottomLugLeft": {
+        "x": 195,
+        "y": 895
+      },
+      "bottomLugRight": {
+        "x": 584,
+        "y": 895
+      },
+      "lugWidthPx": 387,
+      "imageWidth": 841,
+      "imageHeight": 900,
+      "topCaseEdgeY": 55,
+      "bottomCaseEdgeY": 809
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Speedmaster Professional Moonwatch",
+    "reference": "310.30.42.50.01.001",
+    "lugWidthMm": 20,
+    "sourceCatalogId": "omega-310-32-42-50-01-001",
+    "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-speedmaster-moonwatch-professional-co-axial-master-chronometer-chronograph-42-mm-31032425001001-df6aad.png"
+  },
+  "omega-310-30-42-50-01-002": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-310-30-42-50-01-002/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-310-30-42-50-01-002/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 204,
+        "y": 9
+      },
+      "topLugRight": {
+        "x": 586,
+        "y": 9
+      },
+      "bottomLugLeft": {
+        "x": 197,
+        "y": 895
+      },
+      "bottomLugRight": {
+        "x": 581,
+        "y": 895
+      },
+      "lugWidthPx": 383,
+      "imageWidth": 836,
+      "imageHeight": 900,
+      "topCaseEdgeY": 52,
+      "bottomCaseEdgeY": 808
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Speedmaster Professional Moonwatch",
+    "reference": "310.30.42.50.01.002",
+    "lugWidthMm": 20,
+    "sourceCatalogId": "omega-310-32-42-50-01-002",
+    "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-speedmaster-moonwatch-professional-co-axial-master-chronometer-chronograph-42-mm-31032425001002-78e3aa.png"
   },
   "omega-aqua-terra-blue-22010412103004": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-aqua-terra-blue-22010412103004/case-only.webp",
@@ -639,6 +1202,74 @@
     "lugWidthMm": 18,
     "catalogReferenceVerified": true
   },
+  "patek-philippe-5227r-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5227r-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5227r-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 198,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 576,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 196,
+        "y": 897
+      },
+      "bottomLugRight": {
+        "x": 579,
+        "y": 897
+      },
+      "lugWidthPx": 381,
+      "imageWidth": 805,
+      "imageHeight": 900,
+      "topCaseEdgeY": 62,
+      "bottomCaseEdgeY": 810
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Patek Philippe",
+    "model": "Calatrava",
+    "reference": "5227R-001",
+    "lugWidthMm": 18
+  },
+  "rolex-18038": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-18038/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-18038/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 161,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 580,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 165,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 585,
+        "y": 898
+      },
+      "lugWidthPx": 420,
+      "imageWidth": 803,
+      "imageHeight": 900,
+      "topCaseEdgeY": 87,
+      "bottomCaseEdgeY": 790
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Rolex",
+    "model": "Day-Date 36",
+    "reference": "18038",
+    "lugWidthMm": 20
+  },
   "seiko-sarb033": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/seiko-sarb033/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/seiko-sarb033/case-only.png",
@@ -741,6 +1372,40 @@
     "reference": "556.010",
     "lugWidthMm": 20
   },
+  "tudor-79230g": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-79230g/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-79230g/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 182,
+        "y": 6
+      },
+      "topLugRight": {
+        "x": 586,
+        "y": 6
+      },
+      "bottomLugLeft": {
+        "x": 182,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 562,
+        "y": 898
+      },
+      "lugWidthPx": 392,
+      "imageWidth": 826,
+      "imageHeight": 900,
+      "topCaseEdgeY": 80,
+      "bottomCaseEdgeY": 828
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Tudor",
+    "model": "Black Bay",
+    "reference": "79230G",
+    "lugWidthMm": 22
+  },
   "tudor-black-bay-gmt-m79830rb": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-black-bay-gmt-m79830rb/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-black-bay-gmt-m79830rb/case-only.png",
@@ -806,5 +1471,73 @@
     "reference": "M79830RB-0001",
     "lugWidthMm": 22,
     "sourceCatalogId": "tudor-m79830rb-0003"
+  },
+  "tudor-m79950-0001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79950-0001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79950-0001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 184,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 582,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 183,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 578,
+        "y": 898
+      },
+      "lugWidthPx": 397,
+      "imageWidth": 826,
+      "imageHeight": 900,
+      "topCaseEdgeY": 63,
+      "bottomCaseEdgeY": 810
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Tudor",
+    "model": "Ranger",
+    "reference": "M79950-0001",
+    "lugWidthMm": 20
+  },
+  "vacheron-constantin-4600e-000a-b487": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/vacheron-constantin-4600e-000a-b487/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/vacheron-constantin-4600e-000a-b487/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 189,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 594,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 192,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 585,
+        "y": 898
+      },
+      "lugWidthPx": 399,
+      "imageWidth": 823,
+      "imageHeight": 900,
+      "topCaseEdgeY": 68,
+      "bottomCaseEdgeY": 804
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Vacheron Constantin",
+    "model": "Fiftysix",
+    "reference": "4600E/000A-B487",
+    "lugWidthMm": 20
   }
 }

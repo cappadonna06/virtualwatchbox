@@ -10,7 +10,7 @@ import { withVersion } from '@/lib/watchImages/cacheBust'
 import { effectiveCompatibility, type FitState } from '@/lib/strapCompatibility'
 import type { BraceletType, StrapMaterial, StrapWatchOverride, UserStrap } from '@/types/watch'
 
-export type StrapCategory = 'Leather' | 'Rubber' | 'NATO' | 'Sailcloth' | 'Metal' | 'Exotic' | 'Other'
+export type StrapCategory = 'Leather' | 'Rubber' | 'NATO' | 'Sailcloth' | 'Canvas' | 'Metal' | 'Exotic' | 'Other'
 export type StrapSource = 'template' | 'drawer'
 
 /**
@@ -64,7 +64,7 @@ const MATERIAL_CATEGORY: Record<StrapMaterial, StrapCategory> = {
   rubber: 'Rubber',
   silicone: 'Rubber',
   nylon: 'NATO',
-  canvas: 'NATO',
+  canvas: 'Canvas',
   fabric: 'Sailcloth',
   metal: 'Metal',
   ceramic: 'Metal',
@@ -72,7 +72,7 @@ const MATERIAL_CATEGORY: Record<StrapMaterial, StrapCategory> = {
   other: 'Other',
 }
 
-const CATEGORY_ORDER: StrapCategory[] = ['Leather', 'Rubber', 'NATO', 'Sailcloth', 'Metal', 'Exotic', 'Other']
+const CATEGORY_ORDER: StrapCategory[] = ['Leather', 'Rubber', 'NATO', 'Sailcloth', 'Canvas', 'Metal', 'Exotic', 'Other']
 
 export function categoryOf(material: StrapMaterial): StrapCategory {
   return MATERIAL_CATEGORY[material] ?? 'Other'
