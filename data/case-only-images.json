@@ -1517,6 +1517,146 @@
     "reference": "5227R-001",
     "lugWidthMm": 18
   },
+  "patek-philippe-5230p-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5230p-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5230p-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 192,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 583,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 190,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 582,
+        "y": 898
+      },
+      "lugWidthPx": 392,
+      "imageWidth": 813,
+      "imageHeight": 900,
+      "topCaseEdgeY": 70,
+      "bottomCaseEdgeY": 809
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Patek Philippe",
+    "model": "World Time",
+    "reference": "5230P-001",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5230p-001/primary.webp"
+  },
+  "patek-philippe-5320g-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5320g-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5320g-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 192,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 574,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 190,
+        "y": 896
+      },
+      "bottomLugRight": {
+        "x": 573,
+        "y": 896
+      },
+      "lugWidthPx": 383,
+      "imageWidth": 786,
+      "imageHeight": 900,
+      "topCaseEdgeY": 64,
+      "bottomCaseEdgeY": 814
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Patek Philippe",
+    "model": "Grand Complications Perpetual Calendar",
+    "reference": "5320G-001",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5320g-001/primary.webp"
+  },
+  "patek-philippe-5524g-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5524g-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5524g-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 245,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 626,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 247,
+        "y": 897
+      },
+      "bottomLugRight": {
+        "x": 629,
+        "y": 897
+      },
+      "lugWidthPx": 382,
+      "imageWidth": 874,
+      "imageHeight": 900,
+      "topCaseEdgeY": 55,
+      "bottomCaseEdgeY": 822
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Patek Philippe",
+    "model": "Complications",
+    "reference": "5524G-001",
+    "lugWidthMm": 21,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5524g-001/primary.webp"
+  },
+  "patek-philippe-5524r-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5524r-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5524r-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 244,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 629,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 243,
+        "y": 896
+      },
+      "bottomLugRight": {
+        "x": 627,
+        "y": 896
+      },
+      "lugWidthPx": 385,
+      "imageWidth": 873,
+      "imageHeight": 900,
+      "topCaseEdgeY": 62,
+      "bottomCaseEdgeY": 818
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Patek Philippe",
+    "model": "Complications",
+    "reference": "5524R-001",
+    "lugWidthMm": 21,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5524r-001/primary.webp"
+  },
   "patek-philippe-5905-1a-001": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5905-1a-001/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5905-1a-001/case-only.png",
@@ -1585,6 +1725,427 @@
     "reference": "5960/1A-001",
     "lugWidthMm": 21
   },
+  "patek-philippe-6119g-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-6119g-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-6119g-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 173,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 581,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 174,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 584,
+        "y": 899
+      },
+      "lugWidthPx": 409,
+      "imageWidth": 794,
+      "imageHeight": 900,
+      "topCaseEdgeY": 85,
+      "bottomCaseEdgeY": 821
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Patek Philippe",
+    "model": "Calatrava",
+    "reference": "6119G-001",
+    "lugWidthMm": 21,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-6119g-001/primary.webp"
+  },
+  "patek-philippe-6119r-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-6119r-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-6119r-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 172,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 586,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 167,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 588,
+        "y": 899
+      },
+      "lugWidthPx": 418,
+      "imageWidth": 799,
+      "imageHeight": 900,
+      "topCaseEdgeY": 80,
+      "bottomCaseEdgeY": 819
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Patek Philippe",
+    "model": "Calatrava",
+    "reference": "6119R-001",
+    "lugWidthMm": 21,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-6119r-001/primary.webp"
+  },
+  "rolex-116500ln": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-116500ln/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-116500ln/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 183,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 564,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 180,
+        "y": 897
+      },
+      "bottomLugRight": {
+        "x": 560,
+        "y": 897
+      },
+      "lugWidthPx": 381,
+      "imageWidth": 826,
+      "imageHeight": 900,
+      "topCaseEdgeY": 60,
+      "bottomCaseEdgeY": 805
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Rolex",
+    "model": "Cosmograph Daytona",
+    "reference": "116500LN",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-116500ln/primary.webp"
+  },
+  "rolex-124060": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-124060/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-124060/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 187,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 582,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 184,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 584,
+        "y": 899
+      },
+      "lugWidthPx": 398,
+      "imageWidth": 847,
+      "imageHeight": 900,
+      "topCaseEdgeY": 54,
+      "bottomCaseEdgeY": 815
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Rolex",
+    "model": "Submariner",
+    "reference": "124060",
+    "lugWidthMm": 21,
+    "sourceCatalogId": "rolex-124060-0001",
+    "sourcePhotoUrl": "https://media.rolex.com/image/upload/f_png/c_limit,w_1600/v1/a677b2c664f6/catalogue/2026/upright-c/m124060-0001"
+  },
+  "rolex-124270": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-124270/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-124270/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 164,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 570,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 164,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 571,
+        "y": 898
+      },
+      "lugWidthPx": 407,
+      "imageWidth": 798,
+      "imageHeight": 900,
+      "topCaseEdgeY": 69,
+      "bottomCaseEdgeY": 785
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Rolex",
+    "model": "Explorer",
+    "reference": "124270",
+    "lugWidthMm": 19,
+    "sourcePhotoUrl": "https://media.rolex.com/image/upload/f_png/c_limit,w_1600/v1/a677b2c664f6/catalogue/2026/upright-c/m124270-0001"
+  },
+  "rolex-126600": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-126600/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-126600/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 189,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 575,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 189,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 571,
+        "y": 899
+      },
+      "lugWidthPx": 384,
+      "imageWidth": 849,
+      "imageHeight": 900,
+      "topCaseEdgeY": 47,
+      "bottomCaseEdgeY": 816
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Rolex",
+    "model": "Sea-Dweller",
+    "reference": "126600",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://media.rolex.com/image/upload/f_png/c_limit,w_1600/v1/a677b2c664f6/catalogue/2026/upright-c/m126600-0002"
+  },
+  "rolex-126610ln": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-126610ln/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-126610ln/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 187,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 582,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 184,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 584,
+        "y": 899
+      },
+      "lugWidthPx": 398,
+      "imageWidth": 847,
+      "imageHeight": 900,
+      "topCaseEdgeY": 54,
+      "bottomCaseEdgeY": 815
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Rolex",
+    "model": "Submariner Date",
+    "reference": "126610LN",
+    "lugWidthMm": 21,
+    "sourcePhotoUrl": "https://media.rolex.com/image/upload/f_png/c_limit,w_1600/v1/a677b2c664f6/catalogue/2026/upright-c/m126610ln-0001"
+  },
+  "rolex-126619lb": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-126619lb/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-126619lb/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 190,
+        "y": 9
+      },
+      "topLugRight": {
+        "x": 577,
+        "y": 9
+      },
+      "bottomLugLeft": {
+        "x": 190,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 577,
+        "y": 899
+      },
+      "lugWidthPx": 387,
+      "imageWidth": 843,
+      "imageHeight": 900,
+      "topCaseEdgeY": 61,
+      "bottomCaseEdgeY": 818
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Rolex",
+    "model": "Submariner Date",
+    "reference": "126619LB",
+    "lugWidthMm": 21,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-126619lb/primary.webp"
+  },
+  "rolex-126622": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-126622/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-126622/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 200,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 601,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 202,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 593,
+        "y": 899
+      },
+      "lugWidthPx": 396,
+      "imageWidth": 866,
+      "imageHeight": 900,
+      "topCaseEdgeY": 48,
+      "bottomCaseEdgeY": 814
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Rolex",
+    "model": "Yacht-Master 40",
+    "reference": "126622",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://media.rolex.com/image/upload/f_png/c_limit,w_1600/v1/a677b2c664f6/catalogue/2026/upright-c/m126622-0001"
+  },
+  "rolex-126710blnr": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-126710blnr/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-126710blnr/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 191,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 576,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 192,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 576,
+        "y": 898
+      },
+      "lugWidthPx": 385,
+      "imageWidth": 840,
+      "imageHeight": 900,
+      "topCaseEdgeY": 55,
+      "bottomCaseEdgeY": 812
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Rolex",
+    "model": "GMT-Master II",
+    "reference": "126710BLNR",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://media.rolex.com/image/upload/f_png/c_limit,w_1600/v1/a677b2c664f6/catalogue/2026/upright-c/m126710blnr-0003"
+  },
+  "rolex-126710blro": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-126710blro/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-126710blro/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 194,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 581,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 190,
+        "y": 896
+      },
+      "bottomLugRight": {
+        "x": 581,
+        "y": 896
+      },
+      "lugWidthPx": 389,
+      "imageWidth": 850,
+      "imageHeight": 900,
+      "topCaseEdgeY": 57,
+      "bottomCaseEdgeY": 808
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Rolex",
+    "model": "GMT-Master II",
+    "reference": "126710BLRO",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-126710blro/primary.webp"
+  },
+  "rolex-126711chnr": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-126711chnr/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-126711chnr/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 192,
+        "y": 1
+      },
+      "topLugRight": {
+        "x": 575,
+        "y": 1
+      },
+      "bottomLugLeft": {
+        "x": 186,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 579,
+        "y": 899
+      },
+      "lugWidthPx": 388,
+      "imageWidth": 839,
+      "imageHeight": 900,
+      "topCaseEdgeY": 57,
+      "bottomCaseEdgeY": 814
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Rolex",
+    "model": "GMT-Master II",
+    "reference": "126711CHNR",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://media.rolex.com/image/upload/f_png/c_limit,w_1600/v1/a677b2c664f6/catalogue/2026/upright-c/m126711chnr-0002"
+  },
   "rolex-18038": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-18038/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-18038/case-only.png",
@@ -1618,6 +2179,41 @@
     "model": "Day-Date 36",
     "reference": "18038",
     "lugWidthMm": 20
+  },
+  "rolex-226570": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-226570/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/rolex-226570/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 190,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 568,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 178,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 579,
+        "y": 899
+      },
+      "lugWidthPx": 390,
+      "imageWidth": 814,
+      "imageHeight": 900,
+      "topCaseEdgeY": 60,
+      "bottomCaseEdgeY": 810
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Rolex",
+    "model": "Explorer II",
+    "reference": "226570",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://media.rolex.com/image/upload/f_png/c_limit,w_1600/v1/a677b2c664f6/catalogue/2026/upright-c/m226570-0001"
   },
   "seiko-sarb033": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/seiko-sarb033/case-only.webp",
@@ -1721,6 +2317,76 @@
     "reference": "556.010",
     "lugWidthMm": 20
   },
+  "tudor-79030b": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-79030b/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-79030b/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 196,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 561,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 196,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 561,
+        "y": 898
+      },
+      "lugWidthPx": 365,
+      "imageWidth": 819,
+      "imageHeight": 900,
+      "topCaseEdgeY": 78,
+      "bottomCaseEdgeY": 811
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Tudor",
+    "model": "Black Bay 58",
+    "reference": "79030B",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-79030b/primary.webp"
+  },
+  "tudor-79030n": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-79030n/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-79030n/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 192,
+        "y": 1
+      },
+      "topLugRight": {
+        "x": 572,
+        "y": 1
+      },
+      "bottomLugLeft": {
+        "x": 191,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 570,
+        "y": 899
+      },
+      "lugWidthPx": 380,
+      "imageWidth": 830,
+      "imageHeight": 900,
+      "topCaseEdgeY": 74,
+      "bottomCaseEdgeY": 815
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Tudor",
+    "model": "Black Bay 58",
+    "reference": "79030N",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-79030n/primary.webp"
+  },
   "tudor-79230g": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-79230g/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-79230g/case-only.png",
@@ -1786,6 +2452,41 @@
     "confidence": 0.9,
     "status": "approved"
   },
+  "tudor-m79000n-0001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79000n-0001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79000n-0001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 175,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 575,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 174,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 580,
+        "y": 899
+      },
+      "lugWidthPx": 403,
+      "imageWidth": 797,
+      "imageHeight": 900,
+      "topCaseEdgeY": 84,
+      "bottomCaseEdgeY": 816
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Tudor",
+    "model": "Black Bay 54",
+    "reference": "M79000N-0001",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://media.tudorwatch.com/image/upload/f_png/c_limit,w_1600/v1/catalogue/0yi5ee8b69yh3/upright-cb-with-drop-shadow/tudor-m79000n-0002"
+  },
   "tudor-m79012m-0001": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79012m-0001/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79012m-0001/case-only.png",
@@ -1819,6 +2520,111 @@
     "model": "Black Bay 58 Bronze",
     "reference": "M79012M-0001",
     "lugWidthMm": 20
+  },
+  "tudor-m79030n-0001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79030n-0001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79030n-0001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 190,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 575,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 189,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 570,
+        "y": 899
+      },
+      "lugWidthPx": 383,
+      "imageWidth": 830,
+      "imageHeight": 900,
+      "topCaseEdgeY": 74,
+      "bottomCaseEdgeY": 815
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Tudor",
+    "model": "Black Bay 58",
+    "reference": "M79030N-0001",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79030n-0001/primary.webp"
+  },
+  "tudor-m79360n-0002": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79360n-0002/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79360n-0002/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 198,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 581,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 196,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 581,
+        "y": 898
+      },
+      "lugWidthPx": 384,
+      "imageWidth": 822,
+      "imageHeight": 900,
+      "topCaseEdgeY": 79,
+      "bottomCaseEdgeY": 823
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Tudor",
+    "model": "Black Bay Chrono",
+    "reference": "M79360N-0002",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79360n-0002/primary.webp"
+  },
+  "tudor-m79470-0001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79470-0001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79470-0001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 190,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 572,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 189,
+        "y": 897
+      },
+      "bottomLugRight": {
+        "x": 575,
+        "y": 897
+      },
+      "lugWidthPx": 384,
+      "imageWidth": 823,
+      "imageHeight": 900,
+      "topCaseEdgeY": 64,
+      "bottomCaseEdgeY": 828
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Tudor",
+    "model": "Black Bay Pro",
+    "reference": "M79470-0001",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://media.tudorwatch.com/image/upload/f_png/c_limit,w_1600/v1/catalogue/0yi5ee8b69yh3/upright-cb-with-drop-shadow/tudor-m79470-0002"
   },
   "tudor-m79830rb-0001": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79830rb-0001/case-only.webp",
