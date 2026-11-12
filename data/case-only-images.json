@@ -452,6 +452,76 @@
     "lugWidthMm": 19,
     "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/grand-seiko-sbgm221/primary.webp"
   },
+  "hamilton-h38416541": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h38416541/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h38416541/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 185,
+        "y": 1
+      },
+      "topLugRight": {
+        "x": 553,
+        "y": 1
+      },
+      "bottomLugLeft": {
+        "x": 183,
+        "y": 895
+      },
+      "bottomLugRight": {
+        "x": 548,
+        "y": 895
+      },
+      "lugWidthPx": 367,
+      "imageWidth": 807,
+      "imageHeight": 900,
+      "topCaseEdgeY": 80,
+      "bottomCaseEdgeY": 809
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Hamilton",
+    "model": "Intra-Matic",
+    "reference": "H38416541",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://www.hamiltonwatch.com/media/catalog/product/h/3/h38416541.png"
+  },
+  "hamilton-h38416711": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h38416711/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h38416711/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 183,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 559,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 180,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 558,
+        "y": 899
+      },
+      "lugWidthPx": 377,
+      "imageWidth": 812,
+      "imageHeight": 900,
+      "topCaseEdgeY": 80,
+      "bottomCaseEdgeY": 812
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Hamilton",
+    "model": "Intra-Matic Auto Chrono",
+    "reference": "H38416711",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://www.hamiltonwatch.com/media/catalog/product/h/3/h38416711.png"
+  },
   "hamilton-h69439931": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h69439931/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h69439931/case-only.png",
@@ -1953,6 +2023,76 @@
     "lugWidthMm": 19,
     "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-12-38-20-01-001-aka-22012382001001/primary.webp"
   },
+  "omega-220-12-38-20-03-001-aka-22012382003001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-12-38-20-03-001-aka-22012382003001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-12-38-20-03-001-aka-22012382003001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 195,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 591,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 190,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 582,
+        "y": 899
+      },
+      "lugWidthPx": 394,
+      "imageWidth": 839,
+      "imageHeight": 900,
+      "topCaseEdgeY": 53,
+      "bottomCaseEdgeY": 818
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Aqua Terra",
+    "reference": "220.12.38.20.03.001",
+    "lugWidthMm": 19,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-12-38-20-03-001-aka-22012382003001/primary.webp"
+  },
+  "omega-220-13-38-20-01-001-aka-22013382001001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-13-38-20-01-001-aka-22013382001001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-13-38-20-01-001-aka-22013382001001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 194,
+        "y": 6
+      },
+      "topLugRight": {
+        "x": 584,
+        "y": 6
+      },
+      "bottomLugLeft": {
+        "x": 188,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 582,
+        "y": 898
+      },
+      "lugWidthPx": 392,
+      "imageWidth": 835,
+      "imageHeight": 900,
+      "topCaseEdgeY": 58,
+      "bottomCaseEdgeY": 817
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Aqua Terra",
+    "reference": "220.13.38.20.01.001",
+    "lugWidthMm": 19,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-13-38-20-01-001-aka-22013382001001/primary.webp"
+  },
   "omega-220-13-38-20-02-001-aka-22013382002001": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-13-38-20-02-001-aka-22013382002001/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-13-38-20-02-001-aka-22013382002001/case-only.png",
@@ -1987,6 +2127,41 @@
     "reference": "220.13.38.20.02.001",
     "lugWidthMm": 19,
     "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-13-38-20-02-001-aka-22013382002001/primary.webp"
+  },
+  "omega-220-13-41-21-01-001-aka-22013412101001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-13-41-21-01-001-aka-22013412101001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-13-41-21-01-001-aka-22013412101001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 197,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 581,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 201,
+        "y": 896
+      },
+      "bottomLugRight": {
+        "x": 595,
+        "y": 896
+      },
+      "lugWidthPx": 389,
+      "imageWidth": 847,
+      "imageHeight": 900,
+      "topCaseEdgeY": 56,
+      "bottomCaseEdgeY": 822
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Aqua Terra",
+    "reference": "220.13.41.21.01.001",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-13-41-21-01-001-aka-22013412101001/primary.webp"
   },
   "omega-231-10-42-21-03-003": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-231-10-42-21-03-003/case-only-6c09f6b8674f.webp",
