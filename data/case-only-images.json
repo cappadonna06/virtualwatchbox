@@ -900,6 +900,42 @@
     "lugWidthMm": 20,
     "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-seamaster-diver-300m-co-axial-master-chronometer-42-mm-21032422010001-a0ed87.png"
   },
+  "omega-215-30-44-21-01-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-215-30-44-21-01-001/case-only-96ef6ac081ec.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-215-30-44-21-01-001/case-only-96ef6ac081ec.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 216,
+        "y": 1
+      },
+      "topLugRight": {
+        "x": 608,
+        "y": 1
+      },
+      "bottomLugLeft": {
+        "x": 213,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 609,
+        "y": 898
+      },
+      "lugWidthPx": 394,
+      "imageWidth": 880,
+      "imageHeight": 900,
+      "topCaseEdgeY": 41,
+      "bottomCaseEdgeY": 810
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Seamaster Planet Ocean 600M",
+    "reference": "215.30.44.21.01.001",
+    "lugWidthMm": 21,
+    "sourceCatalogId": "omega-215-33-44-21-01-001",
+    "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-seamaster-planet-ocean-600m-co-axial-master-chronometer-43-5-mm-21533442101001-e23e51.png"
+  },
   "omega-220-10-40-20-01-001": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-10-40-20-01-001/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-10-40-20-01-001/case-only.png",
@@ -1073,6 +1109,42 @@
     "reference": "220.10.41.21.10.001",
     "lugWidthMm": 20,
     "catalogReferenceVerified": true
+  },
+  "omega-220-10-43-22-03-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-10-43-22-03-001/case-only-73a57ee813c2.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-220-10-43-22-03-001/case-only-73a57ee813c2.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 196,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 572,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 197,
+        "y": 888
+      },
+      "bottomLugRight": {
+        "x": 577,
+        "y": 888
+      },
+      "lugWidthPx": 378,
+      "imageWidth": 835,
+      "imageHeight": 900,
+      "topCaseEdgeY": 50,
+      "bottomCaseEdgeY": 812
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Seamaster Aqua Terra",
+    "reference": "220.10.43.22.03.001",
+    "lugWidthMm": 21,
+    "sourceCatalogId": "omega-220-12-43-22-03-001",
+    "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-seamaster-aqua-terra-150m-co-axial-master-chronometer-gmt-worldtimer-43-mm-22012432203001-e80481.png"
   },
   "omega-231-10-42-21-03-003": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-231-10-42-21-03-003/case-only-6c09f6b8674f.webp",
@@ -1250,6 +1322,112 @@
     "reference": "310.32.42.50.01.001",
     "lugWidthMm": 20,
     "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-speedmaster-moonwatch-professional-co-axial-master-chronometer-chronograph-42-mm-31032425001001-df6aad.png"
+  },
+  "omega-310-32-42-50-02-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-310-32-42-50-02-001/case-only-a3e71d4e32ba.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-310-32-42-50-02-001/case-only-a3e71d4e32ba.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 193,
+        "y": 1
+      },
+      "topLugRight": {
+        "x": 590,
+        "y": 1
+      },
+      "bottomLugLeft": {
+        "x": 186,
+        "y": 895
+      },
+      "bottomLugRight": {
+        "x": 589,
+        "y": 895
+      },
+      "lugWidthPx": 400,
+      "imageWidth": 837,
+      "imageHeight": 900,
+      "topCaseEdgeY": 45,
+      "bottomCaseEdgeY": 818
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Speedmaster Silver Snoopy 50th Anniversary",
+    "reference": "310.32.42.50.02.001",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-speedmaster-anniversary-series-co-axial-master-chronometer-chronograph-42-mm-31032425002001-d907dd.png"
+  },
+  "omega-311-30-42-30-01-005": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-311-30-42-30-01-005/case-only-b05c7fa64cb5.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-311-30-42-30-01-005/case-only-b05c7fa64cb5.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 198,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 582,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 192,
+        "y": 892
+      },
+      "bottomLugRight": {
+        "x": 575,
+        "y": 892
+      },
+      "lugWidthPx": 384,
+      "imageWidth": 812,
+      "imageHeight": 900,
+      "topCaseEdgeY": 63,
+      "bottomCaseEdgeY": 798
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Speedmaster Professional Moonwatch",
+    "reference": "311.30.42.30.01.005",
+    "lugWidthMm": 20,
+    "sourceCatalogId": "omega-311-33-42-30-01-001",
+    "sourcePhotoUrl": "https://www.omegawatches.com/media/catalog/product/o/m/omega-speedmaster-moonwatch-professional-chronograph-42-mm-31133423001001-1c287f.png"
+  },
+  "omega-3510-50-00": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-3510-50-00/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-3510-50-00/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 213,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 581,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 202,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 574,
+        "y": 899
+      },
+      "lugWidthPx": 370,
+      "imageWidth": 842,
+      "imageHeight": 900,
+      "topCaseEdgeY": 69,
+      "bottomCaseEdgeY": 811
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Speedmaster Reduced",
+    "reference": "3510.50.00",
+    "lugWidthMm": 18,
+    "sourcePhotoUrl": "https://www.omegawatches.com.hk/media/pdf/watches/product-sheet/hk/en-gb/35105000-en-gb.pdf"
   },
   "omega-aqua-terra-blue-22010412103004": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-aqua-terra-blue-22010412103004/case-only.webp",
