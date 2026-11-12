@@ -7,6 +7,7 @@
 // round-trips (no spinner, ever). Only `approved` entries are exposed.
 
 import raw from '@/data/case-only-images.json'
+import type { BandHalf } from '@/lib/strapStudio'
 import { withVersion } from '@/lib/watchImages/cacheBust'
 
 export interface LugPoint {
@@ -93,5 +94,35 @@ export function channelMetrics(g: LugGeometry, end: 'top' | 'bottom', sleeveToWi
     centerXRatio: (left.x + right.x) / 2 / g.imageWidth,
     widthRatio: width / g.imageWidth,
     springBarYRatio: springBarY / g.imageHeight,
+  }
+}
+
+export function strapCaseFrame(g: LugGeometry, stageHeight: number) {
+  const height = Math.floor(stageHeight / 2.05)
+  const width = height * (g.imageWidth / g.imageHeight)
+  const stageWidth = Math.round(width * 1.2)
+  return { stageWidth, frame: { left: (stageWidth - width) / 2, top: (stageHeight - height) / 2, width, height } }
+}
+
+export function strapBandPlacement(
+  g: LugGeometry,
+  half: BandHalf,
+  end: 'top' | 'bottom',
+  frame: { left: number; top: number; width: number; height: number },
+) {
+  const bandWidth = half.bodyRight - half.bodyLeft
+  const sleeve = half.endY === undefined ? bandWidth * 0.07 : Math.abs(half.endY - half.pinY)
+  const channel = channelMetrics(g, end, sleeve / bandWidth)
+  const scale = channel.widthRatio * frame.width / bandWidth
+  const cropTop = end === 'bottom' ? Math.max(0, half.pinY - sleeve) : 0
+  const cropBottom = end === 'top' ? Math.max(0, half.h - half.pinY - sleeve) : 0
+  return {
+    left: frame.left + channel.centerXRatio * frame.width - (half.bodyLeft + half.bodyRight) / 2 * scale,
+    top: frame.top + channel.springBarYRatio * frame.height - half.pinY * scale,
+    width: half.w * scale,
+    height: half.h * scale,
+    clipPath: half.endY !== undefined
+      ? undefined
+      : `inset(${cropTop * scale}px 0 ${cropBottom * scale}px round ${bandWidth * scale * 0.018}px)`,
   }
 }

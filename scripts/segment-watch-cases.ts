@@ -3,8 +3,9 @@ import fs from 'node:fs'
 import path from 'node:path'
 import sharp from 'sharp'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import bands from '../data/strap-band-demo.json'
 import { brand } from '../lib/brand'
-import type { CaseOnlyEntry, LugGeometry } from '../lib/caseOnlyImages'
+import { strapBandPlacement, strapCaseFrame, type CaseOnlyEntry, type LugGeometry } from '../lib/caseOnlyImages'
 import { cropToAlphaBounds } from '../lib/imageProcessing'
 import { loadLocalEnv, repoRoot } from './watch-image-pipeline'
 import { segmentWatchHead } from './segment-watch-head'
@@ -25,6 +26,7 @@ function arg(name: string): string | undefined {
   return hit.slice(name.length + 1)
 }
 const INGEST_DIR = arg('--ingest')
+const PREVIEW_DIR = arg('--preview-cutouts')
 const TOP = Number(arg('--top') ?? 0)
 const ONLY = arg('--only')
 const SOURCE_ID = arg('--source-id')
@@ -352,16 +354,55 @@ figcaption{font-size:12px;padding:5px}
 <p>Compare the dial, crown, and both lug channels to the original. Approve only exact-reference cutouts that preserve the watch and remove the original band.</p><main>${rows.join('')}</main></html>`)
 }
 
-async function runIngest(supabase: SupabaseClient, dir: string): Promise<void> {
+function mountedReview(directory: string, id: string, g: LugGeometry, lugWidth: number): string {
+  const height = 400
+  const { stageWidth: width, frame } = strapCaseFrame(g, height)
+  const cutout = `${id}.normalized.png`
+  const original = `${id}.original.webp`
+  const looks = bands.straps
+    .filter(band => ['leather-smooth-black', 'canvas-twill-tan'].includes(band.id) && band.availableLugWidths.includes(lugWidth))
+    .map(band => {
+      const halves = ([['top', band.bandTop], ['bottom', band.bandBottom]] as const).map(([end, half]) => {
+        const rect = strapBandPlacement(g, half, end, frame)
+        const src = path.relative(directory, path.join(repoRoot, 'public', half.url)).split(path.sep).map(encodeURIComponent).join('/')
+        const clip = rect.clipPath ? `;clip-path:${rect.clipPath}` : ''
+        return `<img alt="" src="${src}" style="left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;height:${rect.height}px${clip}">`
+      }).join('')
+      return `<figure><div class="stage" style="width:${width}px;height:${height}px">${halves}<img alt="" src="${cutout}" style="left:${frame.left}px;top:${frame.top}px;width:${frame.width}px;height:${frame.height}px"></div><figcaption>${band.label}</figcaption></figure>`
+    }).join('')
+  const originalImage = fs.existsSync(path.join(directory, original))
+    ? `<figure><img class="photo" alt="" src="${original}"><figcaption>Catalog photo</figcaption></figure>`
+    : ''
+  return `<article><h2>${id} · ${lugWidth} mm</h2><div class="looks">${originalImage}<figure><img class="photo" alt="" src="${cutout}"><figcaption>Case cutout</figcaption></figure>${looks}</div></article>`
+}
+
+function writeMountedReview(directory: string, rows: string[]) {
+  const report = path.join(directory, 'mounted-review.html')
+  fs.writeFileSync(report, `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Strap Studio mounted review</title><style>
+body{font:16px system-ui;margin:24px;background:${brand.colors.bg};color:${brand.colors.ink}}
+article{padding:16px 0;border-top:1px solid ${brand.colors.border}}
+.looks{display:flex;flex-wrap:wrap;gap:16px}
+figure{margin:0;text-align:center}
+.stage{position:relative;overflow:hidden;background:${brand.colors.slot}}
+.stage img{position:absolute}
+.photo{width:164px;height:400px;object-fit:contain;background:${brand.colors.slot}}
+figcaption{padding:8px}
+</style><h1>Strap Studio mounted review</h1><main>${rows.join('')}</main></html>`)
+  console.log(`Review ${report}`)
+}
+
+async function runIngest(supabase: SupabaseClient, dir: string, preview = false): Promise<void> {
   const directory = path.resolve(dir)
   const requested = new Set(ONLY?.split(',').map(id => id.trim()).filter(Boolean))
   if (!requested.size) fail('Pass --only with the exact catalog IDs you reviewed.')
   const bridge = readBridge()
+  const reviews: string[] = []
   let failed = false
   for (const id of requested) {
     try {
       if (!/^[a-z0-9][a-z0-9-]*$/.test(id)) throw new Error('Invalid catalog ID')
-      if (bridge[id]?.status === 'approved' && !FORCE) {
+      if (!preview && bridge[id]?.status === 'approved' && !FORCE) {
         console.log(`Skip ${id} (already approved)`)
         continue
       }
@@ -387,7 +428,10 @@ async function runIngest(supabase: SupabaseClient, dir: string): Promise<void> {
           geom[key] = y
         }
       }
-      if (!DRY_RUN) {
+      if (preview) {
+        fs.writeFileSync(path.join(directory, `${id}.normalized.png`), norm.png)
+        reviews.push(mountedReview(directory, id, geom, watch.lug_width_mm!))
+      } else if (!DRY_RUN) {
         const metadataPath = path.join(directory, `${id}.json`)
         const metadata: { sourceId?: string; sourceUrl?: string } = fs.existsSync(metadataPath)
           ? JSON.parse(fs.readFileSync(metadataPath, 'utf8')) : {}
@@ -402,12 +446,13 @@ async function runIngest(supabase: SupabaseClient, dir: string): Promise<void> {
         bridge[id] = entry
         writeBridge(bridge)
       }
-      console.log(`${DRY_RUN ? 'Validated' : 'Approved'} ${id} (${watch.reference}, ${watch.lug_width_mm} mm)`)
+      console.log(`${preview ? 'Prepared preview' : DRY_RUN ? 'Validated' : 'Approved'} ${id} (${watch.reference}, ${watch.lug_width_mm} mm)`)
     } catch (error) {
       failed = true
       console.error(`Failed ${id}: ${(error as Error).message}`)
     }
   }
+  if (preview) writeMountedReview(directory, reviews)
   if (failed) process.exitCode = 1
 }
 
@@ -529,14 +574,15 @@ async function backfillClearance(supabase: SupabaseClient) {
 
 async function main(): Promise<void> {
   if (!SUPABASE_URL) fail('Missing SUPABASE_URL / NEXT_PUBLIC_SUPABASE_URL.')
-  if (!SUPABASE_KEY && !DRY_RUN) fail('Missing SUPABASE_SECRET_KEY / SUPABASE_SERVICE_ROLE_KEY.')
-  if ([INGEST_DIR, REVIEW_DIR, MEASURE_CLEARANCE].filter(Boolean).length !== 1) {
-    fail('Pass one of --review-dir, --ingest, or --measure-clearance.')
+  if (!SUPABASE_KEY && !DRY_RUN && !PREVIEW_DIR) fail('Missing SUPABASE_SECRET_KEY / SUPABASE_SERVICE_ROLE_KEY.')
+  if ([INGEST_DIR, PREVIEW_DIR, REVIEW_DIR, MEASURE_CLEARANCE].filter(Boolean).length !== 1) {
+    fail('Pass one of --review-dir, --preview-cutouts, --ingest, or --measure-clearance.')
   }
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'anon', {
     auth: { persistSession: false, autoRefreshToken: false },
   })
   if (INGEST_DIR) await runIngest(supabase, INGEST_DIR)
+  if (PREVIEW_DIR) await runIngest(supabase, PREVIEW_DIR, true)
   if (REVIEW_DIR) await runSegment(supabase, REVIEW_DIR)
   if (MEASURE_CLEARANCE) await backfillClearance(supabase)
 }

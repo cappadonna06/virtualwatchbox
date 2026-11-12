@@ -3,8 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { brand } from '@/lib/brand'
-import { channelMetrics } from '@/lib/caseOnlyImages'
-import type { BandHalf } from '@/lib/strapStudio'
+import { strapBandPlacement, strapCaseFrame } from '@/lib/caseOnlyImages'
 import type { StudioController } from './useStudioController'
 
 // The hero: a watch wearing the active strap.
@@ -35,34 +34,11 @@ function BandComposite({ c, rowHeight }: { c: StudioController; rowHeight: numbe
   if (!caseOnly) return null
   const g = caseOnly.lugGeometry
 
-  const caseH = Math.floor(rowHeight / 2.05)
-  const caseW = caseH * (g.imageWidth / g.imageHeight)
   const stageH = rowHeight
-  const stageW = Math.round(caseW * 1.2)
-  const caseTop = (stageH - caseH) / 2
-  const caseLeft = (stageW - caseW) / 2
-
-  const bandRect = (half: BandHalf, end: 'top' | 'bottom') => {
-    const bandWidth = half.bodyRight - half.bodyLeft
-    const sleeve = half.endY === undefined ? bandWidth * 0.07 : Math.abs(half.endY - half.pinY)
-    const channel = channelMetrics(g, end, sleeve / bandWidth)
-    const scale = channel.widthRatio * caseW / bandWidth
-    const cropTop = end === 'bottom' ? Math.max(0, half.pinY - sleeve) : 0
-    const cropBottom = end === 'top' ? Math.max(0, half.h - half.pinY - sleeve) : 0
-    return {
-      left: caseLeft + channel.centerXRatio * caseW - (half.bodyLeft + half.bodyRight) / 2 * scale,
-      top: caseTop + channel.springBarYRatio * caseH - half.pinY * scale,
-      width: half.w * scale,
-      height: half.h * scale,
-      clipPath: half.endY !== undefined
-        ? undefined
-        : `inset(${cropTop * scale}px 0 ${cropBottom * scale}px round ${bandWidth * scale * 0.018}px)`,
-    }
-  }
-
+  const { stageWidth: stageW, frame } = strapCaseFrame(g, stageH)
   const band = currentStrap?.band
-  const topRect = band ? bandRect(band.top, 'top') : null
-  const bottomRect = band ? bandRect(band.bottom, 'bottom') : null
+  const topRect = band ? strapBandPlacement(g, band.top, 'top', frame) : null
+  const bottomRect = band ? strapBandPlacement(g, band.bottom, 'bottom', frame) : null
 
   // "Fit-in" swap: the halves slide INTO the lugs (top half drops down, bottom
   // half rises up) with a spring, like snapping onto the spring bars; the
@@ -107,10 +83,7 @@ function BandComposite({ c, rowHeight }: { c: StudioController; rowHeight: numbe
         transition={reducedMotion ? undefined : { type: 'spring', stiffness: 400, damping: 25 }}
         style={{
           position: 'absolute',
-          left: caseLeft,
-          top: caseTop,
-          width: caseW,
-          height: caseH,
+          ...frame,
           zIndex: 2,
           filter: 'drop-shadow(0 14px 22px rgba(26,20,16,0.18))',
         }}

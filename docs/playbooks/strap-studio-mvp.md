@@ -12,6 +12,8 @@ The Studio uses the exact catalog ID, with a reviewed transparent watch head and
 
 Use a small, representative batch. Watches already photographed on straight leather or fabric straps are good candidates. Metal end links can be difficult to separate from the lugs. A high model score still requires visual review.
 
+Start with the existing catalog photo and any saved candidate cutouts. Source another exact-reference photo when the catalog photo obscures a lug or lacks enough detail to trace the join.
+
 The [popular-watch queue](../../data/strap-studio-popular-queue.json) preserves the ranked references for this rollout. Use the approved case manifest to determine which references have shipped. Keep uncertain lugs and unsupported strap interfaces in review.
 
 If the manufacturer confirms an identical case, bezel, and dial on another strap variant, prepare one target with `--only=TARGET_ID --source-id=PHOTO_VARIANT_ID`. The review image uses the alternate catalog photo and records its ID beside the candidate.
@@ -24,11 +26,14 @@ npm run straps:segment-cases -- --review-dir /tmp/studio-cases --only=WATCH_ID,A
 # Or use --top 20 to prioritize the imaged catalog by heat.
 # DRY_RUN=1 lists those candidates without sending images to the model.
 
+# Review local cutouts on light and dark straps before uploading.
+npm run straps:segment-cases -- --preview-cutouts /tmp/studio-cases --only=WATCH_ID,ANOTHER_WATCH_ID
+
 # Approve the exact IDs whose original dial, crown, bezel, and both lugs are intact.
 npm run straps:segment-cases -- --ingest /tmp/studio-cases --only=APPROVED_ID
 ```
 
-The first command runs SAM 3 with case and location prompts, and applies the chosen mask to the source pixels. Preparation requires the Replicate token and Supabase credentials. The second command validates both lug channels, publishes the PNG/WebP pair to Supabase, and updates the case-only bridge. Use the Studio at desktop and mobile widths to inspect both strap joins. Commit the bridge to release the approved references with the site.
+The `--review-dir` command runs paid SAM 3 predictions on Replicate for candidates that still need a mask. The `--preview-cutouts` command takes local `<catalog-id>.png` cutouts and optional `<catalog-id>.original.webp` catalog photos. It reads catalog widths, checks the geometry, and writes a local `mounted-review.html` using the Studio's strap placement. Previewing requires no model calls or uploads. The `--ingest` command validates both lug channels, publishes the PNG/WebP pair to Supabase, and updates the case-only bridge. Commit the bridge to release the approved references with the site.
 
 The default fit uses the center of the case silhouette and the sleeve depth from the strap image. It leaves a small clearance at the center. A curved case naturally opens the gap toward the shoulders. Run `npm run straps:segment-cases -- --measure-clearance` to backfill existing approved exact-reference cutouts. If a reference image shows the spring-bar position, put `<catalog-id>.spring-bars.json` next to the reviewed cutout with `topSpringBarY`, `bottomSpringBarY`, or both, measured on the normalized 900 px cutout. Ingest carries those positions into the Studio.
 
