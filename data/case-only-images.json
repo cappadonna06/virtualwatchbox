@@ -237,6 +237,40 @@
     "reference": "IW326901",
     "lugWidthMm": 20
   },
+  "iwc-iw371606": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw371606/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw371606/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 200,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 578,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 200,
+        "y": 897
+      },
+      "bottomLugRight": {
+        "x": 578,
+        "y": 897
+      },
+      "lugWidthPx": 378,
+      "imageWidth": 838,
+      "imageHeight": 900,
+      "topCaseEdgeY": 64,
+      "bottomCaseEdgeY": 834
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "IWC",
+    "model": "Portugieser Chronograph",
+    "reference": "IW371606",
+    "lugWidthMm": 20
+  },
   "nomos-737": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-737/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-737/case-only.png",
@@ -468,6 +502,74 @@
     "model": "Big Crown D.26 286 HB-RAG",
     "reference": "D.26 286",
     "lugWidthMm": 20
+  },
+  "panerai-pam01312": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/panerai-pam01312/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/panerai-pam01312/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 173,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 586,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 166,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 588,
+        "y": 899
+      },
+      "lugWidthPx": 418,
+      "imageWidth": 878,
+      "imageHeight": 900,
+      "topCaseEdgeY": 80,
+      "bottomCaseEdgeY": 819
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Panerai",
+    "model": "Luminor Marina",
+    "reference": "PAM01312",
+    "lugWidthMm": 24
+  },
+  "patek-philippe-5205r-010": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5205r-010/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5205r-010/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 178,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 562,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 183,
+        "y": 897
+      },
+      "bottomLugRight": {
+        "x": 560,
+        "y": 897
+      },
+      "lugWidthPx": 381,
+      "imageWidth": 777,
+      "imageHeight": 900,
+      "topCaseEdgeY": 73,
+      "bottomCaseEdgeY": 793
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Patek Philippe",
+    "model": "Complications Annual Calendar",
+    "reference": "5205R-010",
+    "lugWidthMm": 21
   },
   "patek-philippe-5212a-001": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/patek-philippe-5212a-001/case-only.webp",
