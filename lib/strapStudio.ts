@@ -4,6 +4,7 @@
 // renders from this so the composite, picker, and footer share one source.
 
 import bandDemoRaw from '@/data/strap-band-demo.json'
+import { getCaseOnly } from '@/lib/caseOnlyImages'
 import type { StrapTemplate } from '@/lib/strapTemplates'
 import { findTemplate, getStrapTemplates, findTemplatePhoto } from '@/lib/strapTemplates'
 import { withVersion } from '@/lib/watchImages/cacheBust'
@@ -58,6 +59,32 @@ export interface StudioCompatTarget {
   id: string
   lugWidthMm?: number | null
   braceletType?: BraceletType | null
+}
+
+function supportsLugWidth(strap: { availableLugWidths: number[] }, width?: number | null): boolean {
+  return width == null || strap.availableLugWidths.includes(width)
+}
+
+export type StudioOrigin = 'discover' | 'playground'
+
+export function strapStudioHref(watchId: string, strapId?: string, from?: StudioOrigin) {
+  const params = new URLSearchParams({ watchId, source: 'all' })
+  if (strapId) params.set('strapId', strapId)
+  if (from) params.set('from', from)
+  return `/collection/straps/studio?${params}`
+}
+
+export function getStudioEntryPoint(watch: StudioCompatTarget, hasWatchPhoto: boolean, from?: StudioOrigin) {
+  if (!watch.id || watch.braceletType === 'integrated') return null
+  const caseOnly = getCaseOnly(watch.id)
+  const width = caseOnly?.lugWidthMm ?? watch.lugWidthMm
+  const canTryOn = Boolean(caseOnly && bandDemoRaw.straps.some(strap => supportsLugWidth(strap, width)))
+  if (!canTryOn && (!hasWatchPhoto || !getStrapTemplates().some(strap => supportsLugWidth(strap, width)))) return null
+
+  return {
+    href: strapStudioHref(watch.id, undefined, from),
+    label: canTryOn ? 'Try on straps' : 'Compare straps',
+  }
 }
 
 const MATERIAL_CATEGORY: Record<StrapMaterial, StrapCategory> = {
@@ -191,7 +218,7 @@ export function studioFit(strap: StudioStrap, watch: StudioCompatTarget | null, 
     return effectiveCompatibility(strap.userStrap, watch, overrides)
   }
   if (watch.lugWidthMm == null) return 'unknown'
-  return strap.availableLugWidths.includes(watch.lugWidthMm) ? 'fits' : 'excluded'
+  return supportsLugWidth(strap, watch.lugWidthMm) ? 'fits' : 'excluded'
 }
 
 export function isCompatible(strap: StudioStrap, watch: StudioCompatTarget | null, overrides: StrapWatchOverride[]): boolean {

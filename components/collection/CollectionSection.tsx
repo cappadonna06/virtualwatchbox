@@ -49,7 +49,7 @@ export default function CollectionSection() {
               fontWeight: 400,
               lineHeight: 1.08,
               color: brand.colors.ink,
-              whiteSpace: 'nowrap',
+              whiteSpace: isMobile ? 'normal' : 'nowrap',
               margin: 0,
             }}
           >

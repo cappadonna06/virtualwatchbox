@@ -3,10 +3,11 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import type { ResolvedOwnedWatch, ResolvedWatch, WatchCondition } from '@/types/watch'
+import type { CatalogWatch, ResolvedOwnedWatch, ResolvedWatch, WatchCondition } from '@/types/watch'
 import { brand } from '@/lib/brand'
 import { dialColorToHex } from '@/lib/dialColors'
 import { buildChrono24URL } from '@/lib/discover'
+import { getStudioEntryPoint } from '@/lib/strapStudio'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { toStrapDrawerWatch } from '@/components/straps/useStrapDrawerWatches'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
@@ -126,6 +127,7 @@ interface Props {
   mode?: 'collection' | 'playground' | 'followed' | 'public'
   sticky?: boolean
   catalogWatchId?: string | null
+  sourceWatch?: CatalogWatch
   onRequestDelete?: (watch: ResolvedOwnedWatch | ResolvedWatch) => void
   onRequestEdit?: (watch: ResolvedOwnedWatch | ResolvedWatch) => void
 }
@@ -135,6 +137,7 @@ export default function WatchSidebar({
   mode = 'collection',
   sticky = true,
   catalogWatchId,
+  sourceWatch,
   onRequestDelete,
   onRequestEdit,
 }: Props) {
@@ -172,7 +175,7 @@ export default function WatchSidebar({
   }
 
   const colors = conditionColors[watch.condition]
-  const resolvedCatalogWatchId = catalogWatchId ?? watch.watchId
+  const resolvedCatalogWatchId = catalogWatchId ?? sourceWatch?.id ?? watch.watchId
   const canEdit = mode === 'collection' || Boolean(onRequestEdit)
   const canDelete = Boolean(onRequestDelete)
   const isOwnedWatch = mode === 'collection'
@@ -184,9 +187,21 @@ export default function WatchSidebar({
   const isTarget = isWatchTarget(resolvedCatalogWatchId)
   const marketLabel = !isOwnedWatch && savedState === 'grail' && !isPublicMode ? 'Find on Market ↗' : 'Find For Sale ↗'
 
-  // Strap Drawer wiring (owner-only). Integrated bracelets can't take straps.
-  const strapWatch = isOwnedWatch ? toStrapDrawerWatch(watch, getCatalogWatch(watch.watchId)) : null
+  const isPlaygroundWatch = mode === 'playground'
+  const catalogWatch = sourceWatch ?? (isOwnedWatch || isPlaygroundWatch ? getCatalogWatch(resolvedCatalogWatchId) : undefined)
+  const strapWatch = isOwnedWatch ? toStrapDrawerWatch(watch, catalogWatch) : null
   const isIntegrated = strapWatch?.braceletType === 'integrated'
+  const studio = isOwnedWatch || isPlaygroundWatch ? getStudioEntryPoint({
+    id: resolvedCatalogWatchId,
+    lugWidthMm: catalogWatch?.lugWidthMm ?? watch.lugWidthMm,
+    braceletType: catalogWatch?.braceletType,
+  }, Boolean(watch.imageUrl || watch.imageTransparentUrl || catalogWatch?.imageUrl || catalogWatch?.imageTransparentUrl),
+  isPlaygroundWatch ? 'playground' : undefined) : null
+  const studioLink = studio && (
+    <Link href={studio.href} style={{ ...btnSecondary, textAlign: 'center', textDecoration: 'none' }}>
+      {studio.label} <span aria-hidden="true">→</span>
+    </Link>
+  )
 
   // Owned mode shows a trimmed, glanceable spec set; the full sheet lives on
   // /collection/watch/[id]. Non-owned modes keep the fuller set — they have no
@@ -357,6 +372,7 @@ export default function WatchSidebar({
 
       {mode === 'playground' || mode === 'followed' ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {studioLink}
           <a
             href={`https://www.chrono24.com/search/index.htm?query=${encodeURIComponent(watch.brand + ' ' + watch.model)}`}
             target="_blank"
@@ -400,6 +416,7 @@ export default function WatchSidebar({
           <Link href={`/collection/watch/${watch.id}`} style={btnPrimary}>
             View full detail →
           </Link>
+          {studioLink}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             <a
               href={buildChrono24URL(watch.brand, watch.model, 'sell')}
@@ -414,7 +431,7 @@ export default function WatchSidebar({
                 Integrated
               </span>
             ) : (
-              <button style={btnAction} onClick={() => router.push(`/collection/straps?watchId=${watch.id}`)}>Straps →</button>
+              <button style={btnAction} onClick={() => router.push(`/collection/straps?watchId=${watch.id}`)}>Strap Drawer →</button>
             )}
           </div>
         </div>

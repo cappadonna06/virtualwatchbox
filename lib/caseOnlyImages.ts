@@ -4,7 +4,7 @@
 // of the watch head. The segmentation pipeline (scripts/segment-watch-cases.ts)
 // writes the authoritative columns to Supabase AND this committed static bridge,
 // so the Studio resolves case-only assets + lug geometry at module-load with zero
-// round-trips (no spinner, ever). Only `approved` entries are exposed.
+// round-trips. Studio only uses approved cutouts for the exact reference.
 
 import raw from '@/data/case-only-images.json'
 import type { BandHalf } from '@/lib/strapStudio'
@@ -52,7 +52,7 @@ export interface CaseOnlyEntry {
 
 const MAP = new Map<string, CaseOnlyEntry>(
   Object.entries(raw as Record<string, CaseOnlyEntry>)
-    .filter(([, e]) => e.status === 'approved' && Boolean(e.caseOnlyUrl))
+    .filter(([, e]) => e.status === 'approved' && e.catalogReferenceVerified && Boolean(e.caseOnlyUrl))
     .map(([id, e]) => [
       id,
       {
@@ -75,7 +75,7 @@ export function hasCaseOnly(catalogWatchId: string | undefined | null): boolean 
 
 /** Exact catalog references available in the Studio watch picker. */
 export function caseOnlyIds(): string[] {
-  return Array.from(MAP).filter(([, entry]) => entry.catalogReferenceVerified).map(([id]) => id)
+  return Array.from(MAP.keys())
 }
 
 export function channelMetrics(g: LugGeometry, end: 'top' | 'bottom', sleeveToWidth: number) {

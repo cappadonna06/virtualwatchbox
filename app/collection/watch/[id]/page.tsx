@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 
 import { brand } from '@/lib/brand'
+import { getStudioEntryPoint } from '@/lib/strapStudio'
 import { useCollectionSession } from '../../CollectionSessionProvider'
 import EditWatchModal, { type EditWatchUpdates } from '@/components/collection/EditWatchModal'
 import WatchPhotoGallery from '@/components/collection/WatchPhotoGallery'
@@ -30,6 +31,7 @@ export default function OwnedWatchDetailPage() {
     : '← Back to Collection'
   const {
     collectionWatches,
+    straps,
     updateCollectionWatch,
     removeFromCollection,
     showToast,
@@ -39,11 +41,6 @@ export default function OwnedWatchDetailPage() {
   const watch = useMemo(
     () => collectionWatches.find(w => w.id === params.id),
     [collectionWatches, params.id],
-  )
-
-  const strapWatch = useMemo(
-    () => (watch ? toStrapDrawerWatch(watch, getCatalogWatch(watch.watchId)) : null),
-    [watch, getCatalogWatch],
   )
 
   const [editing, setEditing] = useState(false)
@@ -90,6 +87,13 @@ export default function OwnedWatchDetailPage() {
   }
 
   const isCompact = viewportWidth < 980
+  const catalogWatch = getCatalogWatch(watch.watchId)
+  const strapWatch = toStrapDrawerWatch(watch, catalogWatch)
+  const studio = getStudioEntryPoint({
+    id: watch.watchId,
+    lugWidthMm: catalogWatch?.lugWidthMm ?? watch.lugWidthMm,
+    braceletType: catalogWatch?.braceletType,
+  }, Boolean(strapWatch.imageUrl || watch.imageTransparentUrl || catalogWatch?.imageTransparentUrl))
 
   function handleSave(updates: EditWatchUpdates) {
     if (!watch) return
@@ -251,6 +255,17 @@ export default function OwnedWatchDetailPage() {
               Ref. {watch.reference}
             </div>
 
+            {studio && (
+              <Link href={studio.href} style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8, minHeight: 42,
+                padding: '8px 16px', marginBottom: 18, textDecoration: 'none',
+                fontFamily: brand.font.sans, fontSize: 13, fontWeight: 600,
+                background: brand.colors.ink, color: brand.colors.bg, borderRadius: brand.radius.btn,
+              }}>
+                {studio.label} <span aria-hidden="true">→</span>
+              </Link>
+            )}
+
             {watch.estimatedValue ? (
               <div style={{
                 display: 'flex', alignItems: 'baseline', gap: 10,
@@ -334,20 +349,9 @@ export default function OwnedWatchDetailPage() {
           </div>
         </div>
 
-        {/* Straps that fit — hidden when the drawer is empty or bracelet is integrated */}
-        {strapWatch && strapWatch.braceletType !== 'integrated' && (
+        {straps.length > 0 && strapWatch.braceletType !== 'integrated' && (
           <div style={{ marginBottom: 28, paddingBottom: 24, borderBottom: `1px solid ${brand.colors.border}` }}>
             <StrapsThatFit watch={strapWatch} variant="detail" />
-            <button
-              onClick={() => router.push(`/collection/straps/studio?watchId=${watch.watchId}&source=compatible`)}
-              style={{
-                marginTop: 14, background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-                fontFamily: brand.font.sans, fontSize: 12, fontWeight: 600, letterSpacing: '0.06em',
-                color: brand.colors.gold, display: 'inline-flex', alignItems: 'center', gap: 6,
-              }}
-            >
-              Try in Strap Studio →
-            </button>
           </div>
         )}
 

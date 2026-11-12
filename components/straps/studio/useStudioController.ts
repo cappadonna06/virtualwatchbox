@@ -55,6 +55,8 @@ export function useStudioController() {
   const router = useRouter()
   const pathname = usePathname()
   const search = useSearchParams()
+  const from = search.get('from')
+  const origin = from === 'discover' || from === 'playground' ? from : undefined
 
   const session = useCollectionSession()
   const { collectionWatches, straps, strapOverrides, getCatalogWatch, showToast } = session
@@ -212,9 +214,10 @@ export function useStudioController() {
     params.set('watchId', watchId)
     if (currentStrap) params.set('strapId', currentStrap.id)
     params.set('source', source)
+    if (origin) params.set('from', origin)
     router.replace(`${pathname}?${params.toString()}`, { scroll: false })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchId, currentStrap?.id, source])
+  }, [watchId, currentStrap?.id, source, origin])
 
   // ── Keyboard ← / → cycles straps (ignored while typing) ───────────────────
   useEffect(() => {
@@ -303,6 +306,7 @@ export function useStudioController() {
     shareLook,
     // misc
     watchId,
+    origin,
     compatTarget,
     strapOverrides,
     hasOwned: collectionWatches.length > 0,

@@ -865,7 +865,7 @@ function PlaygroundPageInner() {
               <WatchSidebar
                 watch={selectedItem?.displayWatch ?? null}
                 sticky={false}
-                catalogWatchId={selectedItem?.sourceWatch.id ?? null}
+                sourceWatch={selectedItem?.sourceWatch}
                 mode="playground"
                 onRequestDelete={() => setDeleteEntryTarget(selectedItem)}
                 onRequestEdit={() => {

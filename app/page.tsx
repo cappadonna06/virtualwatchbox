@@ -2,6 +2,7 @@
 
 import HeroCarousel from '@/components/HeroCarousel'
 import CollectionSection from '@/components/collection/CollectionSection'
+import StrapStudioPreview from '@/components/StrapStudioPreview'
 import DiscoverPreview from '@/components/DiscoverPreview'
 import FeaturesSection from '@/components/FeaturesSection'
 import OnYourRadar from '@/components/OnYourRadar'
@@ -18,6 +19,7 @@ export default function HomePage() {
     <>
       <HeroCarousel />
       <CollectionSection />
+      <StrapStudioPreview />
       <DiscoverPreview />
       <FeaturesSection />
       <OnYourRadar followedWatchIds={followedWatchIdSet} />

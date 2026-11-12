@@ -83,6 +83,8 @@ const ICON_PATHS: Record<string, string[]> = {
   plus: ['M10 4v12', 'M4 10h12'],
   close: ['M5 5l10 10', 'M15 5L5 15'],
   chevDown: ['M5 8l5 5 5-5'],
+  arrowLeft: ['M16 10H4', 'M9 5l-5 5 5 5'],
+  arrowRight: ['M4 10h12', 'M11 5l5 5-5 5'],
   arrowUpRight: ['M6 14L14 6', 'M7 6h7v7'],
   check: ['M4 10.5l4 4 8-9'],
   trash: ['M3 6h14', 'M8 6V4h4v2', 'M5 6l1 11h8l1-11'],

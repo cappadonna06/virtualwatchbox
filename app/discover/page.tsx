@@ -19,6 +19,7 @@ import {
   pickDemoCollection,
 } from '@/lib/discover'
 import { pickFromPool } from '@/lib/discoverRotation'
+import { sampleStrapSuggestions, suggestStraps } from '@/lib/discoverStraps'
 import type { UpgradeSuggestion } from '@/lib/discover'
 import { getProfileDemoState } from '@/lib/profileDemo'
 
@@ -29,6 +30,7 @@ import UpgradeSpread from './UpgradeSpread'
 import TargetsGrailSection from './TargetsGrailSection'
 import NextSlotEditorial from './NextSlotEditorial'
 import NewsEditorial from './NewsEditorial'
+import StrapSuggestions from './StrapSuggestions'
 import { usePersonalizedInsight } from './usePersonalizedInsight'
 import './discover.css'
 
@@ -255,6 +257,12 @@ export default function DiscoverPage() {
 
   const showLead = Boolean(leadWatch)
   const showUpgrade = personalized && upgradeSuggestions.length > 0
+  const ownedStrapSuggestions = useMemo(
+    () => suggestStraps(session.collectionWatches, session.straps, session.strapOverrides, session.getCatalogWatch),
+    [session.collectionWatches, session.straps, session.strapOverrides, session.getCatalogWatch],
+  )
+  const strapSuggestions = ownedStrapSuggestions.length ? ownedStrapSuggestions : sampleStrapSuggestions
+  const showStraps = strapSuggestions.length > 0
 
   // Single source of truth for section order + numbering. Order MUST mirror the
   // JSX render order below; numbers are sequential over only the sections that
@@ -266,9 +274,10 @@ export default function DiscoverPage() {
     if (showUpgrade) out.push({ id: 'upgrade', label: 'Upgrade' })
     if (showTargets) out.push({ id: 'targets', label: 'Targets' })
     out.push({ id: 'next-slot', label: 'Next Slot' })
+    if (showStraps) out.push({ id: 'straps', label: 'Straps' })
     out.push({ id: 'news', label: 'News' })
     return out.map((s, i) => ({ ...s, num: String(i + 1).padStart(2, '0') }))
-  }, [showLead, showUpgrade, showTargets])
+  }, [showLead, showUpgrade, showTargets, showStraps])
 
   const numById = useMemo(() => new Map(sections.map(s => [s.id, s.num])), [sections])
 
@@ -316,6 +325,13 @@ export default function DiscoverPage() {
       {showTargets && <TargetsGrailSection kicker={`§ ${numById.get('targets')}`} />}
 
       <NextSlotEditorial watches={nextSlotRecs} ownedTypes={ownedTypes} seedKeyByWatchId={nextSlotSeedKeys} kicker={`§ ${numById.get('next-slot')}`} />
+
+      {showStraps && (
+        <StrapSuggestions
+          suggestions={strapSuggestions} personalized={ownedStrapSuggestions.length > 0}
+          kicker={`§ ${numById.get('straps')}`}
+        />
+      )}
 
       <NewsEditorial brandFilter={newsBrandFilter} kicker={`§ ${numById.get('news')}`} />
     </div>
