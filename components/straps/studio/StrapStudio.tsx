@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { brand } from '@/lib/brand'
+import type { CaseOnlyEntry } from '@/lib/caseOnlyImages'
 import { useIsMobile } from '@/components/collection/useResponsiveState'
 import { Kicker, SpecBadge } from '@/components/straps/atoms'
 import type { StudioStrap } from '@/lib/strapStudio'
 import { useStudioController, type StudioController } from './useStudioController'
-import StudioComposite from './StudioComposite'
+import StudioComposite, { WornStrapPreview } from './StudioComposite'
+import StudioArrow from './StudioArrow'
 import StrapPickerTray from './StrapPickerTray'
 import WatchPickerDropdown from './WatchPickerDropdown'
 
@@ -83,6 +85,9 @@ export default function StrapStudio() {
 }
 
 function Masthead({ c, isMobile, stacked }: { c: StudioController; isMobile: boolean; stacked: boolean }) {
+  const back = c.origin === 'discover' ? { href: '/discover#straps', label: 'Discover' }
+    : c.origin === 'playground' ? { href: '/playground', label: 'Playground' }
+    : { href: '/collection', label: 'Collection' }
   return (
     <header
       style={{
@@ -97,14 +102,14 @@ function Masthead({ c, isMobile, stacked }: { c: StudioController; isMobile: boo
       }}
     >
       <Link
-        href="/collection"
+        href={back.href}
         style={{
           justifySelf: 'start', display: 'inline-flex', alignItems: 'center', gap: 6,
           color: brand.studio.textLow, textDecoration: 'none',
           font: `500 ${isMobile ? 12 : 13}px ${brand.font.sans}`, whiteSpace: 'nowrap',
         }}
       >
-        <span style={{ fontSize: isMobile ? 14 : 15 }}>←</span> Collection
+        <span aria-hidden="true" style={{ fontSize: isMobile ? 14 : 15 }}>←</span> {back.label}
       </Link>
       <div
         style={{
@@ -213,7 +218,7 @@ function CaptionBlock({ c, isMobile }: { c: StudioController; isMobile: boolean 
             transition={{ duration: c.reducedMotion ? 0 : 0.22, ease: [0.4, 0, 0.2, 1] }}
             style={{ font: `italic 400 ${isMobile ? 15 : 18}px ${brand.font.serif}`, color: brand.studio.textMid }}
           >
-            {s ? `on ${s.label}` : 'Choose a strap'}
+            {s ? `${c.renderMode === 'composite' ? 'on' : 'with'} ${s.label}` : 'Choose a strap'}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -248,77 +253,60 @@ function CaptionCta({ label, href, onClick, primary, compact }: { label: string;
 }
 
 function Stage({ c, isMobile, viewport: { w: vw, h: vh } }: { c: StudioController; isMobile: boolean; viewport: { w: number; h: number } }) {
-  const ghostsPerSide = c.renderMode === 'side-by-side'
+  const caseOnly = c.renderMode === 'composite' ? c.caseOnly : undefined
+  const ghostsPerSide = isMobile ? 0 : c.renderMode === 'side-by-side'
     ? Number(vw >= 1100)
-    : isMobile ? 1 : vw >= 1140 ? 2 : 1
-  const ghostW = isMobile ? (vw < 360 ? 48 : 60) : vw >= 1280 ? 130 : 108
+    : vw >= 1140 ? 2 : 1
+  const ghostW = vw >= 1280 ? 130 : 108
   const rowH = isMobile ? Math.max(210, Math.min(300, Math.round(vh * 0.32)))
     : Math.max(330, Math.min(430, Math.round(vh * 0.44)))
   const swipe = useStageSwipe(c.nextStrap, c.prevStrap)
+  const ghostProps = { caseOnly, width: ghostW, rowHeight: rowH, onSelect: c.selectStrap }
+  const arrow = (dir: 'prev' | 'next') => {
+    const previous = dir === 'prev'
+    const strap = isMobile && caseOnly ? c.ghostAt(previous ? -1 : 1) : undefined
+    const preview = caseOnly && strap?.band ? {
+      label: strap.label,
+      content: <WornStrapPreview caseOnly={caseOnly} band={strap.band} rowHeight={rowH} opacity={0.62} />,
+    } : undefined
+    return <StudioArrow dir={dir} onClick={previous ? c.prevStrap : c.nextStrap} disabled={!c.canCycle} preview={preview} />
+  }
 
   return (
-    <div
-      {...(isMobile ? swipe : {})}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: isMobile ? 8 : 26,
-        height: rowH - (isMobile ? 38 : 68),
-        marginTop: isMobile ? 4 : 6,
-        touchAction: 'pan-y',
-      }}
-    >
-      {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(-2)} width={ghostW} opacity={0.35} onSelect={c.selectStrap} />}
-      {ghostsPerSide >= 1 && <GhostStrap strap={c.ghostAt(-1)} width={ghostW} opacity={0.62} onSelect={c.selectStrap} />}
-
-      {/* On mobile the tappable side ghosts ARE the prev/next controls —
-          arrows + ghosts + stage don't all fit a 375pt width. */}
-      {!isMobile && <Arrow dir="prev" onClick={c.prevStrap} disabled={!c.canCycle} />}
-      <StudioComposite c={c} rowHeight={rowH} />
-      {!isMobile && <Arrow dir="next" onClick={c.nextStrap} disabled={!c.canCycle} />}
-
-      {ghostsPerSide >= 1 && <GhostStrap strap={c.ghostAt(1)} width={ghostW} opacity={0.62} onSelect={c.selectStrap} />}
-      {ghostsPerSide >= 2 && <GhostStrap strap={c.ghostAt(2)} width={ghostW} opacity={0.35} onSelect={c.selectStrap} />}
-    </div>
+    <>
+      <div
+        {...(isMobile ? swipe : {})}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: isMobile ? 8 : 26,
+          height: rowH - (isMobile ? 38 : 68),
+          marginTop: isMobile ? 4 : 6,
+          touchAction: 'pan-y',
+        }}
+      >
+        {ghostsPerSide >= 2 && <GhostStrap {...ghostProps} strap={c.ghostAt(-2)} opacity={0.35} />}
+        {ghostsPerSide >= 1 && <GhostStrap {...ghostProps} strap={c.ghostAt(-1)} opacity={0.62} />}
+        {(!isMobile || caseOnly) && arrow('prev')}
+        <StudioComposite c={c} rowHeight={rowH} />
+        {(!isMobile || caseOnly) && arrow('next')}
+        {ghostsPerSide >= 1 && <GhostStrap {...ghostProps} strap={c.ghostAt(1)} opacity={0.62} />}
+        {ghostsPerSide >= 2 && <GhostStrap {...ghostProps} strap={c.ghostAt(2)} opacity={0.35} />}
+      </div>
+      {isMobile && !caseOnly && (
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: 8 }}>
+          {arrow('prev')}
+          {arrow('next')}
+        </div>
+      )}
+    </>
   )
 }
 
-// In normal flow (flex-centered) — never absolutely positioned and never given a
-// static transform, so Framer's whileTap scale can't displace it.
-function Arrow({ dir, onClick, disabled }: { dir: 'prev' | 'next'; onClick: () => void; disabled: boolean }) {
-  return (
-    <motion.button
-      onClick={onClick}
-      disabled={disabled}
-      aria-label={dir === 'prev' ? 'Previous strap' : 'Next strap'}
-      whileTap={{ scale: 0.88 }}
-      transition={{ type: 'spring', stiffness: 500, damping: 28 }}
-      style={{
-        flex: '0 0 auto',
-        width: 42,
-        height: 42,
-        borderRadius: '50%',
-        border: `1px solid ${brand.studio.hairline}`,
-        background: brand.studio.panel,
-        color: brand.studio.textHi,
-        cursor: disabled ? 'default' : 'pointer',
-        opacity: disabled ? 0.35 : 1,
-        fontSize: 15,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        boxShadow: brand.shadow.sm,
-      }}
-    >
-      {dir === 'prev' ? '‹' : '›'}
-    </motion.button>
-  )
-}
-
-// Ghosted carousel neighbor — the full-strap product photo (the worn halves
-// render only in the composite centerpiece).
-function GhostStrap({ strap, width, opacity, onSelect }: { strap?: StudioStrap; width: number; opacity: number; onSelect: (id: string) => void }) {
+function GhostStrap({ strap, caseOnly, width, rowHeight, opacity, onSelect }: {
+  strap?: StudioStrap; caseOnly?: CaseOnlyEntry; width: number; rowHeight: number; opacity: number; onSelect: (id: string) => void
+}) {
   if (!strap) return <div style={{ width, flex: '0 0 auto' }} />
   return (
     <button
@@ -327,12 +315,15 @@ function GhostStrap({ strap, width, opacity, onSelect }: { strap?: StudioStrap; 
       title={strap.label}
       style={{
         flex: '0 0 auto', width, padding: 0, border: 'none', background: 'transparent',
+        display: 'grid', justifyItems: 'center',
         cursor: 'pointer', opacity, transition: 'opacity 0.2s ease',
       }}
       onMouseEnter={e => { e.currentTarget.style.opacity = '0.92' }}
       onMouseLeave={e => { e.currentTarget.style.opacity = String(opacity) }}
     >
-      <div
+      {caseOnly && strap.band ? (
+        <WornStrapPreview caseOnly={caseOnly} band={strap.band} rowHeight={rowHeight} />
+      ) : <div
         style={{
           width: '100%', aspectRatio: '1000 / 1200', borderRadius: brand.radius.md, overflow: 'hidden',
           background: brand.studio.panel, border: `1px solid ${brand.studio.hairlineSoft}`,
@@ -342,7 +333,7 @@ function GhostStrap({ strap, width, opacity, onSelect }: { strap?: StudioStrap; 
           // eslint-disable-next-line @next/next/no-img-element
           <img src={strap.imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         ) : null}
-      </div>
+      </div>}
     </button>
   )
 }
