@@ -1845,6 +1845,41 @@
     "lugWidthMm": 20,
     "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw356517/primary.webp"
   },
+  "iwc-iw356518": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw356518/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw356518/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 176,
+        "y": 24
+      },
+      "topLugRight": {
+        "x": 526,
+        "y": 24
+      },
+      "bottomLugLeft": {
+        "x": 176,
+        "y": 812
+      },
+      "bottomLugRight": {
+        "x": 529,
+        "y": 812
+      },
+      "lugWidthPx": 352,
+      "imageWidth": 749,
+      "imageHeight": 900,
+      "topCaseEdgeY": 88,
+      "bottomCaseEdgeY": 763
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "IWC",
+    "model": "Portofino Automatic",
+    "reference": "IW356518",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw356518/primary.webp"
+  },
   "iwc-iw356522": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw356522/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw356522/case-only.png",
@@ -3800,6 +3835,76 @@
     "reference": "701.1",
     "lugWidthMm": 18,
     "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-701-1/primary.webp"
+  },
+  "nomos-glashutte-702": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-702/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-702/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 165,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 572,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 183,
+        "y": 890
+      },
+      "bottomLugRight": {
+        "x": 571,
+        "y": 890
+      },
+      "lugWidthPx": 398,
+      "imageWidth": 838,
+      "imageHeight": 900,
+      "topCaseEdgeY": 49,
+      "bottomCaseEdgeY": 789
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Nomos Glashütte",
+    "model": "Club",
+    "reference": "702",
+    "lugWidthMm": 18,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-702/primary.webp"
+  },
+  "nomos-glashutte-704": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-704/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-704/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 191,
+        "y": 1
+      },
+      "topLugRight": {
+        "x": 574,
+        "y": 1
+      },
+      "bottomLugLeft": {
+        "x": 193,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 573,
+        "y": 899
+      },
+      "lugWidthPx": 382,
+      "imageWidth": 840,
+      "imageHeight": 900,
+      "topCaseEdgeY": 43,
+      "bottomCaseEdgeY": 785
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Nomos Glashütte",
+    "model": "Club",
+    "reference": "704",
+    "lugWidthMm": 18,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-704/primary.webp"
   },
   "nomos-glashutte-708": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-708/case-only.webp",
