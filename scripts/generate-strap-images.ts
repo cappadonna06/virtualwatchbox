@@ -211,7 +211,7 @@ const KINDS: Record<KindKey, Kind> = {
     clasp: 'deployant',
   },
   'rubber-channel': {
-    descriptor: 'molded black rubber watch strap with two raised lengthwise channels and a curved end',
+    descriptor: 'molded rubber watch strap with two raised lengthwise channels and a curved end',
     texture: 'Fine-grained matte rubber with parallel lengthwise channels',
     stitch: false,
     singlePiece: false,
@@ -367,6 +367,19 @@ const STRAPS: StrapDef[] = [
   { name: 'rubber-ribbed-sky', kind: 'rubber-ribbed', material: 'rubber', subMaterial: 'Ribbed', color: 'Sky Blue', colorHex: '#6A9BBC', style: 'sporty', tier: 3 },
   { name: 'canvas-twill-charcoal', kind: 'canvas-twill', material: 'canvas', subMaterial: 'Cotton Twill', color: 'Charcoal', colorHex: '#424348', style: 'rugged', tier: 3 },
   { name: 'canvas-herringbone-blue', kind: 'canvas-herringbone', material: 'canvas', subMaterial: 'Herringbone', color: 'Blue', colorHex: '#2E4C8A', style: 'rugged', tier: 3 },
+
+  { name: 'leather-suede-lilac', kind: 'leather-suede', material: 'leather', subMaterial: 'Suede', color: 'Lilac', colorHex: '#A595BB', style: 'casual', tier: 4 },
+  { name: 'leather-suede-dusty-rose', kind: 'leather-suede', material: 'leather', subMaterial: 'Suede', color: 'Dusty Rose', colorHex: '#B98287', style: 'casual', tier: 4 },
+  { name: 'leather-nubuck-moss', kind: 'leather-suede', material: 'leather', subMaterial: 'Nubuck', color: 'Moss Green', colorHex: '#596347', style: 'casual', tier: 4 },
+  { name: 'leather-shell-cordovan-forest', kind: 'leather-shell-cordovan', material: 'leather', subMaterial: 'Shell Cordovan', color: 'Forest Green', colorHex: '#294834', style: 'dressy', tier: 4 },
+  { name: 'leather-alligator-lagoon', kind: 'leather-alligator', material: 'leather', subMaterial: 'Alligator', color: 'Lagoon Blue', colorHex: '#2F758C', style: 'dressy', tier: 4 },
+  { name: 'fabric-sailcloth-red', kind: 'fabric-sailcloth', material: 'fabric', subMaterial: 'Sailcloth', color: 'Crimson Red', colorHex: '#9F2436', style: 'sporty', tier: 4 },
+  { name: 'rubber-waffle-lime', kind: 'rubber-waffle', material: 'rubber', subMaterial: 'Waffle', color: 'Lime Green', colorHex: '#A6BF49', style: 'sporty', tier: 4 },
+  { name: 'rubber-channel-blue', kind: 'rubber-channel', material: 'rubber', subMaterial: 'Channel', color: 'Cobalt Blue', colorHex: '#244C92', style: 'sporty', tier: 4 },
+  { name: 'canvas-twill-rust', kind: 'canvas-twill', material: 'canvas', subMaterial: 'Cotton Twill', color: 'Rust Orange', colorHex: '#AA512C', style: 'rugged', tier: 4 },
+  { name: 'canvas-herringbone-cream', kind: 'canvas-herringbone', material: 'canvas', subMaterial: 'Herringbone', color: 'Cream', colorHex: '#E1D0AA', style: 'rugged', tier: 4 },
+  { name: 'canvas-herringbone-mustard', kind: 'canvas-herringbone', material: 'canvas', subMaterial: 'Herringbone', color: 'Mustard Yellow', colorHex: '#B39135', style: 'rugged', tier: 4 },
+  { name: 'leather-rally-ivory', kind: 'leather-rally', material: 'leather', subMaterial: 'Rally', color: 'Ivory', colorHex: '#DCCDB2', style: 'sporty', tier: 4 },
 ]
 
 // Sample set for the review preview (one per material family + sub-material branch)

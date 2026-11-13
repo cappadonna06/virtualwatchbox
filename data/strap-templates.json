@@ -1138,5 +1138,233 @@
     ],
     "affiliatePartner": null,
     "affiliateUrl": null
+  },
+  {
+    "id": "leather-suede-lilac",
+    "material": "leather",
+    "subMaterial": "Suede",
+    "color": "Lilac",
+    "colorHex": "#A595BB",
+    "style": "casual",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-suede-lilac.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-suede-dusty-rose",
+    "material": "leather",
+    "subMaterial": "Suede",
+    "color": "Dusty Rose",
+    "colorHex": "#B98287",
+    "style": "casual",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-suede-dusty-rose.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-nubuck-moss",
+    "material": "leather",
+    "subMaterial": "Nubuck",
+    "color": "Moss Green",
+    "colorHex": "#596347",
+    "style": "casual",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-nubuck-moss.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-shell-cordovan-forest",
+    "material": "leather",
+    "subMaterial": "Shell Cordovan",
+    "color": "Forest Green",
+    "colorHex": "#294834",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-shell-cordovan-forest.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-alligator-lagoon",
+    "material": "leather",
+    "subMaterial": "Alligator",
+    "color": "Lagoon Blue",
+    "colorHex": "#2F758C",
+    "style": "dressy",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-alligator-lagoon.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "fabric-sailcloth-red",
+    "material": "fabric",
+    "subMaterial": "Sailcloth",
+    "color": "Crimson Red",
+    "colorHex": "#9F2436",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/fabric-sailcloth-red.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "rubber-waffle-lime",
+    "material": "rubber",
+    "subMaterial": "Waffle",
+    "color": "Lime Green",
+    "colorHex": "#A6BF49",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/rubber-waffle-lime.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "rubber-channel-blue",
+    "material": "rubber",
+    "subMaterial": "Channel",
+    "color": "Cobalt Blue",
+    "colorHex": "#244C92",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/rubber-channel-blue.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "canvas-twill-rust",
+    "material": "canvas",
+    "subMaterial": "Cotton Twill",
+    "color": "Rust Orange",
+    "colorHex": "#AA512C",
+    "style": "rugged",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/canvas-twill-rust.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "canvas-herringbone-cream",
+    "material": "canvas",
+    "subMaterial": "Herringbone",
+    "color": "Cream",
+    "colorHex": "#E1D0AA",
+    "style": "rugged",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/canvas-herringbone-cream.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "canvas-herringbone-mustard",
+    "material": "canvas",
+    "subMaterial": "Herringbone",
+    "color": "Mustard Yellow",
+    "colorHex": "#B39135",
+    "style": "rugged",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/canvas-herringbone-mustard.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
+  },
+  {
+    "id": "leather-rally-ivory",
+    "material": "leather",
+    "subMaterial": "Rally",
+    "color": "Ivory",
+    "colorHex": "#DCCDB2",
+    "style": "sporty",
+    "imageUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/strap-images/strap-templates/leather-rally-ivory.webp",
+    "availableLugWidths": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      24
+    ],
+    "affiliatePartner": null,
+    "affiliateUrl": null
   }
 ]
