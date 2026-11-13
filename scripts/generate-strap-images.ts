@@ -22,7 +22,7 @@
  *
  * USAGE:
  *   npx tsx scripts/generate-strap-images.ts --tier 1           # generate + upload all Tier 1
- *   npx tsx scripts/generate-strap-images.ts --only leather-smooth-cognac --no-upload
+ *   npx tsx scripts/generate-strap-images.ts --only leather-smooth-dark-brown --no-upload
  *   npx tsx scripts/generate-strap-images.ts --tier 1 --dry-run # print prompts, no API calls
  *   npx tsx scripts/generate-strap-images.ts --process-only     # skip gen; ingest public/strap-assets/raw/<name>.{png,jpg,webp}
  *   npx tsx scripts/generate-strap-images.ts --tier 1 --force   # re-generate even if already uploaded
@@ -131,7 +131,10 @@ const COLOR_LITERAL: Record<string, string> = {
   Navy: 'deep midnight navy blue',
   Olive: 'muted olive military green',
   Orange: 'vibrant safety orange',
-  Grey: 'neutral mid-grey',
+  Gray: 'neutral mid-gray',
+  'Warm Gray': 'warm gray with subtle taupe undertones',
+  'Chestnut Brown': 'warm reddish chestnut brown',
+  'Walnut Brown': 'medium-dark walnut brown',
   Burgundy: 'deep burgundy oxblood red',
   Blue: 'rich royal blue',
 }
@@ -144,6 +147,7 @@ type KindKey =
   | 'leather-pebbled'
   | 'fabric-sailcloth'
   | 'rubber-tropical'
+  | 'rubber-channel'
   | 'rubber-tread'
   | 'leather-rally'
   | 'rubber-waffle'
@@ -202,6 +206,13 @@ const KINDS: Record<KindKey, Kind> = {
   'rubber-tropical': {
     descriptor: 'molded FKM tropical-style rubber watch strap with a fine pin-grain texture and a matte finish',
     texture: 'The matte rubber shows a fine even pin-grain micro-texture, no gloss',
+    stitch: false,
+    singlePiece: false,
+    clasp: 'deployant',
+  },
+  'rubber-channel': {
+    descriptor: 'molded black rubber watch strap with two raised lengthwise channels and a curved end',
+    texture: 'Fine-grained matte rubber with parallel lengthwise channels',
     stitch: false,
     singlePiece: false,
     clasp: 'deployant',
@@ -278,36 +289,29 @@ type StrapDef = {
 }
 
 const STRAPS: StrapDef[] = [
-  // ---- Leather: Smooth calfskin (9) ----
+  // ---- Leather: Smooth calfskin (6) ----
   { name: 'leather-smooth-black', kind: 'leather-smooth', material: 'leather', subMaterial: 'Smooth', color: 'Black', colorHex: '#1A1410', style: 'dressy', tier: 1, reference: REF.buttero, recolor: true },
-  { name: 'leather-smooth-dark-brown', kind: 'leather-smooth', material: 'leather', subMaterial: 'Smooth', color: 'Dark Brown', colorHex: '#3A2418', style: 'dressy', tier: 1, reference: REF.buttero, recolor: true },
-  { name: 'leather-smooth-brown', kind: 'leather-smooth', material: 'leather', subMaterial: 'Smooth', color: 'Brown', colorHex: '#6A4426', style: 'dressy', tier: 1, reference: REF.buttero, recolor: true },
-  { name: 'leather-smooth-cognac', kind: 'leather-smooth', material: 'leather', subMaterial: 'Smooth', color: 'Cognac', colorHex: '#8A4B24', style: 'dressy', tier: 1, reference: REF.buttero, recolor: true },
+  { name: 'leather-smooth-dark-brown', kind: 'leather-smooth', material: 'leather', subMaterial: 'Smooth', color: 'Chestnut Brown', colorHex: '#81422E', style: 'dressy', tier: 1, reference: REF.buttero, recolor: true },
   { name: 'leather-smooth-tan', kind: 'leather-smooth', material: 'leather', subMaterial: 'Smooth', color: 'Tan', colorHex: '#B08552', style: 'casual', tier: 1, reference: REF.buttero, recolor: true },
   { name: 'leather-smooth-navy', kind: 'leather-smooth', material: 'leather', subMaterial: 'Smooth', color: 'Navy', colorHex: '#2A3550', style: 'dressy', tier: 1, reference: REF.buttero, recolor: true },
   { name: 'leather-smooth-olive', kind: 'leather-smooth', material: 'leather', subMaterial: 'Smooth', color: 'Olive', colorHex: '#44523B', style: 'casual', tier: 1, reference: REF.buttero, recolor: true },
-  { name: 'leather-smooth-grey', kind: 'leather-smooth', material: 'leather', subMaterial: 'Smooth', color: 'Grey', colorHex: '#6E6A63', style: 'dressy', tier: 1, reference: REF.buttero, recolor: true },
-  { name: 'leather-smooth-burgundy', kind: 'leather-smooth', material: 'leather', subMaterial: 'Smooth', color: 'Burgundy', colorHex: '#5A2A2E', style: 'dressy', tier: 1, reference: REF.buttero, recolor: true },
+  { name: 'leather-smooth-grey', kind: 'leather-smooth', material: 'leather', subMaterial: 'Smooth', color: 'Warm Gray', colorHex: '#84776E', style: 'dressy', tier: 1, reference: REF.buttero, recolor: true },
 
-  // ---- Leather: Shell Cordovan (4) — exact colour match on black/cognac refs ----
+  // ---- Leather: Shell Cordovan (3) ----
   { name: 'leather-shell-cordovan-black', kind: 'leather-shell-cordovan', material: 'leather', subMaterial: 'Shell Cordovan', color: 'Black', colorHex: '#1A1410', style: 'dressy', tier: 1, reference: REF.shellBlack },
-  { name: 'leather-shell-cordovan-cognac', kind: 'leather-shell-cordovan', material: 'leather', subMaterial: 'Shell Cordovan', color: 'Cognac', colorHex: '#8A4B24', style: 'dressy', tier: 1, reference: REF.shellCognac },
+  { name: 'leather-shell-cordovan-cognac', kind: 'leather-shell-cordovan', material: 'leather', subMaterial: 'Shell Cordovan', color: 'Walnut Brown', colorHex: '#6A4A31', style: 'dressy', tier: 1, reference: REF.shellCognac },
   { name: 'leather-shell-cordovan-burgundy', kind: 'leather-shell-cordovan', material: 'leather', subMaterial: 'Shell Cordovan', color: 'Burgundy', colorHex: '#5A2A2E', style: 'dressy', tier: 1, reference: REF.shellCognac, recolor: true },
-  { name: 'leather-shell-cordovan-navy', kind: 'leather-shell-cordovan', material: 'leather', subMaterial: 'Shell Cordovan', color: 'Navy', colorHex: '#2A3550', style: 'dressy', tier: 1, reference: REF.shellBlack, recolor: true },
 
-  // ---- Leather: Alligator (7) — exact on black/dark-brown refs ----
+  // ---- Leather: Alligator (4) ----
   { name: 'leather-alligator-black', kind: 'leather-alligator', material: 'leather', subMaterial: 'Alligator', color: 'Black', colorHex: '#1A1410', style: 'dressy', tier: 1, reference: REF.alligatorBlack },
-  { name: 'leather-alligator-dark-brown', kind: 'leather-alligator', material: 'leather', subMaterial: 'Alligator', color: 'Dark Brown', colorHex: '#3A2418', style: 'dressy', tier: 1, reference: REF.alligatorMahogany },
-  { name: 'leather-alligator-brown', kind: 'leather-alligator', material: 'leather', subMaterial: 'Alligator', color: 'Brown', colorHex: '#6A4426', style: 'dressy', tier: 1, reference: REF.alligatorMahogany, recolor: true },
   { name: 'leather-alligator-cognac', kind: 'leather-alligator', material: 'leather', subMaterial: 'Alligator', color: 'Cognac', colorHex: '#8A4B24', style: 'dressy', tier: 1, reference: REF.alligatorMahogany, recolor: true },
   { name: 'leather-alligator-navy', kind: 'leather-alligator', material: 'leather', subMaterial: 'Alligator', color: 'Navy', colorHex: '#2A3550', style: 'dressy', tier: 1, reference: REF.alligatorMahogany, recolor: true },
   { name: 'leather-alligator-burgundy', kind: 'leather-alligator', material: 'leather', subMaterial: 'Alligator', color: 'Burgundy', colorHex: '#5A2A2E', style: 'dressy', tier: 1, reference: REF.alligatorMahogany, recolor: true },
-  { name: 'leather-alligator-grey', kind: 'leather-alligator', material: 'leather', subMaterial: 'Alligator', color: 'Grey', colorHex: '#6E6A63', style: 'dressy', tier: 1, reference: REF.alligatorMahogany, recolor: true },
 
-  // ---- Leather: Suede (4) — shape from a smooth ref, suede texture via prompt ----
+  // ---- Leather: Suede and nubuck ----
   { name: 'leather-suede-brown', kind: 'leather-suede', material: 'leather', subMaterial: 'Suede', color: 'Brown', colorHex: '#6A4426', style: 'casual', tier: 1, reference: REF.nubuck, recolor: true },
   { name: 'leather-suede-tan', kind: 'leather-suede', material: 'leather', subMaterial: 'Suede', color: 'Tan', colorHex: '#B08552', style: 'casual', tier: 1, reference: REF.nubuck, recolor: true },
-  { name: 'leather-suede-grey', kind: 'leather-suede', material: 'leather', subMaterial: 'Suede', color: 'Grey', colorHex: '#6E6A63', style: 'casual', tier: 1, reference: REF.nubuck },
+  { name: 'leather-suede-grey', kind: 'leather-suede', material: 'leather', subMaterial: 'Nubuck', color: 'Gray', colorHex: '#6E6A63', style: 'casual', tier: 1, reference: REF.nubuck },
   { name: 'leather-suede-navy', kind: 'leather-suede', material: 'leather', subMaterial: 'Suede', color: 'Navy', colorHex: '#2A3550', style: 'casual', tier: 1, reference: REF.nubuck, recolor: true },
 
   // ---- Leather: Pebbled (3) — pebble-grain texture ref (tan); ref is buckle-LEFT, so mirror it ----
@@ -319,20 +323,19 @@ const STRAPS: StrapDef[] = [
   { name: 'fabric-sailcloth-black', kind: 'fabric-sailcloth', material: 'fabric', subMaterial: 'Sailcloth', color: 'Black', colorHex: '#1A1410', style: 'sporty', tier: 1, reference: REF.sailclothNavy, recolor: true },
   { name: 'fabric-sailcloth-navy', kind: 'fabric-sailcloth', material: 'fabric', subMaterial: 'Sailcloth', color: 'Navy', colorHex: '#2A3550', style: 'sporty', tier: 1, reference: REF.sailclothNavy },
   { name: 'fabric-sailcloth-olive', kind: 'fabric-sailcloth', material: 'fabric', subMaterial: 'Sailcloth', color: 'Olive', colorHex: '#44523B', style: 'sporty', tier: 1, reference: REF.sailclothOlive },
-  { name: 'fabric-sailcloth-grey', kind: 'fabric-sailcloth', material: 'fabric', subMaterial: 'Sailcloth', color: 'Grey', colorHex: '#6E6A63', style: 'sporty', tier: 1, reference: REF.sailclothNavy, recolor: true },
+  { name: 'fabric-sailcloth-grey', kind: 'fabric-sailcloth', material: 'fabric', subMaterial: 'Sailcloth', color: 'Gray', colorHex: '#6E6A63', style: 'sporty', tier: 1, reference: REF.sailclothNavy, recolor: true },
   { name: 'fabric-sailcloth-brown', kind: 'fabric-sailcloth', material: 'fabric', subMaterial: 'Sailcloth', color: 'Brown', colorHex: '#6A4426', style: 'sporty', tier: 1, reference: REF.sailclothOlive, recolor: true },
 
-  // ---- Rubber: Tropic (6) — exact on black/olive refs ----
-  { name: 'rubber-tropical-black', kind: 'rubber-tropical', material: 'rubber', subMaterial: 'Tropic', color: 'Black', colorHex: '#1A1410', style: 'sporty', tier: 1, reference: REF.rubberBlack },
+  // ---- Rubber: Tropic ----
   { name: 'rubber-tropical-navy', kind: 'rubber-tropical', material: 'rubber', subMaterial: 'Tropic', color: 'Navy', colorHex: '#2A3550', style: 'sporty', tier: 1, reference: REF.rubberOlive, recolor: true },
   { name: 'rubber-tropical-orange', kind: 'rubber-tropical', material: 'rubber', subMaterial: 'Tropic', color: 'Orange', colorHex: '#C8581C', style: 'sporty', tier: 1, reference: REF.rubberOlive, recolor: true },
-  { name: 'rubber-tropical-grey', kind: 'rubber-tropical', material: 'rubber', subMaterial: 'Tropic', color: 'Grey', colorHex: '#6E6A63', style: 'sporty', tier: 1, reference: REF.rubberOlive, recolor: true },
+  { name: 'rubber-tropical-grey', kind: 'rubber-tropical', material: 'rubber', subMaterial: 'Tropic', color: 'Gray', colorHex: '#6E6A63', style: 'sporty', tier: 1, reference: REF.rubberOlive, recolor: true },
   { name: 'rubber-tropical-olive', kind: 'rubber-tropical', material: 'rubber', subMaterial: 'Tropic', color: 'Olive', colorHex: '#44523B', style: 'sporty', tier: 1, reference: REF.rubberOlive },
   { name: 'rubber-tropical-blue', kind: 'rubber-tropical', material: 'rubber', subMaterial: 'Tropic', color: 'Blue', colorHex: '#2E4C8A', style: 'sporty', tier: 1, reference: REF.rubberOlive, recolor: true },
 
-  // ---- Rubber: Tread (2) ----
-  { name: 'rubber-tread-black', kind: 'rubber-tread', material: 'rubber', subMaterial: 'Tread', color: 'Black', colorHex: '#1A1410', style: 'sporty', tier: 1, reference: REF.rubberBlack, recolor: true },
-  { name: 'rubber-tread-grey', kind: 'rubber-tread', material: 'rubber', subMaterial: 'Tread', color: 'Grey', colorHex: '#6E6A63', style: 'sporty', tier: 1, reference: REF.rubberOlive, recolor: true },
+  // ---- Rubber: Channel and waffle ----
+  { name: 'rubber-tread-black', kind: 'rubber-channel', material: 'rubber', subMaterial: 'Channel', color: 'Black', colorHex: '#1A1410', style: 'sporty', tier: 1, reference: REF.rubberBlack, recolor: true },
+  { name: 'rubber-tread-grey', kind: 'rubber-tread', material: 'rubber', subMaterial: 'Waffle', color: 'Olive', colorHex: '#7B7B69', style: 'sporty', tier: 1, reference: REF.rubberOlive, recolor: true },
   { name: 'leather-rally-cognac', kind: 'leather-rally', material: 'leather', subMaterial: 'Rally', color: 'Cognac', colorHex: '#8A4B24', style: 'sporty', tier: 2 },
   { name: 'rubber-waffle-navy', kind: 'rubber-waffle', material: 'rubber', subMaterial: 'Waffle', color: 'Navy', colorHex: '#2A3550', style: 'sporty', tier: 2 },
   { name: 'canvas-twill-tan', kind: 'canvas-twill', material: 'canvas', subMaterial: 'Cotton Twill', color: 'Tan', colorHex: '#B08552', style: 'rugged', tier: 2 },
@@ -342,15 +345,37 @@ const STRAPS: StrapDef[] = [
   { name: 'fabric-sailcloth-charcoal', kind: 'fabric-sailcloth', material: 'fabric', subMaterial: 'Sailcloth', color: 'Charcoal', colorHex: '#424348', style: 'sporty', tier: 2 },
   { name: 'rubber-tropical-oxblood', kind: 'rubber-tropical', material: 'rubber', subMaterial: 'Tropic', color: 'Oxblood', colorHex: '#71262C', style: 'sporty', tier: 2 },
 
+
+  // ---- Studio catalog expansion ----
+  { name: 'leather-alligator-slate', kind: 'leather-alligator', material: 'leather', subMaterial: 'Alligator', color: 'Slate Gray', colorHex: '#5C6267', style: 'dressy', tier: 3 },
+  { name: 'leather-alligator-forest', kind: 'leather-alligator', material: 'leather', subMaterial: 'Alligator', color: 'Forest Green', colorHex: '#294834', style: 'dressy', tier: 3 },
+  { name: 'leather-alligator-espresso', kind: 'leather-alligator', material: 'leather', subMaterial: 'Alligator', color: 'Espresso Brown', colorHex: '#412A22', style: 'dressy', tier: 3 },
+  { name: 'leather-smooth-oxblood', kind: 'leather-smooth', material: 'leather', subMaterial: 'Smooth', color: 'Oxblood', colorHex: '#681F2F', style: 'dressy', tier: 3 },
+  { name: 'leather-smooth-honey', kind: 'leather-smooth', material: 'leather', subMaterial: 'Smooth', color: 'Honey', colorHex: '#C28942', style: 'casual', tier: 3 },
+  { name: 'leather-pebbled-ivory', kind: 'leather-pebbled', material: 'leather', subMaterial: 'Pebbled', color: 'Ivory', colorHex: '#DCCDB2', style: 'casual', tier: 3 },
+  { name: 'leather-pebbled-forest', kind: 'leather-pebbled', material: 'leather', subMaterial: 'Pebbled', color: 'Forest Green', colorHex: '#294834', style: 'casual', tier: 3 },
+  { name: 'leather-rally-black', kind: 'leather-rally', material: 'leather', subMaterial: 'Rally', color: 'Black', colorHex: '#1A1410', style: 'sporty', tier: 3 },
+  { name: 'leather-rally-burgundy', kind: 'leather-rally', material: 'leather', subMaterial: 'Rally', color: 'Burgundy', colorHex: '#5A2A2E', style: 'sporty', tier: 3 },
+  { name: 'leather-suede-teal', kind: 'leather-suede', material: 'leather', subMaterial: 'Suede', color: 'Teal', colorHex: '#315E5C', style: 'casual', tier: 3 },
+  { name: 'leather-suede-rust', kind: 'leather-suede', material: 'leather', subMaterial: 'Suede', color: 'Rust Orange', colorHex: '#AD582E', style: 'casual', tier: 3 },
+  { name: 'fabric-sailcloth-burgundy', kind: 'fabric-sailcloth', material: 'fabric', subMaterial: 'Sailcloth', color: 'Burgundy', colorHex: '#5A2A2E', style: 'sporty', tier: 3 },
+  { name: 'fabric-sailcloth-sand', kind: 'fabric-sailcloth', material: 'fabric', subMaterial: 'Sailcloth', color: 'Sand', colorHex: '#B89159', style: 'sporty', tier: 3 },
+  { name: 'rubber-waffle-black', kind: 'rubber-waffle', material: 'rubber', subMaterial: 'Waffle', color: 'Black', colorHex: '#1A1410', style: 'sporty', tier: 3 },
+  { name: 'rubber-waffle-yellow', kind: 'rubber-waffle', material: 'rubber', subMaterial: 'Waffle', color: 'Yellow', colorHex: '#DEAF35', style: 'sporty', tier: 3 },
+  { name: 'rubber-ribbed-red', kind: 'rubber-ribbed', material: 'rubber', subMaterial: 'Ribbed', color: 'Red', colorHex: '#AF3030', style: 'sporty', tier: 3 },
+  { name: 'rubber-ribbed-teal', kind: 'rubber-ribbed', material: 'rubber', subMaterial: 'Ribbed', color: 'Teal', colorHex: '#315E5C', style: 'sporty', tier: 3 },
+  { name: 'rubber-ribbed-sky', kind: 'rubber-ribbed', material: 'rubber', subMaterial: 'Ribbed', color: 'Sky Blue', colorHex: '#6A9BBC', style: 'sporty', tier: 3 },
+  { name: 'canvas-twill-charcoal', kind: 'canvas-twill', material: 'canvas', subMaterial: 'Cotton Twill', color: 'Charcoal', colorHex: '#424348', style: 'rugged', tier: 3 },
+  { name: 'canvas-herringbone-blue', kind: 'canvas-herringbone', material: 'canvas', subMaterial: 'Herringbone', color: 'Blue', colorHex: '#2E4C8A', style: 'rugged', tier: 3 },
 ]
 
 // Sample set for the review preview (one per material family + sub-material branch)
 const SAMPLE_NAMES = [
-  'leather-smooth-cognac',
+  'leather-smooth-dark-brown',
   'leather-suede-brown',
   'leather-pebbled-brown',
   'fabric-sailcloth-navy',
-  'rubber-tropical-black',
+  'rubber-tread-black',
 ]
 
 function stitchColorFor(color: string): string {
