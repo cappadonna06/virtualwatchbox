@@ -519,7 +519,7 @@
     "brand": "Certina",
     "model": "DS Action",
     "reference": "C032.427.17.051.00",
-    "lugWidthMm": 24,
+    "lugWidthMm": 21,
     "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/certina-c032-427-17-051-00/primary.webp"
   },
   "doxa-822-70-011-23": {
@@ -4576,6 +4576,111 @@
     "reference": "01 733 7771 3157-07 5 19 04BR",
     "lugWidthMm": 19,
     "sourcePhotoUrl": "https://image.oris.ch/data/30200_0173377713157-0751904BR_verticale.png"
+  },
+  "oris-01-754-7779-4063-set": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/oris-01-754-7779-4063-set/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/oris-01-754-7779-4063-set/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 214,
+        "y": 8
+      },
+      "topLugRight": {
+        "x": 586,
+        "y": 8
+      },
+      "bottomLugLeft": {
+        "x": 161,
+        "y": 893
+      },
+      "bottomLugRight": {
+        "x": 556,
+        "y": 893
+      },
+      "lugWidthPx": 384,
+      "imageWidth": 827,
+      "imageHeight": 900,
+      "topCaseEdgeY": 61,
+      "bottomCaseEdgeY": 791
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Oris",
+    "model": "Big Crown",
+    "reference": "01 754 7779 4063-Set",
+    "lugWidthMm": 19,
+    "sourcePhotoUrl": "https://image.oris.ch/data/31693_0175477794063-Set_verticale.png"
+  },
+  "oris-01-754-7779-4065-set": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/oris-01-754-7779-4065-set/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/oris-01-754-7779-4065-set/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 215,
+        "y": 5
+      },
+      "topLugRight": {
+        "x": 590,
+        "y": 5
+      },
+      "bottomLugLeft": {
+        "x": 165,
+        "y": 895
+      },
+      "bottomLugRight": {
+        "x": 556,
+        "y": 895
+      },
+      "lugWidthPx": 383,
+      "imageWidth": 831,
+      "imageHeight": 900,
+      "topCaseEdgeY": 60,
+      "bottomCaseEdgeY": 800
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Oris",
+    "model": "Big Crown",
+    "reference": "01 754 7779 4065-Set",
+    "lugWidthMm": 19,
+    "sourcePhotoUrl": "https://image.oris.ch/data/31697_0175477794065-Set_verticale.png"
+  },
+  "oris-01-754-7779-4067-set": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/oris-01-754-7779-4067-set/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/oris-01-754-7779-4067-set/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 205,
+        "y": 6
+      },
+      "topLugRight": {
+        "x": 581,
+        "y": 6
+      },
+      "bottomLugLeft": {
+        "x": 165,
+        "y": 895
+      },
+      "bottomLugRight": {
+        "x": 558,
+        "y": 895
+      },
+      "lugWidthPx": 385,
+      "imageWidth": 830,
+      "imageHeight": 900,
+      "topCaseEdgeY": 61,
+      "bottomCaseEdgeY": 795
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Oris",
+    "model": "Big Crown",
+    "reference": "01 754 7779 4067-Set",
+    "lugWidthMm": 19,
+    "sourcePhotoUrl": "https://image.oris.ch/data/31701_0175477794067-Set_verticale.png"
   },
   "oris-big-crown-pointer-date-green": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/oris-big-crown-pointer-date-green/case-only.webp",
