@@ -1320,6 +1320,270 @@
         "bodyLeft": 2,
         "bodyRight": 302
       }
+    },
+    {
+      "id": "leather-suede-lilac",
+      "fullImageId": "leather-suede-lilac",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/leather-suede-lilac-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 197,
+        "endY": 218,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/leather-suede-lilac-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 27,
+        "endY": 6,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "leather-suede-dusty-rose",
+      "fullImageId": "leather-suede-dusty-rose",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/leather-suede-dusty-rose-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 197,
+        "endY": 218,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/leather-suede-dusty-rose-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 27,
+        "endY": 6,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "leather-nubuck-moss",
+      "fullImageId": "leather-nubuck-moss",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/leather-nubuck-moss-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 197,
+        "endY": 218,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/leather-nubuck-moss-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 27,
+        "endY": 6,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "leather-shell-cordovan-forest",
+      "fullImageId": "leather-shell-cordovan-forest",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/leather-shell-cordovan-forest-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 197,
+        "endY": 218,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/leather-shell-cordovan-forest-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 27,
+        "endY": 6,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "leather-alligator-lagoon",
+      "fullImageId": "leather-alligator-lagoon",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/leather-alligator-lagoon-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 197,
+        "endY": 218,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/leather-alligator-lagoon-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 27,
+        "endY": 6,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "fabric-sailcloth-red",
+      "fullImageId": "fabric-sailcloth-red",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/fabric-sailcloth-red-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 197,
+        "endY": 218,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/fabric-sailcloth-red-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 27,
+        "endY": 6,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "rubber-waffle-lime",
+      "fullImageId": "rubber-waffle-lime",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/rubber-waffle-lime-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 197,
+        "endY": 218,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/rubber-waffle-lime-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 27,
+        "endY": 6,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "rubber-channel-blue",
+      "fullImageId": "rubber-channel-blue",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/rubber-channel-blue-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 197,
+        "endY": 218,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/rubber-channel-blue-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 27,
+        "endY": 6,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "canvas-twill-rust",
+      "fullImageId": "canvas-twill-rust",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/canvas-twill-rust-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 197,
+        "endY": 218,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/canvas-twill-rust-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 27,
+        "endY": 6,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "canvas-herringbone-cream",
+      "fullImageId": "canvas-herringbone-cream",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/canvas-herringbone-cream-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 197,
+        "endY": 218,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/canvas-herringbone-cream-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 27,
+        "endY": 6,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "canvas-herringbone-mustard",
+      "fullImageId": "canvas-herringbone-mustard",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/canvas-herringbone-mustard-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 197,
+        "endY": 218,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/canvas-herringbone-mustard-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 27,
+        "endY": 6,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "leather-rally-ivory",
+      "fullImageId": "leather-rally-ivory",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/leather-rally-ivory-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 200,
+        "endY": 221,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/leather-rally-ivory-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 24,
+        "endY": 3,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
     }
   ]
 }
