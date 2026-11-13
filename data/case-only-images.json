@@ -732,6 +732,41 @@
     "lugWidthMm": 20,
     "sourcePhotoUrl": "https://www.hamiltonwatch.com/media/catalog/product/h/3/h38416541.png"
   },
+  "hamilton-h38416560": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h38416560/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h38416560/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 184,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 558,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 179,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 569,
+        "y": 899
+      },
+      "lugWidthPx": 382,
+      "imageWidth": 813,
+      "imageHeight": 900,
+      "topCaseEdgeY": 79,
+      "bottomCaseEdgeY": 810
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Hamilton",
+    "model": "Intra-Matic",
+    "reference": "H38416560",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://www.hamiltonwatch.com/media/catalog/product/h/3/h38416560.png"
+  },
   "hamilton-h38416711": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h38416711/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h38416711/case-only.png",
@@ -1081,6 +1116,76 @@
     "reference": "H68201093",
     "lugWidthMm": 20,
     "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h68201093/primary.webp"
+  },
+  "hamilton-h68201943": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h68201943/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h68201943/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 172,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 564,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 176,
+        "y": 896
+      },
+      "bottomLugRight": {
+        "x": 566,
+        "y": 896
+      },
+      "lugWidthPx": 391,
+      "imageWidth": 824,
+      "imageHeight": 900,
+      "topCaseEdgeY": 79,
+      "bottomCaseEdgeY": 804
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Hamilton",
+    "model": "Khaki Field",
+    "reference": "H68201943",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h68201943/primary.webp"
+  },
+  "hamilton-h68201993": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h68201993/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h68201993/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 167,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 552,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 171,
+        "y": 879
+      },
+      "bottomLugRight": {
+        "x": 554,
+        "y": 879
+      },
+      "lugWidthPx": 384,
+      "imageWidth": 807,
+      "imageHeight": 900,
+      "topCaseEdgeY": 78,
+      "bottomCaseEdgeY": 787
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Hamilton",
+    "model": "Khaki Field",
+    "reference": "H68201993",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h68201993/primary.webp"
   },
   "hamilton-h69439931": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h69439931/case-only.webp",
@@ -2051,6 +2156,76 @@
     "reference": "IW371614",
     "lugWidthMm": 20,
     "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw371614/primary.webp"
+  },
+  "iwc-iw371615": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw371615/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw371615/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 197,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 592,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 197,
+        "y": 889
+      },
+      "bottomLugRight": {
+        "x": 591,
+        "y": 889
+      },
+      "lugWidthPx": 395,
+      "imageWidth": 853,
+      "imageHeight": 900,
+      "topCaseEdgeY": 52,
+      "bottomCaseEdgeY": 817
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "IWC",
+    "model": "Portugieser Chronograph",
+    "reference": "IW371615",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw371615/primary.webp"
+  },
+  "iwc-iw371616": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw371616/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw371616/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 194,
+        "y": 12
+      },
+      "topLugRight": {
+        "x": 584,
+        "y": 12
+      },
+      "bottomLugLeft": {
+        "x": 194,
+        "y": 888
+      },
+      "bottomLugRight": {
+        "x": 584,
+        "y": 888
+      },
+      "lugWidthPx": 390,
+      "imageWidth": 841,
+      "imageHeight": 900,
+      "topCaseEdgeY": 65,
+      "bottomCaseEdgeY": 819
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "IWC",
+    "model": "Portugieser Chronograph",
+    "reference": "IW371616",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw371616/primary.webp"
   },
   "iwc-iw371620": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw371620/case-only.webp",
