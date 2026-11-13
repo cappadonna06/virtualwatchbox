@@ -15,12 +15,12 @@ const demoWatchLabel = 'Omega Speedmaster Moonwatch'
 const demoWatch = getCaseOnly(demoWatchId)
 const catalog = buildBandDemoStraps()
 const presets = [
-  { id: 'fabric-sailcloth-charcoal', label: 'Charcoal sailcloth' },
-  { id: 'leather-suede-sand', label: 'Sand suede' },
-  { id: 'rubber-tropical-oxblood', label: 'Oxblood rubber' },
-].flatMap(look => {
-  const strap = catalog.find(item => item.id === look.id)
-  return strap?.band && strap.templateId && strap.imageUrl ? [{ ...look, strap }] : []
+  'fabric-sailcloth-charcoal',
+  'leather-suede-sand',
+  'rubber-tropical-oxblood',
+].flatMap(id => {
+  const strap = catalog.find(item => item.id === id)
+  return strap?.band ? [{ id, label: strap.label, strap }] : []
 })
 
 export default function StrapStudioPreview() {

@@ -10,10 +10,10 @@ export const MATERIALS: StrapMaterial[] = [
 ]
 
 export const SUB_MATERIALS: Record<StrapMaterial, string[]> = {
-  leather: ['Smooth', 'Alligator', 'Suede', 'Pebbled', 'Shell Cordovan', 'Rally'],
-  rubber: ['Smooth', 'Tropic', 'Tread', 'FKM', 'Waffle'],
+  leather: ['Smooth', 'Alligator', 'Suede', 'Nubuck', 'Pebbled', 'Shell Cordovan', 'Rally'],
+  rubber: ['Smooth', 'Tropic', 'Tread', 'FKM', 'Waffle', 'Channel', 'Ribbed'],
   nylon: ['NATO', 'Seatbelt', 'Perlon', 'Single-pass'],
-  canvas: ['Cordura', 'Sailcloth', 'Waxed', 'Cotton Twill'],
+  canvas: ['Cordura', 'Sailcloth', 'Waxed', 'Cotton Twill', 'Herringbone'],
   fabric: ['Sailcloth', 'Tweed', 'Denim'],
   metal: ['Oyster', 'Jubilee', 'President', 'H-Link', 'Milanese', 'Beads of Rice', 'Mesh'],
   silicone: ['Smooth', 'Textured'],
@@ -26,7 +26,7 @@ export const SUB_MATERIALS: Record<StrapMaterial, string[]> = {
 export const COMMON_COLORS: Array<[string, string]> = [
   ['Black', '#1A1410'], ['Dark Brown', '#3A2418'], ['Brown', '#6A4426'],
   ['Cognac', '#8A4B24'], ['Tan', '#B08552'], ['Navy', '#2A3550'],
-  ['Olive', '#44523B'], ['Grey', '#6E6A63'], ['Burgundy', '#5A2A2E'], ['Steel', '#9A9A9A'],
+  ['Olive', '#44523B'], ['Gray', '#6E6A63'], ['Burgundy', '#5A2A2E'], ['Steel', '#9A9A9A'],
 ]
 
 export const COMMON_WIDTHS = [18, 19, 20, 21, 22, 24]

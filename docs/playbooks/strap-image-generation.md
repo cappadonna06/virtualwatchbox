@@ -64,7 +64,7 @@ npx tsx scripts/generate-strap-images.ts --sample --no-upload
 npx tsx scripts/generate-strap-images.ts --tier 1
 
 # Regenerate a specific strap (overwrite):
-npx tsx scripts/generate-strap-images.ts --only leather-smooth-cognac --force
+npx tsx scripts/generate-strap-images.ts --only leather-smooth-dark-brown --force
 ```
 
 **Flags:** `--tier N` · `--only a,b,c` · `--sample` · `--dry-run` · `--no-upload` ·

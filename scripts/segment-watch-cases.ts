@@ -6,6 +6,7 @@ import sharp from 'sharp'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import bands from '../data/strap-band-demo.json'
 import { brand } from '../lib/brand'
+import { findTemplate, strapTemplateLabel } from '../lib/strapTemplates'
 import { strapBandPlacement, strapCaseFrame, type CaseOnlyEntry, type LugGeometry } from '../lib/caseOnlyImages'
 import { cropToAlphaBounds } from '../lib/imageProcessing'
 import { loadLocalEnv, repoRoot } from './watch-image-pipeline'
@@ -361,15 +362,17 @@ function mountedReview(directory: string, id: string, g: LugGeometry, lugWidth: 
   const cutout = `${id}.normalized.png`
   const original = `${id}.original.webp`
   const looks = bands.straps
-    .filter(band => ['leather-smooth-black', 'canvas-twill-tan'].includes(band.id) && band.availableLugWidths.includes(lugWidth))
-    .map(band => {
+    .filter(band => ['leather-smooth-black', 'canvas-twill-tan'].includes(band.fullImageId))
+    .flatMap(band => {
+      const template = findTemplate(band.fullImageId)
+      if (!template?.availableLugWidths.includes(lugWidth)) return []
       const halves = ([['top', band.bandTop], ['bottom', band.bandBottom]] as const).map(([end, half]) => {
         const rect = strapBandPlacement(g, half, end, frame)
         const src = pathToFileURL(path.join(repoRoot, 'public', half.url)).href
         const clip = rect.clipPath ? `;clip-path:${rect.clipPath}` : ''
         return `<img alt="" src="${src}" style="left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;height:${rect.height}px${clip}">`
       }).join('')
-      return `<figure><div class="stage" style="width:${width}px;height:${height}px">${halves}<img alt="" src="${cutout}" style="left:${frame.left}px;top:${frame.top}px;width:${frame.width}px;height:${frame.height}px"></div><figcaption>${band.label}</figcaption></figure>`
+      return `<figure><div class="stage" style="width:${width}px;height:${height}px">${halves}<img alt="" src="${cutout}" style="left:${frame.left}px;top:${frame.top}px;width:${frame.width}px;height:${frame.height}px"></div><figcaption>${strapTemplateLabel(template)}</figcaption></figure>`
     }).join('')
   const originalImage = fs.existsSync(path.join(directory, original))
     ? `<figure><img class="photo" alt="" src="${original}"><figcaption>Catalog photo</figcaption></figure>`

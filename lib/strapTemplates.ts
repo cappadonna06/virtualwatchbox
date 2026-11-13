@@ -7,6 +7,7 @@
 // script has run + uploaded; callers fall back to the CSS swatch in that case.
 
 import rawTemplates from '@/data/strap-templates.json'
+import templateAliases from '@/data/strap-template-aliases.json'
 import { withVersion } from '@/lib/watchImages/cacheBust'
 import type { StrapMaterial, StrapStyle } from '@/types/watch'
 
@@ -52,7 +53,18 @@ export function findTemplate(id: string): StrapTemplate | undefined {
   return TEMPLATES.find((t) => t.id === id)
 }
 
-const norm = (s: string | undefined | null) => (s ?? '').trim().toLowerCase()
+export function canonicalStrapTemplateId(id: string): string {
+  return Object.hasOwn(templateAliases, id) ? templateAliases[id as keyof typeof templateAliases] : id
+}
+
+export function strapTemplateLabel({ color, subMaterial, material }: StrapTemplate): string {
+  const suffix = material === 'rubber' ? ' Rubber'
+    : material === 'leather' && ['Smooth', 'Pebbled', 'Rally'].includes(subMaterial) ? ' Leather'
+    : ''
+  return `${color} ${subMaterial}${suffix}`
+}
+
+const norm = (s: string | undefined | null) => (s ?? '').trim().toLowerCase().replace(/\bgrey\b/g, 'gray')
 
 /**
  * Best-matching template photo URL for a (material, subMaterial, color) spec — used as the

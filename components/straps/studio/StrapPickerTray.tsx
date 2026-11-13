@@ -184,7 +184,8 @@ function StrapChoice({ strap, active, showDesign, onSelect }: {
   return (
     <button
       type="button"
-      aria-label={`${title}, ${strap.source === 'drawer' && strap.color ? `${strap.color}, ` : ''}${design}`}
+      aria-label={strap.source === 'drawer' ? [title, strap.color, design].filter(Boolean).join(', ') : strap.label}
+      title={strap.label}
       aria-pressed={active}
       onClick={onSelect}
       style={{

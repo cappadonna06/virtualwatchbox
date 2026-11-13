@@ -15,7 +15,7 @@ import {
 import { StrapPhotoFallback } from './StrapPhotoFallback'
 import { GhostBtn, Kicker, PrimaryBtn, SpecBadge, StrapIcon, type StrapDrawerWatch } from './atoms'
 import type { StrapInput } from '@/app/collection/CollectionSessionProvider'
-import { findTemplatePhoto, getTemplatesByMaterial, type StrapTemplate } from '@/lib/strapTemplates'
+import { findTemplatePhoto, getTemplatesByMaterial, strapTemplateLabel, type StrapTemplate } from '@/lib/strapTemplates'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', fontFamily: brand.font.sans, fontSize: 16, color: brand.colors.ink, background: brand.colors.slot,
@@ -250,13 +250,13 @@ export function StrapModal({
                   {(templateGroups.find(g => g.material === tplTab)?.templates ?? []).map(t => {
                     const selected = templateId === t.id
                     return (
-                      <button key={t.id} type="button" onClick={() => pickTemplate(t)} title={`${t.color} ${t.subMaterial}`} style={{ flexShrink: 0, width: 78, background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+                      <button key={t.id} type="button" onClick={() => pickTemplate(t)} title={strapTemplateLabel(t)} style={{ flexShrink: 0, width: 78, background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
                         <div style={{ width: 78, height: 96, borderRadius: brand.radius.md, overflow: 'hidden', border: `1.5px solid ${selected ? brand.colors.gold : brand.colors.borderMid}`, background: brand.colors.white, boxShadow: selected ? brand.shadow.gold : 'none' }}>
                           {t.imageUrl
-                            ? <img src={t.imageUrl} alt={`${t.color} ${t.subMaterial}`} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 4 }} />
+                            ? <img src={t.imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 4 }} />
                             : <StrapPhotoFallback height={96} />}
                         </div>
-                        <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: selected ? brand.colors.ink : brand.colors.inkSoft, fontWeight: selected ? 600 : 400, marginTop: 4, textAlign: 'center', lineHeight: 1.2 }}>{t.color}</div>
+                        <div style={{ fontFamily: brand.font.sans, fontSize: 12, color: selected ? brand.colors.ink : brand.colors.inkSoft, fontWeight: selected ? 600 : 400, marginTop: 4, textAlign: 'center', lineHeight: 1.2 }}>{strapTemplateLabel(t)}</div>
                       </button>
                     )
                   })}

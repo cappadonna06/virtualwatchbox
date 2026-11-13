@@ -6,7 +6,7 @@
 import bandDemoRaw from '@/data/strap-band-demo.json'
 import { getCaseOnly } from '@/lib/caseOnlyImages'
 import type { StrapTemplate } from '@/lib/strapTemplates'
-import { findTemplate, getStrapTemplates, findTemplatePhoto } from '@/lib/strapTemplates'
+import { canonicalStrapTemplateId, findTemplate, getStrapTemplates, findTemplatePhoto, strapTemplateLabel } from '@/lib/strapTemplates'
 import { withVersion } from '@/lib/watchImages/cacheBust'
 import { effectiveCompatibility, type FitState } from '@/lib/strapCompatibility'
 import type { BraceletType, StrapMaterial, StrapWatchOverride, UserStrap } from '@/types/watch'
@@ -78,7 +78,10 @@ export function getStudioEntryPoint(watch: StudioCompatTarget, hasWatchPhoto: bo
   if (!watch.id || watch.braceletType === 'integrated') return null
   const caseOnly = getCaseOnly(watch.id)
   const width = caseOnly?.lugWidthMm ?? watch.lugWidthMm
-  const canTryOn = Boolean(caseOnly && bandDemoRaw.straps.some(strap => supportsLugWidth(strap, width)))
+  const canTryOn = Boolean(caseOnly && bandDemoRaw.straps.some(({ fullImageId }) => {
+    const template = findTemplate(fullImageId)
+    return Boolean(template?.imageUrl && supportsLugWidth(template, width))
+  }))
   if (!canTryOn && (!hasWatchPhoto || !getStrapTemplates().some(strap => supportsLugWidth(strap, width)))) return null
 
   return {
@@ -119,7 +122,7 @@ function templateToStudio(t: StrapTemplate): StudioStrap {
     key: `tpl:${t.id}`,
     source: 'template',
     id: t.id,
-    label: `${t.subMaterial} ${t.color}`.trim(),
+    label: strapTemplateLabel(t),
     material: t.material,
     category: categoryOf(t.material),
     color: colorName(t.color),
@@ -155,44 +158,29 @@ export function buildTemplateStraps(): StudioStrap[] {
   return getStrapTemplates().map(templateToStudio)
 }
 
-type BandDemoEntry = {
-  id: string
-  label: string
-  material: StrapMaterial
-  subMaterial: string
-  color: string
-  colorHex: string
-  availableLugWidths: number[]
-  bandTop: BandHalf
-  bandBottom: BandHalf
-  /** Matching full-strap template master — browsing imagery (swatches/ghosts). */
-  fullImageId?: string
+export function buildBandDemoStraps(): StudioStrap[] {
+  return bandDemoRaw.straps.flatMap(({ id, fullImageId, bandTop, bandBottom }) => {
+    const template = findTemplate(fullImageId)
+    if (!template?.imageUrl) return []
+    return [{
+      ...templateToStudio(template),
+      key: `band:${id}`,
+      id,
+      templateId: fullImageId,
+      band: {
+        top: { ...bandTop, url: withVersion(bandTop.url) ?? bandTop.url },
+        bottom: { ...bandBottom, url: withVersion(bandBottom.url) ?? bandBottom.url },
+      },
+    }]
+  })
 }
 
-export function buildBandDemoStraps(): StudioStrap[] {
-  const entries = (bandDemoRaw as { straps: BandDemoEntry[] }).straps
-  return entries.map(e => {
-    const template = e.fullImageId ? findTemplate(e.fullImageId) : undefined
-    return {
-      key: `band:${e.id}`,
-      source: 'template',
-      id: e.id,
-      templateId: e.fullImageId,
-      label: e.label,
-      material: e.material,
-      category: categoryOf(template?.material ?? e.material),
-      color: colorName(e.color),
-      design: e.subMaterial,
-      colorHex: e.colorHex,
-      imageUrl: template?.imageUrl || e.bandTop.url,
-      availableLugWidths: e.availableLugWidths,
-      affiliateUrl: template?.affiliateUrl,
-      band: {
-        top: { ...e.bandTop, url: withVersion(e.bandTop.url) ?? e.bandTop.url },
-        bottom: { ...e.bandBottom, url: withVersion(e.bandBottom.url) ?? e.bandBottom.url },
-      },
-    }
-  })
+export function findStudioStrap(straps: StudioStrap[], id: string): StudioStrap | undefined {
+  const exact = straps.find(strap => strap.id === id)
+  if (exact) return exact
+
+  const templateId = canonicalStrapTemplateId(bandDemoRaw.straps.find(strap => strap.id === id)?.fullImageId ?? id)
+  return straps.find(strap => strap.source === 'template' && (strap.templateId ?? strap.id) === templateId)
 }
 
 export function buildDrawerStraps(straps: UserStrap[]): StudioStrap[] {
@@ -238,10 +226,10 @@ const COLOR_FAMILIES: Array<[string, RegExp]> = [
   ['Black', /\bblack\b/i],
   ['Gray', /\b(gray|charcoal|silver)\b/i],
   ['White & cream', /\b(white|cream|ivory)\b/i],
+  ['Red & burgundy', /\b(red|burgundy|wine|maroon|oxblood)\b/i],
   ['Brown & tan', /\b(brown|tan|cognac|beige|camel|chocolate|khaki|taupe|honey|sand)\b/i],
   ['Blue', /\b(blue|navy|indigo|teal)\b/i],
   ['Green', /\b(green|olive|sage)\b/i],
-  ['Red & burgundy', /\b(red|burgundy|wine|maroon|oxblood)\b/i],
 ]
 
 export function strapColorFamily(strap: StudioStrap): string {

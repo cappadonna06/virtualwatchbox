@@ -16,6 +16,7 @@ import {
   filterByCategory,
   filterCompatible,
   filterStudioStraps,
+  findStudioStrap,
   groupStudioStraps,
   strapColorFamily,
   strapDesign,
@@ -142,7 +143,7 @@ export function useStudioController() {
   const visibleStraps = useMemo(() => groups.flatMap(g => g.straps), [groups])
 
   const currentStrap: StudioStrap | undefined = useMemo(
-    () => sourceStraps.find(s => s.id === strapId) ?? sourceStraps.find(s => s.templateId === strapId) ?? sourceStraps[0],
+    () => findStudioStrap(sourceStraps, strapId) ?? sourceStraps[0],
     [sourceStraps, strapId],
   )
 

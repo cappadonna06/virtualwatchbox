@@ -142,12 +142,7 @@ async function main() {
           { ...options, endRow: rally ? 415 : oxbloodTropic ? 273 : 285 }),
       ])
       await Promise.all([top, bottom].map(half => fs.writeFile(path.join(ASSET_DIR, half.name), half.output)))
-      const metadata = prior ?? {
-        id, label: `${template.subMaterial} ${template.color}`, material: template.material,
-        subMaterial: template.subMaterial, color: template.color, colorHex: template.colorHex,
-        availableLugWidths: template.availableLugWidths, fullImageId: template.id,
-      }
-      updated.set(id, { ...metadata, bandTop: top.half, bandBottom: bottom.half })
+      updated.set(id, { id, fullImageId: template.id, bandTop: top.half, bandBottom: bottom.half })
       prepared += 1
     } catch (error) {
       console.error(`Skipped ${id}: ${(error as Error).message}`)
