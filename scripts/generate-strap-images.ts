@@ -380,6 +380,20 @@ const STRAPS: StrapDef[] = [
   { name: 'canvas-herringbone-cream', kind: 'canvas-herringbone', material: 'canvas', subMaterial: 'Herringbone', color: 'Cream', colorHex: '#E1D0AA', style: 'rugged', tier: 4 },
   { name: 'canvas-herringbone-mustard', kind: 'canvas-herringbone', material: 'canvas', subMaterial: 'Herringbone', color: 'Mustard Yellow', colorHex: '#B39135', style: 'rugged', tier: 4 },
   { name: 'leather-rally-ivory', kind: 'leather-rally', material: 'leather', subMaterial: 'Rally', color: 'Ivory', colorHex: '#DCCDB2', style: 'sporty', tier: 4 },
+
+  { name: 'fabric-sailcloth-white', kind: 'fabric-sailcloth', material: 'fabric', subMaterial: 'Sailcloth', color: 'White', colorHex: '#EEECE4', style: 'sporty', tier: 5 },
+  { name: 'rubber-waffle-white', kind: 'rubber-waffle', material: 'rubber', subMaterial: 'Waffle', color: 'White', colorHex: '#ECEAE3', style: 'sporty', tier: 5 },
+  { name: 'rubber-channel-gray', kind: 'rubber-channel', material: 'rubber', subMaterial: 'Channel', color: 'Gray', colorHex: '#666B70', style: 'sporty', tier: 5 },
+  { name: 'rubber-channel-burgundy', kind: 'rubber-channel', material: 'rubber', subMaterial: 'Channel', color: 'Burgundy', colorHex: '#60232F', style: 'sporty', tier: 5 },
+  { name: 'fabric-sailcloth-purple', kind: 'fabric-sailcloth', material: 'fabric', subMaterial: 'Sailcloth', color: 'Purple', colorHex: '#553E79', style: 'sporty', tier: 5 },
+  { name: 'fabric-sailcloth-orange', kind: 'fabric-sailcloth', material: 'fabric', subMaterial: 'Sailcloth', color: 'Burnt Orange', colorHex: '#BD542B', style: 'sporty', tier: 5 },
+  { name: 'canvas-twill-sage', kind: 'canvas-twill', material: 'canvas', subMaterial: 'Cotton Twill', color: 'Sage Green', colorHex: '#8F9F81', style: 'rugged', tier: 5 },
+  { name: 'canvas-herringbone-red', kind: 'canvas-herringbone', material: 'canvas', subMaterial: 'Herringbone', color: 'Brick Red', colorHex: '#954737', style: 'rugged', tier: 5 },
+  { name: 'leather-rally-gray', kind: 'leather-rally', material: 'leather', subMaterial: 'Rally', color: 'Charcoal', colorHex: '#48464A', style: 'sporty', tier: 5 },
+  { name: 'leather-rally-blue', kind: 'leather-rally', material: 'leather', subMaterial: 'Rally', color: 'Navy', colorHex: '#203750', style: 'sporty', tier: 5 },
+  { name: 'leather-nubuck-chocolate', kind: 'leather-suede', material: 'leather', subMaterial: 'Nubuck', color: 'Chocolate Brown', colorHex: '#544039', style: 'casual', tier: 5 },
+  { name: 'leather-pebbled-burgundy', kind: 'leather-pebbled', material: 'leather', subMaterial: 'Pebbled', color: 'Burgundy', colorHex: '#612A35', style: 'casual', tier: 5 },
+  { name: 'leather-shell-cordovan-blue', kind: 'leather-shell-cordovan', material: 'leather', subMaterial: 'Shell Cordovan', color: 'Navy', colorHex: '#202F46', style: 'dressy', tier: 5 },
 ]
 
 // Sample set for the review preview (one per material family + sub-material branch)
