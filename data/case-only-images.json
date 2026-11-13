@@ -487,6 +487,146 @@
     "reference": "WSTA0041",
     "lugWidthMm": 19
   },
+  "certina-c032-427-17-051-00": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/certina-c032-427-17-051-00/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/certina-c032-427-17-051-00/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 203,
+        "y": 5
+      },
+      "topLugRight": {
+        "x": 622,
+        "y": 5
+      },
+      "bottomLugLeft": {
+        "x": 186,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 640,
+        "y": 899
+      },
+      "lugWidthPx": 437,
+      "imageWidth": 907,
+      "imageHeight": 900,
+      "topCaseEdgeY": 90,
+      "bottomCaseEdgeY": 831
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Certina",
+    "model": "DS Action",
+    "reference": "C032.427.17.051.00",
+    "lugWidthMm": 24,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/certina-c032-427-17-051-00/primary.webp"
+  },
+  "doxa-822-70-011-23": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/doxa-822-70-011-23/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/doxa-822-70-011-23/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 216,
+        "y": 4
+      },
+      "topLugRight": {
+        "x": 626,
+        "y": 4
+      },
+      "bottomLugLeft": {
+        "x": 216,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 626,
+        "y": 899
+      },
+      "lugWidthPx": 410,
+      "imageWidth": 898,
+      "imageHeight": 900,
+      "topCaseEdgeY": 53,
+      "bottomCaseEdgeY": 826
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Doxa",
+    "model": "SUB 300",
+    "reference": "822.70.011.23",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/doxa-822-70-011-23/primary.webp"
+  },
+  "formex-0330-1-6321-311": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/formex-0330-1-6321-311/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/formex-0330-1-6321-311/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 196,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 611,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 177,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 619,
+        "y": 899
+      },
+      "lugWidthPx": 429,
+      "imageWidth": 863,
+      "imageHeight": 900,
+      "topCaseEdgeY": 51,
+      "bottomCaseEdgeY": 830
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Formex",
+    "model": "Essence",
+    "reference": "0330.1.6321.311",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/formex-0330-1-6321-311/primary.webp"
+  },
+  "formex-0330-1-6321-713": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/formex-0330-1-6321-713/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/formex-0330-1-6321-713/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 190,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 612,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 164,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 639,
+        "y": 899
+      },
+      "lugWidthPx": 449,
+      "imageWidth": 863,
+      "imageHeight": 900,
+      "topCaseEdgeY": 55,
+      "bottomCaseEdgeY": 827
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Formex",
+    "model": "Essence",
+    "reference": "0330.1.6321.713",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/formex-0330-1-6321-713/primary.webp"
+  },
   "grand-seiko-sbga211": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/grand-seiko-sbga211/case-only.webp",
     "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/grand-seiko-sbga211/case-only.png",
@@ -1076,6 +1216,146 @@
     "model": "Pilot's Watch Automatic Top Gun",
     "reference": "IW326901",
     "lugWidthMm": 20
+  },
+  "iwc-iw327001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw327001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw327001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 180,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 539,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 180,
+        "y": 897
+      },
+      "bottomLugRight": {
+        "x": 539,
+        "y": 897
+      },
+      "lugWidthPx": 359,
+      "imageWidth": 779,
+      "imageHeight": 900,
+      "topCaseEdgeY": 106,
+      "bottomCaseEdgeY": 792
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "IWC",
+    "model": "Pilot's Watch Mark XVIII",
+    "reference": "IW327001",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw327001/primary.webp"
+  },
+  "iwc-iw327002": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw327002/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw327002/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 180,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 539,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 180,
+        "y": 897
+      },
+      "bottomLugRight": {
+        "x": 539,
+        "y": 897
+      },
+      "lugWidthPx": 359,
+      "imageWidth": 780,
+      "imageHeight": 900,
+      "topCaseEdgeY": 105,
+      "bottomCaseEdgeY": 793
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "IWC",
+    "model": "Pilot's Watch Mark XVIII",
+    "reference": "IW327002",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw327002/primary.webp"
+  },
+  "iwc-iw327004": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw327004/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw327004/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 172,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 554,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 181,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 542,
+        "y": 898
+      },
+      "lugWidthPx": 372,
+      "imageWidth": 785,
+      "imageHeight": 900,
+      "topCaseEdgeY": 99,
+      "bottomCaseEdgeY": 790
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "IWC",
+    "model": "Pilot's Watch Mark XVIII",
+    "reference": "IW327004",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw327004/primary.webp"
+  },
+  "iwc-iw328201": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw328201/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw328201/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 187,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 569,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 187,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 570,
+        "y": 898
+      },
+      "lugWidthPx": 383,
+      "imageWidth": 834,
+      "imageHeight": 900,
+      "topCaseEdgeY": 83,
+      "bottomCaseEdgeY": 827
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "IWC",
+    "model": "Pilot's Watch Mark XX",
+    "reference": "IW328201",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw328201/primary.webp"
   },
   "iwc-iw328203": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/iwc-iw328203/case-only.webp",
@@ -2016,6 +2296,216 @@
     "reference": "L3.374.4.90.2",
     "lugWidthMm": 19,
     "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-374-4-90-2/primary.webp"
+  },
+  "longines-l3-810-4-53-0": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-810-4-53-0/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-810-4-53-0/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 170,
+        "y": 4
+      },
+      "topLugRight": {
+        "x": 556,
+        "y": 4
+      },
+      "bottomLugLeft": {
+        "x": 176,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 555,
+        "y": 898
+      },
+      "lugWidthPx": 383,
+      "imageWidth": 806,
+      "imageHeight": 900,
+      "topCaseEdgeY": 91,
+      "bottomCaseEdgeY": 808
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Longines",
+    "model": "Spirit",
+    "reference": "L3.810.4.53.0",
+    "lugWidthMm": 21,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-810-4-53-0/primary.webp"
+  },
+  "longines-l3-810-4-73-2": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-810-4-73-2/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-810-4-73-2/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 174,
+        "y": 3
+      },
+      "topLugRight": {
+        "x": 556,
+        "y": 3
+      },
+      "bottomLugLeft": {
+        "x": 174,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 560,
+        "y": 899
+      },
+      "lugWidthPx": 384,
+      "imageWidth": 811,
+      "imageHeight": 900,
+      "topCaseEdgeY": 92,
+      "bottomCaseEdgeY": 813
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Longines",
+    "model": "Spirit",
+    "reference": "L3.810.4.73.2",
+    "lugWidthMm": 21,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-810-4-73-2/primary.webp"
+  },
+  "longines-l3-810-4-93-0": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-810-4-93-0/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-810-4-93-0/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 178,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 558,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 174,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 556,
+        "y": 899
+      },
+      "lugWidthPx": 381,
+      "imageWidth": 808,
+      "imageHeight": 900,
+      "topCaseEdgeY": 91,
+      "bottomCaseEdgeY": 810
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Longines",
+    "model": "Spirit",
+    "reference": "L3.810.4.93.0",
+    "lugWidthMm": 21,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-810-4-93-0/primary.webp"
+  },
+  "longines-l3-811-4-53-0": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-811-4-53-0/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-811-4-53-0/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 179,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 566,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 180,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 566,
+        "y": 898
+      },
+      "lugWidthPx": 387,
+      "imageWidth": 819,
+      "imageHeight": 900,
+      "topCaseEdgeY": 84,
+      "bottomCaseEdgeY": 816
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Longines",
+    "model": "Spirit",
+    "reference": "L3.811.4.53.0",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-811-4-53-0/primary.webp"
+  },
+  "longines-l3-811-4-93-0": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-811-4-93-0/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-811-4-93-0/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 178,
+        "y": 18
+      },
+      "topLugRight": {
+        "x": 555,
+        "y": 18
+      },
+      "bottomLugLeft": {
+        "x": 176,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 557,
+        "y": 899
+      },
+      "lugWidthPx": 379,
+      "imageWidth": 805,
+      "imageHeight": 900,
+      "topCaseEdgeY": 98,
+      "bottomCaseEdgeY": 820
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Longines",
+    "model": "Spirit",
+    "reference": "L3.811.4.93.0",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-811-4-93-0/primary.webp"
+  },
+  "longines-l3-812-4-53-2": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-812-4-53-2/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-812-4-53-2/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 184,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 569,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 184,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 571,
+        "y": 898
+      },
+      "lugWidthPx": 386,
+      "imageWidth": 828,
+      "imageHeight": 900,
+      "topCaseEdgeY": 73,
+      "bottomCaseEdgeY": 825
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Longines",
+    "model": "Spirit Zulu Time",
+    "reference": "L3.812.4.53.2",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-812-4-53-2/primary.webp"
   },
   "longines-l3-812-4-63-2": {
     "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/longines-l3-812-4-63-2/case-only.webp",
