@@ -49,7 +49,7 @@ const w = {
   reduced: watch('omega-3510-50-00', 'Omega', 'Speedmaster Reduced', '3510.50.00', 3000, 'marketplace.watchcharts.com/listings/watch_model/24?page=1&status=all'),
   seamaster: watch('omega-210-30-42-20-01-001', 'Omega', 'Seamaster 300M', '210.30.42.20.01.001', 4375, 'marketplace.watchcharts.com/listings/watch_model/869'),
   moonwatch: watch('omega-310-30-42-50-01-001', 'Omega', 'Speedmaster Moonwatch', '310.30.42.50.01.001', 5525, 'watchcharts.com/watch_model/30920-omega-speedmaster-professional-moonwatch-310-30-42-50-01-001/overview'),
-  moonwatchTwoTone: watch('omega-310-30-42-50-01-004', 'Omega', 'Moonwatch Two-Tone', '310.30.42.50.01.004', 9375, 'watchcharts.com/watches/brand/omega/speedmaster?page=1'),
+  moonwatchReversePanda: watch('omega-310-30-42-50-01-004', 'Omega', 'Moonwatch Reverse Panda', '310.30.42.50.01.004', 9375, 'watchcharts.com/watches/brand/omega/speedmaster?page=1'),
   tank: watch('cartier-wsta0041', 'Cartier', 'Tank Must', 'WSTA0041', 3175, 'watchcharts.com/watches/brand_index/cartier'),
   explorer: watch('rolex-124270', 'Rolex', 'Explorer 36', '124270', 8125, 'watchcharts.com/watches/brand/rolex/explorer'),
   bb58: watch('tudor-m79030n-0001', 'Tudor', 'Black Bay 58', 'M79030N-0001', 3075, 'watchcharts.com/watches/brand/tudor?sort=1Y_price_trend'),
@@ -96,7 +96,7 @@ export const boards: Board[] = [
       { title: 'Tissot', watches: [w.prx, w.prxAuto, w.gentleman] },
       { title: 'Hamilton', watches: [w.boulton, w.scuba, w.murph, w.intra] },
       { title: 'Longines', watches: [w.classic, w.hydro, w.conquest, w.zulu] },
-      { title: 'Omega', watches: [w.aquaQuartz, w.seamaster, w.moonwatch, w.moonwatchTwoTone] },
+      { title: 'Omega', watches: [w.aquaQuartz, w.seamaster, w.moonwatch, w.moonwatchReversePanda] },
     ],
   },
   {
