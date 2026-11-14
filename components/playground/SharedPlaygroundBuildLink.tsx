@@ -9,14 +9,26 @@ export default function SharedPlaygroundBuildLink({ shareToken }: { shareToken?:
   const viewed = useRef(false)
   useEffect(() => {
     if (!shareToken || viewed.current) return
+    let retry: number | undefined
     const recordVisibleView = () => {
       if (viewed.current || document.visibilityState !== 'visible') return
+      // The shared page can hydrate before the analytics component initializes its queue.
+      if (!window.va) {
+        retry ??= window.setTimeout(() => {
+          retry = undefined
+          recordVisibleView()
+        }, 100)
+        return
+      }
       viewed.current = true
       trackPlaygroundShare('playground_share_viewed')
     }
     recordVisibleView()
     document.addEventListener('visibilitychange', recordVisibleView)
-    return () => document.removeEventListener('visibilitychange', recordVisibleView)
+    return () => {
+      window.clearTimeout(retry)
+      document.removeEventListener('visibilitychange', recordVisibleView)
+    }
   }, [shareToken])
 
   return (
