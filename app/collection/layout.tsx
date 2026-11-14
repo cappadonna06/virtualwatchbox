@@ -1,5 +1,8 @@
 import type { ReactNode } from 'react'
+import { publicPageMetadata } from '@/lib/siteMetadata'
 
-export default function CollectionLayout({ children }: { children: ReactNode }) {
+export const metadata = publicPageMetadata('/collection')
+
+export default function Layout({ children }: { children: ReactNode }) {
   return children
 }

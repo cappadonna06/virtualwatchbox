@@ -49,6 +49,7 @@ export default function Footer() {
           className="site-footer__links"
           style={{ display: 'inline-flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}
         >
+          <Link href="/guides/three-watch-collection" style={linkStyle}>Three-Watch Guide</Link>
           <Link href="/privacy" style={linkStyle}>Privacy</Link>
           <Link href="/terms" style={linkStyle}>Terms</Link>
           <Link href="/settings" style={linkStyle}>Settings</Link>

@@ -8,6 +8,7 @@ import { CollectionSessionProvider } from './collection/CollectionSessionProvide
 import { WatchImagesProvider } from '@/lib/watchImages/WatchImagesProvider'
 import { CatalogProvider } from '@/lib/catalog/CatalogProvider'
 import SiteAnalytics from '@/components/SiteAnalytics'
+import { publicPages, SITE_URL } from '@/lib/siteMetadata'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -24,8 +25,6 @@ const dmSans = DM_Sans({
   display: 'swap',
 })
 
-const BASE_URL = 'https://virtualwatchbox.com'
-
 export const viewport: Viewport = {
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#FAF8F4' },
@@ -33,44 +32,12 @@ export const viewport: Viewport = {
   ],
 }
 
-const SITE_DESCRIPTION =
-  'Virtual Watchbox is the digital home for watch collectors. Showcase what you own, follow what you love, and discover what’s next.'
-
-const SOCIAL_DESCRIPTION =
-  'Showcase what you own, follow what you love, and discover what’s next. The digital home for watch collectors.'
-
 export const metadata: Metadata = {
   title: {
-    default: 'Virtual Watchbox — Showcase Your Timepieces. Discover What\'s Next.',
+    default: 'Virtual Watchbox',
     template: '%s | Virtual Watchbox',
   },
-  description: SITE_DESCRIPTION,
-  keywords: [
-    'online watchbox',
-    'online watch collection',
-    'virtual watch collection',
-    'watch collector app',
-    'digital watch display',
-    'watch portfolio tracker',
-    'watch collection manager',
-    'virtual watch box',
-    'digital watchbox',
-    'watch collection app',
-    'luxury watch collector',
-    'watch collection tracker',
-    'watch showcase',
-    'watch display app',
-    'watch portfolio',
-    'horology app',
-    'watch enthusiast platform',
-    'curate watch collection',
-    'organize watch collection',
-    'watch wishlist app',
-  ],
-  metadataBase: new URL(BASE_URL),
-  alternates: {
-    canonical: '/',
-  },
+  metadataBase: new URL(SITE_URL),
   robots: {
     index: true,
     follow: true,
@@ -81,31 +48,6 @@ export const metadata: Metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: BASE_URL,
-    siteName: 'Virtual Watchbox',
-    title: 'Showcase Your Timepieces. Discover What\'s Next.',
-    description: SOCIAL_DESCRIPTION,
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'Virtual Watchbox — Showcase your timepieces. Discover what’s next.',
-        type: 'image/png',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    site: '@virtualwatchbox',
-    creator: '@virtualwatchbox',
-    title: 'Showcase Your Timepieces. Discover What\'s Next.',
-    description: SOCIAL_DESCRIPTION,
-    images: ['/og-image.png'],
   },
   icons: {
     icon: [
@@ -137,26 +79,16 @@ const STRUCTURED_DATA = [
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Virtual Watchbox',
-    alternateName: 'Watchbox',
-    url: BASE_URL,
-    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    description: publicPages['/'].description,
     inLanguage: 'en-US',
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: {
-        '@type': 'EntryPoint',
-        urlTemplate: `${BASE_URL}/collection/add?from=home&q={search_term_string}`,
-      },
-      'query-input': 'required name=search_term_string',
-    },
   },
   {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Virtual Watchbox',
-    url: BASE_URL,
-    logo: `${BASE_URL}/icon.svg`,
-    sameAs: ['https://twitter.com/virtualwatchbox'],
+    url: SITE_URL,
+    logo: `${SITE_URL}/icon.svg`,
   },
 ]
 

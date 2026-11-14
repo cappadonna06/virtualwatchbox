@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 import { brand } from '@/lib/brand'
+import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { renderableWatches as catalogWatches } from '@/lib/renderableWatches'
 import WatchStateControl from '@/components/collection/WatchStateControl'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
@@ -12,18 +13,15 @@ function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
 }
 
-interface Props {
-  followedWatchIds: Set<string>
-}
-
-export default function OnYourRadar({ followedWatchIds }: Props) {
+export default function OnYourRadar() {
+  const { followedWatchIds } = useCollectionSession()
   const router = useRouter()
   const prefersReducedMotion = usePrefersReducedMotion()
 
-  const followedWatches = useMemo(
-    () => catalogWatches.filter(watch => followedWatchIds.has(watch.id)),
-    [followedWatchIds],
-  )
+  const followedWatches = useMemo(() => {
+    const followedIds = new Set(followedWatchIds)
+    return catalogWatches.filter(watch => followedIds.has(watch.id))
+  }, [followedWatchIds])
 
   if (followedWatches.length === 0) return null
 

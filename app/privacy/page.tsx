@@ -1,4 +1,7 @@
+import { publicPageMetadata } from '@/lib/siteMetadata'
 import { brand } from '@/lib/brand'
+
+export const metadata = publicPageMetadata('/privacy')
 
 const sectionTitleStyle = {
   fontFamily: brand.font.sans,
