@@ -16,8 +16,9 @@ import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { remapLegacyCatalogId } from '@/lib/catalog/legacyIdRemap'
 import { createCatalogWatchMap, resolveCatalogWatchId, resolveOwnedWatches } from '@/lib/watchData'
 import { getEffectiveSlotCount, packToSlotCount } from '@/lib/watchboxOverflow'
-import { migratePlaygroundBox, normalizePlaygroundBoxes } from '@/lib/playground'
+import { hasThreePlaygroundWatches, migratePlaygroundBox, normalizePlaygroundBoxes } from '@/lib/playground'
 import { createSeededPlaygroundBoxes } from '@/lib/playgroundData'
+import { captureLaunchAttribution, trackLaunchActivation, type LaunchAttribution } from '@/lib/launchAnalytics'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { createClient } from '@/lib/supabase/client'
 import type {
@@ -490,16 +491,16 @@ type DbWatchboxConfig = {
 // raised — correctly deferring the tab-focus refetch until the write settles.
 const SYNC_RETRY_DELAYS = [400, 800, 1600, 3200]
 
-async function withRetry(label: string, op: () => Promise<void>): Promise<void> {
+async function withRetry(label: string, op: () => Promise<void>): Promise<boolean> {
   for (let attempt = 0; ; attempt++) {
     try {
       await op()
-      return
+      return true
     } catch (err) {
       const delay = SYNC_RETRY_DELAYS[attempt]
       if (delay === undefined) {
         console.error(`[vwb] ${label} failed after ${attempt + 1} attempts`, err)
-        return
+        return false
       }
       await new Promise(resolve => setTimeout(resolve, delay))
     }
@@ -514,7 +515,7 @@ async function syncWatchAdd(watch: OwnedWatch, _catalogWatch: CatalogWatch, user
   // watch.id is always passed so the upsert is idempotent on the client-
   // generated UUID (Strict-mode double-invoke / transient duplicates update
   // the same row instead of inserting two).
-  await withRetry('syncWatchAdd', async () => {
+  return withRetry('syncWatchAdd', async () => {
     const supabase = createClient()
     const { error } = await supabase.from('watches').upsert({
       id: watch.id,
@@ -636,7 +637,7 @@ async function syncWatchState(
 }
 
 async function syncPlaygroundBoxes(boxes: PlaygroundBox[], userId: string) {
-  await withRetry('syncPlaygroundBoxes', async () => {
+  return withRetry('syncPlaygroundBoxes', async () => {
     const supabase = createClient()
     const { data: existing, error: selectError } = await supabase
       .from('playground_boxes')
@@ -985,15 +986,44 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   // even while the authoritative network load is still in flight.
   const [cacheHydrated, setCacheHydrated] = useState(false)
   const [migrationPending, setMigrationPending] = useState(false)
-  const [playgroundBoxes, setPlaygroundBoxesState] = useState<PlaygroundBox[]>(createSeededPlaygroundBoxes)
+  const [{ boxes: playgroundBoxes, activation: playgroundActivation }, setPlaygroundState] = useState<{
+    boxes: PlaygroundBox[]
+    activation?: { boxId: string; userId?: string; attribution: LaunchAttribution }
+  }>(() => ({ boxes: createSeededPlaygroundBoxes() }))
   const [playgroundHydrated, setPlaygroundHydrated] = useState(false)
   const [discoverRefreshOffsets, setDiscoverRefreshOffsets] = useState<Record<string, number>>({})
+  const unconfirmedOwnedAdds = useRef(new Set<string>())
+  const guestOwnedActivation = useRef<{ watchId: string; attribution: LaunchAttribution } | null>(null)
 
+  const setPlaygroundBoxesState = useCallback((boxes: PlaygroundBox[]) => setPlaygroundState({ boxes }), [])
   const setPlaygroundBoxes = useCallback(
     (update: PlaygroundBox[] | ((prev: PlaygroundBox[]) => PlaygroundBox[])) => {
-      setPlaygroundBoxesState(update)
+      const userId = user?.id
+      const attribution = captureLaunchAttribution()
+      setPlaygroundState(previous => {
+        const boxes = typeof update === 'function' ? update(previous.boxes) : update
+        if (boxes === previous.boxes) return previous
+
+        // Carry the threshold-crossing action through a coalesced save, even if
+        // a subsequent change is just a reorder or a styling edit.
+        const pending = previous.activation
+        if (pending && pending.userId === userId && boxes.some(box =>
+          box.id === pending.boxId && hasThreePlaygroundWatches(box),
+        )) return { boxes, activation: pending }
+
+        if (!playgroundHydrated || authLoading || dataLoading || migrationPending) return { boxes }
+        if (previous.boxes.some(hasThreePlaygroundWatches)) return { boxes }
+        const completed = boxes.find(box => {
+          if (!hasThreePlaygroundWatches(box)) return false
+          const prior = previous.boxes.find(item => item.id === box.id)
+          return !prior || box.entries.some(entry =>
+            !prior.entries.some(oldEntry => oldEntry.id === entry.id),
+          )
+        })
+        return completed ? { boxes, activation: { boxId: completed.id, userId, attribution } } : { boxes }
+      })
     },
-    [],
+    [user?.id, playgroundHydrated, authLoading, dataLoading, migrationPending],
   )
 
   const bumpDiscoverRefresh = useCallback((seedKey: string) => {
@@ -1102,7 +1132,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       ...(snapshot.collectionJewelWatchId ? [snapshot.collectionJewelWatchId] : []),
     ]
     void replaceOwnedCatalog(referencedIds)
-  }, [replaceOwnedCatalog])
+  }, [replaceOwnedCatalog, setPlaygroundBoxesState])
 
   // Instant-paint hydrate from the per-user local cache. Unlike
   // applyServerSnapshot this seeds the resolver rows synchronously from the
@@ -1126,7 +1156,7 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       setPlaygroundBoxesState(cached.playgroundBoxes)
     }
     setPlaygroundHydrated(true)
-  }, [])
+  }, [setPlaygroundBoxesState])
 
   const primaryPhotoByOwnedId = useMemo(() => {
     const map = new Map<string, string>()
@@ -1405,7 +1435,17 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
       watchboxConfig,
     }
 
-    sessionStorage.setItem(COLLECTION_SESSION_STORAGE_KEY, JSON.stringify(snapshot))
+    try {
+      sessionStorage.setItem(COLLECTION_SESSION_STORAGE_KEY, JSON.stringify(snapshot))
+    } catch {
+      return
+    }
+    for (const entry of collectionEntries) unconfirmedOwnedAdds.current.delete(entry.id)
+    const pending = guestOwnedActivation.current
+    guestOwnedActivation.current = null
+    if (pending && collectionEntries.some(entry => entry.id === pending.watchId)) {
+      trackLaunchActivation('first_owned_watch_added', pending.attribution)
+    }
   }, [hydrated, user, collectionEntries, followedWatchIds, nextTargets, grailWatchId, collectionJewelWatchId, watchboxConfig])
 
   useEffect(() => {
@@ -1546,18 +1586,24 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
   // useDebouncedCloudWrite) so a final drag/edit isn't lost inside the window.
   useEffect(() => {
     if (!playgroundHydrated) return
+    const activation = playgroundActivation?.userId === user?.id ? playgroundActivation : undefined
     if (!user) {
       try {
         localStorage.setItem(PLAYGROUND_BOXES_STORAGE_KEY, JSON.stringify(playgroundBoxes))
-      } catch {}
+      } catch {
+        return
+      }
+      if (activation) trackLaunchActivation('first_three_watch_playground_box', activation.attribution)
       return
     }
     const userId = user.id
     const boxesSnapshot = playgroundBoxes
     playgroundWriter.schedule(1000, () => {
-      void trackedSync(syncPlaygroundBoxes(boxesSnapshot, userId))
+      void trackedSync(syncPlaygroundBoxes(boxesSnapshot, userId)).then(saved => {
+        if (saved && activation) trackLaunchActivation('first_three_watch_playground_box', activation.attribution)
+      })
     })
-  }, [playgroundBoxes, playgroundHydrated, user, trackedSync, playgroundWriter])
+  }, [playgroundBoxes, playgroundActivation, playgroundHydrated, user, trackedSync, playgroundWriter])
 
   useEffect(() => {
     if (!playgroundHydrated) return
@@ -1840,9 +1886,19 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     // Compute next entries from the current closure value — avoids putting a
     // side effect inside a state updater (which strict-mode double-invokes).
     const nextEntries = [...collectionEntries, newWatch]
+    const isFirstOwnedAdd = hydrated && !dataLoading && !authLoading && !migrationPending &&
+      collectionEntries.every(entry => unconfirmedOwnedAdds.current.has(entry.id))
+    const attribution = isFirstOwnedAdd ? captureLaunchAttribution() : null
+    unconfirmedOwnedAdds.current.add(newWatch.id)
     setCollectionEntries(nextEntries)
     if (user) {
-      void trackedSync(syncWatchAdd(newWatch, watch, user.id, targetSlot))
+      void trackedSync(syncWatchAdd(newWatch, watch, user.id, targetSlot)).then(saved => {
+        if (!saved) return
+        unconfirmedOwnedAdds.current.delete(newWatch.id)
+        if (attribution) trackLaunchActivation('first_owned_watch_added', attribution)
+      })
+    } else if (attribution) {
+      guestOwnedActivation.current = { watchId: newWatch.id, attribution }
     }
 
     setNextTargets(prev => prev.filter(target => target.watchId !== watch.id))
@@ -1859,7 +1915,9 @@ export function CollectionSessionProvider({ children }: { children: React.ReactN
     const isFirstEverAdd =
       nextEntries.length === 1 &&
       typeof window !== 'undefined' &&
-      !localStorage.getItem('vwb:firstWatchToastShown')
+      (() => {
+        try { return !localStorage.getItem('vwb:firstWatchToastShown') } catch { return false }
+      })()
 
     if (isFirstEverAdd) {
       try {
