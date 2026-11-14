@@ -12,10 +12,12 @@ import { useCollectionSession } from '@/app/collection/CollectionSessionProvider
 import { IntentBadge } from './WatchStateIcons'
 import { PLAYGROUND_DRAG_PAYLOAD_KEY, PLAYGROUND_WATCH_MIME, startGhostDrag } from '@/lib/dragGhost'
 
+type WatchboxWatch = Pick<ResolvedWatch, 'id' | 'watchId' | 'brand' | 'model' | 'reference' | 'dialConfig' | 'imageUrl'>
+
 interface Props {
-  watches: ResolvedWatch[]
+  watches: WatchboxWatch[]
   activeSlot: number | null
-  onSlotClick: (i: number) => void
+  onSlotClick?: (i: number) => void
   onEmptySlotClick?: (slotIndex: number) => void
   onReorder?: (from: number, to: number) => void
   onExternalDrop?: (slotIndex: number, watchId: string) => void
@@ -31,7 +33,7 @@ interface Props {
    * dense rendering uses `watches[i]` directly. Either source still feeds the
    * overflow tally via `watches`.
    */
-  watchBySlot?: Map<number, ResolvedWatch>
+  watchBySlot?: Map<number, WatchboxWatch>
   frame: string
   lining: string
   slotCount: number
@@ -55,7 +57,7 @@ function OverflowGridCard({
   mode,
   showJewelBadge = false,
 }: {
-  watch: ResolvedWatch
+  watch: WatchboxWatch
   onClick: () => void
   mode: 'collection' | 'playground'
   showJewelBadge?: boolean
@@ -166,7 +168,7 @@ function OverflowListItem({
   mode,
   showJewelBadge = false,
 }: {
-  watch: ResolvedWatch
+  watch: WatchboxWatch
   onClick: () => void
   mode: 'collection' | 'playground'
   showJewelBadge?: boolean
@@ -518,7 +520,7 @@ export default function WatchBox({
     && dragOverIndex !== null
     && draggedIndex !== dragOverIndex
 
-  function watchAtSlot(slotIndex: number): ResolvedWatch | null {
+  function watchAtSlot(slotIndex: number): WatchboxWatch | null {
     if (isSparse) return watchBySlot?.get(slotIndex) ?? null
     return denseVisibleItems[slotIndex] ?? null
   }
@@ -528,7 +530,7 @@ export default function WatchBox({
       return { type: 'overflow' as const }
     }
     // Drag preview swaps watch-at-slot-from with watch-at-slot-to visually.
-    let watch: ResolvedWatch | null
+    let watch: WatchboxWatch | null
     if (inPreview && i === draggedIndex) watch = watchAtSlot(dragOverIndex!)
     else if (inPreview && i === dragOverIndex) watch = watchAtSlot(draggedIndex!)
     else watch = watchAtSlot(i)
@@ -880,8 +882,8 @@ export default function WatchBox({
               return (
                 <motion.div
                   key={`watch-${w.id}`}
-                  layout={reduceMotion || draggedIndex !== null ? false : 'position'}
-                  initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
+                  layout={!onSlotClick || reduceMotion || draggedIndex !== null ? false : 'position'}
+                  initial={!onSlotClick || reduceMotion ? false : { opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={
                     reduceMotion
@@ -892,20 +894,20 @@ export default function WatchBox({
                           scale: { duration: 0.3, ease: [0.4, 0, 0.2, 1], delay: i * 0.04 },
                         }
                   }
-                  whileHover={reduceMotion || draggedIndex !== null ? undefined : { y: -2 }}
+                  whileHover={!onSlotClick || reduceMotion || draggedIndex !== null ? undefined : { y: -2 }}
                   style={{ position: 'relative', aspectRatio: '3/4' }}
                 >
                 <div
                   data-slot-index={i}
                   draggable={onReorder !== undefined && !isTouchDevice}
                   onPointerDown={isTouchDevice && onReorder ? e => handleSlotTouchPointerDown(e, i) : undefined}
-                  onClick={() => {
+                  onClick={onSlotClick ? () => {
                     if (didTouchDragRef.current) {
                       didTouchDragRef.current = false
                       return
                     }
                     onSlotClick(slot.originalIndex)
-                  }}
+                  } : undefined}
                   onDragStart={onReorder ? e => {
                     dragCounter.current = 0
                     setDraggedIndex(i)
@@ -958,7 +960,7 @@ export default function WatchBox({
                     height: '100%',
                     borderRadius: 3,
                     position: 'relative',
-                    cursor: 'pointer',
+                    cursor: onSlotClick ? 'pointer' : 'default',
                     overflow: 'visible',
                     // Transient drag/preview dimming stays plain CSS (instant,
                     // position-correct). Framer owns only the entrance + reorder
@@ -1038,7 +1040,7 @@ export default function WatchBox({
                       overflow: 'hidden',
                       position: 'relative',
                       background: ln.slotBg,
-                      cursor: 'pointer',
+                      cursor: onSlotClick ? 'pointer' : 'default',
                       border: isExternalDragTarget
                         ? '2px solid rgba(201,168,76,0.95)'
                         : (isActive || isDragTarget || isDestInPreview)
@@ -1209,7 +1211,7 @@ export default function WatchBox({
                       mode={mode}
                       showJewelBadge={shouldShowJewel(item.watchId)}
                       onClick={() => {
-                        onSlotClick(index)
+                        onSlotClick?.(index)
                         setOverflowOpen(false)
                       }}
                     />
@@ -1286,7 +1288,7 @@ export default function WatchBox({
                         mode={mode}
                         showJewelBadge={shouldShowJewel(item.watchId)}
                         onClick={() => {
-                          onSlotClick(index)
+                          onSlotClick?.(index)
                           setOverflowOpen(false)
                         }}
                       />

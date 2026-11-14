@@ -1,16 +1,10 @@
 'use client'
 
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { CatalogWatch, PlaygroundBox, PlaygroundBoxEntry, ResolvedWatch } from '@/types/watch'
 import { FRAMES, LININGS, SLOT_COUNTS, watchboxSlotPadding } from '@/lib/frameConfig'
-import {
-  buildAbsoluteProfileDemoUrl,
-  buildBoxShareUrl,
-  getPlaygroundBoxSlug,
-  getProfileDemoState,
-} from '@/lib/profileDemo'
-import { useAuth } from '@/lib/auth/AuthProvider'
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import {
   buildSlotMap,
@@ -34,12 +28,13 @@ import SortDropdown from '@/components/collection/SortDropdown'
 import ViewSwitcher from '@/components/collection/ViewSwitcher'
 import WatchCard from '@/components/collection/WatchCard'
 import CollectionStats from '@/components/collection/CollectionStats'
-import ShareBoxModal, { type ShareFlags } from '@/components/collection/ShareBoxModal'
+import PlaygroundShareModal from '@/components/playground/PlaygroundShareModal'
 import SyncRibbon from '@/components/collection/SyncRibbon'
 import WatchboxHeader from '@/components/collection/WatchboxHeader'
 import PlaygroundEmptyState from '@/components/collection/PlaygroundEmptyState'
 import { SAMPLE_BOX_GHOSTS } from '@/lib/sampleBox'
 import { brand, masthead } from '@/lib/brand'
+import { publicPages } from '@/lib/siteMetadata'
 
 const PV_W_PAD = 38
 const PV_H_PAD = 45
@@ -85,16 +80,27 @@ function calcSlotPx(
 
 export default function PlaygroundPage() {
   return (
-    <Suspense>
+    <Suspense fallback={<PlaygroundIntro />}>
       <PlaygroundPageInner />
     </Suspense>
+  )
+}
+
+function PlaygroundIntro() {
+  return (
+    <section style={{ padding: 'clamp(24px, 5vw, 56px)' }}>
+      <h1 style={masthead.title}>Build a Dream Watch Collection</h1>
+      <p style={{ ...masthead.subtitle, marginTop: 8 }}>{publicPages['/playground'].description}</p>
+      <Link href="/collection/add?dest=playground" style={{ color: brand.colors.goldDeep, display: 'inline-block', marginTop: 16 }}>
+        Browse watches →
+      </Link>
+    </section>
   )
 }
 
 function PlaygroundPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user } = useAuth()
   const {
     collectionWatches,
     followedWatches,
@@ -105,7 +111,6 @@ function PlaygroundPageInner() {
   const { allWatches, ensureWatches } = useCatalog()
   const requestedBoxId = searchParams.get('boxId')
   const requestedEntryId = searchParams.get('entryId')
-  const [shareDisplayName, setShareDisplayName] = useState('')
 
   const [activeBoxId, setActiveBoxId] = useState<string>(boxes[0]?.id ?? '')
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null)
@@ -114,7 +119,7 @@ function PlaygroundPageInner() {
   const [newBoxModalOpen, setNewBoxModalOpen] = useState(false)
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
   const [deleteEntryTarget, setDeleteEntryTarget] = useState<ResolvedPlaygroundWatch | null>(null)
-  const [shareModalOpen, setShareModalOpen] = useState(false)
+  const [shareBox, setShareBox] = useState<PlaygroundBox | null>(null)
   const [editingName, setEditingName] = useState(false)
   const [editingNameValue, setEditingNameValue] = useState('')
   const [renameModalOpen, setRenameModalOpen] = useState(false)
@@ -319,11 +324,8 @@ function PlaygroundPageInner() {
     if (selectedEntryId === item.entry.id) setSelectedEntryId(null)
   }
 
-  async function handleShareBox() {
-    if (!activeBox) return
-
-    setShareDisplayName(getProfileDemoState().displayName ?? '')
-    setShareModalOpen(true)
+  function handleShareBox() {
+    if (activeBox?.entries.length) setShareBox(activeBox)
   }
 
   function handleRenameBox(newName: string) {
@@ -436,12 +438,7 @@ function PlaygroundPageInner() {
                 label: mobileStatsOpen ? 'Hide Box Stats' : 'Show Box Stats',
                 onSelect: () => setMobileStatsOpen(open => !open),
               }]),
-              {
-                label: 'Share Box',
-                onSelect: () => {
-                  void handleShareBox()
-                },
-              },
+              ...(activeBox?.entries.length ? [{ label: 'Share Box', onSelect: handleShareBox }] : []),
               ...(boxes.length > 1 ? [{
                 label: 'Delete Box',
                 onSelect: () => setDeleteConfirmId(activeBoxId),
@@ -757,8 +754,8 @@ function PlaygroundPageInner() {
                 onChange={value => setSortBy(value as SortMode)}
               />
             ) : null}
-            <button
-              onClick={() => setShareModalOpen(true)}
+            {activeBox?.entries.length ? <button
+              onClick={handleShareBox}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -782,7 +779,7 @@ function PlaygroundPageInner() {
                 <path d="M10.5 8.5v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5.5a1 1 0 0 1 1-1H6" />
               </svg>
               Share Box
-            </button>
+            </button> : null}
             </div>
           </div>
         ) : null}
@@ -884,42 +881,7 @@ function PlaygroundPageInner() {
       </div>
       )}
 
-      {(() => {
-        const total = displayWatches.reduce((s, w) => s + w.estimatedValue, 0)
-        const handle = (shareDisplayName.trim() || user?.email?.split('@')[0] || 'collector')
-        const brandCount = new Set(displayWatches.map(w => w.brand).filter(Boolean)).size
-        const data = activeBox ? {
-          handle,
-          watchCount: displayWatches.length,
-          totalValue: total,
-          brandCount,
-          slotCount: activeBox.slotCount,
-          boxTitle: activeBox.name,
-          // Sparse: align image URL index with slot so the share preview keeps
-          // empty middle slots empty.
-          watchImageUrls: Array.from({ length: activeBox.slotCount }, (_, i) => {
-            const r = resolvedEntries.find(item => item.slot === i)
-            return r?.displayWatch.imageUrl ?? null
-          }),
-        } : null
-        const buildShareUrl = (flags: ShareFlags) => activeBox && data
-          ? buildAbsoluteProfileDemoUrl(buildBoxShareUrl(getPlaygroundBoxSlug(activeBox), 'playground', data, flags))
-          : ''
-        return (
-          <ShareBoxModal
-            open={shareModalOpen}
-            onClose={() => setShareModalOpen(false)}
-            watches={displayWatches.map(w => ({ id: w.id, brand: w.brand, model: w.model, imageUrl: w.imageUrl ?? null, estimatedValue: w.estimatedValue }))}
-            totalValue={total}
-            handle={handle}
-            shareUrl={buildShareUrl({ showCount: true, showValue: true, showBrands: true })}
-            buildShareUrl={buildShareUrl}
-            slotCount={activeBox?.slotCount ?? 6}
-            source="playground"
-            title={activeBox?.name}
-          />
-        )
-      })()}
+      {shareBox && <PlaygroundShareModal box={shareBox} onClose={() => setShareBox(null)} />}
 
       {newBoxModalOpen && (
         <NewBoxModal

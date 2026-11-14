@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+import { SITE_URL } from '@/lib/siteMetadata'
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -6,10 +7,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/_next/', '/admin/', '/auth/'],
+        disallow: ['/api/', '/admin/', '/auth/'],
       },
     ],
-    sitemap: 'https://virtualwatchbox.com/sitemap.xml',
-    host: 'https://virtualwatchbox.com',
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   }
 }

@@ -11,7 +11,8 @@ function asString(v: string | string[] | undefined): string | null {
 
 export function generateMetadata({ searchParams }: { searchParams: SearchParams }): Metadata {
   const slug = asString(searchParams.box)
-  if (!slug) return {}
+  const robots = { index: false, follow: false, googleBot: { index: false, follow: false } }
+  if (!slug) return { robots }
 
   const type = asString(searchParams.type) === 'playground' ? 'playground' : 'collection'
   const handle = asString(searchParams.handle) ?? 'collector'
@@ -47,6 +48,7 @@ export function generateMetadata({ searchParams }: { searchParams: SearchParams 
     : `${boxTitle ? `${boxTitle} — ` : ''}A dream box from ${handle} on Virtual Watchbox.`
 
   return {
+    robots,
     title: `${previewLabel} — Virtual Watchbox`,
     description,
     openGraph: {
