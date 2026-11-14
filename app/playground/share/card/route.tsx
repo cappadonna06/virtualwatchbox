@@ -2,6 +2,7 @@ import { ImageResponse } from 'next/og'
 import type { NextRequest } from 'next/server'
 import sharp from 'sharp'
 import { brand } from '@/lib/brand'
+import { draftName } from '@/lib/watchDraftChallenge'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import { decodePlaygroundShare, formatPlaygroundShareTotal } from '@/lib/playgroundShare'
 import { loadPlaygroundShareCatalog } from '@/lib/playgroundShareCatalog'
@@ -62,8 +63,7 @@ export async function GET(request: NextRequest) {
         <div style={{ display: 'flex', width: 350, flexDirection: 'column', flexShrink: 0 }}>
           <div style={{ color: brand.colors.gold, fontSize: 22, letterSpacing: 4, marginBottom: 25 }}>VIRTUAL WATCHBOX</div>
           <div style={{ display: 'flex', flexDirection: 'column', fontSize: 59, lineHeight: 1.03 }}>
-            <span>Shared</span>
-            <span>Playground Box</span>
+            {share.challenge ? <span>{draftName(share.challenge)}</span> : <><span>Shared</span><span>Playground Box</span></>}
           </div>
           <div style={{ color: brand.colors.onDarkMuted, fontSize: 24, marginTop: 24 }}>
             {`${count} ${count === 1 ? 'watch' : 'watches'}`}

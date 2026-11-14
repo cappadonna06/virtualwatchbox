@@ -35,6 +35,7 @@ import PlaygroundEmptyState from '@/components/collection/PlaygroundEmptyState'
 import { SAMPLE_BOX_GHOSTS } from '@/lib/sampleBox'
 import { brand, masthead } from '@/lib/brand'
 import { publicPages } from '@/lib/siteMetadata'
+import { challengeFromTags, draftPath } from '@/lib/watchDraftChallenge'
 
 const PV_W_PAD = 38
 const PV_H_PAD = 45
@@ -164,6 +165,7 @@ function PlaygroundPageInner() {
   }, [])
 
   const activeBox = boxes.find(box => box.id === activeBoxId) ?? boxes[0]
+  const activeChallenge = activeBox && challengeFromTags(activeBox.tags)
   const boxOptions = useMemo(
     () => boxes.map(box => ({ value: box.id, label: `${box.name} · ${box.entries.length}` })),
     [boxes],
@@ -523,6 +525,17 @@ function PlaygroundPageInner() {
       )}
 
       <div style={{ padding: `${isMobile ? 24 : 24}px ${isMobile ? 20 : 56}px 32px` }}>
+        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <Link href={draftPath} style={{ color: brand.colors.goldDeep, textDecoration: 'underline', fontSize: 14 }}>
+            Try the five-watch budget challenge →
+          </Link>
+          {isMobile && activeChallenge && activeBox?.entries.length ? (
+            <button type="button" onClick={handleShareBox} style={{
+              background: brand.colors.ink, color: brand.colors.white, padding: '8px 14px',
+              borderRadius: brand.radius.btn, fontSize: 14, minHeight: 44,
+            }}>Share dream box</button>
+          ) : null}
+        </div>
         {!isMobile ? (
           <div
             style={{

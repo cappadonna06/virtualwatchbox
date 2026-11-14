@@ -8,7 +8,7 @@ import { captureLaunchAttribution } from '@/lib/launchAnalytics'
 
 const publicPaths = new Set([
   '/', '/auth', '/collection', '/collection/add', '/collection/straps',
-  '/collection/straps/studio', '/discover', '/followed', '/guides/three-watch-collection', '/news', '/playground',
+  '/collection/straps/studio', '/discover', '/followed', '/games/watch-draft', '/guides/three-watch-collection', '/news', '/playground',
   '/privacy', '/profile', '/profile/preview', '/service-room', '/settings', '/terms',
 ])
 

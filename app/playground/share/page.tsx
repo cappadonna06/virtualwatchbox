@@ -1,4 +1,6 @@
 import { cache } from 'react'
+import Link from 'next/link'
+import { challengePath, draftName } from '@/lib/watchDraftChallenge'
 import type { Metadata } from 'next'
 import SharedPlaygroundBuildLink from '@/components/playground/SharedPlaygroundBuildLink'
 import SharedPlaygroundWatchbox from '@/components/playground/SharedPlaygroundWatchbox'
@@ -40,7 +42,8 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     return { ...base, description: 'Open a shared Playground box on Virtual Watchbox.', openGraph: null, twitter: null }
   }
 
-  const { entries, total } = result.share
+  const { entries, total, challenge } = result.share
+  const title = challenge ? draftName(challenge) : SHARE_TITLE
   const count = entries.length
   const countText = count === 1 ? '1 watch' : `${count} watches`
   const description = total === undefined
@@ -53,12 +56,13 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   }]
   return {
     ...base,
+    title,
     description,
     openGraph: {
-      type: 'website', siteName: 'Virtual Watchbox', title: SHARE_TITLE, description, images,
+      type: 'website', siteName: 'Virtual Watchbox', title, description, images,
       url: playgroundSharePath(searchParams.box),
     },
-    twitter: { card: 'summary_large_image', title: SHARE_TITLE, description, images },
+    twitter: { card: 'summary_large_image', title, description, images },
   }
 }
 
@@ -104,12 +108,15 @@ export default async function SharedPlaygroundPage({ searchParams }: Props) {
           fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.16em',
           color: brand.colors.goldDeep, margin: '0 0 8px',
         }}>Virtual Watchbox</p>
-        <h1 style={heading}>{SHARE_TITLE}</h1>
+        <h1 style={heading}>{share.challenge ? draftName(share.challenge) : SHARE_TITLE}</h1>
         <p style={{ fontSize: 14, color: brand.colors.muted, margin: '8px 0 18px' }}>
           {lineup.length} {lineup.length === 1 ? 'watch' : 'watches'} · {frame.label} · {lining.label}
           {share.total === undefined ? null : ` · ${formatPlaygroundShareTotal(share.total)} catalog estimate`}
         </p>
-        <SharedPlaygroundBuildLink key={String(searchParams.box)} shareToken={String(searchParams.box)} />
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, alignItems: 'center', justifyContent: 'center' }}>
+          <SharedPlaygroundBuildLink key={String(searchParams.box)} shareToken={String(searchParams.box)} draftHref={share.challenge && challengePath(share.challenge)} />
+          {share.challenge && <Link href="/collection" style={{ textDecoration: 'underline', fontSize: 14 }}>My Collection</Link>}
+        </div>
       </header>
 
       <div style={{ maxWidth: 56 + layout.cols * 150, margin: '0 auto' }}>

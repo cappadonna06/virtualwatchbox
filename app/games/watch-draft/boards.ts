@@ -1,8 +1,6 @@
 import { withVersion } from '@/lib/watchImages/cacheBust'
 
-export const draftPath = '/games/watch-draft'
-export const budgets = [5000, 10000, 15000] as const
-export type Budget = (typeof budgets)[number]
+import { draftPath, type Budget, type DraftChallenge } from '@/lib/watchDraftChallenge'
 export const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format
 
 type Watch = {
@@ -46,7 +44,6 @@ const w = {
   hydro: watch('longines-l3-781-4-96-6', 'Longines', 'HydroConquest', 'L3.781.4.96.6', 1150, `${longines}/hydroconquest?page=1`),
   zulu: watch('longines-l3-812-4-63-6', 'Longines', 'Spirit Zulu Time', 'L3.812.4.63.6', 2175, longines),
   aquaQuartz: watch('omega-2517-50-00', 'Omega', 'Aqua Terra Quartz', '2517.50.00', 2225, 'watchcharts.com/watches/brand/omega/aqua%20terra?page=2'),
-  reduced: watch('omega-3510-50-00', 'Omega', 'Speedmaster Reduced', '3510.50.00', 3000, 'marketplace.watchcharts.com/listings/watch_model/24?page=1&status=all'),
   seamaster: watch('omega-210-30-42-20-01-001', 'Omega', 'Seamaster 300M', '210.30.42.20.01.001', 4375, 'marketplace.watchcharts.com/listings/watch_model/869'),
   moonwatch: watch('omega-310-30-42-50-01-001', 'Omega', 'Speedmaster Moonwatch', '310.30.42.50.01.001', 5525, 'watchcharts.com/watch_model/30920-omega-speedmaster-professional-moonwatch-310-30-42-50-01-001/overview'),
   moonwatchReversePanda: watch('omega-310-30-42-50-01-004', 'Omega', 'Moonwatch Reverse Panda', '310.30.42.50.01.004', 9375, 'watchcharts.com/watches/brand/omega/speedmaster?page=1'),
@@ -63,7 +60,7 @@ const w = {
 }
 
 export type Board = {
-  id: string
+  id: DraftChallenge['board']
   title: string
   label: string
   rule: string
@@ -79,7 +76,7 @@ export const boards: Board[] = [
     prompt: 'You have $5,000 to cover five roles. Where are you splurging, and which slot gets the budget pick? Drop your five and your total.',
     budget: 5000,
     groups: [
-      { title: 'Chronograph', watches: [w.speedtimer, w.intra, w.reduced, w.moonwatch] },
+      { title: 'Chronograph', watches: [w.speedtimer, w.intra, w.moonwatch, w.moonwatchReversePanda] },
       { title: 'Dress', watches: [w.cocktail, w.boulton, w.tangente, w.tank] },
       { title: 'Diver', watches: [w.turtle, w.hydro, w.bb58, w.seamaster] },
       { title: 'Sport', watches: [w.prx, w.murph, w.alpinist, w.explorer] },
@@ -120,4 +117,48 @@ export function draftUrl(board: Board, budget: Budget, picks: string[] = []) {
   const query = new URLSearchParams({ board: board.id, budget: String(budget) })
   if (picks.length) query.set('picks', picks.join(','))
   return `${draftPath}?${query}`
+}
+
+const tierPrices: Record<Budget, readonly number[]> = {
+  5000: [2500, 1500, 750, 500, 250],
+  10000: [5000, 2500, 1500, 750, 250],
+  15000: [9500, 3500, 2500, 1250, 500],
+}
+
+export function draftGrid(board: Board, budget: Budget) {
+  const prices = tierPrices[budget]
+  // Leave watches well above the top tier off the board.
+  const columns = board.groups.map(group => group.watches
+    .filter(watch => watch.price <= budget && watch.price <= prices[0] * 1.25)
+    .map(watch => {
+      const tier = prices.reduce((closest, price) =>
+        Math.abs(price - watch.price) <= Math.abs(closest - watch.price) ? price : closest)
+      return { ...watch, tier }
+    }))
+
+  return prices.map(price => ({
+    price,
+    cells: columns.map((column, columnIndex) => column.filter(watch => {
+      if (watch.tier !== price) return false
+      if (board.id !== 'region') {
+        const reserve = columns.reduce((sum, options, index) =>
+          index === columnIndex ? sum : sum + Math.min(...options.map(option => option.tier)), 0)
+        return price + reserve <= budget
+      }
+
+      // Reserve the cheapest watch from each missing country, then fill the two flex slots.
+      const cheapest = columns.flatMap((options, index) => options
+        .filter(option => option.id !== watch.id)
+        .map(option => ({ price: option.tier, index })))
+        .sort((a, b) => a.price - b.price)
+      const required = new Set(columns.map((_, index) => index).filter(index => index !== columnIndex))
+      let reserve = 0
+      const extras = cheapest.filter(option => {
+        if (!required.delete(option.index)) return true
+        reserve += option.price
+        return false
+      })
+      return !required.size && extras.length >= 2 && price + reserve + extras[0].price + extras[1].price <= budget
+    })),
+  }))
 }

@@ -1,6 +1,7 @@
 import { isValidCatalogId } from '@/lib/catalogId'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
 import { getEntrySlot } from '@/lib/playground'
+import { challengeFromTags, draftChallenge, type DraftChallenge } from '@/lib/watchDraftChallenge'
 import type { CatalogWatch, PlaygroundBox } from '@/types/watch'
 
 export const PLAYGROUND_SHARE_PATH = '/playground/share'
@@ -20,6 +21,7 @@ export type PlaygroundShare = {
   slotCount: number
   entries: Array<{ slot: number; watchId: string }>
   total?: number
+  challenge?: DraftChallenge
 }
 
 export function formatPlaygroundShareTotal(total: number) {
@@ -27,7 +29,9 @@ export function formatPlaygroundShareTotal(total: number) {
 }
 
 export function createPlaygroundShare(box: PlaygroundBox): PlaygroundShare {
+  const challenge = challengeFromTags(box.tags)
   return {
+    ...(challenge ? { challenge } : {}),
     frame: (FRAMES.find(frame => frame.id === box.frame) ?? FRAMES[0]).id,
     lining: (LININGS.find(lining => lining.id === box.lining) ?? LININGS[0]).id,
     slotCount: (SLOT_COUNTS.find(layout => layout.n === box.slotCount) ?? SLOT_COUNTS[1]).n,
@@ -39,11 +43,12 @@ export function createPlaygroundShare(box: PlaygroundBox): PlaygroundShare {
 }
 
 export function encodePlaygroundShare(share: PlaygroundShare): string | null {
-  const payload = [
-    1, share.frame, share.lining, share.slotCount,
+  const payload: unknown[] = [
+    share.challenge ? 2 : 1, share.frame, share.lining, share.slotCount,
     share.entries.map(({ slot, watchId }) => [slot, watchId]),
   ]
-  if (share.total !== undefined) payload.push(share.total)
+  if (share.challenge) payload.push(share.total ?? null, share.challenge.board, share.challenge.budget)
+  else if (share.total !== undefined) payload.push(share.total)
   try {
     const token = btoa(JSON.stringify(payload)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
     return decodePlaygroundShare(token) ? token : null
@@ -57,12 +62,15 @@ export function decodePlaygroundShare(token: string | string[] | undefined | nul
 
   try {
     const payload: unknown = JSON.parse(atob(token.replace(/-/g, '+').replace(/_/g, '/')))
-    if (!Array.isArray(payload) || (payload.length !== 5 && payload.length !== 6)) return null
-    const [version, frame, lining, slotCount, entries, total] = payload
-    if (version !== 1 || !FRAMES.some(option => option.id === frame) ||
+    if (!Array.isArray(payload)) return null
+    const [version, frame, lining, slotCount, entries, total, board, budget] = payload
+    const challenge = version === 2 ? draftChallenge(board, budget) : undefined
+    if (version === 1 ? payload.length !== 5 && payload.length !== 6 : payload.length !== 8 || !challenge) return null
+    const hasTotal = version === 1 ? payload.length === 6 : total !== null
+    if (!FRAMES.some(option => option.id === frame) ||
         !LININGS.some(option => option.id === lining) || !SLOT_COUNTS.some(option => option.n === slotCount) ||
         !Array.isArray(entries) || entries.length === 0 ||
-        (payload.length === 6 && (!Number.isSafeInteger(total) || total < 0))) return null
+        (hasTotal && (!Number.isSafeInteger(total) || total < 0))) return null
 
     const slots = new Set<number>()
     const watches: PlaygroundShare['entries'] = []
@@ -78,7 +86,8 @@ export function decodePlaygroundShare(token: string | string[] | undefined | nul
     return {
       frame, lining, slotCount,
       entries: watches.sort((a, b) => a.slot - b.slot),
-      ...(payload.length === 6 ? { total } : {}),
+      ...(hasTotal ? { total } : {}),
+      ...(challenge ? { challenge } : {}),
     }
   } catch {
     return null

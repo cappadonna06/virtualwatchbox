@@ -10,6 +10,7 @@ import {
   encodePlaygroundShare,
   formatPlaygroundShareTotal,
   playgroundSharePath,
+  playgroundShareCardPath,
 } from '@/lib/playgroundShare'
 import type { PlaygroundBox } from '@/types/watch'
 
@@ -138,7 +139,10 @@ export default function PlaygroundShareModal({ box, onClose }: { box: Playground
           )}
           {url ? (
             <>
-              <button type="button" onClick={copyLink} style={primary}>Copy link</button>
+              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12 }}>
+                <button type="button" onClick={copyLink} style={primary}>Copy link</button>
+                {token && <a href={playgroundShareCardPath(token)} download="virtual-watchbox.png" style={{ fontSize: 14, textDecoration: 'underline' }}>Download share image</a>}
+              </div>
               <p role="status" style={{ margin: status === 'idle' ? 0 : '8px 0 0', fontSize: 13, color: brand.colors.muted }}>
                 {status === 'copied' ? 'Link copied.' : status === 'manual' ? 'Select and copy this link manually.' : ''}
               </p>
