@@ -1,6 +1,6 @@
 import { cache } from 'react'
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import SharedPlaygroundBuildLink from '@/components/playground/SharedPlaygroundBuildLink'
 import SharedPlaygroundWatchbox from '@/components/playground/SharedPlaygroundWatchbox'
 import { brand } from '@/lib/brand'
 import { FRAMES, LININGS, SLOT_COUNTS } from '@/lib/frameConfig'
@@ -74,14 +74,6 @@ const unavailableWatch: SharedCatalogWatch = {
 export default async function SharedPlaygroundPage({ searchParams }: Props) {
   const result = await resolveShare(searchParams.box)
   const ready = result.status === 'ready'
-  const cta = (
-    <Link href="/playground" prefetch={false} style={{
-      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minHeight: 44,
-      padding: '0 18px', borderRadius: brand.radius.btn, background: brand.colors.ink,
-      color: brand.colors.white, textDecoration: 'none', fontSize: 14, fontWeight: 600,
-    }}>Build your own box&nbsp;<span aria-hidden>→</span></Link>
-  )
-
   if (!ready) {
     return (
       <section style={{ textAlign: 'center', margin: '0 auto', padding: '72px 20px 96px' }}>
@@ -91,7 +83,7 @@ export default async function SharedPlaygroundPage({ searchParams }: Props) {
             ? 'The catalog is temporarily unavailable. Refresh this page to try again.'
             : 'Check the link or ask the sender to copy a new one.'}
         </p>
-        {cta}
+        <SharedPlaygroundBuildLink />
       </section>
     )
   }
@@ -117,7 +109,7 @@ export default async function SharedPlaygroundPage({ searchParams }: Props) {
           {lineup.length} {lineup.length === 1 ? 'watch' : 'watches'} · {frame.label} · {lining.label}
           {share.total === undefined ? null : ` · ${formatPlaygroundShareTotal(share.total)} catalog estimate`}
         </p>
-        {cta}
+        <SharedPlaygroundBuildLink key={String(searchParams.box)} shareToken={String(searchParams.box)} />
       </header>
 
       <div style={{ maxWidth: 56 + layout.cols * 150, margin: '0 auto' }}>

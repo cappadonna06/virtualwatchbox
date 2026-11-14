@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { preparePlaygroundShare } from '@/app/playground/share/actions'
 import { brand } from '@/lib/brand'
 import { FRAMES, LININGS } from '@/lib/frameConfig'
+import { trackPlaygroundShare } from '@/lib/launchAnalytics'
 import {
   createPlaygroundShare,
   encodePlaygroundShare,
@@ -61,6 +62,7 @@ export default function PlaygroundShareModal({ box, onClose }: { box: Playground
     try {
       await navigator.clipboard.writeText(url)
       setStatus('copied')
+      trackPlaygroundShare('playground_share_copied')
     } catch {
       setStatus('manual')
     }

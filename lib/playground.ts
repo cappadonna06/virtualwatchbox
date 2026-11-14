@@ -91,6 +91,15 @@ export function getEntrySlot(entry: PlaygroundBoxEntry, fallbackIndex: number): 
   return typeof entry.slot === 'number' ? entry.slot : fallbackIndex
 }
 
+export function hasThreePlaygroundWatches(box: PlaygroundBox): boolean {
+  const slots = new Set<number>()
+  box.entries.forEach((entry, index) => {
+    // Older saved boxes can still contain the original prefilled picks.
+    if (!/^pge-(dream|budget)-\d+$/.test(entry.id)) slots.add(getEntrySlot(entry, index))
+  })
+  return slots.size >= 3
+}
+
 /** First slot index not claimed by any entry. Useful when appending without an explicit slot. */
 export function getNextFreeSlot(entries: PlaygroundBoxEntry[], slotCount: number): number {
   const claimed = new Set(entries.map((e, i) => getEntrySlot(e, i)))

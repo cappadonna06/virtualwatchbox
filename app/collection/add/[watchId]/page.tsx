@@ -6,14 +6,12 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import type { CatalogWatch, PlaygroundBox, WatchCondition } from '@/types/watch'
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
-import { addWatchToPlaygroundBox, createPlaygroundBox, createPlaygroundEntry, normalizePlaygroundBoxes } from '@/lib/playground'
-import { createSeededPlaygroundBoxes } from '@/lib/playgroundData'
+import { addWatchToPlaygroundBox, createPlaygroundBox, createPlaygroundEntry } from '@/lib/playground'
 import { useCollectionSession } from '../../CollectionSessionProvider'
 import { brand } from '@/lib/brand'
 import WatchStateControl from '@/components/collection/WatchStateControl'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
 
-const STORAGE_KEY = 'playgroundBoxes'
 const CONDITIONS: WatchCondition[] = ['Unworn', 'Like New', 'Excellent', 'Good', 'Fair']
 type OwnershipChoice = 'owned' | 'playground'
 
@@ -70,20 +68,14 @@ function StepHeading({
   )
 }
 
-function loadPlaygroundBoxes() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    return normalizePlaygroundBoxes(stored ? JSON.parse(stored) : null, createSeededPlaygroundBoxes())
-  } catch {
-    return createSeededPlaygroundBoxes()
-  }
-}
-
 export default function AddWatchConfirmPage() {
   const params = useParams<{ watchId: string }>()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { addToCollection, followWatch, isInCollection, collectionWatches } = useCollectionSession()
+  const {
+    addToCollection, followWatch, isInCollection, collectionWatches,
+    playgroundBoxes, playgroundHydrated, setPlaygroundBoxes,
+  } = useCollectionSession()
 
   const { allWatches, fetchById, registerWatches } = useCatalog()
   // The in-memory catalog only holds the top-2000 by heat. The other ~33k
@@ -145,22 +137,16 @@ export default function AddWatchConfirmPage() {
   const [purchasePrice, setPurchasePrice] = useState('')
   const [purchaseDate, setPurchaseDate] = useState('')
   const [notes, setNotes] = useState('')
-  const [playgroundBoxes, setPlaygroundBoxes] = useState<PlaygroundBox[]>(createSeededPlaygroundBoxes)
-  const [selectedBoxId, setSelectedBoxId] = useState<string | null>(incomingBoxId)
+  const [chosenBoxId, setChosenBoxId] = useState<string | null>(null)
+  const preferredBoxId = chosenBoxId ?? incomingBoxId
+  const selectedBoxId = playgroundHydrated
+    ? preferredBoxId
+      ? playgroundBoxes.find(box => box.id === preferredBoxId)?.id ?? null
+      : playgroundBoxes[0]?.id ?? null
+    : null
   const [newBoxOpen, setNewBoxOpen] = useState(false)
   const [newBoxName, setNewBoxName] = useState('')
   const [viewportWidth, setViewportWidth] = useState(1280)
-
-  useEffect(() => {
-    const boxes = loadPlaygroundBoxes()
-    setPlaygroundBoxes(boxes)
-
-    if (incomingBoxId && boxes.some(box => box.id === incomingBoxId)) {
-      setSelectedBoxId(incomingBoxId)
-    } else if (!incomingBoxId) {
-      setSelectedBoxId(boxes[0]?.id ?? null)
-    }
-  }, [incomingBoxId])
 
   useEffect(() => {
     function updateViewportWidth() {
@@ -202,29 +188,21 @@ export default function AddWatchConfirmPage() {
     ? 'Add to Playground'
     : 'Add a Watch'
 
-  function persistPlaygroundBoxes(boxes: PlaygroundBox[], autoFollowWatchId?: string) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(boxes))
-    setPlaygroundBoxes(boxes)
-    if (autoFollowWatchId) followWatch(autoFollowWatchId)
-  }
-
   function handleAddToPlayground() {
     if (!selectedBoxId) return
-    const boxes = loadPlaygroundBoxes()
-    const updated = addWatchToPlaygroundBox(boxes, selectedBoxId, resolvedWatch.id, targetSlot)
-    persistPlaygroundBoxes(updated, resolvedWatch.id)
+    setPlaygroundBoxes(boxes => addWatchToPlaygroundBox(boxes, selectedBoxId, resolvedWatch.id, targetSlot))
+    followWatch(resolvedWatch.id)
     router.push(`/playground?boxId=${selectedBoxId}`)
   }
 
   function handleCreateBoxAndAdd() {
-    if (!newBoxName.trim()) return
-    const boxes = loadPlaygroundBoxes()
+    if (!playgroundHydrated || !newBoxName.trim()) return
     const newBox: PlaygroundBox = createPlaygroundBox({
       name: newBoxName.trim(),
       entries: [createPlaygroundEntry(resolvedWatch.id, undefined, undefined, targetSlot ?? 0)],
     })
-    const updated = [...boxes, newBox]
-    persistPlaygroundBoxes(updated, resolvedWatch.id)
+    setPlaygroundBoxes(boxes => [...boxes, newBox])
+    followWatch(resolvedWatch.id)
     router.push(`/playground?boxId=${newBox.id}`)
   }
 
@@ -838,7 +816,7 @@ export default function AddWatchConfirmPage() {
                     return (
                       <button
                         key={box.id}
-                        onClick={() => setSelectedBoxId(box.id)}
+                        onClick={() => setChosenBoxId(box.id)}
                         style={{
                           display: 'flex',
                           justifyContent: 'space-between',
