@@ -331,7 +331,8 @@ body {
 
   /* Nav */
   .nav-root      { padding: 0 !important; }
-  .nav-shell     { padding: 18px 20px !important; max-width: none !important; width: 100% !important; margin: 0 !important; }
+  .nav-shell     { padding: 8px 16px !important; max-width: none !important; width: 100% !important; margin: 0 !important; }
+  .nav-shell .brand-lockup svg { width: 30px; height: 30px; }
   .brand-lockup-word { font-size: 18px !important; }
   .nav-links        { display: none !important; }
   .nav-signin       { display: none !important; }
@@ -342,7 +343,6 @@ body {
   .nav-hamburger    { display: flex !important; align-items: center; justify-content: center; }
   .nav-drawer    {
     display: flex !important;
-    top: 80px !important;
     left: 50% !important;
     right: auto !important;
     width: min(calc(100vw - 56px), 360px) !important;
