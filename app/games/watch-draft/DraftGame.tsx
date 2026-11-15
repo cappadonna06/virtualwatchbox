@@ -120,7 +120,7 @@ function Game({ initial, showResult }: { initial: ReturnType<typeof resolveDraft
             </nav>
           </header>
 
-          <div className={styles.board} style={{ '--columns': board.groups.length } as CSSProperties} data-three={count === 3} role="region" aria-label="Draft board">
+          <div className={styles.board} style={{ '--columns': board.groups.length } as CSSProperties} data-board={board.id} role="region" aria-label="Draft board">
             <table className={styles.matrix}>
               <thead>
                 <tr>
@@ -176,7 +176,11 @@ function Game({ initial, showResult }: { initial: ReturnType<typeof resolveDraft
                           <DraftDial watch={watch} showCaption={false} />
                         </button>
                       ) : <span className={styles.emptyPick} role="img" aria-label={`Empty ${group.title} slot`} />}
-                      {board.id === 'region' && <span className={styles.flag} data-country={group.title} aria-hidden="true" />}
+                      {board.id === 'region' && (
+                        <span className={styles.countryTab} aria-hidden="true">
+                          <span className={styles.flag} data-country={group.title} />
+                        </span>
+                      )}
                     </li>
                   )
                 })}
