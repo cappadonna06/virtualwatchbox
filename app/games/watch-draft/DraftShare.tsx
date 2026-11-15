@@ -65,7 +65,11 @@ export default function DraftShare({ path, title, text }: { path: string; title:
     <dialog className={styles.shareDialog} ref={dialog} onClose={() => setOpen(false)} aria-labelledby="share-result-title">
       <header className={styles.shareHeader}>
         <h2 id="share-result-title">Share results</h2>
-        <button type="button" onClick={() => dialog.current?.close()} aria-label="Close sharing">×</button>
+        <button type="button" onClick={() => dialog.current?.close()} aria-label="Close sharing">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="m4 4 8 8m0-8-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        </button>
       </header>
       {open && <>
         {/* The PNG is generated for this exact lineup. */}

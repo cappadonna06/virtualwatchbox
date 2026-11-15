@@ -28,7 +28,7 @@ export function resolveDraft(query: Pick<URLSearchParams, 'get'>, latest = curre
 }
 
 export function draftCardPath(sharePath: string) {
-  return sharePath.replace('/games/watch-draft?', '/games/watch-draft/card?')
+  return sharePath.replace('/games/watch-draft?', '/games/watch-draft/card?') + '&v=2'
 }
 
 export function fitsDraft(board: Board, lineup: Watch[], count: number, total: number, budget: number) {

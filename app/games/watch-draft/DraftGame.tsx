@@ -7,7 +7,7 @@ import { useCollectionSession } from '@/app/collection/CollectionSessionProvider
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { createPlaygroundBox, createPlaygroundEntry } from '@/lib/playground'
 import { draftName, draftTags } from '@/lib/watchDraftChallenge'
-import { curatedBoards, dreamBox, dreamUrl, draftUrl, money, weekLabel, weeklyBoard, type Board } from './boards'
+import { curatedBoards, draftEditionNames, dreamBox, dreamUrl, draftUrl, money, weekLabel, weeklyBoard, type Board } from './boards'
 import { fitsDraft, resolveDraft } from './resolveDraft'
 import DraftShare from './DraftShare'
 import DraftDial from './DraftDial'
@@ -40,10 +40,13 @@ function Game({ initial, showResult }: { initial: ReturnType<typeof resolveDraft
   const sharePath = (legacy ? draftUrl(board, budget, picks) : dreamUrl(board, picks, week)) + '&view=result'
   const challenge = { board: board.id, budget }
   const name = draftName(challenge)
+  const editionName = draftEditionNames[board.id]
   const shareText = [
-    `My ${name} · ${board.title}`,
-    ...displayedLineup.map(watch => `${watch.brand} ${watch.model} · ${money(watch.tier)}`),
+    `Can you build a better ${name}?`,
+    `The Watch Draft · ${editionName}${week ? ` · Week of ${weekLabel(week)}` : ''}`,
+    ...displayedLineup.map(watch => `${watch.brand} ${watch.model} · ~${money(watch.tier)}`),
     `${money(total)} of ${money(budget)} spent`,
+    'Play your own →',
   ].join('\n')
 
   function updatePicks(next: string[]) {
@@ -73,34 +76,40 @@ function Game({ initial, showResult }: { initial: ReturnType<typeof resolveDraft
 
   const resultPage = legacy || archived || (showResult && complete)
   const replayBoard = week ? weeklyBoard(board.id, week) : curatedBoards.find(option => option.id === board.id) ?? dreamBox
+  const pickRule = legacy ? board.rule : {
+    type: 'Pick one watch per type.',
+    brand: 'Pick one watch per brand.',
+    region: count === 3 ? 'Pick one watch each from Japan, Switzerland, and Germany.' : 'Pick one watch per column.',
+  }[board.id]
   const save = complete && <button className={styles.playgroundAction} type="button" onClick={saveBox} disabled={!canSave || saving}>{saving ? 'Opening Playground…' : 'Save to Playground'}</button>
   const result = (
     <section className={styles.lineup} id="draft-result" aria-labelledby="draft-result-heading">
-      <div className={styles.resultHeading}>
-        <div>
-          <h1 id="draft-result-heading">{complete ? name : 'Your lineup'}</h1>
-          <p aria-live="polite">
-            {complete ? `${week ? `Week of ${weekLabel(week)} · ` : ''}${board.title} · ${money(total)} spent of ${money(budget)}` :
-              lineup.length < count ? `Pick ${count} watches to share a lineup.` :
-              remaining < 0 ? 'Swap or remove a watch to get back under budget.' : 'Swap a pick to include all three countries.'}
-          </p>
-        </div>
-        <Link className={styles.resultLink} href={dreamUrl(replayBoard, [], week)}>Play this challenge →</Link>
-      </div>
-      {complete && <div className={styles.resultShare}><DraftShare path={sharePath} title={name} text={shareText} /></div>}
+      <header className={styles.resultHeading}>
+        <p className={styles.resultEdition}>The Watch Draft · {editionName}{week && ` · Week of ${weekLabel(week)}`}</p>
+        <h1 id="draft-result-heading">{complete ? name : 'Your lineup'}</h1>
+        <p>{pickRule}</p>
+        {complete ? (
+          <p className={styles.resultBudget}><strong>{money(total)} spent</strong> of {money(budget)} · {displayedLineup.length} watches</p>
+        ) : (
+          <p>{lineup.length < count ? `Pick ${count} watches to share a lineup.` :
+            remaining < 0 ? 'This lineup is over budget.' : 'This lineup is missing a country.'}</p>
+        )}
+        <Link className={styles.resultLink} href={dreamUrl(replayBoard, [], week)}>Play your own <span aria-hidden="true">→</span></Link>
+      </header>
       {lineup.length > 0 && (
-        <ol className={styles.resultPicks}>
+        <ol className={styles.resultPicks} data-count={displayedLineup.length}>
           {displayedLineup.map(watch => (
             <li key={watch.id}>
+              <span className={styles.resultCategory}>{board.groups.find(group => group.watches.some(option => option.id === watch.id))?.title}</span>
               <WatchPhoto src={watch.image} eager={showResult} />
               <span>{watch.brand}</span>
               <strong>{watch.model}</strong>
-              <b>{money(watch.tier)}</b>
+              <b>~{money(watch.tier)}</b>
             </li>
           ))}
         </ol>
       )}
-      {save}
+      {complete && <div className={styles.resultActions}><DraftShare path={sharePath} title={name} text={shareText} />{save}</div>}
     </section>
   )
 
