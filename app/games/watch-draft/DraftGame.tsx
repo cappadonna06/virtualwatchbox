@@ -213,10 +213,10 @@ function Game({ board, budget, initialPicks, legacy, showResult }: { board: Boar
           </div>
 
           <div className={styles.gameFooter}>
-            <span className={styles.count} aria-live="polite"><strong>{lineup.length}/5</strong> picked</span>
-            <span className={styles.balance} data-over={remaining < 0} aria-live="polite">
-              <strong>{money(Math.abs(remaining))}</strong> {remaining < 0 ? 'over' : 'left'}
+            <span className={styles.balance} data-over={remaining < 0} aria-live="polite" aria-atomic="true">
+              <strong>{money(Math.abs(remaining))}</strong> <span>{remaining < 0 ? 'over budget' : 'left'}</span>
             </span>
+            <span aria-live="polite"><strong>{lineup.length}/5</strong> picked</span>
             <button type="button" disabled={!lineup.length} onClick={() => updatePicks([])}>Reset</button>
             <button className={styles.shareButton} type="button" disabled={!complete} onClick={() => shareDialog.current?.showModal()}>Share lineup ↗</button>
           </div>

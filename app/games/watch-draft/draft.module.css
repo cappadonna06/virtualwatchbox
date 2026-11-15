@@ -115,9 +115,11 @@
 .pickSlot .dial { inset: 1px 0; transform: none; }
 .pickSlot .photo { filter: drop-shadow(1px 2px 2px #3c291d75); }
 .emptyPick { display: block; height: var(--tile); }
-.gameFooter { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 11px; padding-top: 7px; color: var(--muted); font-size: .8rem; }
+.gameFooter { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; align-items: center; gap: 11px; padding-top: 7px; color: var(--muted); font-size: .8rem; }
 .gameFooter strong { color: var(--ink); }
-.balance { font-variant-numeric: tabular-nums; }
+.balance { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 5px; line-height: 1; }
+.balance strong { font-size: clamp(1.3rem, 5.5vw, 1.95rem); font-weight: 700; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.balance span { font-weight: 700; }
 .balance[data-over="true"], .balance[data-over="true"] strong { color: #9b3326; }
 .gameFooter button { min-height: 33px; padding: 4px 9px; font-weight: 700; white-space: nowrap; }
 .gameFooter .shareButton, .actions .primaryAction { background: var(--dark); color: #fff5e4; border-radius: 5px; }
