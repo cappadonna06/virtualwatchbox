@@ -172,7 +172,7 @@ function WatchboxConfigControls({
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: compact ? 'repeat(5, 24px)' : 'repeat(5, 1fr)',
+            gridTemplateColumns: `repeat(${FRAMES.length}, ${compact ? '24px' : 'minmax(0, 1fr)'})`,
             gap: compact ? 7 : 4,
             width: compact ? 'auto' : '100%',
           }}

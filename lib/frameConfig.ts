@@ -1,9 +1,13 @@
+import { brand } from './brand'
+
 export interface FrameConfig {
   id: string
   label: string
   swatchColor: string
   css: string
   shadow: string
+  texture: 'oak' | 'walnut' | 'cognac' | 'carbon' | 'ash'
+  textureFilter?: string
 }
 
 export interface LiningConfig {
@@ -12,6 +16,7 @@ export interface LiningConfig {
   color: string
   slotBg: string
   emptyColor: string
+  cushionFilter?: string
 }
 
 export interface SlotCount {
@@ -20,10 +25,13 @@ export interface SlotCount {
   label: string
 }
 
+export const SAMPLE_BOX_FRAME = 'pale-ash'
+
 export const FRAMES: FrameConfig[] = [
   {
     id: 'light-oak',
     label: 'Light Oak',
+    texture: 'oak',
     swatchColor: '#c4944a',
     css: [
       'repeating-linear-gradient(91deg,transparent 0px,transparent 6px,rgba(70,38,8,0.06) 6px,rgba(70,38,8,0.06) 7px,transparent 7px,transparent 15px,rgba(50,25,4,0.04) 15px,rgba(50,25,4,0.04) 16px,transparent 16px,transparent 28px,rgba(90,48,10,0.05) 28px,rgba(90,48,10,0.05) 29px)',
@@ -36,6 +44,7 @@ export const FRAMES: FrameConfig[] = [
   {
     id: 'dark-walnut',
     label: 'Dark Walnut',
+    texture: 'walnut',
     swatchColor: '#4a2e14',
     css: [
       'repeating-linear-gradient(91deg,transparent 0px,transparent 8px,rgba(20,8,0,0.08) 8px,rgba(20,8,0,0.08) 9px,transparent 9px,transparent 22px)',
@@ -47,6 +56,8 @@ export const FRAMES: FrameConfig[] = [
   {
     id: 'ebony',
     label: 'Ebony',
+    texture: 'walnut',
+    textureFilter: 'grayscale(1) brightness(0.52)',
     swatchColor: '#242018',
     css: [
       'repeating-linear-gradient(91deg,transparent 0px,transparent 10px,rgba(255,255,255,0.03) 10px,rgba(255,255,255,0.03) 11px)',
@@ -58,6 +69,7 @@ export const FRAMES: FrameConfig[] = [
   {
     id: 'cognac',
     label: 'Cognac',
+    texture: 'cognac',
     swatchColor: '#9c5828',
     css: 'linear-gradient(145deg,#9c5828 0%,#b06030 20%,#944e20 45%,#a85c2a 70%,#905020 100%)',
     shadow:
@@ -66,6 +78,7 @@ export const FRAMES: FrameConfig[] = [
   {
     id: 'carbon',
     label: 'Carbon',
+    texture: 'carbon',
     swatchColor: '#222222',
     css: [
       'repeating-linear-gradient(45deg,#1a1a1a 0px,#1a1a1a 6px,#222 6px,#222 12px)',
@@ -74,14 +87,22 @@ export const FRAMES: FrameConfig[] = [
     shadow:
       'inset 0 1px 0 rgba(255,255,255,0.06),inset 0 -2px 0 rgba(0,0,0,0.6),0 24px 64px rgba(0,0,0,0.5)',
   },
+  {
+    id: SAMPLE_BOX_FRAME,
+    label: 'Ash',
+    texture: 'ash',
+    swatchColor: brand.watchbox.ashWood,
+    css: brand.watchbox.ashWood,
+    shadow: 'inset 0 1px 0 rgba(255,255,255,0.45),0 14px 44px rgba(26,20,16,0.14),0 4px 12px rgba(26,20,16,0.08)',
+  },
 ]
 
 export const LININGS: LiningConfig[] = [
   { id: 'cream',    label: 'Cream',    color: '#e0d8c8', slotBg: '#F8F4EE', emptyColor: '#8a7a68' },
-  { id: 'taupe',    label: 'Taupe',    color: '#6a5a4c', slotBg: '#8a7a6c', emptyColor: '#c8b8a8' },
-  { id: 'navy',     label: 'Navy',     color: '#1a2438', slotBg: '#2a3448', emptyColor: '#8a9ab8' },
-  { id: 'noir',     label: 'Noir',     color: '#111111', slotBg: '#222222', emptyColor: '#666666' },
-  { id: 'bordeaux', label: 'Bordeaux', color: '#2a1018', slotBg: '#3a2028', emptyColor: '#a87888' },
+  { id: 'taupe',    label: 'Taupe',    color: '#6a5a4c', slotBg: '#8a7a6c', emptyColor: '#c8b8a8', cushionFilter: 'saturate(0.45) brightness(0.64)' },
+  { id: 'navy',     label: 'Navy',     color: '#1a2438', slotBg: '#2a3448', emptyColor: '#8a9ab8', cushionFilter: 'sepia(1) hue-rotate(169deg) saturate(0.65) brightness(0.33)' },
+  { id: 'noir',     label: 'Noir',     color: '#111111', slotBg: '#222222', emptyColor: '#666666', cushionFilter: 'grayscale(1) brightness(0.24)' },
+  { id: 'bordeaux', label: 'Bordeaux', color: '#2a1018', slotBg: '#3a2028', emptyColor: '#a87888', cushionFilter: 'sepia(1) hue-rotate(292deg) saturate(0.8) brightness(0.29)' },
 ]
 
 export const SLOT_COUNTS: SlotCount[] = [

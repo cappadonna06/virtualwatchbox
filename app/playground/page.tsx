@@ -35,6 +35,7 @@ import PlaygroundEmptyState from '@/components/collection/PlaygroundEmptyState'
 import { SAMPLE_BOX_GHOSTS } from '@/lib/sampleBox'
 import { brand, masthead } from '@/lib/brand'
 import { publicPages } from '@/lib/siteMetadata'
+import { challengeFromTags, draftPath } from '@/lib/watchDraftChallenge'
 
 const PV_W_PAD = 38
 const PV_H_PAD = 45
@@ -164,6 +165,7 @@ function PlaygroundPageInner() {
   }, [])
 
   const activeBox = boxes.find(box => box.id === activeBoxId) ?? boxes[0]
+  const activeChallenge = activeBox && challengeFromTags(activeBox.tags)
   const boxOptions = useMemo(
     () => boxes.map(box => ({ value: box.id, label: `${box.name} · ${box.entries.length}` })),
     [boxes],
@@ -523,6 +525,17 @@ function PlaygroundPageInner() {
       )}
 
       <div style={{ padding: `${isMobile ? 24 : 24}px ${isMobile ? 20 : 56}px 32px` }}>
+        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <Link href={draftPath} style={{ color: brand.colors.goldDeep, textDecoration: 'underline', fontSize: 14 }}>
+            Try the five-watch budget challenge →
+          </Link>
+          {isMobile && activeChallenge && activeBox?.entries.length ? (
+            <button type="button" onClick={handleShareBox} style={{
+              background: brand.colors.ink, color: brand.colors.white, padding: '8px 14px',
+              borderRadius: brand.radius.btn, fontSize: 14, minHeight: 44,
+            }}>Share dream box</button>
+          ) : null}
+        </div>
         {!isMobile ? (
           <div
             style={{
@@ -1369,7 +1382,7 @@ function WatchboxView({
               <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', flexShrink: 0, width: 48 }}>
                 Frame
               </span>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 24px)', gap: 7 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: `repeat(${FRAMES.length}, 24px)`, gap: 7 }}>
                 {FRAMES.map(frame => (
                   <div key={frame.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <div
@@ -1397,7 +1410,7 @@ function WatchboxView({
               <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', flexShrink: 0, width: 48 }}>
                 Lining
               </span>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 24px)', gap: 7 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: `repeat(${LININGS.length}, 24px)`, gap: 7 }}>
                 {LININGS.map(lining => (
                   <div key={lining.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <div
@@ -1535,7 +1548,7 @@ function WatchboxView({
               <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
                 Frame · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0, fontSize: 12 }}>{fr.label}</span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 4 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: `repeat(${FRAMES.length}, minmax(0, 1fr))`, gap: 4 }}>
                 {FRAMES.map(frame => (
                   <div key={frame.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, cursor: 'pointer' }} onClick={() => onFrameChange(frame.id)}>
                     <div style={{ width: 34, height: 34, borderRadius: '50%', background: frame.swatchColor, border: box.frame === frame.id ? '2.5px solid #C9A84C' : '2.5px solid transparent', outline: box.frame === frame.id ? '1.5px solid rgba(201,168,76,0.3)' : '1.5px solid transparent', outlineOffset: 2, boxShadow: '0 1px 4px rgba(0,0,0,0.18)', transition: 'border-color 0.15s, outline-color 0.15s' }} />
@@ -1548,7 +1561,7 @@ function WatchboxView({
               <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A89880', marginBottom: 10 }}>
                 Lining · <span style={{ color: '#1A1410', fontWeight: 600, textTransform: 'none', letterSpacing: 0, fontSize: 12 }}>{ln.label}</span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 4 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: `repeat(${LININGS.length}, minmax(0, 1fr))`, gap: 4 }}>
                 {LININGS.map(lining => (
                   <div key={lining.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, cursor: 'pointer' }} onClick={() => onLiningChange(lining.id)}>
                     <div style={{ width: 34, height: 34, borderRadius: '50%', background: lining.color, border: box.lining === lining.id ? '2.5px solid #C9A84C' : lining.id === 'cream' ? '2.5px solid #e0dbd0' : '2.5px solid transparent', outline: box.lining === lining.id ? '1.5px solid rgba(201,168,76,0.3)' : '1.5px solid transparent', outlineOffset: 2, boxShadow: '0 1px 4px rgba(0,0,0,0.18)', transition: 'border-color 0.15s, outline-color 0.15s' }} />

@@ -8,6 +8,13 @@
 import type { CSSProperties } from 'react'
 
 export const brand = {
+  watchbox: {
+    ashWood: 'rgb(216, 201, 178)',
+    lightLiningShadow: 'inset 0 2px 10px rgba(26,20,16,0.15)',
+    contactShadow: 'drop-shadow(0 1px 1px rgba(26,20,16,0.38)) drop-shadow(1px 3px 3px rgba(26,20,16,0.30))',
+    cushionMask: 'linear-gradient(to bottom, transparent 2%, black 10%, black 90%, transparent 98%)',
+  },
+
   colors: {
     /** Page background — warm cream */
     bg: '#FAF8F4',

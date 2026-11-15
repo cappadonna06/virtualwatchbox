@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react'
 import { brand } from '@/lib/brand'
 import { trackPlaygroundShare } from '@/lib/launchAnalytics'
 
-export default function SharedPlaygroundBuildLink({ shareToken }: { shareToken?: string }) {
+export default function SharedPlaygroundBuildLink({ shareToken, draftHref }: { shareToken?: string; draftHref?: string }) {
   const viewed = useRef(false)
   useEffect(() => {
     if (!shareToken || viewed.current) return
@@ -33,7 +33,7 @@ export default function SharedPlaygroundBuildLink({ shareToken }: { shareToken?:
 
   return (
     <Link
-      href="/playground"
+      href={draftHref ?? "/playground"}
       prefetch={false}
       onClick={shareToken ? event => {
         if (!event.defaultPrevented && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
@@ -46,7 +46,7 @@ export default function SharedPlaygroundBuildLink({ shareToken }: { shareToken?:
         color: brand.colors.white, textDecoration: 'none', fontSize: 14, fontWeight: 600,
       }}
     >
-      Build your own box&nbsp;<span aria-hidden>→</span>
+      {draftHref ? 'Build another dream box' : 'Build your own box'}&nbsp;<span aria-hidden>→</span>
     </Link>
   )
 }

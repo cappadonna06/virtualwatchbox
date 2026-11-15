@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { brand } from '@/lib/brand'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import { useAuth } from '@/lib/auth/AuthProvider'
+import { SAMPLE_BOX_FRAME } from '@/lib/frameConfig'
 import { SAMPLE_BOX_GHOSTS } from '@/lib/sampleBox'
 import { useIsMobile } from './useResponsiveState'
 import WatchBox from './WatchBox'
@@ -18,6 +20,7 @@ export default function CollectionEmptyState() {
   const router = useRouter()
   const isMobile = useIsMobile()
   const { watchboxConfig } = useCollectionSession()
+  const { user } = useAuth()
 
   const handleAdd = () => router.push('/collection/add')
 
@@ -37,11 +40,12 @@ export default function CollectionEmptyState() {
           activeSlot={null}
           onSlotClick={() => {}}
           onEmptySlotClick={handleAdd}
-          frame={watchboxConfig.frame}
+          frame={user ? watchboxConfig.frame : SAMPLE_BOX_FRAME}
           lining={watchboxConfig.lining}
           slotCount={watchboxConfig.slotCount}
           mode="collection"
           ghostWatches={SAMPLE_BOX_GHOSTS}
+          lightSample={!user}
         />
       </div>
 

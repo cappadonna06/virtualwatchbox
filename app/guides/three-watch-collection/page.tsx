@@ -147,7 +147,10 @@ export default function ThreeWatchCollectionGuide() {
         <p style={{ ...body, margin: '8px 0 18px', maxWidth: '58ch' }}>
           What would you swap? Try your three picks in Playground, then share the box with someone who’ll argue for a different lineup.
         </p>
-        <Link href="/playground" style={ctaStyle}>Open the Playground →</Link>
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+          <Link href="/playground" style={ctaStyle}>Open the Playground →</Link>
+          <Link href="/games/watch-draft" style={linkStyle}>Try the five-watch budget challenge →</Link>
+        </div>
       </section>
     </article>
   )

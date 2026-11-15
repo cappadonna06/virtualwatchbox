@@ -12,6 +12,22 @@ import { useCollectionSession } from '@/app/collection/CollectionSessionProvider
 import { IntentBadge } from './WatchStateIcons'
 import { PLAYGROUND_DRAG_PAYLOAD_KEY, PLAYGROUND_WATCH_MIME, startGhostDrag } from '@/lib/dragGhost'
 
+const CUSHION_IMAGE = 'url(/watchbox-materials/suede-cushion.webp)'
+
+function SlotCushion({ filter, opacity = 1 }: { filter?: string; opacity?: number }) {
+  return <div aria-hidden="true" style={{
+    position: 'absolute',
+    inset: 0,
+    zIndex: -1,
+    borderRadius: 'inherit',
+    backgroundImage: CUSHION_IMAGE,
+    backgroundSize: '100% 100%',
+    filter,
+    opacity,
+    pointerEvents: 'none',
+  }} />
+}
+
 type WatchboxWatch = Pick<ResolvedWatch, 'id' | 'watchId' | 'brand' | 'model' | 'reference' | 'dialConfig' | 'imageUrl'>
 
 interface Props {
@@ -49,6 +65,7 @@ interface Props {
    * box reverts to its normal rendering.
    */
   ghostWatches?: Array<{ id: string; img: string }>
+  lightSample?: boolean
 }
 
 function OverflowGridCard({
@@ -306,6 +323,7 @@ export default function WatchBox({
   jewelWatchIds,
   showFirstSlotLabel = false,
   ghostWatches,
+  lightSample = false,
 }: Props) {
   const isSparse = watchBySlot !== undefined
   const { isWatchJewel } = useCollectionSession()
@@ -473,6 +491,9 @@ export default function WatchBox({
 
   const fr = FRAMES.find(f => f.id === frame) ?? FRAMES[0]
   const ln = LININGS.find(l => l.id === lining) ?? LININGS[0]
+  const side = `${metrics.outerPaddingSide}px`
+  const top = `${metrics.outerPaddingTop}px`
+  const bottom = `${metrics.outerPaddingBottom}px`
   const sc = SLOT_COUNTS.find(s => s.n === slotCount) ?? SLOT_COUNTS[1]
   const publicJewelSet = useMemo(() => new Set(jewelWatchIds ?? []), [jewelWatchIds])
 
@@ -501,13 +522,13 @@ export default function WatchBox({
     [sparseOverflow, watches, sc.n],
   )
   const useHighContrastSlotText = isDarkColor(ln.slotBg) || isDarkColor(ln.color)
-  const slotMetaColor = useHighContrastSlotText ? 'rgba(201,168,76,0.52)' : 'rgba(80,60,40,0.3)'
-  const emptyPrimaryColor = useHighContrastSlotText ? brand.colors.gold : ln.emptyColor
+  const emptyPrimaryColor = useHighContrastSlotText ? brand.colors.gold : brand.colors.muted
   const overflowPrimaryColor = useHighContrastSlotText ? brand.colors.gold : brand.colors.ink
   const overflowSecondaryColor = useHighContrastSlotText ? 'rgba(201,168,76,0.82)' : brand.colors.muted
   // Empty box + ghosts supplied → render the "sample box" showcase. Self-gating
   // on watches.length so adding/dropping a watch auto-reverts to normal slots.
   const showcase = !readonly && watches.length === 0 && (ghostWatches?.length ?? 0) > 0
+  const lightShowcase = showcase && lightSample
   const addRingSize = isMobile ? 26 : 44
   const shouldShowJewel = (watchId: string) => (
     jewelWatchIds
@@ -567,12 +588,35 @@ export default function WatchBox({
           position: 'relative',
         }}
       >
+        <div aria-hidden="true" style={{
+          position: 'absolute', inset: 0, borderRadius: 'inherit', overflow: 'hidden',
+          filter: fr.textureFilter, pointerEvents: 'none',
+        }}>
+          {[
+            { edge: 'top', axis: 'horizontal', clip: `0 0, 100% 0, calc(100% - ${side}) ${top}, ${side} ${top}` },
+            { edge: 'bottom', axis: 'horizontal', clip: `${side} calc(100% - ${bottom}), calc(100% - ${side}) calc(100% - ${bottom}), 100% 100%, 0 100%` },
+            { edge: 'left', axis: 'vertical', clip: `0 0, ${side} ${top}, ${side} calc(100% - ${bottom}), 0 100%` },
+            { edge: 'right', axis: 'vertical', clip: `100% 0, 100% 100%, calc(100% - ${side}) calc(100% - ${bottom}), calc(100% - ${side}) ${top}` },
+          ].map(({ edge, axis, clip }) => (
+            <div key={edge} style={{
+              position: 'absolute',
+              inset: 0,
+              clipPath: `polygon(${clip})`,
+              backgroundImage: `url(/watchbox-materials/${fr.texture}-${axis}.webp)`,
+              backgroundPosition: edge,
+              backgroundSize: axis === 'horizontal' ? `100% ${edge === 'top' ? top : bottom}` : `${side} 100%`,
+              backgroundRepeat: 'no-repeat',
+            }} />
+          ))}
+        </div>
         <div
           style={{
-            background: ln.color,
+            background: lightShowcase ? brand.colors.paperWarm : ln.color,
             borderRadius: 5,
             padding: metrics.innerPadding,
-            boxShadow: 'inset 0 4px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04)',
+            boxShadow: lightShowcase
+              ? brand.watchbox.lightLiningShadow
+              : 'inset 0 4px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04)',
             transition: 'background 0.4s ease',
             position: 'relative',
           }}
@@ -644,12 +688,15 @@ export default function WatchBox({
                         alignItems: 'center',
                         justifyContent: 'center',
                         cursor: readonly ? 'default' : 'pointer',
-                        opacity: showcase ? 1 : useHighContrastSlotText ? 0.88 : showDropAffordance ? 1 : 0.55,
+                        isolation: 'isolate',
                         background: showDropAffordance
                           ? 'rgba(201,168,76,0.10)'
                           : showcase && isFirstSlot
                           ? brand.colors.white
+                          : lightShowcase
+                          ? brand.colors.slot
                           : ln.slotBg,
+                        backgroundClip: 'padding-box',
                         border: showDropAffordance
                           ? '2px dashed rgba(201,168,76,0.95)'
                           : showcase && isFirstSlot
@@ -668,6 +715,12 @@ export default function WatchBox({
                         transition: 'border-color 0.18s, box-shadow 0.18s, background 0.18s, transform 0.18s, opacity 0.18s',
                       }}
                     >
+                      {(!showcase || !isFirstSlot) && (
+                        <SlotCushion
+                          filter={lightShowcase ? undefined : ln.cushionFilter}
+                          opacity={lightShowcase ? 0.42 : showDropAffordance ? 0.65 : 1}
+                        />
+                      )}
                       {readonly ? (
                         <span style={{ fontFamily: brand.font.sans, fontSize: 11, letterSpacing: '0.1em', color: emptyPrimaryColor }}>
                           EMPTY
@@ -708,38 +761,27 @@ export default function WatchBox({
                         ) : ghostWatches && ghostWatches[i - 1] ? (
                           // Sample box: faded ghost watch — pure decoration, the
                           // slot stays a live drop target via the wrapper above.
-                          <>
-                            <span
-                              aria-hidden="true"
-                              style={{
-                                position: 'absolute',
-                                top: isMobile ? 4 : 6,
-                                left: isMobile ? 6 : 8,
-                                fontFamily: brand.font.sans,
-                                fontSize: 11,
-                                fontWeight: 500,
-                                letterSpacing: '0.08em',
-                                color: slotMetaColor,
-                              }}
-                            >
-                              {String(i + 1).padStart(2, '0')}
-                            </span>
-                            <div style={{ position: 'relative', width: '82%', height: '78%' }}>
+                          <div style={{
+                            position: 'absolute',
+                            inset: 0,
+                            maskImage: brand.watchbox.cushionMask,
+                            pointerEvents: 'none',
+                            opacity: lightShowcase ? 0.3 : useHighContrastSlotText ? 0.6 : 0.44,
+                          }}>
+                            <div style={{ position: 'absolute', inset: '-7.5% 6%' }}>
                               <Image
                                 src={ghostWatches[i - 1].img}
                                 alt=""
                                 fill
-                                sizes="120px"
+                                sizes={slotWidth ? `${slotWidth}px` : '(max-width: 768px) 30vw, 180px'}
                                 draggable={false}
                                 style={{
                                   objectFit: 'contain',
-                                  filter: 'grayscale(1) brightness(1.08)',
-                                  opacity: useHighContrastSlotText ? 0.28 : 0.16,
-                                  pointerEvents: 'none',
+                                  filter: `grayscale(0.85) ${brand.watchbox.contactShadow}`,
                                 }}
                               />
                             </div>
-                          </>
+                          </div>
                         ) : null
                       ) : showFirstSlotLabel ? (
                         // Empty collection: keep the PR #47 restrained behavior —
@@ -802,6 +844,7 @@ export default function WatchBox({
                           ? 'inset 0 1px 4px rgba(0,0,0,0.12), 0 0 0 1px rgba(201,168,76,0.4), 0 3px 14px rgba(201,168,76,0.16)'
                           : 'inset 0 1px 4px rgba(0,0,0,0.12)',
                         background: ln.slotBg,
+                        backgroundClip: 'padding-box',
                         cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
@@ -810,25 +853,11 @@ export default function WatchBox({
                         gap: 8,
                         position: 'relative',
                         overflow: 'hidden',
+                        isolation: 'isolate',
                         transition: 'border-color 0.2s, box-shadow 0.2s',
                       }}
                     >
-                      <span
-                        style={{
-                          position: 'absolute',
-                          top: 5,
-                          left: 6,
-                          fontFamily: brand.font.sans,
-                          fontSize: 11,
-                          fontWeight: 500,
-                          letterSpacing: '0.08em',
-                          color: slotMetaColor,
-                          pointerEvents: 'none',
-                          zIndex: 2,
-                        }}
-                      >
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
+                      <SlotCushion filter={ln.cushionFilter} />
                       <div
                         style={{
                           fontFamily: brand.font.serif,
@@ -1039,7 +1068,9 @@ export default function WatchBox({
                       borderRadius: 3,
                       overflow: 'hidden',
                       position: 'relative',
+                      isolation: 'isolate',
                       background: ln.slotBg,
+                      backgroundClip: 'padding-box',
                       cursor: onSlotClick ? 'pointer' : 'default',
                       border: isExternalDragTarget
                         ? '2px solid rgba(201,168,76,0.95)'
@@ -1057,26 +1088,12 @@ export default function WatchBox({
                       transition: 'border-color 0.2s, box-shadow 0.2s, transform 0.2s',
                     }}
                   >
-                    <span
-                      style={{
-                        position: 'absolute',
-                        top: 5,
-                        left: 6,
-                        fontFamily: 'var(--font-dm-sans)',
-                        fontSize: 11,
-                        fontWeight: 500,
-                        letterSpacing: '0.08em',
-                        color: slotMetaColor,
-                        pointerEvents: 'none',
-                        zIndex: 2,
-                      }}
-                    >
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
+                    <SlotCushion filter={ln.cushionFilter} />
                     <WatchImageOrDial
                       watch={w}
                       fill
-                      sizes="(max-width: 768px) 20vw, 10vw"
+                      onCushion
+                      sizes={slotWidth ? `${slotWidth}px` : '(max-width: 768px) 25vw, 15vw'}
                       imageStyle={{
                         objectFit: 'contain',
                         objectPosition: 'center center',
