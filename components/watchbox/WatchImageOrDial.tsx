@@ -4,6 +4,7 @@ import Image from 'next/image'
 import type { CSSProperties } from 'react'
 import type { CatalogWatch, ResolvedWatch } from '@/types/watch'
 import DialSVG from './DialSVG'
+import { brand } from '@/lib/brand'
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 
 type WatchVisual = Pick<CatalogWatch | ResolvedWatch, 'id' | 'model' | 'imageUrl' | 'dialConfig'> & {
@@ -15,6 +16,8 @@ type WatchVisual = Pick<CatalogWatch | ResolvedWatch, 'id' | 'model' | 'imageUrl
   watchId?: string
 }
 
+const PROCESSED_CUTOUT = /\/(?:watch-images\/(?:[^/]+\/primary|processed\/(?:webp\/)?[^/]+)|watch-assets\/processed\/(?:webp\/)?[^/]+)\.(?:webp|png)(?:[?#]|$)/i
+
 type Props = {
   watch: WatchVisual
   fill?: boolean
@@ -23,6 +26,7 @@ type Props = {
   sizes?: string
   imageStyle?: CSSProperties
   dialSize?: number
+  onCushion?: boolean
   /** Forward HTML `draggable` attr to the underlying <img>. Pass `false` to
    *  suppress iOS Safari's native image-drag/callout gesture so a custom
    *  long-press handler on a parent can fire instead. */
@@ -37,6 +41,7 @@ export default function WatchImageOrDial({
   sizes,
   imageStyle,
   dialSize = 88,
+  onCushion = false,
   draggable,
 }: Props) {
   const { getImageUrl } = useWatchImages()
@@ -44,6 +49,30 @@ export default function WatchImageOrDial({
   const effectiveImageUrl = getImageUrl(lookupId) ?? watch.imageUrl
 
   if (effectiveImageUrl) {
+    // Processed cutouts have 5% transparent padding on each end. Other
+    // sources can be uncropped photos or dial-only images and need their full frame.
+    if (fill && onCushion && PROCESSED_CUTOUT.test(effectiveImageUrl)) {
+      return (
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          pointerEvents: 'none',
+          maskImage: brand.watchbox.cushionMask,
+        }}>
+          <div style={{ position: 'absolute', inset: '-7.5% 6%', filter: brand.watchbox.contactShadow }}>
+            <Image
+              src={effectiveImageUrl}
+              alt={watch.model}
+              fill
+              sizes={sizes}
+              style={imageStyle}
+              draggable={draggable}
+            />
+          </div>
+        </div>
+      )
+    }
+
     return fill ? (
       <Image
         src={effectiveImageUrl}
