@@ -162,6 +162,20 @@
   gap: var(--gap);
   padding: var(--gap);
 }
+.board[data-board="region"] .pickTray {
+  position: relative;
+  isolation: isolate;
+}
+.board[data-board="region"] .pickTray::before {
+  position: absolute;
+  z-index: -1;
+  inset: 3px 4px 3px calc(var(--tier-width) + var(--gap));
+  border: 1px solid #b2855e70;
+  border-radius: 5px;
+  background: radial-gradient(ellipse at 50% 10%, #6c5140, #3b2a20);
+  box-shadow: inset 0 2px 9px #1e120c;
+  content: '';
+}
 .trayLabel { color: #fff1dc; font: 700 1.03rem/.9 var(--font-cormorant), Georgia, serif; text-align: center; }
 .pickSlot {
   --tile: clamp(44px, (100svh - 510px) / 3, 74px);
@@ -172,7 +186,33 @@
   background: #d5b899 url('/watchbox-materials/suede-cushion.webp') center / 100% 100%;
   box-shadow: inset 0 1px 5px #4028189c, 0 1px 2px #1c0c07a0;
 }
-.countryTab { position: absolute; inset: 5px 5px auto auto; opacity: .93; pointer-events: none; }
+.countryTab {
+  position: absolute;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  inset: 50% 0 auto auto;
+  width: 33px;
+  height: 26px;
+  transform: translateY(-50%);
+  border: 1px solid #967653;
+  border-right: 0;
+  border-radius: 4px 0 0 4px;
+  background:
+    repeating-linear-gradient(90deg, #8b6d4d14 0 1px, transparent 1px 3px),
+    linear-gradient(90deg, #ead8b8, #cbb18b 89%, #ae8c64);
+  box-shadow: 0 1px 2px #39271855;
+}
+.countryTab::before {
+  position: absolute;
+  inset: 2px 1px 2px 2px;
+  border: 1px dashed #82705294;
+  border-right: 0;
+  border-radius: 3px 0 0 3px;
+  content: '';
+}
+.countryTab .flag { width: 23px; height: 15px; box-shadow: 0 0 0 1px #422b2140; }
+.countryTab .flag[data-country="Switzerland"] { width: 15px; }
 .pickSlot .watch { border: 0; background: transparent; }
 .pickSlot .dial { inset: 1px 0; transform: none; }
 .pickSlot .photo { filter: drop-shadow(1px 2px 2px #3c291d75); }
@@ -282,50 +322,10 @@
 .poster[data-curated="true"] .posterWatch .caption { color: #fff9ee; font-size: 17px; margin: 0; }
 
 @media (min-width: 761px) {
-  .board[data-board="region"] .pickTray {
-    position: relative;
-    isolation: isolate;
-  }
-  .board[data-board="region"] .pickTray::before {
-    position: absolute;
-    z-index: -1;
-    inset: 3px 4px 3px calc(var(--tier-width) + var(--gap));
-    border: 1px solid #b2855e70;
-    border-radius: 5px;
-    background: radial-gradient(ellipse at 50% 10%, #6c5140, #3b2a20);
-    box-shadow: inset 0 2px 9px #1e120c;
-    content: '';
-  }
   .board[data-board="region"] .pickSlot {
     justify-self: center;
     width: min(100%, 146px);
   }
-  .countryTab {
-    display: grid;
-    place-items: center;
-    inset: 50% 0 auto auto;
-    width: 33px;
-    height: 26px;
-    transform: translateY(-50%);
-    border: 1px solid #967653;
-    border-right: 0;
-    border-radius: 4px 0 0 4px;
-    background:
-      repeating-linear-gradient(90deg, #8b6d4d14 0 1px, transparent 1px 3px),
-      linear-gradient(90deg, #ead8b8, #cbb18b 89%, #ae8c64);
-    box-shadow: 0 1px 2px #39271855;
-    opacity: 1;
-  }
-  .countryTab::before {
-    position: absolute;
-    inset: 2px 1px 2px 2px;
-    border: 1px dashed #82705294;
-    border-right: 0;
-    border-radius: 3px 0 0 3px;
-    content: '';
-  }
-  .countryTab .flag { width: 23px; height: 15px; box-shadow: 0 0 0 1px #422b2140; }
-  .countryTab .flag[data-country="Switzerland"] { width: 15px; }
 }
 
 @media (max-width: 760px) {
@@ -337,6 +337,11 @@
   .countryLabel { gap: 4px; }
   .flag { width: 14px; height: 10px; }
   .flag[data-country="Switzerland"] { width: 10px; }
+  .board[data-board="region"] .pickTray::before { inset: 1px 1px 1px calc(var(--tier-width) + var(--gap)); }
+  .countryTab { width: 21px; height: 18px; }
+  .countryTab::before { inset: 1px 1px 1px 1px; }
+  .countryTab .flag { width: 14px; height: 10px; }
+  .countryTab .flag[data-country="Switzerland"] { width: 10px; }
   .priceTag { min-height: 22px; padding-left: 10px; font-size: .66rem; }
   .priceTag::before, .priceTag::after { clip-path: polygon(0 50%, 7px 0, 100% 0, 100% 100%, 7px 100%); }
   .priceTag::after { background: radial-gradient(circle at 4px 50%, #7c5b38 1px, transparent 1.5px), linear-gradient(#fff8e9, #e7d2b1); }
