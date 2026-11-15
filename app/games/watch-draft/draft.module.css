@@ -231,7 +231,16 @@
 .shareDialog { padding: clamp(13px, 4vw, 24px); }
 .shareHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .shareHeader h2 { font: 700 2rem/.95 var(--font-cormorant), Georgia, serif; }
-.shareHeader button { width: 36px; height: 36px; font-size: 1.5rem; border-radius: 50%; background: #f3eadc; }
+.shareHeader button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--muted);
+  border-radius: 50%;
+}
+.shareHeader button:hover { background: #f3eadc; color: var(--ink); }
+.shareHeader button:focus-visible { outline: 2px solid var(--bronze); outline-offset: -2px; }
 .sharePreview { display: block; width: 100%; height: auto; aspect-ratio: 1200 / 630; border-radius: 8px; background: var(--dark); }
 .shareActions { display: flex; gap: 12px; align-items: center; margin-top: 13px; }
 .shareActions button { flex: 1; min-height: 44px; border-radius: 7px; background: var(--dark); color: #fff4df; font-weight: 700; }
@@ -240,23 +249,38 @@
 .shareDialog p[role="status"] { margin-top: 8px; color: var(--muted); font-size: .83rem; }
 .playgroundAction { display: inline-block; margin-top: 10px; }
 .playgroundAction:disabled { opacity: .6; }
-.resultShare .shareButton { padding: 8px 14px; font-weight: 700; }
-.resultFirst { padding: clamp(16px, 4vw, 48px) clamp(16px, 4vw, 48px) 0; }
+.resultFirst { max-width: 1050px; margin-inline: auto; padding: clamp(12px, 3vw, 32px) clamp(12px, 3vw, 32px) 0; }
 .resultFirst .lineup { margin: 0; }
-.lineup { margin-top: 20px; display: grid; gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: clamp(12px, 2.5vw, 26px); scroll-margin-top: 80px; }
-.resultHeading { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 10px; }
-.lineup :is(h1, h2) { font: 600 clamp(1.9rem, 5vw, 3.6rem)/1 var(--font-cormorant), Georgia, serif; margin-bottom: 5px; }
+.lineup { display: grid; gap: clamp(12px, 2vw, 20px); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: clamp(12px, 2.5vw, 26px); }
+.resultHeading { display: grid; justify-items: start; gap: 6px; }
+.lineup h1 { font: 600 clamp(2rem, 5vw, 3.6rem)/1 var(--font-cormorant), Georgia, serif; }
 .lineup p, .sources { color: var(--muted); font-size: .9rem; }
-.resultLink { color: var(--bronze); font-size: .9rem; font-weight: 700; text-decoration: underline; }
+.lineup .resultEdition { color: var(--bronze); font-weight: 700; font-size: .75rem; }
+.resultBudget strong { color: var(--ink); }
+.resultLink {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  min-height: 44px;
+  margin-top: 4px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: var(--dark);
+  color: #fff5e4;
+  font-weight: 700;
+}
+.resultLink:hover { background: #493627; }
 .resultPicks { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; list-style: none; }
-.resultPicks li { display: grid; align-content: start; gap: 3px; justify-items: center; text-align: center; background: var(--paper); border: 1px solid var(--line); border-radius: 7px; padding: 7px 5px; }
+.resultPicks[data-count="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.resultPicks li { display: grid; grid-template-rows: auto auto auto 1fr auto; gap: 3px; justify-items: center; text-align: center; background: var(--paper); border: 1px solid var(--line); border-radius: 7px; padding: 7px 5px; }
 .resultPicks .photo { width: 100%; height: clamp(100px, 18vw, 170px); }
 .resultPicks span { font-size: .72rem; color: var(--muted); }
+.resultPicks .resultCategory { color: var(--bronze); font-weight: 700; }
 .resultPicks strong { font-size: .87rem; line-height: 1.15; }
 .resultPicks b { font-size: .81rem; color: var(--bronze); }
-.actions { display: flex; flex-wrap: wrap; gap: 6px; }
-.actions :is(button, a) { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; font-size: .86rem; font-weight: 600; }
-.actions button:disabled { opacity: .57; cursor: default; }
+.resultActions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.resultActions .shareButton { padding: 7px 12px; border: 1px solid var(--line); background: transparent; color: var(--ink); font-size: .84rem; font-weight: 700; }
+.resultActions .playgroundAction { margin: 0; }
 .shareInput { width: 100%; border: 1px solid var(--line); padding: 7px; font: inherit; resize: vertical; }
 .sources { margin-top: 16px; }
 .sources summary { cursor: pointer; }

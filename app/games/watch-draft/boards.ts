@@ -2,6 +2,7 @@ import { withVersion } from '@/lib/watchImages/cacheBust'
 
 import { draftPath, type Budget, type DraftChallenge } from '@/lib/watchDraftChallenge'
 export const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format
+export const draftEditionNames = { type: 'Watch types', brand: 'Brands', region: 'International' } as const
 
 export type Watch = {
   id: string

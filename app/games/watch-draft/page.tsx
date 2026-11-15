@@ -3,7 +3,7 @@ import { Suspense } from 'react'
 import { SITE_URL } from '@/lib/siteMetadata'
 import { draftName, draftPath } from '@/lib/watchDraftChallenge'
 import DraftGame from './DraftGame'
-import { currentDraftWeek, money } from './boards'
+import { currentDraftWeek, draftEditionNames, money, weekLabel } from './boards'
 import { draftCardPath, fitsDraft, resolveDraft } from './resolveDraft'
 
 type Props = { searchParams: Record<string, string | string[] | undefined> }
@@ -21,11 +21,11 @@ export function generateMetadata({ searchParams }: Props): Metadata {
     const value = searchParams[key]
     if (typeof value === 'string') query.set(key, value)
   }
-  const { board, budget, lineup, count } = resolveDraft(query)
+  const { board, budget, lineup, count, week } = resolveDraft(query)
   const total = lineup.reduce((sum, watch) => sum + watch.tier, 0)
   if (!fitsDraft(board, lineup, count, total, budget)) return metadata
-  const title = draftName({ board: board.id, budget })
-  const description = `${lineup.length} watches · ${money(total)} spent of ${money(budget)} · The Watch Draft`
+  const title = `Play your own ${draftName({ board: board.id, budget })}`
+  const description = `${draftEditionNames[board.id]}${week ? ` · Week of ${weekLabel(week)}` : ''}. See the ${count}-watch lineup and play the same Watch Draft challenge.`
   const path = `${draftPath}?${query}`
   const image = new URL(draftCardPath(path), SITE_URL).href
   return {
