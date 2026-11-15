@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
+import { useAuth } from '@/lib/auth/AuthProvider'
 import { useCatalog } from '@/lib/catalog/CatalogProvider'
 import { useWatchImages } from '@/lib/watchImages/WatchImagesProvider'
 import { usePrefersReducedMotion } from '@/components/collection/useResponsiveState'
@@ -28,6 +29,8 @@ import {
 } from '@/lib/strapStudio'
 import type { BraceletType, CatalogWatch } from '@/types/watch'
 import { useStrapPreloader } from './useStrapPreloader'
+
+const GUEST_WATCH_ID = 'omega-310-30-42-50-01-002'
 
 export type StudioSourceMode = 'all' | 'drawer'
 
@@ -60,7 +63,8 @@ export function useStudioController() {
   const origin = from === 'discover' || from === 'playground' ? from : undefined
 
   const session = useCollectionSession()
-  const { collectionWatches, straps, strapOverrides, getCatalogWatch, showToast } = session
+  const { collectionWatches, straps, strapOverrides, getCatalogWatch, showToast, dataLoading } = session
+  const { user, loading: authLoading } = useAuth()
   const { fetchById, searchCatalog, allWatches } = useCatalog()
   const { getImageUrl, getTransparentUrl } = useWatchImages()
   const reducedMotion = usePrefersReducedMotion()
@@ -70,9 +74,9 @@ export function useStudioController() {
   const bandStraps = useMemo(() => buildBandDemoStraps(), [])
 
   // ── Core state (URL-seeded) ───────────────────────────────────────────────
-  const [watchId, setWatchId] = useState<string>(
-    () => search.get('watchId') || collectionWatches[0]?.watchId || caseOnlyIds()[0] || allWatches[0]?.id || '',
-  )
+  const [selectedWatchId, setWatchId] = useState(() => search.get('watchId') || '')
+  const guestWatchId = getCaseOnly(GUEST_WATCH_ID) ? GUEST_WATCH_ID : caseOnlyIds()[0] || allWatches[0]?.id || ''
+  const watchId = selectedWatchId || (user ? collectionWatches[0]?.watchId : '') || guestWatchId
   const [source, setSource] = useState<StudioSourceMode>(
     () => parseSourceMode(search.get('source')) ?? 'all',
   )
@@ -210,7 +214,7 @@ export function useStudioController() {
 
   // ── URL sync (shareable state) ────────────────────────────────────────────
   useEffect(() => {
-    if (!watchId) return
+    if (!watchId || (!selectedWatchId && (authLoading || (user && dataLoading)))) return
     const params = new URLSearchParams()
     params.set('watchId', watchId)
     if (currentStrap) params.set('strapId', currentStrap.id)
@@ -218,7 +222,7 @@ export function useStudioController() {
     if (origin) params.set('from', origin)
     router.replace(`${pathname}?${params.toString()}`, { scroll: false })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchId, currentStrap?.id, source, origin])
+  }, [watchId, currentStrap?.id, source, origin, selectedWatchId, authLoading, user, dataLoading])
 
   // ── Keyboard ← / → cycles straps (ignored while typing) ───────────────────
   useEffect(() => {
@@ -237,7 +241,10 @@ export function useStudioController() {
     const urls: Array<string | undefined> = []
     for (const s of sourceStraps) {
       urls.push(s.imageUrl)
-      if (s.band) urls.push(s.band.top.url, s.band.bottom.url)
+      if (s.band) {
+        urls.push(s.band.top.url, s.band.bottom.url)
+        if (s.band.passThroughUrl) urls.push(s.band.passThroughUrl)
+      }
     }
     if (caseOnly) urls.push(caseOnly.caseOnlyUrl)
     if (studioWatch?.imageUrl) urls.push(studioWatch.imageUrl)
