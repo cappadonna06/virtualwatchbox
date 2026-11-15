@@ -125,14 +125,24 @@ function Game({ initial, showResult }: { initial: ReturnType<typeof resolveDraft
               <thead>
                 <tr>
                   <th scope="col">Tier</th>
-                  {board.groups.map(group => <th key={group.title} scope="col">{group.title === 'Chronograph' ? <abbr title="Chronograph">Chrono</abbr> :
-                    board.id === 'region' && group.title.includes(' ') ? group.title.split(' ').map(word => <span className={styles.regionHeader} key={word}>{word}{' '}</span>) : group.title}</th>)}
+                  {board.groups.map(group => (
+                    <th key={group.title} scope="col">
+                      {board.id === 'region' ? (
+                        <span className={styles.countryLabel}>
+                          <span className={styles.flag} data-country={group.title} aria-hidden="true" />
+                          {group.title}
+                        </span>
+                      ) : group.title === 'Chronograph' ? <abbr title="Chronograph">Chrono</abbr> : group.title}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
                 {rows.map(row => (
                   <tr key={row.price}>
-                    <th scope="row" aria-label={money(row.price)}>${row.price / 1000}k</th>
+                    <th scope="row" aria-label={`Approximately ${money(row.price)}`}>
+                      <span className={styles.priceTag}>~${row.price / 1000}k</span>
+                    </th>
                     {row.cells.map((watch, index) => {
                       const group = board.groups[index]
                       const picked = picks.includes(watch.id)
@@ -166,6 +176,7 @@ function Game({ initial, showResult }: { initial: ReturnType<typeof resolveDraft
                           <DraftDial watch={watch} showCaption={false} />
                         </button>
                       ) : <span className={styles.emptyPick} role="img" aria-label={`Empty ${group.title} slot`} />}
+                      {board.id === 'region' && <span className={styles.flag} data-country={group.title} aria-hidden="true" />}
                     </li>
                   )
                 })}

@@ -11,7 +11,7 @@
 }
 .game {
   --gap: 5px;
-  --tier-width: 60px;
+  --tier-width: 64px;
   --tile: clamp(46px, (100svh - 363px) / 5, 100px);
   max-width: 880px;
   padding: 10px 18px 22px;
@@ -35,7 +35,63 @@
 .matrix thead th { height: 27px; background: #473528; color: #fcf2de; }
 .matrix thead th:first-child { width: var(--tier-width); background: #e7d6bd; color: #56412c; }
 .matrix abbr { text-decoration: none; }
-.matrix tbody th { background: #e7d6bd; color: #624527; }
+.countryLabel { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.flag {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 18px;
+  height: 12px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px #3d291e42, 0 1px 2px #2a180b55;
+  background: #fffaf1;
+}
+.flag[data-country="Japan"]::after {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 33%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #bd2946;
+  content: '';
+}
+.flag[data-country="Switzerland"] {
+  width: 12px;
+  background: #c72f3e;
+}
+.flag[data-country="Switzerland"]::after {
+  position: absolute;
+  inset: 21%;
+  background: #fffaf1;
+  clip-path: polygon(36% 0, 64% 0, 64% 36%, 100% 36%, 100% 64%, 64% 64%, 64% 100%, 36% 100%, 36% 64%, 0 64%, 0 36%, 36% 36%);
+  content: '';
+}
+.flag[data-country="Germany"] { background: linear-gradient(#24211e 33.33%, #bb2835 33.33% 66.66%, #e2aa3e 66.66%); }
+.priceTag {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  min-height: 26px;
+  padding: 1px 3px 0 14px;
+  color: #5b3b20;
+  filter: drop-shadow(0 1px 1px #49321e35);
+  white-space: nowrap;
+}
+.priceTag::before, .priceTag::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: 4px;
+  clip-path: polygon(0 50%, 11px 0, 100% 0, 100% 100%, 11px 100%);
+  content: '';
+}
+.priceTag::before { background: #ad8e67; }
+.priceTag::after {
+  inset: 1px;
+  background: radial-gradient(circle at 7px 50%, #7c5b38 1.2px, transparent 1.7px), linear-gradient(#fff8e9, #e7d2b1);
+}
 .matrix td { padding: 0; }
 .watch {
   position: relative;
@@ -109,12 +165,14 @@
 .trayLabel { color: #fff1dc; font: 700 1.03rem/.9 var(--font-cormorant), Georgia, serif; text-align: center; }
 .pickSlot {
   --tile: clamp(44px, (100svh - 510px) / 3, 74px);
+  position: relative;
   min-width: 0;
   padding: 2px;
   border-radius: 5px;
   background: #d5b899 url('/watchbox-materials/suede-cushion.webp') center / 100% 100%;
   box-shadow: inset 0 1px 5px #4028189c, 0 1px 2px #1c0c07a0;
 }
+.pickSlot .flag { position: absolute; inset: 5px 5px auto auto; opacity: .93; pointer-events: none; }
 .pickSlot .watch { border: 0; background: transparent; }
 .pickSlot .dial { inset: 1px 0; transform: none; }
 .pickSlot .photo { filter: drop-shadow(1px 2px 2px #3c291d75); }
@@ -224,12 +282,17 @@
 .poster[data-curated="true"] .posterWatch .caption { color: #fff9ee; font-size: 17px; margin: 0; }
 
 @media (max-width: 760px) {
-  .game { --gap: 3px; --tier-width: 33px; --tile: clamp(39px, (100svh - 323px) / 5, 84px); padding: 6px 5px 14px; }
+  .game { --gap: 3px; --tier-width: 42px; --tile: clamp(39px, (100svh - 323px) / 5, 84px); padding: 6px 5px 14px; }
   .gameHeader { display: grid; grid-template-columns: 1fr auto; gap: 4px; padding-bottom: 6px; }
   .gameHeader p { grid-column: 1 / -1; grid-row: 2; text-align: left; }
   .editions a { min-height: 23px; padding-inline: clamp(3px, 1.3vw, 7px); font-size: .65rem; }
   .gameHeader h1 { font-size: clamp(1.33rem, 6vw, 1.52rem); }
-  .regionHeader { display: block; line-height: 1.05; }
+  .countryLabel { gap: 4px; }
+  .flag { width: 14px; height: 10px; }
+  .flag[data-country="Switzerland"] { width: 10px; }
+  .priceTag { min-height: 22px; padding-left: 10px; font-size: .66rem; }
+  .priceTag::before, .priceTag::after { clip-path: polygon(0 50%, 7px 0, 100% 0, 100% 100%, 7px 100%); }
+  .priceTag::after { background: radial-gradient(circle at 4px 50%, #7c5b38 1px, transparent 1.5px), linear-gradient(#fff8e9, #e7d2b1); }
   .gameHeader p { font-size: .7rem; }
   .matrix { border-spacing: var(--gap) 3px; }
   .matrix th { font-size: clamp(.58rem, 2.6vw, .76rem); }
