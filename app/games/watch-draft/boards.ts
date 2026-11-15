@@ -136,17 +136,89 @@ export const dreamBox: Board = {
   ],
 }
 
-const dreamTiers = [5000, 4000, 3000, 2000, 1000] as const
-export const dreamRows = dreamTiers.map((price, index) => ({
-  price,
-  cells: dreamBox.groups.map(group => ({ ...group.watches[index], tier: price })),
-}))
-
-export function dreamUrl(picks: string[] = []) {
-  if (!picks.length) return draftPath
-  const query = new URLSearchParams({ edition: 'dream-box', picks: picks.join(',') })
-  return `${draftPath}?${query}`
+const editions = {
+  tuna: watch('seiko-sbdx014g', 'Seiko', 'Emperor Tuna', 'SBDX014', 2650, `${seiko}/prospex`),
+  marinemaster: watch('seiko-sbdx017', 'Seiko', 'Marinemaster 300', 'SBDX017', 2100, `${seiko}/prospex?page=3`),
+  willard: watch('seiko-spb151', 'Seiko', 'Captain Willard', 'SPB151', 1050, `${seiko}/prospex`),
+  springDrive: watch('grand-seiko-sbga201', 'Grand Seiko', 'Spring Drive', 'SBGA201', 3225, grandSeiko),
+  starBar: watch('seiko-srpc43', 'Seiko', 'Presage Star Bar', 'SRPC43', 875, `${seiko}/presage`),
+  drive: watch('cartier-wsnm0004', 'Cartier', 'Drive de Cartier', 'WSNM0004', 4150, 'watchcharts.com/watches/brand/cartier/drive'),
+  flagship: watch('longines-l4-815-4-78-2', 'Longines', 'Flagship Heritage', 'L4.815.4.78.2', 2200, `${longines}/flagship`),
+  sixties: watch('glashutte-original-1-39-52-01-02-04', 'Glashütte Original', 'Sixties', '1-39-52-01-02-04', 5500, 'watchcharts.com/watches/brand/glashutte%20original/sixties'),
+  diapal: watch('sinn-358-061', 'Sinn', '358 Diapal', '358.061', 3550, sinn),
+  update: watch('nomos-180', 'NOMOS', 'Tangente Update', '180', 2950, 'nomos-glashuette.com/en/tangente/tangente-neomatik-41-update-180'),
+  fiftyEightGMT: watch('tudor-m7939g1a0nru-0003', 'Tudor', 'Black Bay 58 GMT', 'M7939G1A0NRU-0003', 4500, 'watchcharts.com/watches/brand/tudor/black%20bay'),
+  tudor1926: watch('tudor-m91350-0001', 'Tudor', '1926', 'M91350-0001', 1500, 'watchcharts.com/watches/brand/tudor/1926'),
+  seamasterQuartz: watch('omega-2561-80-00', 'Omega', 'Seamaster Quartz', '2561.80.00', 2000, 'watchcharts.com/watches/brand/omega/seamaster'),
+  flyback: watch('longines-l3-821-4-53-6', 'Longines', 'Spirit Flyback', 'L3.821.4.53.6', 4500, 'longines.com/en-us/p/watch-longines-spirit-flyback-l3-821-4-53-6'),
+  spiritChrono: watch('longines-l3-820-4-73-2', 'Longines', 'Spirit Chronograph', 'L3.820.4.73.2', 3300, `${longines}/spirit`),
+  orisProPilot: watch('oris-01-793-7775-8734-set', 'Oris', 'ProPilot Coulson', '01 793 7775 8734-Set', 5000, 'watchcharts.com/watches/brand/oris/big%20crown%20propilot'),
+  orisAquis400: watch('oris-01-400-7769-6355-07-4-22-75fc', 'Oris', 'Aquis Calibre 400', '01 400 7769 6355-07 4 22 75FC', 3900, 'watchcharts.com/watches/brand/oris/aquis'),
+  orisArtelier: watch('oris-01-111-7700-4061-set-1-23-71fc', 'Oris', 'Artelier Calibre 111', '01 111 7700 4061-Set 1 23 71FC', 3900, 'watchcharts.com/watches/brand/oris/artelier'),
+  orisBigCrown: watch('oris-01-754-7741-4065-07-8-20-22', 'Oris', 'Big Crown Pointer Date', '01 754 7741 4065-07 8 20 22', 1950, 'watchcharts.com/watches/brand/oris/big%20crown'),
+  oris65: watch('oris-01-733-7707-4064-07-8-20-18', 'Oris', 'Divers Sixty-Five', '01 733 7707 4064-07 8 20 18', 1500, 'watchcharts.com/watches/brand/oris/divers%20sixty-five'),
+  sinn900: watch('sinn-900-011', 'Sinn', '900 Flieger', '900.011', 3500, sinn),
+  sinn140: watch('sinn-140-020', 'Sinn', '140 St Space Chrono', '140.020', 3100, sinn),
 }
+
+export const regionBox: Board = {
+  id: 'region',
+  title: 'Three countries',
+  label: 'By region',
+  rule: dreamBox.rule,
+  prompt: 'Build a $15,000 watch box across Japan, Switzerland, and Germany.',
+  budget: dreamBox.budget,
+  groups: [
+    { title: 'Japan Sport', watches: [curated.hiBeat, editions.tuna, editions.marinemaster, editions.willard, w.turtle] },
+    { title: 'Japan Dress', watches: [w.snowflake, w.gsGmt, editions.springDrive, editions.starBar, w.cocktail] },
+    { title: 'Swiss Sport', watches: [w.moonwatch, curated.pelagos, curated.ranger, w.conquest, w.prx] },
+    { title: 'Swiss Dress', watches: [editions.drive, w.tank, curated.moonphase, editions.flagship, w.gentleman] },
+    { title: 'Germany', watches: [editions.sixties, editions.diapal, editions.update, w.sinn103, w.club] },
+  ],
+}
+
+export const brandBox: Board = {
+  id: 'brand',
+  title: 'Five brands',
+  label: 'By brand',
+  rule: dreamBox.rule,
+  prompt: 'Build a $15,000 box with one Omega, Tudor, Longines, Oris, and Sinn.',
+  budget: dreamBox.budget,
+  groups: [
+    { title: 'Omega', watches: [w.moonwatch, w.seamaster, w.reduced, w.aquaQuartz, editions.seamasterQuartz] },
+    { title: 'Tudor', watches: [editions.fiftyEightGMT, curated.pelagos, w.bb58, curated.ranger, editions.tudor1926] },
+    { title: 'Longines', watches: [editions.flyback, editions.spiritChrono, w.zulu, editions.flagship, w.hydro] },
+    { title: 'Oris', watches: [editions.orisProPilot, editions.orisAquis400, editions.orisArtelier, editions.orisBigCrown, editions.oris65] },
+    { title: 'Sinn', watches: [editions.sinn900, editions.diapal, editions.sinn140, w.sinn103, w.sinn556] },
+  ],
+}
+
+export const curatedBoards = [dreamBox, brandBox, regionBox]
+export const draftEdition = 'dream-box'
+
+const dreamTiers = [5000, 4000, 3000, 2000, 1000] as const
+
+export function dreamRows(board: Board) {
+  return dreamTiers.map((price, index) => ({
+    price,
+    cells: board.groups.map(group => ({ ...group.watches[index], tier: price })),
+  }))
+}
+
+export function dreamUrl(board: Board, picks: string[] = []) {
+  const query = new URLSearchParams()
+  if (board.id !== 'type') {
+    query.set('board', board.id)
+    query.set('budget', String(board.budget))
+  }
+  if (picks.length) {
+    query.set('edition', draftEdition)
+    query.set('picks', picks.join(','))
+  }
+  return query.size ? `${draftPath}?${query}` : draftPath
+}
+
+export const posterSlugs = { type: 'dream-box', brand: 'dream-brands', region: 'dream-regions' } as const
 
 export function boardFor(id: string | null) {
   return legacyBoards.find(board => board.id === id) ?? legacyBoards[0]
