@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { createPlaygroundBox, createPlaygroundEntry } from '@/lib/playground'
+import { encodePlaygroundShare, playgroundShareCardPath } from '@/lib/playgroundShare'
 import { budgets, draftName, draftTags, type Budget } from '@/lib/watchDraftChallenge'
 import { boards, boardFor, draftUrl, draftGrid, money, type Board } from './boards'
 import WatchPhoto from './WatchPhoto'
@@ -14,10 +15,10 @@ export default function DraftGame() {
   const query = useSearchParams()
   const board = boardFor(query.get('board'))
   const budget = budgets.find(value => String(value) === query.get('budget')) ?? board.budget
-  return <Game board={board} budget={budget} initialPicks={query.get('picks')} />
+  return <Game board={board} budget={budget} initialPicks={query.get('picks')} showResult={query.get('view') === 'result'} />
 }
 
-function Game({ board, budget: initialBudget, initialPicks }: { board: Board; budget: Budget; initialPicks: string | null }) {
+function Game({ board, budget: initialBudget, initialPicks, showResult }: { board: Board; budget: Budget; initialPicks: string | null; showResult: boolean }) {
   const router = useRouter()
   const { loading: authLoading } = useAuth()
   const { dataLoading, migrationPending, playgroundHydrated, setPlaygroundBoxes } = useCollectionSession()
@@ -32,7 +33,8 @@ function Game({ board, budget: initialBudget, initialPicks }: { board: Board; bu
     const eligible = new Set(draftGrid(board, initialBudget).flatMap(row => row.cells.flat().map(watch => watch.id)))
     return board.groups.flatMap(group => group.watches.filter(watch => requested.has(watch.id) && eligible.has(watch.id)).slice(0, board.id === 'region' ? 5 : 1).map(watch => watch.id)).slice(0, 5)
   })
-  const [copy, setCopy] = useState<'ready' | 'copied' | 'manual'>('ready')
+  const [copyFeedback, setCopyFeedback] = useState('')
+  const [copyFallback, setCopyFallback] = useState('')
   const rows = draftGrid(active, budget)
   const watches = rows.flatMap(row => row.cells.flat())
   const lineup = watches.filter(watch => picks.includes(watch.id))
@@ -40,13 +42,28 @@ function Game({ board, budget: initialBudget, initialPicks }: { board: Board; bu
   const remaining = budget - total
   const hasEveryGroup = active.groups.every(group => group.watches.some(watch => picks.includes(watch.id)))
   const complete = lineup.length === 5 && hasEveryGroup && remaining >= 0
-  const sharePath = draftUrl(active, budget, lineup.map(watch => watch.id))
+  const sharePath = draftUrl(active, budget, lineup.map(watch => watch.id)) + '&view=result'
+  const challenge = { board: active.id, budget }
+  const name = draftName(challenge)
+  // The shared image uses the same six-slot layout as a saved Playground box.
+  const resultCardToken = complete ? encodePlaygroundShare({
+    frame: 'light-oak',
+    lining: 'cream',
+    slotCount: 6,
+    entries: lineup.map((watch, slot) => ({ slot, watchId: watch.id })),
+    challenge,
+  }) : null
+
+  function resetShareFeedback() {
+    setCopyFeedback('')
+    setCopyFallback('')
+  }
 
   function changeBoard(next: Board) {
     setActive(next)
     setBudget(next.budget)
     setPicks([])
-    setCopy('ready')
+    resetShareFeedback()
     window.history.replaceState(null, '', draftUrl(next, next.budget))
   }
 
@@ -55,13 +72,13 @@ function Game({ board, budget: initialBudget, initialPicks }: { board: Board; bu
     const kept = picks.filter(id => eligible.has(id))
     setBudget(next)
     setPicks(kept)
-    setCopy('ready')
+    resetShareFeedback()
     window.history.replaceState(null, '', draftUrl(active, next, kept))
   }
 
   function updatePicks(next: string[]) {
     setPicks(next)
-    setCopy('ready')
+    resetShareFeedback()
     window.history.replaceState(null, '', draftUrl(active, budget, next))
   }
 
@@ -80,9 +97,8 @@ function Game({ board, budget: initialBudget, initialPicks }: { board: Board; bu
     if (!canSave || creating.current) return
     creating.current = true
     setSaving(true)
-    const challenge = { board: active.id, budget }
     const box = createPlaygroundBox({
-      name: draftName(challenge),
+      name,
       tags: draftTags(challenge),
       entries: lineup.map((watch, slot) => createPlaygroundEntry(watch.id, undefined, undefined, slot)),
     })
@@ -90,18 +106,67 @@ function Game({ board, budget: initialBudget, initialPicks }: { board: Board; bu
     router.push(`/playground?boxId=${box.id}`)
   }
 
-  async function share() {
+  async function copyResult(withPicks: boolean) {
+    const url = new URL(sharePath, window.location.origin).href
+    const text = withPicks ? [
+      `My ${name} · ${active.title}`,
+      ...lineup.map(watch => `• ${watch.brand} ${watch.model} · ${money(watch.tier)}`),
+      `${money(total)} of ${money(budget)} spent`,
+      `See my picks or draft your own: ${url}`,
+    ].join('\n') : url
+    resetShareFeedback()
     try {
-      await navigator.clipboard.writeText(new URL(sharePath, window.location.origin).href)
-      setCopy('copied')
+      await navigator.clipboard.writeText(text)
+      setCopyFeedback(withPicks ? 'Picks and link copied.' : 'Lineup link copied.')
     } catch {
-      setCopy('manual')
+      setCopyFallback(text)
     }
   }
 
+  const ResultHeading = showResult && complete ? 'h1' : 'h2'
+  const result = (
+    <section className={styles.lineup} id="draft-result" aria-labelledby="draft-result-heading">
+      <div className={styles.resultHeading}>
+        <div>
+          <ResultHeading id="draft-result-heading">{complete ? name : 'Your lineup'}</ResultHeading>
+          <p aria-live="polite">
+            {complete ? `${active.title} · ${money(total)} spent of ${money(budget)}` :
+              lineup.length < 5 ? 'Pick five watches to share a lineup.' :
+              remaining < 0 ? 'Swap or remove a watch to get back under budget.' : 'Swap a pick to include all three countries.'}
+          </p>
+        </div>
+        {showResult && complete && <a className={styles.resultLink} href={draftUrl(active, budget)}>Build your own lineup →</a>}
+      </div>
+      <div className={styles.actions}>
+        {complete && <button className={styles.primaryAction} type="button" onClick={() => copyResult(true)} disabled={!interactive}>Copy picks + link</button>}
+        {complete && <button type="button" onClick={() => copyResult(false)} disabled={!interactive}>Copy lineup link</button>}
+        {resultCardToken && <a href={playgroundShareCardPath(resultCardToken)} download="my-watch-draft.png">Download lineup image</a>}
+        {complete && <button type="button" onClick={saveBox} disabled={!canSave || saving}>{saving ? 'Opening Playground…' : 'Create Playground box'}</button>}
+        {lineup.length > 0 && !showResult && <button type="button" onClick={() => updatePicks([])}>Clear picks</button>}
+      </div>
+      {copyFeedback && <p role="status">{copyFeedback}</p>}
+      {copyFallback && <>
+        <p>Copy your results from this field.</p>
+        <textarea className={styles.shareInput} aria-label="Copyable draft result" readOnly value={copyFallback} rows={copyFallback.includes('\n') ? 8 : 2} onFocus={event => event.currentTarget.select()} />
+      </>}
+      {lineup.length > 0 && (
+        <ol className={styles.resultPicks}>
+          {lineup.map(watch => (
+            <li key={watch.id}>
+              <WatchPhoto src={watch.image} eager={showResult} />
+              <span>{watch.brand}</span>
+              <strong>{watch.model}</strong>
+              <b>{money(watch.tier)}</b>
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
+  )
+
   return (
     <div className={styles.page}>
-      <header className={styles.hero}>
+      {showResult && complete ? <div className={styles.resultFirst}>{result}</div> : <header className={styles.hero}>
         <div>
           <p className={styles.eyebrow}>Virtual Watchbox presents</p>
           <h1>The Watch<br /> <em>Draft.</em></h1>
@@ -111,7 +176,7 @@ function Game({ board, budget: initialBudget, initialPicks }: { board: Board; bu
         <div className={styles.heroImages} aria-hidden="true">
           {[boards[0].groups[0].watches[0], boards[0].groups[2].watches[2], boards[0].groups[4].watches[3]].map(watch => <WatchPhoto key={watch.id} src={watch.image} eager />)}
         </div>
-      </header>
+      </header>}
 
       <section className={styles.game} id="draft-board" aria-label="Watch draft">
         <div className={styles.controls}>
@@ -132,6 +197,7 @@ function Game({ board, budget: initialBudget, initialPicks }: { board: Board; bu
           <div aria-live="polite"><strong>{lineup.length} / 5</strong><span>Watches picked</span></div>
           <div><strong>{money(total)}</strong><span>Spent</span></div>
           <div aria-live="polite" data-over={remaining < 0}><strong>{money(Math.abs(remaining))}</strong><span>{remaining < 0 ? 'Over budget' : 'Left to spend'}</span></div>
+          {complete && !showResult && <a href="#draft-result" className={styles.resultsJump}>View and share picks ↓</a>}
         </div>
 
         <p className={styles.scrollHelp} id="draft-scroll-help">Scroll the board to see all categories and tiers.</p>
@@ -173,19 +239,7 @@ function Game({ board, budget: initialBudget, initialPicks }: { board: Board; bu
           </table>
         </div>
 
-        <div className={styles.lineup}>
-          <div>
-            <h3>Your lineup</h3>
-            {lineup.length > 0 && <ol>{lineup.map(watch => <li key={watch.id}>{watch.brand} {watch.model} <span>{money(watch.tier)}</span></li>)}</ol>}
-            <p aria-live="polite">{lineup.length < 5 ? 'Pick five watches to share a lineup.' : remaining < 0 ? 'Swap or remove a watch to get back under budget.' : !hasEveryGroup ? 'Swap a pick to include all three countries.' : 'Lineup complete. Save it as a Playground box or copy the draft link.'}</p>
-          </div>
-          <div className={styles.actions}>
-            <button type="button" onClick={() => updatePicks([])} disabled={!lineup.length}>Clear picks</button>
-            <button type="button" onClick={share} disabled={!complete}>{copy === 'copied' ? 'Link copied' : 'Copy lineup link'}</button>
-            <button type="button" onClick={saveBox} disabled={!canSave || saving}>{saving ? 'Opening Playground…' : 'Create Playground box'}</button>
-          </div>
-          {copy === 'manual' && <input className={styles.shareInput} aria-label="Lineup link" readOnly value={new URL(sharePath, window.location.origin).href} onFocus={event => event.currentTarget.select()} />}
-        </div>
+        {!(showResult && complete) && result}
 
         <details className={styles.sources}>
           <summary>How watches are priced</summary>
