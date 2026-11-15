@@ -194,6 +194,96 @@ export const brandBox: Board = {
 }
 
 export const curatedBoards = [dreamBox, brandBox, regionBox]
+const weeklyRegion: Board = {
+  ...regionBox,
+  budget: 9000,
+  rule: 'Pick one from each country. Spend up to $9,000.',
+  title: 'International',
+  groups: [
+    { title: 'Japan', watches: [curated.hiBeat, w.gsGmt, editions.springDrive, editions.willard, w.cocktail] },
+    { title: 'Switzerland', watches: [w.moonwatch, curated.pelagos, w.tank, w.zulu, w.prx] },
+    { title: 'Germany', watches: [editions.sixties, editions.diapal, editions.update, w.sinn103, w.club] },
+  ],
+}
+
+const additions = {
+  edoAlpinist: watch('seiko-hbc006', 'Seiko', 'Alpinist 145th', 'HBC006', 900, 'www.seikowatches.com/us-en/products/prospex/hbc006j1'),
+  tudor54Blue: watch('tudor-m79000b-0001', 'Tudor', 'Black Bay 54 Blue', 'M79000B-0001', 4725, 'www.tudorwatch.com/en/watches/black-bay-54/m79000b-0001'),
+  aquaVintage: watch('omega-3513-30-00', 'Omega', 'Speedmaster Date', '3513.30.00', 2500, 'watchcharts.com/watches/brand/omega/speedmaster'),
+  silverSinn: watch('sinn-556-010', 'Sinn', '556 I', '556.010', 1250, sinn),
+  sinn144: watch('sinn-144-066', 'Sinn', '144 St Sa', '144.066', 2800, sinn),
+  sinn104: w.sinn104,
+  nomosOrion: watch('nomos-384', 'NOMOS', 'Orion 38', '384', 1800, 'watchcharts.com/watches/brand/nomos/orion'),
+  sixtiesBlue: watch('glashutte-original-1-39-52-04-02-04', 'Glashütte Original', 'Sixties Blue', '1-39-52-04-02-04', 5300, 'watchcharts.com/watches/brand/glashutte%20original/sixties'),
+  seikoWillardGreen: watch('seiko-spb153', 'Seiko', 'Green Willard', 'SPB153', 950, `${seiko}/prospex`),
+  tudorRoyal: watch('tudor-m28500-0003', 'Tudor', 'Royal 38', 'M28500-0003', 2000, 'watchcharts.com/watches/brand/tudor/royal'),
+  tudorBlue58: watch('tudor-79030b', 'Tudor', 'Black Bay 58 Blue', '79030B', 3000, 'watchcharts.com/watches/brand/tudor/black%20bay'),
+  longinesSpirit: watch('longines-l3-810-4-93-6', 'Longines', 'Spirit 40', 'L3.810.4.93.6', 2000, `${longines}/spirit`),
+  longinesSector: watch('longines-l2-828-4-73-2', 'Longines', 'Heritage Sector', 'L2.828.4.73.2', 2200, longines),
+  longinesFlybackBlue: watch('longines-l3-821-4-93-6', 'Longines', 'Spirit Flyback Blue', 'L3.821.4.93.6', 4500, `${longines}/spirit`),
+  orisProX: watch('oris-01-400-7778-7153-07-7-20-01', 'Oris', 'ProPilot X', '01 400 7778 7153-07 7 20 01', 3900, 'watchcharts.com/watches/brand/oris/propilot%20x'),
+  orisAquis: watch('oris-01-733-7653-4154-07-8-26-01peb', 'Oris', 'Aquis Date', '01 733 7653 4154-07 8 26 01PEB', 1200, 'watchcharts.com/watches/brand/oris/aquis'),
+  orisRectangular: watch('oris-01-561-7783-4068-07-5-19-18', 'Oris', 'Rectangular', '01 561 7783 4068-07 5 19 18', 1700, 'watchcharts.com/watches/brand/oris'),
+  orisOcean: watch('oris-01-733-7732-4185-set', 'Oris', 'Clean Ocean', '01 733 7732 4185-Set', 1900, 'watchcharts.com/watches/brand/oris/aquis'),
+}
+
+// These frozen decks form the weekly-v1 archive. Keep their ordering stable so
+// every dated URL always resolves to the same watches and tiers.
+const alternate: Record<Board['id'], Watch[][]> = {
+  type: [
+    [editions.flyback, editions.spiritChrono, additions.aquaVintage, w.sinn103, w.speedtimer],
+    [editions.drive, editions.update, additions.longinesSector, editions.flagship, w.boulton],
+    [editions.fiftyEightGMT, editions.orisAquis400, additions.tudorBlue58, editions.marinemaster, additions.seikoWillardGreen],
+    [curated.aquaTerra, additions.orisProX, editions.tudor1926, w.gentleman, additions.edoAlpinist],
+    [curated.hiBeat, w.bbGmt, w.gsGmt, w.zulu, w.seikoGmt],
+  ],
+  region: [
+    [w.snowflake, editions.tuna, editions.marinemaster, editions.starBar, additions.edoAlpinist],
+    [curated.aquaTerra, additions.tudor54Blue, w.bb58, editions.flagship, w.hydro],
+    [additions.sixtiesBlue, editions.sinn900, editions.sinn140, additions.nomosOrion, w.tangente],
+  ],
+  brand: [
+    [curated.aquaTerra, curated.blueSpeedmaster, additions.aquaVintage, editions.seamasterQuartz, w.aquaQuartz],
+    [additions.tudor54Blue, w.bbGmt, additions.tudorBlue58, additions.tudorRoyal, editions.tudor1926],
+    [additions.longinesFlybackBlue, w.zulu, curated.moonphase, additions.longinesSpirit, w.classic],
+    [additions.orisProX, editions.orisArtelier, additions.orisOcean, additions.orisRectangular, additions.orisAquis],
+    [editions.diapal, editions.sinn900, additions.sinn144, additions.sinn104, additions.silverSinn],
+  ],
+}
+
+export const weeklyEdition = 'weekly-v1'
+const weekMs = 7 * 24 * 60 * 60 * 1000
+const firstWeek = '2026-11-09'
+const firstWeekMs = Date.parse(firstWeek)
+
+export function currentDraftWeek(now = new Date()) {
+  const monday = new Date(now)
+  monday.setUTCDate(monday.getUTCDate() - (monday.getUTCDay() + 6) % 7)
+  return monday.toISOString().slice(0, 10)
+}
+
+export function isDraftWeek(value: string | null, latest: string): value is string {
+  return Boolean(value && /^\d{4}-\d{2}-\d{2}$/.test(value) && value >= firstWeek && value <= latest &&
+    (Date.parse(value) - firstWeekMs) % weekMs === 0)
+}
+
+export function weeklyBoard(id: string | null, week: string) {
+  const board = id === 'region' ? weeklyRegion : curatedBoards.find(option => option.id === id) ?? dreamBox
+  const phase = Math.floor((Date.parse(week) - firstWeekMs) / weekMs) % 4
+  if (phase === 0) return board
+  return {
+    ...board,
+    groups: board.groups.map((group, index) => {
+      const useAlternate = phase === 1 || index % 2 === phase - 2
+      return useAlternate ? { ...group, watches: alternate[board.id][index] } : group
+    }),
+  }
+}
+
+export function weekLabel(week: string) {
+  return new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric' }).format(new Date(week))
+}
+
 export const draftEdition = 'dream-box'
 
 const dreamTiers = [5000, 4000, 3000, 2000, 1000] as const
@@ -205,14 +295,18 @@ export function dreamRows(board: Board) {
   }))
 }
 
-export function dreamUrl(board: Board, picks: string[] = []) {
+export function dreamUrl(board: Board, picks: string[] = [], week?: string) {
   const query = new URLSearchParams()
   if (board.id !== 'type') {
     query.set('board', board.id)
     query.set('budget', String(board.budget))
   }
+  if (week) {
+    query.set('week', week)
+    query.set('edition', weeklyEdition)
+  }
   if (picks.length) {
-    query.set('edition', draftEdition)
+    if (!week) query.set('edition', draftEdition)
     query.set('picks', picks.join(','))
   }
   return query.size ? `${draftPath}?${query}` : draftPath
@@ -230,14 +324,14 @@ export function draftUrl(board: Board, budget: Budget, picks: string[] = []) {
   return `${draftPath}?${query}`
 }
 
-const tierPrices: Record<Budget, readonly number[]> = {
+const tierPrices: Record<(typeof import('@/lib/watchDraftChallenge').budgets)[number], readonly number[]> = {
   5000: [2500, 1500, 750, 500, 250],
   10000: [5000, 2500, 1500, 750, 250],
   15000: [9500, 3500, 2500, 1250, 500],
 }
 
 export function draftGrid(board: Board, budget: Budget) {
-  const prices = tierPrices[budget]
+  const prices = tierPrices[budget === 9000 ? 15000 : budget]
   // Leave watches well above the top tier off the board.
   const columns = board.groups.map(group => group.watches
     .filter(watch => watch.price <= budget && watch.price <= prices[0] * 1.25)

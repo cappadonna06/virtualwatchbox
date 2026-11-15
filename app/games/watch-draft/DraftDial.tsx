@@ -6,6 +6,8 @@ import styles from './draft.module.css'
 // Top and bottom of the crop, as percentages of the source. Keep the full case
 // and lugs, with a short section of bracelet or strap showing at both ends.
 const crops: Record<string, [number, number]> = {
+  'seiko-hbc006': [11, 85],
+  'tudor-m79000b-0001': [10, 85],
   'omega-310-30-42-50-01-001': [12, 79],
   'grand-seiko-sbga211': [11, 79],
   'omega-210-30-42-20-01-001': [12, 79],
@@ -62,6 +64,7 @@ const crops: Record<string, [number, number]> = {
 }
 
 const captions: Record<string, string> = {
+  'Black Bay 54 Blue': 'BB 54 Blue',
   '5 Sports GMT': 'Seiko GMT',
   'Aqua Terra 38': 'Aqua Terra',
   'HydroConquest': 'HydroConq.',

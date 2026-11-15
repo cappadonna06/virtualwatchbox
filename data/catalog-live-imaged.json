@@ -1,9 +1,9 @@
 {
   "_meta": {
     "note": "Snapshot of the LIVE on-site catalog (Supabase catalog_watches rows that have a watch_images photo). Source of truth is Supabase; regenerate with `npm run catalog:export-live`. Do not hand-edit.",
-    "catalog_total": 40621,
-    "on_site_total": 4161,
-    "with_lug_width": 3841,
+    "catalog_total": 40623,
+    "on_site_total": 4163,
+    "with_lug_width": 3843,
     "integrated_bracelet": 607,
     "lug_resolved_pct": 98.5
   },
@@ -47901,6 +47901,19 @@
       "estimated_value": 871
     },
     {
+      "id": "seiko-hbc006",
+      "brand": "Seiko",
+      "model": "Prospex Alpinist 145th Anniversary",
+      "model_family": "Prospex Alpinist",
+      "reference": "HBC006",
+      "watch_type": "Sport",
+      "case_size_mm": 39.5,
+      "lug_width_mm": 20,
+      "bracelet_type": "strap",
+      "dial_color": "Purple",
+      "estimated_value": 0
+    },
+    {
       "id": "seiko-spb151",
       "brand": "Seiko",
       "model": "Prospex Captain Willard",
@@ -51422,6 +51435,19 @@
       "bracelet_type": "strap",
       "dial_color": "Black",
       "estimated_value": 4961
+    },
+    {
+      "id": "tudor-m79000b-0001",
+      "brand": "Tudor",
+      "model": "Black Bay 54 Tudor Blue",
+      "model_family": "Black Bay 54",
+      "reference": "M79000B-0001",
+      "watch_type": "Dive",
+      "case_size_mm": 37,
+      "lug_width_mm": 20,
+      "bracelet_type": "bracelet",
+      "dial_color": "Blue",
+      "estimated_value": 0
     },
     {
       "id": "tudor-79030b",
