@@ -3,7 +3,7 @@ import { withVersion } from '@/lib/watchImages/cacheBust'
 import { draftPath, type Budget, type DraftChallenge } from '@/lib/watchDraftChallenge'
 export const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format
 
-type Watch = {
+export type Watch = {
   id: string
   brand: string
   model: string
@@ -70,7 +70,7 @@ export type Board = {
   groups: { title: string; watches: Watch[] }[]
 }
 
-export const boards: Board[] = [
+export const legacyBoards: Board[] = [
   {
     id: 'type', title: 'Five roles', label: 'By watch type',
     rule: 'Pick one watch per column.',
@@ -110,8 +110,46 @@ export const boards: Board[] = [
   },
 ]
 
+const curated = {
+  blueSpeedmaster: watch('omega-3510-80-00', 'Omega', 'Speedmaster Blue', '3510.80.00', 3275, 'watchcharts.com/watch_model/4950-omega-speedmaster-reduced-3510-80/overview'),
+  moonphase: watch('longines-l2-919-4-78-3', 'Longines', 'Master Moonphase', 'L2.919.4.78.3', 2150, 'watchcharts.com/watch_model/10332-longines-master-collection-42-moonphase-l2-919-4-78/overview'),
+  pelagos: watch('tudor-m25407n-0001', 'Tudor', 'Pelagos 39', 'M25407N-0001', 4000, 'watchcharts.com/watches/brand/tudor/pelagos?page=1'),
+  aquaTerra: watch('omega-220-10-38-20-03-001', 'Omega', 'Aqua Terra 38', '220.10.38.20.03.001', 4425, 'marketplace.watchcharts.com/listings/watch_model/760'),
+  pilot: watch('iwc-iw327001', 'IWC', 'Mark XVIII', 'IW327001', 3500, 'watchcharts.com/watch_model/5465-iwc-pilot-s-watch-mark-xviii-327001/overview'),
+  ranger: watch('tudor-m79950-0001', 'Tudor', 'Ranger', 'M79950-0001', 2800, 'watchcharts.com/watches/brand/tudor/ranger'),
+  hiBeat: watch('grand-seiko-sbgj001', 'Grand Seiko', 'Hi-Beat GMT', 'SBGJ001', 5000, 'watchcharts.com/watch_model/783-grand-seiko-hi-beat-36000-gmt-sbgj001/overview'),
+}
+
+export const dreamBox: Board = {
+  id: 'type',
+  title: 'Five roles',
+  label: 'By watch type',
+  rule: 'Pick one per column. Spend up to $15,000.',
+  prompt: 'You have $15,000 for five watches. Pick one per column and share your five and total.',
+  budget: 15000,
+  groups: [
+    { title: 'Chronograph', watches: [w.moonwatch, curated.blueSpeedmaster, w.reduced, w.intra, w.speedtimer] },
+    { title: 'Dress', watches: [w.snowflake, w.tank, curated.moonphase, w.tangente, w.cocktail] },
+    { title: 'Diver', watches: [w.seamaster, curated.pelagos, w.bb58, w.hydro, w.turtle] },
+    { title: 'Sport', watches: [curated.aquaTerra, curated.pilot, curated.ranger, w.conquest, w.murph] },
+    { title: 'GMT', watches: [curated.hiBeat, w.gsGmt, w.bbGmt, w.zulu, w.seikoGmt] },
+  ],
+}
+
+const dreamTiers = [5000, 4000, 3000, 2000, 1000] as const
+export const dreamRows = dreamTiers.map((price, index) => ({
+  price,
+  cells: dreamBox.groups.map(group => ({ ...group.watches[index], tier: price })),
+}))
+
+export function dreamUrl(picks: string[] = []) {
+  if (!picks.length) return draftPath
+  const query = new URLSearchParams({ edition: 'dream-box', picks: picks.join(',') })
+  return `${draftPath}?${query}`
+}
+
 export function boardFor(id: string | null) {
-  return boards.find(board => board.id === id) ?? boards[0]
+  return legacyBoards.find(board => board.id === id) ?? legacyBoards[0]
 }
 
 export function draftUrl(board: Board, budget: Budget, picks: string[] = []) {
