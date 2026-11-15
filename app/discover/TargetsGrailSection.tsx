@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import type { CatalogWatch, WatchTarget } from '@/types/watch'
 import { brand } from '@/lib/brand'
-import { buildChrono24URL } from '@/lib/discover'
+import { chrono24TargetLink } from '@/lib/discover'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import WatchImageOrDial from '@/components/watchbox/WatchImageOrDial'
@@ -225,14 +225,7 @@ function GrailCard({ watch }: { watch: CatalogWatch }) {
           Ref. {watch.reference} · {watch.caseSizeMm} mm{watch.estimatedValue ? ` · ${fmt(watch.estimatedValue)}` : ''}
         </div>
 
-        <a
-          href={buildChrono24URL(watch.brand, watch.model, 'buy')}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={marketCta}
-        >
-          Find on Market →
-        </a>
+        <Chrono24Link watch={watch} />
       </div>
     </article>
   )
@@ -354,17 +347,24 @@ function TargetCard({ target, watch }: { target: WatchTarget; watch: CatalogWatc
             borderTop: `1px solid ${brand.colors.border}`,
           }}
         >
-          <a
-            href={buildChrono24URL(watch.brand, watch.model, 'buy')}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={marketCta}
-          >
-            Track Listings →
-          </a>
+          <Chrono24Link watch={watch} />
         </div>
       </div>
     </article>
+  )
+}
+
+function Chrono24Link({ watch }: { watch: CatalogWatch }) {
+  const { href, sponsored } = chrono24TargetLink(watch)
+  return (
+    <div>
+      <a href={href} target="_blank" rel={sponsored ? 'sponsored noopener noreferrer' : 'noopener noreferrer'} style={marketCta}>
+        View on Chrono24 ↗
+      </a>
+      {sponsored && (
+        <div style={{ fontSize: brand.text.bodySm, color: brand.colors.muted, marginTop: 4 }}>We may earn a commission.</div>
+      )}
+    </div>
   )
 }
 
