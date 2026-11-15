@@ -101,7 +101,7 @@
 .pickTray {
   list-style: none;
   display: grid;
-  grid-template-columns: var(--tier-width) repeat(5, minmax(0, 1fr));
+  grid-template-columns: var(--tier-width) repeat(var(--columns, 5), minmax(0, 1fr));
   align-items: center;
   gap: var(--gap);
   padding: var(--gap);
@@ -126,12 +126,23 @@
 .balance span { font-weight: 700; }
 .balance[data-over="true"], .balance[data-over="true"] strong { color: #9b3326; }
 .gameFooter button { min-height: 33px; padding: 4px 9px; font-weight: 700; white-space: nowrap; }
-.gameFooter .shareButton, .actions .primaryAction { background: var(--dark); color: #fff5e4; border-radius: 5px; }
+.shareButton { background: var(--dark); color: #fff5e4; border-radius: 5px; }
 .gameFooter button:disabled { opacity: .55; }
 .shareDialog { position: fixed; inset: 0; margin: auto; width: min(680px, calc(100% - 20px)); max-height: 92svh; overflow: auto; color: var(--ink); border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
 .shareDialog::backdrop { background: #241d16a6; }
-.shareDialog .lineup { border: 0; margin: 0; padding-top: 32px; }
-.closeDialog { position: absolute; right: 8px; top: 3px; width: 32px; height: 32px; font-size: 1.5rem; }
+.shareDialog { padding: clamp(13px, 4vw, 24px); }
+.shareHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.shareHeader h2 { font: 700 2rem/.95 var(--font-cormorant), Georgia, serif; }
+.shareHeader button { width: 36px; height: 36px; font-size: 1.5rem; border-radius: 50%; background: #f3eadc; }
+.sharePreview { display: block; width: 100%; height: auto; aspect-ratio: 1200 / 630; border-radius: 8px; background: var(--dark); }
+.shareActions { display: flex; gap: 12px; align-items: center; margin-top: 13px; }
+.shareActions button { flex: 1; min-height: 44px; border-radius: 7px; background: var(--dark); color: #fff4df; font-weight: 700; }
+.shareActions button:disabled { opacity: .65; }
+.shareActions a, .playgroundAction { color: var(--bronze); text-decoration: underline; text-underline-offset: 3px; font-size: .84rem; }
+.shareDialog p[role="status"] { margin-top: 8px; color: var(--muted); font-size: .83rem; }
+.playgroundAction { display: inline-block; margin-top: 10px; }
+.playgroundAction:disabled { opacity: .6; }
+.resultShare .shareButton { padding: 8px 14px; font-weight: 700; }
 .resultFirst { padding: clamp(16px, 4vw, 48px) clamp(16px, 4vw, 48px) 0; }
 .resultFirst .lineup { margin: 0; }
 .lineup { margin-top: 20px; display: grid; gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: clamp(12px, 2.5vw, 26px); scroll-margin-top: 80px; }
@@ -216,7 +227,8 @@
   .game { --gap: 3px; --tier-width: 33px; --tile: clamp(39px, (100svh - 323px) / 5, 84px); padding: 6px 5px 14px; }
   .gameHeader { display: grid; grid-template-columns: 1fr auto; gap: 4px; padding-bottom: 6px; }
   .gameHeader p { grid-column: 1 / -1; grid-row: 2; text-align: left; }
-  .editions a { min-height: 23px; padding-inline: clamp(4px, 1.6vw, 8px); font-size: .68rem; }
+  .editions a { min-height: 23px; padding-inline: clamp(3px, 1.3vw, 7px); font-size: .65rem; }
+  .gameHeader h1 { font-size: clamp(1.33rem, 6vw, 1.52rem); }
   .regionHeader { display: block; line-height: 1.05; }
   .gameHeader p { font-size: .7rem; }
   .matrix { border-spacing: var(--gap) 3px; }
