@@ -52,7 +52,7 @@ export interface StudioStrap {
   userStrap?: UserStrap
   templateId?: string
   /** Worn-render halves; only band-equipped straps appear in composite mode. */
-  band?: { top: BandHalf; bottom: BandHalf }
+  band?: { top: BandHalf; bottom: BandHalf; passThroughUrl?: string }
 }
 
 export interface StudioCompatTarget {
@@ -159,7 +159,11 @@ export function buildTemplateStraps(): StudioStrap[] {
 }
 
 export function buildBandDemoStraps(): StudioStrap[] {
-  return bandDemoRaw.straps.flatMap(({ id, fullImageId, bandTop, bandBottom }) => {
+  return bandDemoRaw.straps.flatMap(row => {
+    const { id, fullImageId, bandTop, bandBottom } = row
+    const passThroughUrl = 'passThroughUrl' in row && typeof row.passThroughUrl === 'string'
+      ? withVersion(row.passThroughUrl)
+      : undefined
     const template = findTemplate(fullImageId)
     if (!template?.imageUrl) return []
     return [{
@@ -168,6 +172,7 @@ export function buildBandDemoStraps(): StudioStrap[] {
       id,
       templateId: fullImageId,
       band: {
+        passThroughUrl,
         top: { ...bandTop, url: withVersion(bandTop.url) ?? bandTop.url },
         bottom: { ...bandBottom, url: withVersion(bandBottom.url) ?? bandBottom.url },
       },

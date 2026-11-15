@@ -154,6 +154,7 @@ type KindKey =
   | 'canvas-twill'
   | 'rubber-ribbed'
   | 'canvas-herringbone'
+  | 'nylon-nato'
 
 type Kind = {
   descriptor: string
@@ -165,6 +166,12 @@ type Kind = {
 }
 
 const KINDS: Record<KindKey, Kind> = {
+  'nylon-nato': {
+    descriptor: 'woven nylon NATO-style pass-through watch strap',
+    texture: 'Matte, fine nylon webbing with heat-sealed edges',
+    stitch: false,
+    singlePiece: true,
+  },
   'leather-smooth': {
     descriptor: 'Italian calfskin leather watch strap with a smooth grain finish and a slight natural sheen',
     texture: 'The smooth leather surface shows subtle natural grain and soft, even highlights',
@@ -394,6 +401,19 @@ const STRAPS: StrapDef[] = [
   { name: 'leather-nubuck-chocolate', kind: 'leather-suede', material: 'leather', subMaterial: 'Nubuck', color: 'Chocolate Brown', colorHex: '#544039', style: 'casual', tier: 5 },
   { name: 'leather-pebbled-burgundy', kind: 'leather-pebbled', material: 'leather', subMaterial: 'Pebbled', color: 'Burgundy', colorHex: '#612A35', style: 'casual', tier: 5 },
   { name: 'leather-shell-cordovan-blue', kind: 'leather-shell-cordovan', material: 'leather', subMaterial: 'Shell Cordovan', color: 'Navy', colorHex: '#202F46', style: 'dressy', tier: 5 },
+
+  { name: 'nylon-nato-black', kind: 'nylon-nato', material: 'nylon', subMaterial: 'NATO', color: 'Black', colorHex: '#2C2B2B', style: 'sporty', tier: 6 },
+  { name: 'nylon-nato-gray', kind: 'nylon-nato', material: 'nylon', subMaterial: 'NATO', color: 'Slate Gray', colorHex: '#66686C', style: 'sporty', tier: 6 },
+  { name: 'nylon-nato-navy', kind: 'nylon-nato', material: 'nylon', subMaterial: 'NATO', color: 'Navy', colorHex: '#283A52', style: 'sporty', tier: 6 },
+  { name: 'nylon-nato-olive', kind: 'nylon-nato', material: 'nylon', subMaterial: 'NATO', color: 'Olive', colorHex: '#5C6846', style: 'sporty', tier: 6 },
+  { name: 'nylon-nato-khaki', kind: 'nylon-nato', material: 'nylon', subMaterial: 'NATO', color: 'Khaki', colorHex: '#A58A60', style: 'sporty', tier: 6 },
+  { name: 'nylon-nato-burgundy', kind: 'nylon-nato', material: 'nylon', subMaterial: 'NATO', color: 'Burgundy', colorHex: '#642D43', style: 'sporty', tier: 6 },
+  { name: 'nylon-nato-orange', kind: 'nylon-nato', material: 'nylon', subMaterial: 'NATO', color: 'Rescue Orange', colorHex: '#BD5426', style: 'sporty', tier: 6 },
+  { name: 'nylon-nato-bond', kind: 'nylon-nato', material: 'nylon', subMaterial: 'NATO', color: 'Bond Black & Gray', colorHex: '#272730', style: 'sporty', tier: 6 },
+  { name: 'nylon-nato-marine', kind: 'nylon-nato', material: 'nylon', subMaterial: 'NATO', color: 'Marine Blue, Cream & Red', colorHex: '#9E3542', style: 'sporty', tier: 6 },
+  { name: 'nylon-nato-regimental', kind: 'nylon-nato', material: 'nylon', subMaterial: 'NATO', color: 'Regimental Green & Burgundy', colorHex: '#384D43', style: 'sporty', tier: 6 },
+  { name: 'nylon-nato-racing', kind: 'nylon-nato', material: 'nylon', subMaterial: 'NATO', color: 'Racing Black & Orange', colorHex: '#C46229', style: 'sporty', tier: 6 },
+  { name: 'nylon-nato-sand-stripe', kind: 'nylon-nato', material: 'nylon', subMaterial: 'NATO', color: 'Sand & Black', colorHex: '#B29568', style: 'sporty', tier: 6 },
 ]
 
 // Sample set for the review preview (one per material family + sub-material branch)

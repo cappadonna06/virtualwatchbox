@@ -1870,6 +1870,282 @@
         "bodyLeft": 2,
         "bodyRight": 302
       }
+    },
+    {
+      "id": "nylon-nato-black",
+      "fullImageId": "nylon-nato-black",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/nylon-nato-black-top.webp",
+        "w": 304,
+        "h": 252,
+        "pinY": 240,
+        "endY": 251,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/nylon-nato-black-bottom.webp",
+        "w": 304,
+        "h": 264,
+        "pinY": 11,
+        "endY": 0,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "passThroughUrl": "/demo-strap-swap-bands/nylon-nato-black-worn.webp"
+    },
+    {
+      "id": "nylon-nato-gray",
+      "fullImageId": "nylon-nato-gray",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/nylon-nato-gray-top.webp",
+        "w": 304,
+        "h": 252,
+        "pinY": 240,
+        "endY": 251,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/nylon-nato-gray-bottom.webp",
+        "w": 304,
+        "h": 264,
+        "pinY": 11,
+        "endY": 0,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "passThroughUrl": "/demo-strap-swap-bands/nylon-nato-gray-worn.webp"
+    },
+    {
+      "id": "nylon-nato-navy",
+      "fullImageId": "nylon-nato-navy",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/nylon-nato-navy-top.webp",
+        "w": 304,
+        "h": 252,
+        "pinY": 240,
+        "endY": 251,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/nylon-nato-navy-bottom.webp",
+        "w": 304,
+        "h": 264,
+        "pinY": 11,
+        "endY": 0,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "passThroughUrl": "/demo-strap-swap-bands/nylon-nato-navy-worn.webp"
+    },
+    {
+      "id": "nylon-nato-olive",
+      "fullImageId": "nylon-nato-olive",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/nylon-nato-olive-top.webp",
+        "w": 304,
+        "h": 252,
+        "pinY": 240,
+        "endY": 251,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/nylon-nato-olive-bottom.webp",
+        "w": 304,
+        "h": 264,
+        "pinY": 11,
+        "endY": 0,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "passThroughUrl": "/demo-strap-swap-bands/nylon-nato-olive-worn.webp"
+    },
+    {
+      "id": "nylon-nato-khaki",
+      "fullImageId": "nylon-nato-khaki",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/nylon-nato-khaki-top.webp",
+        "w": 304,
+        "h": 252,
+        "pinY": 240,
+        "endY": 251,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/nylon-nato-khaki-bottom.webp",
+        "w": 304,
+        "h": 264,
+        "pinY": 11,
+        "endY": 0,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "passThroughUrl": "/demo-strap-swap-bands/nylon-nato-khaki-worn.webp"
+    },
+    {
+      "id": "nylon-nato-burgundy",
+      "fullImageId": "nylon-nato-burgundy",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/nylon-nato-burgundy-top.webp",
+        "w": 304,
+        "h": 252,
+        "pinY": 240,
+        "endY": 251,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/nylon-nato-burgundy-bottom.webp",
+        "w": 304,
+        "h": 264,
+        "pinY": 11,
+        "endY": 0,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "passThroughUrl": "/demo-strap-swap-bands/nylon-nato-burgundy-worn.webp"
+    },
+    {
+      "id": "nylon-nato-orange",
+      "fullImageId": "nylon-nato-orange",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/nylon-nato-orange-top.webp",
+        "w": 304,
+        "h": 252,
+        "pinY": 240,
+        "endY": 251,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/nylon-nato-orange-bottom.webp",
+        "w": 304,
+        "h": 264,
+        "pinY": 11,
+        "endY": 0,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "passThroughUrl": "/demo-strap-swap-bands/nylon-nato-orange-worn.webp"
+    },
+    {
+      "id": "nylon-nato-bond",
+      "fullImageId": "nylon-nato-bond",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/nylon-nato-bond-top.webp",
+        "w": 304,
+        "h": 252,
+        "pinY": 240,
+        "endY": 251,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/nylon-nato-bond-bottom.webp",
+        "w": 304,
+        "h": 264,
+        "pinY": 11,
+        "endY": 0,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "passThroughUrl": "/demo-strap-swap-bands/nylon-nato-bond-worn.webp"
+    },
+    {
+      "id": "nylon-nato-marine",
+      "fullImageId": "nylon-nato-marine",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/nylon-nato-marine-top.webp",
+        "w": 304,
+        "h": 252,
+        "pinY": 240,
+        "endY": 251,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/nylon-nato-marine-bottom.webp",
+        "w": 304,
+        "h": 264,
+        "pinY": 11,
+        "endY": 0,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "passThroughUrl": "/demo-strap-swap-bands/nylon-nato-marine-worn.webp"
+    },
+    {
+      "id": "nylon-nato-regimental",
+      "fullImageId": "nylon-nato-regimental",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/nylon-nato-regimental-top.webp",
+        "w": 304,
+        "h": 252,
+        "pinY": 240,
+        "endY": 251,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/nylon-nato-regimental-bottom.webp",
+        "w": 304,
+        "h": 264,
+        "pinY": 11,
+        "endY": 0,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "passThroughUrl": "/demo-strap-swap-bands/nylon-nato-regimental-worn.webp"
+    },
+    {
+      "id": "nylon-nato-racing",
+      "fullImageId": "nylon-nato-racing",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/nylon-nato-racing-top.webp",
+        "w": 304,
+        "h": 252,
+        "pinY": 240,
+        "endY": 251,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/nylon-nato-racing-bottom.webp",
+        "w": 304,
+        "h": 264,
+        "pinY": 11,
+        "endY": 0,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "passThroughUrl": "/demo-strap-swap-bands/nylon-nato-racing-worn.webp"
+    },
+    {
+      "id": "nylon-nato-sand-stripe",
+      "fullImageId": "nylon-nato-sand-stripe",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/nylon-nato-sand-stripe-top.webp",
+        "w": 304,
+        "h": 252,
+        "pinY": 240,
+        "endY": 251,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/nylon-nato-sand-stripe-bottom.webp",
+        "w": 304,
+        "h": 264,
+        "pinY": 11,
+        "endY": 0,
+        "bodyLeft": 5,
+        "bodyRight": 299
+      },
+      "passThroughUrl": "/demo-strap-swap-bands/nylon-nato-sand-stripe-worn.webp"
     }
   ]
 }

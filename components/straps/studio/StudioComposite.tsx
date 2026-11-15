@@ -62,6 +62,9 @@ export function MountedWatchPreview({
   const band = strap?.band
   const topRect = band ? strapBandPlacement(g, band.top, 'top', frame) : null
   const bottomRect = band ? strapBandPlacement(g, band.bottom, 'bottom', frame) : null
+  const passThroughRect = band?.passThroughUrl && topRect && bottomRect
+    ? passThroughPlacement(topRect, bottomRect, stageH)
+    : null
 
   // "Fit-in" swap: the halves slide INTO the lugs (top half drops down, bottom
   // half rises up) with a spring, like snapping onto the spring bars; the
@@ -84,20 +87,34 @@ export function MountedWatchPreview({
             exit={{ opacity: 0, transition: { duration: reducedMotion ? 0 : 0.14 } }}
             style={{ position: 'absolute', inset: 0, zIndex: 1 }}
           >
-            <motion.img
-              {...halfMotion(1)}
-              src={band.top.url}
-              alt=""
-              loading={loading}
-              style={{ position: 'absolute', ...topRect!, display: 'block' }}
-            />
-            <motion.img
-              {...halfMotion(-1)}
-              src={band.bottom.url}
-              alt=""
-              loading={loading}
-              style={{ position: 'absolute', ...bottomRect!, display: 'block' }}
-            />
+            {passThroughRect && band.passThroughUrl ? (
+              <motion.img
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: reducedMotion ? 0 : 0.18 }}
+                src={band.passThroughUrl}
+                alt=""
+                loading={loading}
+                style={{ position: 'absolute', ...passThroughRect, display: 'block' }}
+              />
+            ) : (
+              <>
+                <motion.img
+                  {...halfMotion(1)}
+                  src={band.top.url}
+                  alt=""
+                  loading={loading}
+                  style={{ position: 'absolute', ...topRect!, display: 'block' }}
+                />
+                <motion.img
+                  {...halfMotion(-1)}
+                  src={band.bottom.url}
+                  alt=""
+                  loading={loading}
+                  style={{ position: 'absolute', ...bottomRect!, display: 'block' }}
+                />
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -123,6 +140,22 @@ export function MountedWatchPreview({
       </span>
     </div>
   )
+}
+
+function passThroughPlacement(
+  top: ReturnType<typeof strapBandPlacement>,
+  bottom: ReturnType<typeof strapBandPlacement>,
+  stageHeight: number,
+) {
+  // One strip must clear both lug channels even when the source photo is slightly asymmetric.
+  const left = Math.max(top.left, bottom.left)
+  const y = Math.max(0, top.top)
+  return {
+    left,
+    top: y,
+    width: Math.min(top.left + top.width, bottom.left + bottom.width) - left,
+    height: Math.min(stageHeight, bottom.top + bottom.height) - y,
+  }
 }
 
 export function WornStrapPreview({ caseOnly, band, rowHeight, opacity }: {
