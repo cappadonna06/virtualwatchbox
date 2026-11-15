@@ -196,17 +196,15 @@ function Game({ board, budget, initialPicks, legacy, showResult }: { board: Boar
                 <li className={styles.trayLabel} aria-hidden="true">Your<br />box</li>
                 {slots.map((watch, index) => {
                   const group = board.groups[index]
-                  const title = group.title === 'Chronograph' ? 'Chrono' : group.title
                   return (
                     <li className={styles.pickSlot} key={group.title}>
                       {watch ? (
                         <button className={styles.watch} type="button" title={`Remove ${watch.brand} ${watch.model}`}
                           aria-label={`Remove ${watch.brand} ${watch.model} from ${group.title}`}
                           onClick={() => toggle(watch.id, group)}>
-                          <DraftDial watch={watch} />
+                          <DraftDial watch={watch} showCaption={false} />
                         </button>
-                      ) : <span className={styles.emptyPick} role="img" aria-label={`Empty ${group.title} slot`}><span aria-hidden="true">+</span></span>}
-                      <span className={styles.pickCategory}>{title}</span>
+                      ) : <span className={styles.emptyPick} role="img" aria-label={`Empty ${group.title} slot`} />}
                     </li>
                   )
                 })}

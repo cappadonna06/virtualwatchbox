@@ -46,7 +46,7 @@ const captions: Record<string, string> = {
   'Spirit Zulu Time': 'Zulu Time',
 }
 
-export default function DraftDial({ watch }: { watch: Watch }) {
+export default function DraftDial({ watch, showCaption = true }: { watch: Watch; showCaption?: boolean }) {
   const [top, bottom] = crops[watch.id] ?? [12, 84]
   const span = bottom - top
   const cropStyle = {
@@ -57,7 +57,7 @@ export default function DraftDial({ watch }: { watch: Watch }) {
   return (
     <>
       <span className={styles.dial} style={cropStyle}><WatchPhoto src={watch.image} eager /></span>
-      <strong className={styles.caption}>{captions[watch.model] ?? watch.model}</strong>
+      {showCaption && <strong className={styles.caption}>{captions[watch.model] ?? watch.model}</strong>}
     </>
   )
 }
