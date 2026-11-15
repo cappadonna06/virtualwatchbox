@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { dreamBox, dreamRows, draftGrid, legacyBoards, money } from '../../boards'
+import { curatedBoards, dreamRows, draftGrid, legacyBoards, money, posterSlugs } from '../../boards'
 import DraftDial from '../../DraftDial'
 import WatchPhoto from '../../WatchPhoto'
 import styles from '../../draft.module.css'
@@ -7,15 +7,16 @@ import styles from '../../draft.module.css'
 export const metadata = { robots: { index: false, follow: false, googleBot: { index: false, follow: false } } }
 
 export function generateStaticParams() {
-  return [...legacyBoards.map(board => ({ board: board.id })), { board: 'dream-box' }]
+  return [...legacyBoards.map(board => ({ board: board.id })), ...Object.values(posterSlugs).map(board => ({ board }))]
 }
 
 export default function Poster({ params }: { params: { board: string } }) {
-  const curated = params.board === 'dream-box'
-  const board = curated ? dreamBox : legacyBoards.find(item => item.id === params.board)
+  const curatedBoard = curatedBoards.find(item => posterSlugs[item.id] === params.board)
+  const curated = Boolean(curatedBoard)
+  const board = curatedBoard ?? legacyBoards.find(item => item.id === params.board)
   if (!board) notFound()
 
-  const rows = curated ? dreamRows.map(row => ({ ...row, cells: row.cells.map(watch => [watch]) })) : draftGrid(board, board.budget)
+  const rows = curated ? dreamRows(board).map(row => ({ ...row, cells: row.cells.map(watch => [watch]) })) : draftGrid(board, board.budget)
     .map(row => ({
       ...row,
       cells: row.cells.map(cell => [...cell]
@@ -24,7 +25,7 @@ export default function Poster({ params }: { params: { board: string } }) {
     }))
 
   return (
-    <article className={styles.poster} data-poster data-curated={curated} data-region={board.id === 'region'} data-board={board.id}>
+    <article className={styles.poster} data-poster data-curated={curated} data-region={!curated && board.id === 'region'} data-board={board.id}>
       <header>
         <div className={styles.posterTop}><span>VIRTUAL WATCHBOX</span><span>{board.title.toUpperCase()}</span></div>
         <p className={styles.posterTitle}>The Watch <em>Draft</em></p>

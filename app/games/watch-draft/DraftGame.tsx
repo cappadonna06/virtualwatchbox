@@ -1,13 +1,14 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { createPlaygroundBox, createPlaygroundEntry } from '@/lib/playground'
 import { encodePlaygroundShare, playgroundShareCardPath } from '@/lib/playgroundShare'
 import { budgets, draftName, draftTags, type Budget } from '@/lib/watchDraftChallenge'
-import { boardFor, dreamBox, dreamRows, dreamUrl, draftUrl, draftGrid, money, type Board } from './boards'
+import { boardFor, curatedBoards, draftEdition, dreamBox, dreamRows, dreamUrl, draftUrl, draftGrid, money, posterSlugs, type Board } from './boards'
 import DraftDial from './DraftDial'
 import WatchPhoto from './WatchPhoto'
 import styles from './draft.module.css'
@@ -15,12 +16,13 @@ import styles from './draft.module.css'
 export default function DraftGame() {
   const query = useSearchParams()
   const initialPicks = query.get('picks')
-  const legacy = Boolean(initialPicks && query.get('edition') !== 'dream-box')
-  const board = legacy ? boardFor(query.get('board')) : dreamBox
+  const boardId = query.get('board')
+  const legacy = Boolean(initialPicks && query.get('edition') !== draftEdition)
+  const board = legacy ? boardFor(boardId) : curatedBoards.find(option => option.id === boardId) ?? dreamBox
   const budget = legacy
     ? budgets.find(value => String(value) === query.get('budget')) ?? board.budget
     : dreamBox.budget
-  return <Game board={board} budget={budget} initialPicks={initialPicks} legacy={legacy} showResult={query.get('view') === 'result'} />
+  return <Game key={board.id + (legacy ? '-legacy' : '')} board={board} budget={budget} initialPicks={initialPicks} legacy={legacy} showResult={query.get('view') === 'result'} />
 }
 
 function Game({ board, budget, initialPicks, legacy, showResult }: { board: Board; budget: Budget; initialPicks: string | null; legacy: boolean; showResult: boolean }) {
@@ -32,13 +34,14 @@ function Game({ board, budget, initialPicks, legacy, showResult }: { board: Boar
   const [interactive, setInteractive] = useState(false)
   useEffect(() => setInteractive(true), [])
   const [saving, setSaving] = useState(false)
-  const watches = legacy ? draftGrid(board, budget).flatMap(row => row.cells.flat()) : dreamRows.flatMap(row => row.cells)
+  const rows = legacy ? [] : dreamRows(board)
+  const watches = legacy ? draftGrid(board, budget).flatMap(row => row.cells.flat()) : rows.flatMap(row => row.cells)
   const [picks, setPicks] = useState(() => {
     const requested = new Set(initialPicks?.split(','))
     const eligible = new Set(watches.map(watch => watch.id))
     return board.groups.flatMap(group => group.watches
       .filter(watch => requested.has(watch.id) && eligible.has(watch.id))
-      .slice(0, board.id === 'region' ? 5 : 1)
+      .slice(0, legacy && board.id === 'region' ? 5 : 1)
       .map(watch => watch.id)).slice(0, 5)
   })
   const [copyFeedback, setCopyFeedback] = useState('')
@@ -49,7 +52,7 @@ function Game({ board, budget, initialPicks, legacy, showResult }: { board: Boar
   const remaining = budget - total
   const complete = lineup.length === 5 && slots.every(Boolean) && remaining >= 0
   const displayedLineup = legacy ? lineup : slots.flatMap(watch => watch ? [watch] : [])
-  const sharePath = (legacy ? draftUrl(board, budget, picks) : dreamUrl(picks)) + '&view=result'
+  const sharePath = (legacy ? draftUrl(board, budget, picks) : dreamUrl(board, picks)) + '&view=result'
   const challenge = { board: board.id, budget }
   const name = draftName(challenge)
   // The shared image uses the same six-slot layout as a saved Playground box.
@@ -69,7 +72,7 @@ function Game({ board, budget, initialPicks, legacy, showResult }: { board: Boar
   function updatePicks(next: string[]) {
     setPicks(next)
     resetShareFeedback()
-    window.history.replaceState(null, '', dreamUrl(next))
+    window.history.replaceState(null, '', dreamUrl(board, next))
   }
 
   function toggle(id: string, group: Board['groups'][number]) {
@@ -122,7 +125,7 @@ function Game({ board, budget, initialPicks, legacy, showResult }: { board: Boar
               remaining < 0 ? 'Swap or remove a watch to get back under budget.' : 'Swap a pick to include all three countries.'}
           </p>
         </div>
-        {resultPage && <a className={styles.resultLink} href={dreamUrl()}>Play the $15,000 draft →</a>}
+        {resultPage && <a className={styles.resultLink} href={dreamUrl(curatedBoards.find(option => option.id === board.id) ?? dreamBox)}>Play the $15,000 draft →</a>}
       </div>
       <div className={styles.actions}>
         {complete && <button className={styles.primaryAction} type="button" onClick={() => copyResult(true)} disabled={!interactive}>Copy picks + link</button>}
@@ -158,6 +161,13 @@ function Game({ board, budget, initialPicks, legacy, showResult }: { board: Boar
           <header className={styles.gameHeader}>
             <h1>The Watch Draft</h1>
             <p><strong>{money(budget)}</strong> · One pick per column</p>
+            <nav className={styles.editions} aria-label="Draft editions">
+              {curatedBoards.map(option => (
+                <Link key={option.id} href={dreamUrl(option)} aria-current={option.id === board.id ? 'page' : undefined}>
+                  {{ type: 'Types', brand: 'Brands', region: 'Regions' }[option.id]}
+                </Link>
+              ))}
+            </nav>
           </header>
 
           <div className={styles.board} role="region" aria-label="Draft board">
@@ -165,11 +175,12 @@ function Game({ board, budget, initialPicks, legacy, showResult }: { board: Boar
               <thead>
                 <tr>
                   <th scope="col">Tier</th>
-                  {board.groups.map(group => <th key={group.title} scope="col">{group.title === 'Chronograph' ? <abbr title="Chronograph">Chrono</abbr> : group.title}</th>)}
+                  {board.groups.map(group => <th key={group.title} scope="col">{group.title === 'Chronograph' ? <abbr title="Chronograph">Chrono</abbr> :
+                    board.id === 'region' && group.title.includes(' ') ? group.title.split(' ').map(word => <span className={styles.regionHeader} key={word}>{word}{' '}</span>) : group.title}</th>)}
                 </tr>
               </thead>
               <tbody>
-                {dreamRows.map(row => (
+                {rows.map(row => (
                   <tr key={row.price}>
                     <th scope="row" aria-label={money(row.price)}>${row.price / 1000}k</th>
                     {row.cells.map((watch, index) => {
@@ -230,7 +241,7 @@ function Game({ board, budget, initialPicks, legacy, showResult }: { board: Boar
             <summary>Pricing and social card</summary>
             <p>{board.rule} You can repeat a price tier. The tiers are rounded game prices inspired by U.S. pre-owned values. Check the linked references for market estimates.</p>
             <ul>{watches.map(watch => <li key={watch.id}><a href={watch.source} target="_blank" rel="noreferrer">{watch.brand} {watch.model} ({watch.reference})</a></li>)}</ul>
-            <a href="/watch-draft/dream-box.png" download>Download the $15,000 challenge card</a>
+            <a href={`/watch-draft/${posterSlugs[board.id]}.png`} download>Download the $15,000 challenge card</a>
           </details>
         </section>
       )}
