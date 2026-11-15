@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 import { ImageResponse } from 'next/og'
 import type { NextRequest } from 'next/server'
 import sharp from 'sharp'
@@ -8,6 +10,7 @@ import { fitsDraft, resolveDraft } from '../resolveDraft'
 export const runtime = 'nodejs'
 const width = 1200
 const height = 630
+const titleFontPath = join(process.cwd(), 'app/games/watch-draft/card/fonts/cormorant-garamond-600.ttf')
 
 async function thumbnail(watch: Watch) {
   if (!watch.image) return null
@@ -29,7 +32,7 @@ export async function GET(request: NextRequest) {
     return new Response(null, { status: 404 })
   }
 
-  const photos = await Promise.all(lineup.map(thumbnail))
+  const [photos, titleFont] = await Promise.all([Promise.all(lineup.map(thumbnail)), readFile(titleFontPath)])
   const size = count === 3 ? 287 : 197
   const title = draftName({ board: board.id, budget })
   return new ImageResponse(
@@ -42,7 +45,7 @@ export async function GET(request: NextRequest) {
         <span style={{ fontSize: 17, letterSpacing: 2, color: '#ead8bf' }}>{week ? `WEEK OF ${weekLabel(week).toUpperCase()}` : 'THE WATCH DRAFT'}</span>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 17, marginBottom: 21 }}>
-        <span style={{ fontSize: count === 3 ? 47 : 55, fontWeight: 700, letterSpacing: -2 }}>{title}</span>
+        <span style={{ fontFamily: 'Cormorant Garamond', fontSize: count === 3 ? 57 : 64, fontWeight: 600 }}>{title}</span>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
           <span style={{ fontSize: 33, fontWeight: 700, color: '#ffd79e' }}>{money(total)}</span>
           <span style={{ fontSize: 17, color: '#e8d6bf' }}>{`of ${money(budget)} spent`}</span>
@@ -58,7 +61,7 @@ export async function GET(request: NextRequest) {
             ) : <div style={{ width: size - 22, height: 220, display: 'flex' }} />}
             <span style={{ fontSize: 14, color: '#6f513b' }}>{watch.brand}</span>
             <span style={{ fontSize: 16, fontWeight: 700, textAlign: 'center', marginTop: 3 }}>{watch.model}</span>
-            <span style={{ fontSize: 16, marginTop: 4, color: '#6a482e' }}>{money(watch.tier)}</span>
+            <div style={{ display: 'flex', marginTop: 'auto', paddingTop: 4, color: '#6a482e', fontSize: 16 }}>{money(watch.tier)}</div>
           </div>
         ))}
       </div>
@@ -66,6 +69,11 @@ export async function GET(request: NextRequest) {
         <span>{`${board.title} · ${count} watches`}</span><span>virtualwatchbox.com</span>
       </div>
     </div>,
-    { width, height, headers: { 'X-Robots-Tag': 'noindex', 'Cache-Control': 'public, max-age=3600, s-maxage=86400' } },
+    {
+      width,
+      height,
+      fonts: [{ name: 'Cormorant Garamond', data: titleFont, weight: 600 }],
+      headers: { 'X-Robots-Tag': 'noindex', 'Cache-Control': 'public, max-age=3600, s-maxage=86400' },
+    },
   )
 }
