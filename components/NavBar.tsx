@@ -249,7 +249,7 @@ export default function NavBar() {
             maxWidth: 1280, margin: '0 auto',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             gap: 16,
-            padding: '20px 56px',
+            padding: '14px 56px',
           }}
         >
         <BrandLockup />
@@ -591,7 +591,7 @@ export default function NavBar() {
               <path d="M4 4L16 16M16 4L4 16" stroke={brand.colors.ink} strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
           ) : (
-            <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
+            <svg width="20" height="16" viewBox="0 0 22 16" fill="none">
               <path d="M1 1H21M1 8H21M1 15H21" stroke={brand.colors.ink} strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
           )}
@@ -606,7 +606,7 @@ export default function NavBar() {
         style={{
           display: 'none',
           position: 'sticky',
-          top: 80,
+          top: 61,
           zIndex: brand.zIndex.nav,
           background: brand.colors.bg,
           borderBottom: `1px solid ${brand.colors.border}`,
@@ -680,7 +680,7 @@ export default function NavBar() {
         style={{
           display: 'none',
           position: 'fixed',
-          top: 80,
+          top: 61,
           left: '50%',
           width: 'min(calc(100vw - 56px), 360px)',
           maxWidth: 360,

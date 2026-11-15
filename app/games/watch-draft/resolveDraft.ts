@@ -27,8 +27,8 @@ export function resolveDraft(query: Pick<URLSearchParams, 'get'>, latest = curre
   return { board, budget, legacy, archived, week, rows, count, lineup: candidates.slice(0, count) }
 }
 
-export function draftCardPath(sharePath: string) {
-  return sharePath.replace('/games/watch-draft?', '/games/watch-draft/card?') + '&v=2'
+export function draftCardPath(sharePath: string, format: 'landscape' | 'portrait' = 'landscape') {
+  return sharePath.replace('/games/watch-draft?', '/games/watch-draft/card?') + `&v=3${format === 'portrait' ? '&format=portrait' : ''}`
 }
 
 export function fitsDraft(board: Board, lineup: Watch[], count: number, total: number, budget: number) {

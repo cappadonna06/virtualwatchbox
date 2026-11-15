@@ -100,11 +100,13 @@ function Game({ initial, showResult }: { initial: ReturnType<typeof resolveDraft
         <ol className={styles.resultPicks} data-count={displayedLineup.length}>
           {displayedLineup.map(watch => (
             <li key={watch.id}>
-              <span className={styles.resultCategory}>{board.groups.find(group => group.watches.some(option => option.id === watch.id))?.title}</span>
               <WatchPhoto src={watch.image} eager={showResult} />
-              <span>{watch.brand}</span>
-              <strong>{watch.model}</strong>
-              <b>~{money(watch.tier)}</b>
+              <div className={styles.resultCaption}>
+                <span className={styles.resultCategory}>{board.groups.find(group => group.watches.some(option => option.id === watch.id))?.title}</span>
+                <span>{watch.brand}</span>
+                <strong>{watch.model}</strong>
+                <b>~{money(watch.tier)}</b>
+              </div>
             </li>
           ))}
         </ol>
@@ -204,7 +206,7 @@ function Game({ initial, showResult }: { initial: ReturnType<typeof resolveDraft
             <span aria-live="polite"><strong>{lineup.length}/{count}</strong> picked</span>
             <button type="button" disabled={!lineup.length} onClick={() => updatePicks([])}>Reset</button>
             {complete ? <DraftShare key={sharePath} path={sharePath} title={name} text={shareText} /> :
-              <button className={styles.shareButton} type="button" disabled>Share results ↗</button>}
+              <button className={styles.shareButton} type="button" disabled>Share results</button>}
           </div>
           {save}
 

@@ -10,7 +10,7 @@ export default function DraftShare({ path, title, text }: { path: string; title:
   const [native, setNative] = useState(false)
   const [file, setFile] = useState<File | null>()
   const [status, setStatus] = useState<'idle' | 'copied' | 'manual'>('idle')
-  const imagePath = draftCardPath(path)
+  const imagePath = draftCardPath(path, 'portrait')
 
   useEffect(() => setNative(typeof navigator.share === 'function'), [])
 
@@ -61,7 +61,7 @@ export default function DraftShare({ path, title, text }: { path: string; title:
   const nativeImage = file && native && navigator.canShare?.({ files: [file] })
 
   return <>
-    <button className={styles.shareButton} type="button" onClick={openSheet}>Share results ↗</button>
+    <button className={styles.shareButton} type="button" onClick={openSheet}>Share results</button>
     <dialog className={styles.shareDialog} ref={dialog} onClose={() => setOpen(false)} aria-labelledby="share-result-title">
       <header className={styles.shareHeader}>
         <h2 id="share-result-title">Share results</h2>
@@ -74,7 +74,7 @@ export default function DraftShare({ path, title, text }: { path: string; title:
       {open && <>
         {/* The PNG is generated for this exact lineup. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className={styles.sharePreview} src={imagePath} width={1200} height={630} alt={`Share card for your ${title}`} />
+        <img className={styles.sharePreview} src={imagePath} width={1080} height={1350} alt={`Share card for your ${title}`} />
         <div className={styles.shareActions}>
           <button type="button" onClick={share} disabled={preparing}>
             {preparing ? 'Preparing image…' : native ? 'Share…' : status === 'copied' ? 'Copied' : 'Copy results'}
