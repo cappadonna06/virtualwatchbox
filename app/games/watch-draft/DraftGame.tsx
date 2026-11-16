@@ -6,8 +6,9 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useCollectionSession } from '@/app/collection/CollectionSessionProvider'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { createPlaygroundBox, createPlaygroundEntry } from '@/lib/playground'
+import { trackWatchDraft } from '@/lib/launchAnalytics'
 import { draftName, draftTags } from '@/lib/watchDraftChallenge'
-import { curatedBoards, draftEditionNames, dreamBox, dreamUrl, draftUrl, money, weekLabel, weeklyBoard, type Board } from './boards'
+import { curatedBoards, draftEditionNames, dreamBox, dreamUrl, draftUrl, money, weekLabel, weeklyBoard, weeklyEdition, type Board } from './boards'
 import { fitsDraft, resolveDraft } from './resolveDraft'
 import DraftShare from './DraftShare'
 import DraftDial from './DraftDial'
@@ -56,7 +57,18 @@ function Game({ initial, showResult }: { initial: ReturnType<typeof resolveDraft
 
   function toggle(id: string, group: Board['groups'][number]) {
     const kept = picks.filter(pick => !group.watches.some(watch => watch.id === pick))
-    updatePicks(picks.includes(id) ? kept : [...kept, id])
+    const next = picks.includes(id) ? kept : [...kept, id]
+    updatePicks(next)
+
+    if (!week) return
+    const boardWeek = `${weeklyEdition}/${board.id}/${week}`
+    trackWatchDraft(boardWeek)
+    if (next.length !== count) return
+    const nextLineup = watches.filter(watch => next.includes(watch.id))
+    const nextTotal = nextLineup.reduce((sum, watch) => sum + watch.tier, 0)
+    if (fitsDraft(board, nextLineup, count, nextTotal, budget)) {
+      trackWatchDraft(boardWeek, nextLineup.map(watch => watch.id))
+    }
   }
 
   const canSave = interactive && complete && !authLoading && !dataLoading && !migrationPending && playgroundHydrated

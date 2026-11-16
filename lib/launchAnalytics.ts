@@ -9,6 +9,7 @@ const campaignLabels = {
 const campaignKey = 'vwb:launch:campaign'
 const shareKey = 'vwb:launch:playground-share'
 const activationEvents = new Set<string>()
+const draftEvents = new Set<string>()
 
 type ActivationEvent = 'first_owned_watch_added' | 'first_three_watch_playground_box'
 type ShareEvent = 'playground_share_copied' | 'playground_share_viewed' | 'playground_share_build_clicked'
@@ -68,4 +69,23 @@ export function trackPlaygroundShare(event: ShareEvent) {
     try { sessionStorage.setItem(shareKey, '1') } catch {}
   }
   track(event, captureLaunchAttribution(window.location.search))
+}
+
+export function trackWatchDraft(boardWeek: string, completedPicks?: readonly string[]) {
+  if (typeof window === 'undefined' || !window.va) return
+
+  const event = completedPicks ? 'watch_draft_completed' : 'watch_draft_started'
+  const key = `vwb:launch:${event}:${boardWeek}`
+  if (draftEvents.has(key)) return
+  draftEvents.add(key)
+  try {
+    if (localStorage.getItem(key) === '1') return
+    localStorage.setItem(key, '1')
+  } catch {
+    // Still dedupe in this document if the browser blocks local storage.
+  }
+  track(event, { board_week: boardWeek })
+  for (const watch of completedPicks ?? []) {
+    track('watch_draft_pick', { board_week: boardWeek, watch })
+  }
 }

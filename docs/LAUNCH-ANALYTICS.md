@@ -32,6 +32,18 @@ Import `trackPlaygroundShare` from `@/lib/launchAnalytics` in the client compone
 
 Share totals represent successful copy actions, valid page visits, and CTA clicks. Reloads of a valid link can count as another visit. Filter the Playground activation event by `referral=playground_share` for browser completions following the CTA. These aggregate counts do not tie a completion to a specific sender, link, or person.
 
+## Watch Draft picks
+
+| Event | When it counts | Custom properties |
+| --- | --- | --- |
+| `watch_draft_started` | First selection change on a weekly board in this browser profile. | `board_week` |
+| `watch_draft_completed` | First lineup with the required picks and within budget on that board. | `board_week` |
+| `watch_draft_pick` | One event per public catalog reference in that first complete lineup. | `board_week`, `watch` |
+
+`board_week` combines the rotation version, board, and UTC Monday, for example `weekly-v1/region/2026-11-09`. Opening a shared lineup, resetting, and editing a lineup after its first completion do not create additional completions or pick events. Only deliberate selection changes on playable weekly boards emit events. Browser-local markers retain the fact that a board was started or completed. A memory fallback limits repeats within the document when storage is blocked. Counts represent measured browser activity and can be affected by blocked requests, cleared storage, or simultaneous tabs.
+
+In **Web Analytics → Events**, filter both `watch_draft_pick` and `watch_draft_completed` to the same `board_week`. Divide a watch’s pick-event count by completed boards for that period and edition, using the actual catalog options for the board. The denominator includes every completion on that board. These are in-game picks rather than purchase or ownership counts. Custom properties use public board metadata and catalog references. URL sanitization removes query parameters.
+
 ## Confirm ingestion after deployment
 
 1. In a fresh browser profile with blockers disabled, open a tagged URL and use the product to save an owned watch and fill a Playground box. Wait for each save to complete. Reload, reorder, and add another watch to check for duplicate activations. Use a separate fresh profile for the signed-in flow.
