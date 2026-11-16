@@ -25,7 +25,7 @@ export default function PrivacyPage() {
   return (
     <section style={{ maxWidth: 960, margin: '0 auto', padding: '40px 56px 64px' }}>
       <h1 style={{ fontFamily: brand.font.serif, fontSize: 40, fontWeight: 600, color: brand.colors.ink, margin: 0 }}>Privacy Policy</h1>
-      <p style={{ fontFamily: brand.font.sans, fontSize: 14, lineHeight: 1.7, color: brand.colors.muted, marginTop: 10 }}>Last updated: May 4, 2026</p>
+      <p style={{ fontFamily: brand.font.sans, fontSize: 14, lineHeight: 1.7, color: brand.colors.muted, marginTop: 10 }}>Last updated: November 15, 2026</p>
 
       <div style={{ marginTop: 24, display: 'grid', gap: 20 }}>
         <div>
@@ -36,6 +36,11 @@ export default function PrivacyPage() {
         <div>
           <p style={sectionTitleStyle}>Collection and watch data</p>
           <p style={bodyStyle}>We store watch collection data you create or edit so app features work as expected, including watchbox state, profile surfaces, and collection views.</p>
+        </div>
+
+        <div>
+          <p style={sectionTitleStyle}>Watch Draft analytics</p>
+          <p style={bodyStyle}>We use Vercel Web Analytics to see which weekly challenges are started and completed and which catalog watches are picked in the first completed lineup. We use these counts to improve the game. The draft events contain the board, week, and public catalog reference for each pick. We use a marker in your browser to avoid counting repeats.</p>
         </div>
 
         <div>
