@@ -11,7 +11,7 @@ import { withVersion } from '@/lib/watchImages/cacheBust'
 import { effectiveCompatibility, type FitState } from '@/lib/strapCompatibility'
 import type { BraceletType, StrapMaterial, StrapWatchOverride, UserStrap } from '@/types/watch'
 
-export type StrapCategory = 'Leather' | 'Rubber' | 'NATO' | 'Sailcloth' | 'Canvas' | 'Metal' | 'Exotic' | 'Other'
+export type StrapCategory = 'Leather' | 'Rubber' | 'Hybrid' | 'NATO' | 'Sailcloth' | 'Fabric' | 'Canvas' | 'Metal' | 'Exotic' | 'Other'
 export type StrapSource = 'template' | 'drawer'
 
 /**
@@ -103,9 +103,11 @@ const MATERIAL_CATEGORY: Record<StrapMaterial, StrapCategory> = {
   other: 'Other',
 }
 
-const CATEGORY_ORDER: StrapCategory[] = ['Leather', 'Rubber', 'NATO', 'Sailcloth', 'Canvas', 'Metal', 'Exotic', 'Other']
+const CATEGORY_ORDER: StrapCategory[] = ['Leather', 'Rubber', 'Hybrid', 'NATO', 'Sailcloth', 'Fabric', 'Canvas', 'Metal', 'Exotic', 'Other']
 
-export function categoryOf(material: StrapMaterial): StrapCategory {
+export function categoryOf(material: StrapMaterial, subMaterial?: string | null): StrapCategory {
+  if (subMaterial === 'Woven Hybrid') return 'Hybrid'
+  if (material === 'fabric') return subMaterial === 'Sailcloth' ? 'Sailcloth' : 'Fabric'
   return MATERIAL_CATEGORY[material] ?? 'Other'
 }
 
@@ -124,7 +126,7 @@ function templateToStudio(t: StrapTemplate): StudioStrap {
     id: t.id,
     label: strapTemplateLabel(t),
     material: t.material,
-    category: categoryOf(t.material),
+    category: categoryOf(t.material, t.subMaterial),
     color: colorName(t.color),
     design: t.subMaterial,
     colorHex: t.colorHex,
@@ -143,7 +145,7 @@ function drawerToStudio(s: UserStrap): StudioStrap {
     id: s.id,
     label,
     material: s.material,
-    category: categoryOf(s.material),
+    category: categoryOf(s.material, s.subMaterial),
     color: colorName(s.color),
     design: titleCase(s.subMaterial?.trim() || ''),
     colorHex: s.colorHex,
