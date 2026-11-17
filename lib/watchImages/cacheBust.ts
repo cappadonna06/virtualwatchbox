@@ -8,7 +8,7 @@
 // objects (i.e. after `npm run images:upload-storage -- --overwrite`).
 // Production deploys can override via NEXT_PUBLIC_IMAGE_VERSION env so the
 // constant isn't a code-change requirement for ops.
-const IMAGE_VERSION = process.env.NEXT_PUBLIC_IMAGE_VERSION ?? '20261114-watch-cutouts'
+const IMAGE_VERSION = process.env.NEXT_PUBLIC_IMAGE_VERSION ?? '20261116-strap-materials'
 
 export function withVersion(url: string | null | undefined): string | undefined {
   if (!url) return undefined

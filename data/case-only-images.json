@@ -16503,5 +16503,706 @@
     "reference": "79540-0003",
     "lugWidthMm": 22,
     "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-79540-0003/primary.webp"
+  },
+  "breitling-a17356531c1s1": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/breitling-a17356531c1s1/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/breitling-a17356531c1s1/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 176,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 635,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 172,
+        "y": 892
+      },
+      "bottomLugRight": {
+        "x": 612,
+        "y": 892
+      },
+      "lugWidthPx": 450,
+      "imageWidth": 887,
+      "imageHeight": 900,
+      "topCaseEdgeY": 88,
+      "bottomCaseEdgeY": 826
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Breitling",
+    "model": "Super Chronomat",
+    "reference": "A17356531C1S1",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/breitling-a17356531c1s1/primary.webp"
+  },
+  "breitling-a233112a1a1x1": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/breitling-a233112a1a1x1/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/breitling-a233112a1a1x1/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 195,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 557,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 195,
+        "y": 891
+      },
+      "bottomLugRight": {
+        "x": 574,
+        "y": 891
+      },
+      "lugWidthPx": 371,
+      "imageWidth": 793,
+      "imageHeight": 900,
+      "topCaseEdgeY": 82,
+      "bottomCaseEdgeY": 833
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Breitling",
+    "model": "Top Time Deus",
+    "reference": "A233112A1A1X1",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/breitling-a233112a1a1x1/primary.webp"
+  },
+  "breitling-ab2010121l1a1": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/breitling-ab2010121l1a1/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/breitling-ab2010121l1a1/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 187,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 597,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 184,
+        "y": 894
+      },
+      "bottomLugRight": {
+        "x": 587,
+        "y": 894
+      },
+      "lugWidthPx": 407,
+      "imageWidth": 856,
+      "imageHeight": 900,
+      "topCaseEdgeY": 93,
+      "bottomCaseEdgeY": 818
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Breitling",
+    "model": "Superocean Heritage",
+    "reference": "AB2010121L1A1",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/breitling-ab2010121l1a1/primary.webp"
+  },
+  "breitling-x82310d91b1s1": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/breitling-x82310d91b1s1/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/breitling-x82310d91b1s1/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 192,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 625,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 193,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 622,
+        "y": 899
+      },
+      "lugWidthPx": 431,
+      "imageWidth": 903,
+      "imageHeight": 900,
+      "topCaseEdgeY": 73,
+      "bottomCaseEdgeY": 829
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Breitling",
+    "model": "Endurance Pro",
+    "reference": "X82310D91B1S1",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/breitling-x82310d91b1s1/primary.webp"
+  },
+  "hamilton-h64656351": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h64656351/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h64656351/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 159,
+        "y": 11
+      },
+      "topLugRight": {
+        "x": 629,
+        "y": 11
+      },
+      "bottomLugLeft": {
+        "x": 175,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 614,
+        "y": 899
+      },
+      "lugWidthPx": 455,
+      "imageWidth": 848,
+      "imageHeight": 900,
+      "topCaseEdgeY": 81,
+      "bottomCaseEdgeY": 827
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Hamilton",
+    "model": "Khaki Field",
+    "reference": "H64656351",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/hamilton-h64656351/primary.webp"
+  },
+  "jaeger-lecoultre-1152520": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/jaeger-lecoultre-1152520/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/jaeger-lecoultre-1152520/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 199,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 605,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 203,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 617,
+        "y": 899
+      },
+      "lugWidthPx": 410,
+      "imageWidth": 814,
+      "imageHeight": 900,
+      "topCaseEdgeY": 34,
+      "bottomCaseEdgeY": 835
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Jaeger-LeCoultre",
+    "model": "Master Ultra Thin",
+    "reference": "1152520",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/jaeger-lecoultre-1152520/primary.webp"
+  },
+  "nomos-glashutte-101": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-101/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-101/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 175,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 533,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 175,
+        "y": 888
+      },
+      "bottomLugRight": {
+        "x": 531,
+        "y": 888
+      },
+      "lugWidthPx": 357,
+      "imageWidth": 742,
+      "imageHeight": 900,
+      "topCaseEdgeY": 95,
+      "bottomCaseEdgeY": 799
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Nomos Glashütte",
+    "model": "Tangente",
+    "reference": "101",
+    "lugWidthMm": 18,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-101/primary.webp"
+  },
+  "nomos-glashutte-205-ol": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-205-ol/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-205-ol/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 189,
+        "y": 10
+      },
+      "topLugRight": {
+        "x": 527,
+        "y": 10
+      },
+      "bottomLugLeft": {
+        "x": 189,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 585,
+        "y": 899
+      },
+      "lugWidthPx": 367,
+      "imageWidth": 832,
+      "imageHeight": 900,
+      "topCaseEdgeY": 72,
+      "bottomCaseEdgeY": 810
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Nomos Glashütte",
+    "model": "Ludwig",
+    "reference": "205.OL",
+    "lugWidthMm": 18,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-205-ol/primary.webp"
+  },
+  "nomos-glashutte-302": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-302/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-302/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 166,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 548,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 165,
+        "y": 896
+      },
+      "bottomLugRight": {
+        "x": 504,
+        "y": 896
+      },
+      "lugWidthPx": 361,
+      "imageWidth": 770,
+      "imageHeight": 900,
+      "topCaseEdgeY": 100,
+      "bottomCaseEdgeY": 796
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Nomos Glashütte",
+    "model": "Orion",
+    "reference": "302",
+    "lugWidthMm": 18,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-302/primary.webp"
+  },
+  "nomos-glashutte-703": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-703/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-703/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 190,
+        "y": 1
+      },
+      "topLugRight": {
+        "x": 534,
+        "y": 1
+      },
+      "bottomLugLeft": {
+        "x": 178,
+        "y": 889
+      },
+      "bottomLugRight": {
+        "x": 538,
+        "y": 889
+      },
+      "lugWidthPx": 352,
+      "imageWidth": 830,
+      "imageHeight": 900,
+      "topCaseEdgeY": 59,
+      "bottomCaseEdgeY": 804
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Nomos Glashütte",
+    "model": "Club",
+    "reference": "703",
+    "lugWidthMm": 18,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/nomos-glashutte-703/primary.webp"
+  },
+  "omega-304-33-44-52-01-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-304-33-44-52-01-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-304-33-44-52-01-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 204,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 642,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 210,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 621,
+        "y": 898
+      },
+      "lugWidthPx": 425,
+      "imageWidth": 865,
+      "imageHeight": 900,
+      "topCaseEdgeY": 52,
+      "bottomCaseEdgeY": 858
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "Speedmaster Moonphase",
+    "reference": "304.33.44.52.01.001",
+    "lugWidthMm": 21,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-304-33-44-52-01-001/primary.webp"
+  },
+  "omega-435-13-40-21-06-001": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-435-13-40-21-06-001/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-435-13-40-21-06-001/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 188,
+        "y": 26
+      },
+      "topLugRight": {
+        "x": 564,
+        "y": 26
+      },
+      "bottomLugLeft": {
+        "x": 185,
+        "y": 857
+      },
+      "bottomLugRight": {
+        "x": 569,
+        "y": 857
+      },
+      "lugWidthPx": 380,
+      "imageWidth": 806,
+      "imageHeight": 900,
+      "topCaseEdgeY": 95,
+      "bottomCaseEdgeY": 843
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Omega",
+    "model": "De Ville Tresor",
+    "reference": "435.13.40.21.06.001",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/omega-435-13-40-21-06-001/primary.webp"
+  },
+  "seiko-hbc006": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/seiko-hbc006/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/seiko-hbc006/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 191,
+        "y": 11
+      },
+      "topLugRight": {
+        "x": 541,
+        "y": 11
+      },
+      "bottomLugLeft": {
+        "x": 172,
+        "y": 887
+      },
+      "bottomLugRight": {
+        "x": 540,
+        "y": 887
+      },
+      "lugWidthPx": 359,
+      "imageWidth": 873,
+      "imageHeight": 900,
+      "topCaseEdgeY": 74,
+      "bottomCaseEdgeY": 811
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Seiko",
+    "model": "Prospex Alpinist 145th Anniversary",
+    "reference": "HBC006",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/seiko-hbc006/primary.webp"
+  },
+  "sinn-140-030": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/sinn-140-030/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/sinn-140-030/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 199,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 731,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 212,
+        "y": 896
+      },
+      "bottomLugRight": {
+        "x": 707,
+        "y": 896
+      },
+      "lugWidthPx": 514,
+      "imageWidth": 996,
+      "imageHeight": 900,
+      "topCaseEdgeY": 63,
+      "bottomCaseEdgeY": 833
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Sinn",
+    "model": "140 A",
+    "reference": "140.030",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/sinn-140-030/primary.webp"
+  },
+  "tag-heuer-cbg2a1zft6157": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tag-heuer-cbg2a1zft6157/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tag-heuer-cbg2a1zft6157/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 172,
+        "y": 7
+      },
+      "topLugRight": {
+        "x": 604,
+        "y": 7
+      },
+      "bottomLugLeft": {
+        "x": 188,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 571,
+        "y": 899
+      },
+      "lugWidthPx": 408,
+      "imageWidth": 823,
+      "imageHeight": 900,
+      "topCaseEdgeY": 74,
+      "bottomCaseEdgeY": 801
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "TAG Heuer",
+    "model": "Carrera",
+    "reference": "CBG2A1ZFT6157",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tag-heuer-cbg2a1zft6157/primary.webp"
+  },
+  "tag-heuer-cbl2111-fc6453": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tag-heuer-cbl2111-fc6453/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tag-heuer-cbl2111-fc6453/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 192,
+        "y": 57
+      },
+      "topLugRight": {
+        "x": 579,
+        "y": 57
+      },
+      "bottomLugLeft": {
+        "x": 191,
+        "y": 890
+      },
+      "bottomLugRight": {
+        "x": 598,
+        "y": 890
+      },
+      "lugWidthPx": 397,
+      "imageWidth": 772,
+      "imageHeight": 900,
+      "topCaseEdgeY": 72,
+      "bottomCaseEdgeY": 820
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "TAG Heuer",
+    "model": "Monaco",
+    "reference": "CBL2111.FC6453",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tag-heuer-cbl2111-fc6453/primary.webp"
+  },
+  "tudor-79910-0003": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-79910-0003/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-79910-0003/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 178,
+        "y": 2
+      },
+      "topLugRight": {
+        "x": 586,
+        "y": 2
+      },
+      "bottomLugLeft": {
+        "x": 184,
+        "y": 885
+      },
+      "bottomLugRight": {
+        "x": 589,
+        "y": 885
+      },
+      "lugWidthPx": 407,
+      "imageWidth": 826,
+      "imageHeight": 900,
+      "topCaseEdgeY": 66,
+      "bottomCaseEdgeY": 831
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Tudor",
+    "model": "Ranger",
+    "reference": "79910-0003",
+    "lugWidthMm": 20,
+    "sourceCatalogId": "tudor-79910-0010",
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-79910-0010/primary.webp"
+  },
+  "tudor-m79540-0005": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79540-0005/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79540-0005/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 177,
+        "y": 5
+      },
+      "topLugRight": {
+        "x": 576,
+        "y": 5
+      },
+      "bottomLugLeft": {
+        "x": 169,
+        "y": 899
+      },
+      "bottomLugRight": {
+        "x": 577,
+        "y": 899
+      },
+      "lugWidthPx": 404,
+      "imageWidth": 820,
+      "imageHeight": 900,
+      "topCaseEdgeY": 75,
+      "bottomCaseEdgeY": 823
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Tudor",
+    "model": "Black Bay 41",
+    "reference": "M79540-0005",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/tudor-m79540-0005/primary.webp"
+  },
+  "zenith-03-2040-400-26-c802": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/zenith-03-2040-400-26-c802/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/zenith-03-2040-400-26-c802/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 190,
+        "y": 0
+      },
+      "topLugRight": {
+        "x": 574,
+        "y": 0
+      },
+      "bottomLugLeft": {
+        "x": 190,
+        "y": 898
+      },
+      "bottomLugRight": {
+        "x": 574,
+        "y": 898
+      },
+      "lugWidthPx": 384,
+      "imageWidth": 830,
+      "imageHeight": 900,
+      "topCaseEdgeY": 84,
+      "bottomCaseEdgeY": 835
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Zenith",
+    "model": "El Primero",
+    "reference": "03.2040.400/26.C802",
+    "lugWidthMm": 20,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/zenith-03-2040-400-26-c802/primary.webp"
+  },
+  "zenith-03-2241-405-51-c915": {
+    "caseOnlyUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/zenith-03-2241-405-51-c915/case-only.webp",
+    "caseOnlyPngUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/zenith-03-2241-405-51-c915/case-only.png",
+    "lugGeometry": {
+      "topLugLeft": {
+        "x": 190,
+        "y": 7
+      },
+      "topLugRight": {
+        "x": 562,
+        "y": 7
+      },
+      "bottomLugLeft": {
+        "x": 186,
+        "y": 875
+      },
+      "bottomLugRight": {
+        "x": 555,
+        "y": 875
+      },
+      "lugWidthPx": 371,
+      "imageWidth": 793,
+      "imageHeight": 900,
+      "topCaseEdgeY": 54,
+      "bottomCaseEdgeY": 806
+    },
+    "confidence": 0.9,
+    "status": "approved",
+    "catalogReferenceVerified": true,
+    "brand": "Zenith",
+    "model": "Pilot",
+    "reference": "03.2241.405/51.C915",
+    "lugWidthMm": 22,
+    "sourcePhotoUrl": "https://uwjswlwnnmumhwupqjdh.supabase.co/storage/v1/object/public/watch-images/zenith-03-2241-405-51-c915/primary.webp"
   }
 }

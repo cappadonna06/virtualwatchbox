@@ -140,8 +140,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-navy-top.webp",
         "w": 304,
         "h": 225,
-        "pinY": 201,
-        "endY": 222,
+        "pinY": 200,
+        "endY": 221,
         "bodyLeft": 2,
         "bodyRight": 302
       },
@@ -149,8 +149,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-navy-bottom.webp",
         "w": 304,
         "h": 250,
-        "pinY": 23,
-        "endY": 2,
+        "pinY": 24,
+        "endY": 3,
         "bodyLeft": 2,
         "bodyRight": 302
       }
@@ -514,8 +514,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-black-top.webp",
         "w": 304,
         "h": 225,
-        "pinY": 201,
-        "endY": 222,
+        "pinY": 200,
+        "endY": 221,
         "bodyLeft": 2,
         "bodyRight": 302
       },
@@ -523,8 +523,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-black-bottom.webp",
         "w": 304,
         "h": 250,
-        "pinY": 23,
-        "endY": 2,
+        "pinY": 24,
+        "endY": 3,
         "bodyLeft": 2,
         "bodyRight": 302
       }
@@ -545,8 +545,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-olive-bottom.webp",
         "w": 304,
         "h": 250,
-        "pinY": 23,
-        "endY": 2,
+        "pinY": 24,
+        "endY": 3,
         "bodyLeft": 2,
         "bodyRight": 302
       }
@@ -589,8 +589,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-brown-bottom.webp",
         "w": 304,
         "h": 250,
-        "pinY": 22,
-        "endY": 1,
+        "pinY": 24,
+        "endY": 3,
         "bodyLeft": 2,
         "bodyRight": 302
       }
@@ -844,8 +844,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-charcoal-top.webp",
         "w": 304,
         "h": 225,
-        "pinY": 202,
-        "endY": 223,
+        "pinY": 200,
+        "endY": 221,
         "bodyLeft": 2,
         "bodyRight": 302
       },
@@ -853,8 +853,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-charcoal-bottom.webp",
         "w": 304,
         "h": 250,
-        "pinY": 22,
-        "endY": 1,
+        "pinY": 24,
+        "endY": 3,
         "bodyLeft": 2,
         "bodyRight": 302
       }
@@ -1086,8 +1086,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-burgundy-top.webp",
         "w": 304,
         "h": 225,
-        "pinY": 197,
-        "endY": 218,
+        "pinY": 200,
+        "endY": 221,
         "bodyLeft": 2,
         "bodyRight": 302
       },
@@ -1095,8 +1095,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-burgundy-bottom.webp",
         "w": 304,
         "h": 250,
-        "pinY": 27,
-        "endY": 6,
+        "pinY": 24,
+        "endY": 3,
         "bodyLeft": 2,
         "bodyRight": 302
       }
@@ -1108,8 +1108,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-sand-top.webp",
         "w": 304,
         "h": 225,
-        "pinY": 197,
-        "endY": 218,
+        "pinY": 200,
+        "endY": 221,
         "bodyLeft": 2,
         "bodyRight": 302
       },
@@ -1117,8 +1117,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-sand-bottom.webp",
         "w": 304,
         "h": 250,
-        "pinY": 27,
-        "endY": 6,
+        "pinY": 24,
+        "endY": 3,
         "bodyLeft": 2,
         "bodyRight": 302
       }
@@ -1438,8 +1438,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-red-top.webp",
         "w": 304,
         "h": 225,
-        "pinY": 197,
-        "endY": 218,
+        "pinY": 200,
+        "endY": 221,
         "bodyLeft": 2,
         "bodyRight": 302
       },
@@ -1447,8 +1447,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-red-bottom.webp",
         "w": 304,
         "h": 250,
-        "pinY": 27,
-        "endY": 6,
+        "pinY": 24,
+        "endY": 3,
         "bodyLeft": 2,
         "bodyRight": 302
       }
@@ -1636,8 +1636,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-purple-top.webp",
         "w": 304,
         "h": 225,
-        "pinY": 197,
-        "endY": 218,
+        "pinY": 200,
+        "endY": 221,
         "bodyLeft": 2,
         "bodyRight": 302
       },
@@ -1645,8 +1645,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-purple-bottom.webp",
         "w": 304,
         "h": 250,
-        "pinY": 27,
-        "endY": 6,
+        "pinY": 24,
+        "endY": 3,
         "bodyLeft": 2,
         "bodyRight": 302
       }
@@ -1658,8 +1658,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-orange-top.webp",
         "w": 304,
         "h": 225,
-        "pinY": 197,
-        "endY": 218,
+        "pinY": 200,
+        "endY": 221,
         "bodyLeft": 2,
         "bodyRight": 302
       },
@@ -1667,8 +1667,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-orange-bottom.webp",
         "w": 304,
         "h": 250,
-        "pinY": 27,
-        "endY": 6,
+        "pinY": 24,
+        "endY": 3,
         "bodyLeft": 2,
         "bodyRight": 302
       }
@@ -1834,8 +1834,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-white-top.webp",
         "w": 304,
         "h": 225,
-        "pinY": 197,
-        "endY": 218,
+        "pinY": 200,
+        "endY": 221,
         "bodyLeft": 2,
         "bodyRight": 302
       },
@@ -1843,8 +1843,8 @@
         "url": "/demo-strap-swap-bands/fabric-sailcloth-white-bottom.webp",
         "w": 304,
         "h": 250,
-        "pinY": 27,
-        "endY": 6,
+        "pinY": 24,
+        "endY": 3,
         "bodyLeft": 2,
         "bodyRight": 302
       }
@@ -2146,6 +2146,358 @@
         "bodyRight": 299
       },
       "passThroughUrl": "/demo-strap-swap-bands/nylon-nato-sand-stripe-worn.webp"
+    },
+    {
+      "id": "leather-epsom-taupe",
+      "fullImageId": "leather-epsom-taupe",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/leather-epsom-taupe-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 200,
+        "endY": 221,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/leather-epsom-taupe-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 24,
+        "endY": 3,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "fabric-microfiber-charcoal",
+      "fullImageId": "fabric-microfiber-charcoal",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/fabric-microfiber-charcoal-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 200,
+        "endY": 221,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/fabric-microfiber-charcoal-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 24,
+        "endY": 3,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "silicone-woven-hybrid-black",
+      "fullImageId": "silicone-woven-hybrid-black",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/silicone-woven-hybrid-black-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 200,
+        "endY": 221,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/silicone-woven-hybrid-black-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 24,
+        "endY": 3,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "leather-epsom-navy",
+      "fullImageId": "leather-epsom-navy",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/leather-epsom-navy-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 200,
+        "endY": 221,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/leather-epsom-navy-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 24,
+        "endY": 3,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "leather-epsom-orange",
+      "fullImageId": "leather-epsom-orange",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/leather-epsom-orange-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 200,
+        "endY": 221,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/leather-epsom-orange-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 24,
+        "endY": 3,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "leather-epsom-cream",
+      "fullImageId": "leather-epsom-cream",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/leather-epsom-cream-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 200,
+        "endY": 221,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/leather-epsom-cream-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 24,
+        "endY": 3,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "fabric-microfiber-navy",
+      "fullImageId": "fabric-microfiber-navy",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/fabric-microfiber-navy-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 200,
+        "endY": 221,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/fabric-microfiber-navy-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 24,
+        "endY": 3,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "fabric-microfiber-olive",
+      "fullImageId": "fabric-microfiber-olive",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/fabric-microfiber-olive-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 200,
+        "endY": 221,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/fabric-microfiber-olive-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 24,
+        "endY": 3,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "fabric-microfiber-burgundy",
+      "fullImageId": "fabric-microfiber-burgundy",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/fabric-microfiber-burgundy-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 200,
+        "endY": 221,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/fabric-microfiber-burgundy-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 24,
+        "endY": 3,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "silicone-woven-hybrid-navy",
+      "fullImageId": "silicone-woven-hybrid-navy",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/silicone-woven-hybrid-navy-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 200,
+        "endY": 221,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/silicone-woven-hybrid-navy-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 24,
+        "endY": 3,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "silicone-woven-hybrid-olive",
+      "fullImageId": "silicone-woven-hybrid-olive",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/silicone-woven-hybrid-olive-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 200,
+        "endY": 221,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/silicone-woven-hybrid-olive-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 24,
+        "endY": 3,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "silicone-woven-hybrid-orange",
+      "fullImageId": "silicone-woven-hybrid-orange",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/silicone-woven-hybrid-orange-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 200,
+        "endY": 221,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/silicone-woven-hybrid-orange-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 24,
+        "endY": 3,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "canvas-waxed-olive",
+      "fullImageId": "canvas-waxed-olive",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/canvas-waxed-olive-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 200,
+        "endY": 221,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/canvas-waxed-olive-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 24,
+        "endY": 3,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "canvas-waxed-sand",
+      "fullImageId": "canvas-waxed-sand",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/canvas-waxed-sand-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 200,
+        "endY": 221,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/canvas-waxed-sand-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 24,
+        "endY": 3,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "canvas-waxed-tobacco",
+      "fullImageId": "canvas-waxed-tobacco",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/canvas-waxed-tobacco-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 200,
+        "endY": 221,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/canvas-waxed-tobacco-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 24,
+        "endY": 3,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
+    },
+    {
+      "id": "canvas-waxed-charcoal",
+      "fullImageId": "canvas-waxed-charcoal",
+      "bandTop": {
+        "url": "/demo-strap-swap-bands/canvas-waxed-charcoal-top.webp",
+        "w": 304,
+        "h": 225,
+        "pinY": 200,
+        "endY": 221,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      },
+      "bandBottom": {
+        "url": "/demo-strap-swap-bands/canvas-waxed-charcoal-bottom.webp",
+        "w": 304,
+        "h": 250,
+        "pinY": 24,
+        "endY": 3,
+        "bodyLeft": 2,
+        "bodyRight": 302
+      }
     }
   ]
 }

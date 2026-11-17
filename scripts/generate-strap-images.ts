@@ -155,6 +155,10 @@ type KindKey =
   | 'rubber-ribbed'
   | 'canvas-herringbone'
   | 'nylon-nato'
+  | 'leather-epsom'
+  | 'fabric-microfiber'
+  | 'silicone-woven-hybrid'
+  | 'canvas-waxed'
 
 type Kind = {
   descriptor: string
@@ -166,6 +170,31 @@ type Kind = {
 }
 
 const KINDS: Record<KindKey, Kind> = {
+  'leather-epsom': {
+    descriptor: 'slim Epsom-style embossed calfskin watch strap',
+    texture: 'Fine angular crosshatched leather grain with evenly spaced tiny diamonds and a dry matte finish',
+    stitch: true,
+    singlePiece: false,
+  },
+  'fabric-microfiber': {
+    descriptor: 'soft brushed microfiber watch strap with a lightly padded center',
+    texture: 'Fine velvety directional nap with soft tonal shading and a completely matte surface',
+    stitch: true,
+    singlePiece: false,
+  },
+  'silicone-woven-hybrid': {
+    descriptor: 'woven nylon and silicone hybrid watch strap',
+    texture: 'A dense ballistic woven inset framed by raised smooth matte black silicone side rails and lining',
+    stitch: true,
+    singlePiece: false,
+  },
+  'canvas-waxed': {
+    descriptor: 'waxed cotton canvas watch strap with a folded spring-bar sleeve',
+    texture: 'Sturdy visible cotton weave with a waxed patina, light pull-up creases and burnished edges',
+    stitch: true,
+    singlePiece: false,
+  },
+
   'nylon-nato': {
     descriptor: 'woven nylon NATO-style pass-through watch strap',
     texture: 'Matte, fine nylon webbing with heat-sealed edges',
@@ -205,8 +234,8 @@ const KINDS: Record<KindKey, Kind> = {
     singlePiece: false,
   },
   'fabric-sailcloth': {
-    descriptor: 'woven sailcloth fabric watch strap with a fine basketweave texture and visible leather backing at the edges',
-    texture: 'The technical sailcloth shows a fine, regular basketweave with a subtle matte sheen',
+    descriptor: 'structured technical sailcloth watch strap with a tightly embossed micro-grid surface and dark bound edges',
+    texture: 'Dense regular micro-grid texture with a controlled satin sheen on the raised pattern, a padded center and smooth bound sides',
     stitch: true,
     singlePiece: false,
   },
@@ -388,7 +417,7 @@ const STRAPS: StrapDef[] = [
   { name: 'canvas-herringbone-mustard', kind: 'canvas-herringbone', material: 'canvas', subMaterial: 'Herringbone', color: 'Mustard Yellow', colorHex: '#B39135', style: 'rugged', tier: 4 },
   { name: 'leather-rally-ivory', kind: 'leather-rally', material: 'leather', subMaterial: 'Rally', color: 'Ivory', colorHex: '#DCCDB2', style: 'sporty', tier: 4 },
 
-  { name: 'fabric-sailcloth-white', kind: 'fabric-sailcloth', material: 'fabric', subMaterial: 'Sailcloth', color: 'White', colorHex: '#EEECE4', style: 'sporty', tier: 5 },
+  { name: 'fabric-sailcloth-white', kind: 'fabric-sailcloth', material: 'fabric', subMaterial: 'Sailcloth', color: 'Ivory', colorHex: '#EEECE4', style: 'sporty', tier: 5 },
   { name: 'rubber-waffle-white', kind: 'rubber-waffle', material: 'rubber', subMaterial: 'Waffle', color: 'White', colorHex: '#ECEAE3', style: 'sporty', tier: 5 },
   { name: 'rubber-channel-gray', kind: 'rubber-channel', material: 'rubber', subMaterial: 'Channel', color: 'Gray', colorHex: '#666B70', style: 'sporty', tier: 5 },
   { name: 'rubber-channel-burgundy', kind: 'rubber-channel', material: 'rubber', subMaterial: 'Channel', color: 'Burgundy', colorHex: '#60232F', style: 'sporty', tier: 5 },
@@ -414,6 +443,23 @@ const STRAPS: StrapDef[] = [
   { name: 'nylon-nato-regimental', kind: 'nylon-nato', material: 'nylon', subMaterial: 'NATO', color: 'Regimental Green & Burgundy', colorHex: '#384D43', style: 'sporty', tier: 6 },
   { name: 'nylon-nato-racing', kind: 'nylon-nato', material: 'nylon', subMaterial: 'NATO', color: 'Racing Black & Orange', colorHex: '#C46229', style: 'sporty', tier: 6 },
   { name: 'nylon-nato-sand-stripe', kind: 'nylon-nato', material: 'nylon', subMaterial: 'NATO', color: 'Sand & Black', colorHex: '#B29568', style: 'sporty', tier: 6 },
+
+  { name: 'leather-epsom-taupe', kind: 'leather-epsom', material: 'leather', subMaterial: 'Epsom', color: 'Taupe', colorHex: '#998370', style: 'dressy', tier: 7 },
+  { name: 'leather-epsom-navy', kind: 'leather-epsom', material: 'leather', subMaterial: 'Epsom', color: 'Navy', colorHex: '#25354D', style: 'dressy', tier: 7 },
+  { name: 'leather-epsom-orange', kind: 'leather-epsom', material: 'leather', subMaterial: 'Epsom', color: 'Cognac Orange', colorHex: '#BD713C', style: 'dressy', tier: 7 },
+  { name: 'leather-epsom-cream', kind: 'leather-epsom', material: 'leather', subMaterial: 'Epsom', color: 'Cream', colorHex: '#D6CBB9', style: 'dressy', tier: 7 },
+  { name: 'fabric-microfiber-charcoal', kind: 'fabric-microfiber', material: 'fabric', subMaterial: 'Microfiber', color: 'Charcoal', colorHex: '#55565A', style: 'casual', tier: 7 },
+  { name: 'fabric-microfiber-navy', kind: 'fabric-microfiber', material: 'fabric', subMaterial: 'Microfiber', color: 'Navy', colorHex: '#293D59', style: 'casual', tier: 7 },
+  { name: 'fabric-microfiber-olive', kind: 'fabric-microfiber', material: 'fabric', subMaterial: 'Microfiber', color: 'Olive', colorHex: '#566345', style: 'casual', tier: 7 },
+  { name: 'fabric-microfiber-burgundy', kind: 'fabric-microfiber', material: 'fabric', subMaterial: 'Microfiber', color: 'Burgundy', colorHex: '#643646', style: 'casual', tier: 7 },
+  { name: 'silicone-woven-hybrid-black', kind: 'silicone-woven-hybrid', material: 'silicone', subMaterial: 'Woven Hybrid', color: 'Black', colorHex: '#242427', style: 'sporty', tier: 7 },
+  { name: 'silicone-woven-hybrid-navy', kind: 'silicone-woven-hybrid', material: 'silicone', subMaterial: 'Woven Hybrid', color: 'Navy', colorHex: '#253956', style: 'sporty', tier: 7 },
+  { name: 'silicone-woven-hybrid-olive', kind: 'silicone-woven-hybrid', material: 'silicone', subMaterial: 'Woven Hybrid', color: 'Olive', colorHex: '#556247', style: 'sporty', tier: 7 },
+  { name: 'silicone-woven-hybrid-orange', kind: 'silicone-woven-hybrid', material: 'silicone', subMaterial: 'Woven Hybrid', color: 'Burnt Orange', colorHex: '#A95230', style: 'sporty', tier: 7 },
+  { name: 'canvas-waxed-olive', kind: 'canvas-waxed', material: 'canvas', subMaterial: 'Waxed Canvas', color: 'Olive', colorHex: '#626B43', style: 'rugged', tier: 7 },
+  { name: 'canvas-waxed-sand', kind: 'canvas-waxed', material: 'canvas', subMaterial: 'Waxed Canvas', color: 'Sand', colorHex: '#B59970', style: 'rugged', tier: 7 },
+  { name: 'canvas-waxed-tobacco', kind: 'canvas-waxed', material: 'canvas', subMaterial: 'Waxed Canvas', color: 'Tobacco Brown', colorHex: '#775334', style: 'rugged', tier: 7 },
+  { name: 'canvas-waxed-charcoal', kind: 'canvas-waxed', material: 'canvas', subMaterial: 'Waxed Canvas', color: 'Charcoal', colorHex: '#535253', style: 'rugged', tier: 7 },
 ]
 
 // Sample set for the review preview (one per material family + sub-material branch)
