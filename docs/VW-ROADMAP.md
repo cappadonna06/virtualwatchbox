@@ -2,6 +2,15 @@
 **IF** = infrastructure · **RM** = product feature · **BUG** = existing issue
 Mark `[x]` when done, `[~]` when partially done (sub-items called out inline).
 
+## Launch priorities
+
+1. [x] **Signed-out Playground sharing.** Share a read-only box with a public link, an Open Graph image, and a way for the recipient to start a box. The illustrated three-watch collection guide links to Playground and the Watch Draft.
+2. [x] **Weekly Watch Draft.** Types and Brands use five picks with a $15,000 budget. International uses three picks with a $9,000 budget. Shared results retain their week and edition and offer an empty replay board. Share images put watch photos above the identifying captions.
+3. [x] **Strap Studio expansion.** Add 20 reviewed watch references, 12 NATO straps, and a Moonwatch default for guests.
+4. [~] **First collectors.** Recruit 15–20 collectors and use the [launch analytics runbook](LAUNCH-ANALYTICS.md) to verify share-to-activation reporting. Lead with r/Watches after moderator approval, then try one watch club or creator.
+5. [~] **First affiliate revenue.** Pilot Barton’s 20 mm collection in Strap Studio for the Murph 38 and use reference-specific Chrono24 searches in My Targets and Grail. Confirm the merchant-issued links and approved deep-link terms, then verify attribution before enabling commissions.
+6. [~] **Search discovery.** The public guide and route-specific metadata are deployed. Verify indexing in Search Console and track discovery by landing page.
+
 ---
 
 ## Changelog
@@ -134,8 +143,8 @@ Mark `[x]` when done, `[~]` when partially done (sub-items called out inline).
 
 ## Phase 4 — Scale + Public Identity
 
-- [ ] **IF** Account-backed `/u/[handle]` public profile routes — replace localStorage demo with real Supabase-backed public profiles. Required before any growth/sharing push.
-- [ ] **IF** Account-backed public box routes `/u/[handle]/box/[slug]` — Playground and Collection box share links resolve here post-auth.
+- [ ] **IF** Account-backed `/u/[handle]` public profile routes — replace the localStorage demo with Supabase-backed public profiles.
+- [ ] **IF** Account-backed public box routes `/u/[handle]/box/[slug]` — extend sharing to profile and Collection publishing after measuring the standalone Playground flow.
 - [ ] **RM** `VW-16` Virtual Try-On Room — preview watch on wrist photo (Feature 10). Rare in the category. High shareability.
 - [ ] **RM** Integrated sell listing support (Feature 12) — Find For Sale deep links + structured sell intent to Chrono24/eBay as leads. Completes ownership lifecycle.
 - [ ] **IF** White-label licensing foundation (future) — infrastructure for dealer/brand partnerships.

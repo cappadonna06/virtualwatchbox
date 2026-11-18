@@ -1668,7 +1668,7 @@ Every watch, strap, and box link can carry an affiliate tag.
 
 | Partner | Category | Commission |
 |---|---|---|
-| Chrono24 | Watches | ~6.5% on completed sales |
+| [Chrono24 US via Awin](https://ui.awin.com/merchant-profile/128225) | Watches | Variable commission on qualifying customer sales. Confirm approved terms and deep links before activation. |
 | eBay Partner Network | Watches | Up to 4% |
 | Amazon Associates | Accessories | 4% |
 | Jomashop / Spinnaker | Specialty | 8–20%, 30-day cookie |

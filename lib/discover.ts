@@ -1,14 +1,28 @@
 import type { CatalogWatch, WatchTarget, WatchType } from '@/types/watch'
 import { BRAND_TIERS, UPGRADE_PATHS } from './discoverUpgradePaths'
 
-export function buildChrono24URL(brand: string, model: string, intent: 'buy' | 'sell' = 'buy'): string {
-  const query = encodeURIComponent(`${brand} ${model}`)
+export function buildChrono24URL(brand: string, model: string, intent: 'buy' | 'sell' = 'buy', reference?: string): string {
+  const query = encodeURIComponent(`${brand} ${reference?.trim() || model}`)
   if (intent === 'sell') {
     // Chrono24's "Sell your watch" listing entry point. The old
     // /info/sell-watch.htm path 404s; /offer/index.htm is the live sell funnel.
     return 'https://www.chrono24.com/offer/index.htm'
   }
   return `https://www.chrono24.com/search/index.htm?query=${query}`
+}
+
+export function chrono24TargetLink(watch: Pick<CatalogWatch, 'brand' | 'model' | 'reference'>) {
+  const directUrl = buildChrono24URL(watch.brand, watch.model, 'buy', watch.reference)
+  const publisherId = process.env.NEXT_PUBLIC_CHRONO24_AWIN_PUBLISHER_ID?.trim()
+  if (!publisherId || !/^[1-9]\d*$/.test(publisherId)) return { href: directUrl, sponsored: false }
+
+  const params = new URLSearchParams({
+    awinmid: '128225',
+    awinaffid: publisherId,
+    clickref: 'my-targets',
+    ued: directUrl,
+  })
+  return { href: `https://www.awin1.com/cread.php?${params}`, sponsored: true }
 }
 
 const RATIONALE_TEMPLATES: Record<string, string[]> = {

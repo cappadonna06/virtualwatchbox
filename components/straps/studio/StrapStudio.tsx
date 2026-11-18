@@ -63,7 +63,7 @@ export default function StrapStudio() {
         paddingBottom: 24,
       }}
     >
-      <Masthead c={c} isMobile={isMobile} stacked={isMobile && (viewport.w < 370 || Boolean(c.buyUrl))} />
+      <Masthead c={c} isMobile={isMobile} stacked={isMobile && (viewport.w < 370 || Boolean(c.shoppingLink))} />
 
       <section aria-label="Watch preview" style={{
         padding: isMobile ? '4px 12px 10px' : '4px 24px 0',
@@ -125,10 +125,17 @@ function Masthead({ c, isMobile, stacked }: { c: StudioController; isMobile: boo
         justifyContent: 'flex-end', alignItems: 'center', gap: 8,
         gridColumn: stacked ? 2 : undefined, gridRow: stacked ? 1 : undefined,
       }}>
-        {c.buyUrl && <CaptionCta label={isMobile ? 'Buy ↗' : 'Buy This Strap ↗'} href={c.buyUrl} primary compact />}
+        {c.shoppingLink && (
+          <CaptionCta label={c.shoppingLink.label} href={c.shoppingLink.href} sponsored={c.shoppingLink.sponsored} primary compact />
+        )}
         <CaptionCta label={isMobile ? 'Share ↗' : 'Share This Look ↗'} onClick={() => void c.shareLook()} compact />
         <WatchPickerDropdown c={c} />
       </div>
+      {c.shoppingLink?.sponsored && (
+        <small style={{ gridColumn: '1 / -1', justifySelf: 'end', color: brand.studio.textLow, marginBottom: 5 }}>
+          We may earn a commission.
+        </small>
+      )}
     </header>
   )
 }
@@ -228,7 +235,14 @@ function CaptionBlock({ c, isMobile }: { c: StudioController; isMobile: boolean 
 
 // Our button grammar: square corners, letterspaced DM Sans; the primary action
 // is ink with gold type (the Strap Drawer's studio-CTA treatment).
-function CaptionCta({ label, href, onClick, primary, compact }: { label: string; href?: string; onClick?: () => void; primary?: boolean; compact?: boolean }) {
+function CaptionCta({ label, href, onClick, primary, compact, sponsored }: {
+  label: string
+  href?: string
+  onClick?: () => void
+  primary?: boolean
+  compact?: boolean
+  sponsored?: boolean
+}) {
   const style: React.CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
@@ -247,7 +261,11 @@ function CaptionCta({ label, href, onClick, primary, compact }: { label: string;
   }
   const motionProps = { whileTap: { scale: 0.97 }, transition: { type: 'spring' as const, stiffness: 500, damping: 30 } }
   if (href) {
-    return <motion.a {...motionProps} href={href} target="_blank" rel="noopener noreferrer" style={style}>{label}</motion.a>
+    return (
+      <motion.a {...motionProps} href={href} target="_blank" rel={sponsored ? 'sponsored noopener noreferrer' : 'noopener noreferrer'} style={style}>
+        {label}
+      </motion.a>
+    )
   }
   return <motion.button {...motionProps} onClick={onClick} style={style}>{label}</motion.button>
 }

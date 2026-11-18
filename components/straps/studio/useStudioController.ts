@@ -271,9 +271,23 @@ export function useStudioController() {
     }
   }, [watchId, currentStrap, source, pathname, showToast])
 
-  const buyUrl = currentStrap?.source === 'template'
-    ? (currentStrap.affiliateUrl ?? undefined)
-    : (currentStrap?.purchaseUrl ?? undefined)
+  const isBartonPilot = currentStrap?.source === 'template'
+    && studioWatch?.catalogId === 'hamilton-h70405730'
+    && studioWatch.lugWidthMm === 20
+    && currentStrap.availableLugWidths.includes(20)
+  const bartonAffiliateUrl = process.env.NEXT_PUBLIC_BARTON_MURPH_20MM_AFFILIATE_URL?.trim()
+  const bartonTrackedUrl = bartonAffiliateUrl?.startsWith('https://') ? bartonAffiliateUrl : undefined
+  const shoppingLink = currentStrap?.source === 'drawer' && currentStrap.purchaseUrl
+    ? { href: currentStrap.purchaseUrl, label: 'Buy this strap ↗', sponsored: false }
+    : currentStrap?.affiliateUrl
+      ? { href: currentStrap.affiliateUrl, label: 'Shop similar straps ↗', sponsored: true }
+      : isBartonPilot
+        ? {
+          href: bartonTrackedUrl ?? 'https://www.bartonwatchbands.com/collections/20mm-watch-straps',
+          label: 'Browse 20 mm straps ↗',
+          sponsored: Boolean(bartonTrackedUrl),
+        }
+        : undefined
 
   return {
     // data
@@ -310,7 +324,7 @@ export function useStudioController() {
     searchCatalog,
     setWatch,
     // footer
-    buyUrl,
+    shoppingLink,
     shareLook,
     // misc
     watchId,
